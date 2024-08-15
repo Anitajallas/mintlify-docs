@@ -1,0 +1,23 @@
+# Verify Customer Identity Using Their National Identification
+
+Verifying a customer using their National Identification Number through ZeeH's endpoint allows you to access their information on a verified national level.
+
+## Request Endpoint
+
+Generates user data from the National Identification Number.
+
+**Method:** `POST`  
+**Endpoint:** `/uganda_kyc/lookup_national_id`  
+**Media Type:** `application/json`
+
+### Payload Fields
+
+```json
+{
+    "surname": "Doe",
+    "givenName": "John",
+    "dateOfBirth": "1990-01-01",
+    "documentId": "1234567890",
+    "nationalID": "NO0987654321BE"
+}
+```

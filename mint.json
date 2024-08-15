@@ -1,9 +1,9 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "Starter Kit",
+  "name": "Smartcomply Docs",
   "logo": {
-    "dark": "/logo/dark.svg",
-    "light": "/logo/light.svg"
+    "dark": "/logo/smartdark.svg",
+    "light": "/logo/smartwhite.svg"
   },
   "favicon": "/favicon.svg",
   "colors": {
@@ -18,54 +18,78 @@
   "topbarLinks": [
     {
       "name": "Support",
-      "url": "mailto:hi@mintlify.com"
+      "url": "mailto: anita@smartcomply.com"
     }
   ],
   "topbarCtaButton": {
     "name": "Dashboard",
-    "url": "https://dashboard.mintlify.com"
+    "url": "https://adhere-app.smartcomply.com"
   },
   "tabs": [
+    {
+      "name": "Transaction Monitoring",
+      "url": "transaction"
+    },
     {
       "name": "API Reference",
       "url": "api-reference"
     }
   ],
-  "anchors": [
-    {
-      "name": "Documentation",
-      "icon": "book-open-cover",
-      "url": "https://mintlify.com/docs"
-    },
-    {
-      "name": "Community",
-      "icon": "slack",
-      "url": "https://mintlify.com/community"
-    },
-    {
-      "name": "Blog",
-      "icon": "newspaper",
-      "url": "https://mintlify.com/blog"
-    }
-  ],
+  
   "navigation": [
     {
       "group": "Get Started",
       "pages": [
         "introduction",
+        "authentication",
         "quickstart",
-        "development"
+        "error_codes"
       ]
     },
     {
-      "group": "Essentials",
+      "group": "Common Use Cases",
       "pages": [
-        "essentials/markdown",
-        "essentials/code",
-        "essentials/images",
-        "essentials/settings",
-        "essentials/navigation",
-        "essentials/reusable-snippets"
+        "pages/account_verification",
+        "pages/lending"
+      ]
+    },
+    {
+      "group": "KYC",
+      "pages": [
+        {
+          "group": "Nigeria",
+          "pages": [
+            "kyc/nigeria/driver_license",
+            "kyc/nigeria/passport_verification",
+            "kyc/nigeria/tin"
+          ]
+        },
+        {
+          "group": "Kenya",
+          "pages": [
+            "pages/account_verification",
+            "pages/lending"
+          ]
+        },
+        {
+          "group": "Ghana",
+          "pages": [
+            "kyc/ghana/driver_license"
+          ]
+        },
+        {
+          "group": "Rwanda",
+          "pages": [
+            "kyc/rwanda/national_id",
+            "kyc/rwanda/passport"
+          ]
+        },
+        {
+          "group": "Uganda",
+          "pages": [
+            "kyc/uganda/national_id"
+          ]
+        }
       ]
     },
     {

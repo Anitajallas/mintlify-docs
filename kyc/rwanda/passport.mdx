@@ -1,0 +1,46 @@
+## Verify Your Customer's Identity Using Their Passport
+The API provides an endpoint to verify customer identity using passport information. 
+This endpoint allows you to retrieve details associated with a verified passport, ensuring a streamlined and reliable identity verification process.
+
+## Request Endpoint
+The endpoint generates user data based on the provided passport number.
+
+
+**Method:** `POST`  
+**Endpoint:** `/rwanda_kyc/lookup_passport`  
+**Media Type:** `application/json`
+
+
+Payload Fields
+
+```json
+{
+    "passportNumber": "PD000000"
+}
+```
+
+200 OK Response
+
+```json
+
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Passport Details retrieved",
+  "response_code": "00",
+  "data": {
+    "PassportNo": "G0000575",
+    "FirstName": "SAMUEL",
+    "LastName": "DENU",
+    "MiddleName": "KWABLA",
+    "Nationality": "GHANAIAN",
+    "DateOfBirth": "23/05/1952",
+    "Gender": "MALE",
+    "PlaceOfBirth": "ADAKLU ABUADI",
+    "PlaceOfIssue": "ACCRA",
+    "IssueDate": "30/03/2010",
+    "ExpiryDate": "30/03/2015",
+    "Picture": "/9j/4AAQSkZJRgABAQEAYABgAAD/..."
+  }
+}
+```

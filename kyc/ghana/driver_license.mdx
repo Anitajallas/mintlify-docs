@@ -1,0 +1,22 @@
+## Verifying Customer Identity Using Driver's License
+You can verify your customer's identity using their driver's license.
+Verifying a customer through their driver's license number using ZeeH's endpoint helps you access their information on a verified national level.
+
+
+## Request Endpoint
+Generates user data from the driver's license.
+
+**Method:** `POST`  
+**Endpoint:** `/ghana_kyc/lookup_driver_license`   
+**Media Type:** `application/json`
+
+
+### Payload Fields
+Sample Request Payload:
+
+``` json
+{
+    "licenseNumber": 12345678909,
+    "dateOfBirth": "1999-11-13"
+}
+```

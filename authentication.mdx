@@ -1,0 +1,34 @@
+# Smartcomply API Authentication Guide
+
+Smartcomply provides secure and seamless authentication mechanisms to ensure that your interactions with our APIs are protected. Follow the steps below to authenticate your application and start making API requests.
+
+## Obtain Your Secret Key
+
+After completing your business KYC, you will be issued a secret key. This key is crucial for authenticating your API requests. Treat it with care and do not share it publicly.
+
+## Authentication Method
+
+Smartcomply uses an API key to secure API requests. You will need to include your secret key in the `Authorization` header of every API request.
+
+
+- **Base URL (production):** `https://adhere-api/v1/monitoring`
+- **media-type:** `application/json`
+
+### HEADERS
+
+### Sample Request:
+
+```bash
+curl -X GET "https://api.smartcomply.com/v1/endpoint" \
+-H "Secret_Key: YOUR_SECRET_KEY" \
+-H "Content-Type: application/json" 
+```
+
+## Best Practices
+
+> Keep your secret key secure: Store it in environment variables and avoid hard-coding it in your application.
+>
+> Rotate keys periodically: To enhance security, consider rotating your API keys periodically.
+>
+> Use different keys for different environments: This helps in isolating issues and managing access control.
+

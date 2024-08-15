@@ -1,0 +1,18 @@
+
+Smartcomply uses conventional HTTP response codes to indicate the success or failure of an API request. In general:
+
+- Codes in the `2xx` range indicate success.
+- Codes in the `4xx` range indicate an error that failed.
+
+| **HTTP Code** | **Error**       | **Description**                                                                 |
+|---------------|-----------------|---------------------------------------------------------------------------------|
+| **400**       | Bad Request     | The request was unacceptable, often due to:                                      |
+|               |                 | 1. Missing a required parameter.                                                 |
+|               |                 | 2. Not having the required key.                                                  |
+| **401**       | Unauthenticated | The user has not been authenticated.                                             |
+| **403**       | Unauthorized    | The user does not have privileges to perform the request.                        |
+| **404**       | Not Found       | The requested resource does not exist.                                           |
+| **Custom**    | Custom Error    | 1. Public key not provided.                                                      |
+|               |                 | 2. Conflicts of information.                                                     |
+| **500, 502, 503, 504** | Server Errors | Something went wrong on Smartcomply's end. (These are rare.)                    |
+| **200**       | OK              | Everything worked as expected.
