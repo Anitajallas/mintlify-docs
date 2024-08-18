@@ -1,0 +1,138 @@
+### Advanced CAC Lookup
+
+These endpoints fetch more advanced information about an account. They retrieve a list of financial accounts associated with a specific app's public key.
+
+#### Request Endpoint
+**Generate advanced customer data object**
+
+**POST** `{{url}}/nigeria_kyc/lookup_cac_advanced`
+
+
+#### Payload
+```json
+{    
+    "rc_number": "1261103",
+    "company_name": "ADAFRUIT LIMITED"
+}
+```
+
+200 OK Response
+
+``` json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Business Registration Details retrieved",
+  "response_code": "00",
+  "data": [
+    {
+      "state": null,
+      "address": "3 OKUNOWO LANE, AGUDA - ORILE, IKEJA, LAGOS",
+      "status": "ACTIVE",
+      "city": null,
+      "email": null,
+      "companyStatus": "INACTIVE",
+      "lga": null,
+      "rcNumber": "461918",
+      "registrationDate": "1981-12-15T23:00:00.000+00:00",
+      "approvedName": "AMO - DOLTEM NIG. ENTS.",
+      "directors": []
+    },
+    {
+      "state": null,
+      "address": "NO. 11A, SAMUEL EDOSA STREET, MAGODO GRA PHASE 2",
+      "status": "ACTIVE",
+      "city": null,
+      "email": "",
+      "companyStatus": "ACTIVE",
+      "lga": null,
+      "rcNumber": "461918",
+      "registrationDate": "2002-09-16T00:00:00.000+00:00",
+      "approvedName": "VAS2NETS TECHNOLOGIES LIMITED",
+      "directors": [
+        {
+          "surname": "STUFFMAN",
+          "firstname": "AYO",
+          "otherName": "",
+          "email": "",
+          "phoneNumber": "",
+          "gender": "Male",
+          "formerNationality": "",
+          "city": "MAGODO GRA PHASE 2",
+          "occupation": "",
+          "formerName": "",
+          "corporationName": "",
+          "rcNumber": "",
+          "state": "LAGOS",
+          "accreditationnumber": "",
+          "formType": "",
+          "numSharesAlloted": null,
+          "typeOfShares": "",
+          "dateOfBirth": null,
+          "dateOfAppointment": null,
+          "status": "ACTIVE",
+          "formerSurname": "",
+          "formerFirstName": "",
+          "formerOtherName": "",
+          "identityNumber": "null",
+          "otherDirectorshipDetails": null,
+          "affiliateTypeFk": {
+            "name": "DIRECTOR",
+            "description": "DIRECTOR"
+          },
+          "countryFk": {
+            "name": "NIGERIA",
+            "code": "NIGERIA"
+          },
+          "lga": null,
+          "isCorporate": null,
+          "nationality": null,
+          "address": "11A, SAMUEL EDOSA STREET",
+          "streetNumber": "",
+          "isChairman": null,
+          "isDesignated": null,
+          "postcode": "",
+          "formerNameType": "",
+          "affiliatesPscInformation": null,
+          "isPublicUser": null
+        },
+        {
+          "surname": "STUFFMAN",
+          "firstname": "AYO",
+          "otherName": "",
+          "email": "",
+          "phoneNumber": "",
+          "gender": "MALE",
+          "formerNationality": "",
+          "city": "MAGODO GRA PHASE 2",
+          "occupation": "SHAREHOLDER",
+          "formerName": "",
+          "corporationName": "",
+          "rcNumber": "",
+          "state": "LAGOS",
+          "accreditationnumber": "",
+          "formType": "",
+          "numSharesAlloted": 75000000,
+          "typeOfShares": "ORDINARY",
+          "dateOfBirth": null,
+          "dateOfAppointment": "2020-06-24T11:03:37.000+00:00",
+          "status": "ACTIVE",
+          "formerSurname": "",
+          "formerFirstName": "",
+          "formerOtherName": "",
+          "identityNumber": "",
+          "otherDirectorshipDetails": "",
+          "affiliateTypeFk": {
+            "name": "SHAREHOLDER",
+            "description": "SHAREHOLDER"
+          },
+          "countryFk": {
+            "name": "NIGERIA",
+            "code": "NIGERIA"
+          }
+        }
+      ]
+    }
+  ]
+}
+```

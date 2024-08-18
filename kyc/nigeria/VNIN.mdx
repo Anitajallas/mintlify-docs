@@ -1,0 +1,37 @@
+## User Verification using the Virtual National Identification Number (VNIN)
+
+An endpoint to fetch and verify customer details using the Virtual National Identification Number (VNIN). It is a means of identification that contains robust information about an individual.
+
+
+### Endpoint
+
+POST `{{url}}/nigeria_kyc/lookup_vnin`
+
+### Payload
+
+```json
+{
+  "vnin": "AB012345678910YZ"
+}
+```
+
+200 OK Response
+
+```json
+
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Virtual National Identification Number Details retrieved",
+  "response_code": "00",
+  "data": {
+    "vnin": "AB012345678910YZ",
+    "firstname": "John",
+    "middlename": "Doe",
+    "lastname": "Alamutu",
+    "gender": "M",
+    "mobile": "08012345678",
+    "photo": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQICAQECAQEBAgICAgICAgICAQICAgICAgICAgL/2wBDAQEBAQEBAQEBAQECAQEBAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgX029q+V/SWWvZv1tgium25ZYom1NDBBiskiRaTORsEVQSkxGMglwakAFZEYhg0sDJSUIIAgECMBkQgBGSkzTIFEGBpUmQkBChrAWHA2XTeCfQnll5qvlt6G8rNZU8/v67dmRt9GXNN69zjdrF0+7aps5Xn+pUO3ByBvo+O6/GE6gftr3um5BrzCczJ+aw7SGoWTvD0TqWf=",
+    "customer": "6bb82c41-e15e-4308-b99d-e9640818eca9"
+  }
+}

@@ -1,0 +1,50 @@
+# Ensures Customer Identity Verification
+
+The BVN Endpoint allows you to verify a user's Bank Verification Number (BVN), which is essential for Know Your Customer (KYC) and user verification purposes. This endpoint can also auto-complete account data and help reduce fraud by providing personal information such as name, phone number, date of birth, national identification number (NIN), local government area of origin, state of origin, image, and more. The BVN can help identify users from specific financial institutions.
+
+## Advanced BVN Lookup With Image URL
+
+This endpoint generates a more detailed BVN response object and includes user data from BVN and image.
+
+**POST** `{{url}}/nigeria_kyc/lookup_bvn_with_face`
+
+### Sample Request
+
+```json
+{
+    "bvn": "22200000000",
+    "imageUrl": "https://salesunbox.s3.amazonaws.com/use-case%2021712313474306.png"
+}
+```
+
+200 OK Response
+
+```json
+
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Bank Verification Number Details Retrieved",
+  "response_code": "00",
+  "data": {
+    "firstName": "abraham",
+    "middleName": "oladiran",
+    "lastName": "fatoki",
+    "dateOfBirth": "01-April-2002",
+    "phoneNumber1": "+2348123456710",
+    "residentialAddress": "3, Old Mill Road, Valencia, Gate.",
+    "gender": "male",
+    "email": "test@gmail.com",
+    "phoneNumber2": "+2347033287012",
+    "levelOfAccount": "level 1 - high level accounts",
+    "lgaOfOrigin": "lagelu",
+    "lgaOfResidence": "ido",
+    "maritalStatus": "single",
+    "nationality": "nigeria",
+    "stateOfOrigin": "oyo state",
+    "stateOfResidence": "oyo state",
+    "nin": null,
+    "base64Image": "/9j/4AAQSkZJBAAD/2wBcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAGQASwDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD0YCnACmg0oPFUZjqXFJRQAxqYaexqM0mCGdzUcx/dt9KkNRTf6pvpSGO005hz6imrxej05p2m/wCp/Cmrj7ZTQmWzSZyaU02mA7PanCmU8HPFADhS0lLQIWlNJRTABS0lGaAF7U2lzSUAFJS0lFwFopKKQC0uaSimAuTS5ptLQAZooopgFJRRQAtApKKQC0UlFAEVOFMFOBqSh1GaSigBjHJpjU80xjigQw1FP/qm+lSZqKfJhfHpSKHadxD33tz1FaMdrvJwKsRWGGJJ61Dmi1C5kPCA21QT9KsRaaSN3rWrHbJH2GakUAGs3UfQ0UEZCWEhk9QKvJYgrhlGat7wDwOauJHvjB7mhSkxuKWxgy6UXcYJUe1XItNESYJzkdMVtfZ2MXyLk0vkSbSWT7"
+  }
+}
+``` 

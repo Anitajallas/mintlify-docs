@@ -1,0 +1,90 @@
+# Verify Your Customer's Identity Using Their NUBAN Number
+
+The NUBAN check using ZeeH's endpoint helps you access verified customer information on a national level.
+
+**POST**  
+`{{url}}/nigeria_kyc/lookup_nuban`
+
+- **Media-Type:** `application/json`
+
+## HEADERS
+
+- **Secret_Key:** `{{Your Secret Key here}}`
+
+## Response Codes
+
+- **200: OK** - Data is successfully returned.
+- **400: Bad Request** - The NUBAN parameter is invalid. Request not completed successfully.
+- **404: Not Found** - NUBAN parameter not found. Request not completed successfully.
+
+## Sample Request
+
+``` json
+{
+  "account_number": "string",
+  "bank_code": "035"
+} 
+```
+
+200 OK Response
+
+``` json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "NUBAN Details Retrieved",
+  "response_code": "00",
+  "data": {
+    "account_currency": "566",
+    "account_name": "MICHEAL ADEOSUN GABRIEL",
+    "account_number": "3046***407",
+    "account_type": "10",
+    "address_1": ".",
+    "address_2": "",
+    "city": "LAGOS",
+    "country_code": "",
+    "country_of_birth": "",
+    "country_of_issue": "",
+    "dob": "10/06/1982",
+    "expiry_date": "",
+    "first_name": "MICHAEL",
+    "identity_number": "222******556",
+    "identity_type": "BVN",
+    "last_name": "ADEOSUN",
+    "nationality": "",
+    "other_names": "GABRIEL",
+    "phone": "2348****77844",
+    "postal_code": "234",
+    "state_code": "LAGOS"
+  }
+} 
+```
+
+### Response Fields
+
+| Field               | Description                                                     | Type   |
+|---------------------|-----------------------------------------------------------------|--------|
+| `status`            | This is the returned status of the request, either success or failed | `String` |
+| `code`              | This is the operational code                                    | `Number` |
+| `data`              | This is an array of objects containing every transaction data   | `Object` |
+| `data.nuban`        | NUBAN of the verified customer                                  | `String` |
+| `data.accountName`  | Full name of the verified customer                              | `String` |
+| `data.identityNumber` | Account number of the verified customer                      | `String` |
+| `data.identityType` | Identity type of the verified customer, e.g., BVN               | `String` |
+| `data.bank`         | Bank of the verified customer                                   | `String` |
+| `data.accountCurrency` | Currency of the verified account                            | `String` |
+| `data.firstName`    | First name of the verified customer                             | `String` |
+| `data.lastName`     | Last name of the verified customer                              | `String` |
+| `data.otherNames`   | Other names of the verified customer                            | `String` |
+| `data.gender`       | Gender of the verified customer                                 | `String` |
+| `data.dob`          | Date of birth of the verified customer                          | `String` |
+| `data.phone`        | Phone number of the verified customer                           | `String` |
+| `data.postalCode`   | Postal code of the verified customer                            | `String` |
+| `data.stateCode`    | State code of the verified customer                             | `String` |
+| `data.countryCode`  | Country code of the verified customer                           | `String` |
+| `data.countryOfBirth` | Country of birth of the verified customer                    | `String` |
+| `data.nationality`  | Nationality of the verified customer                            | `String` |
+| `data.expiryDate`   | Expiry date of the verified customer                            | `String` |
+| `data.address1`     | First address of the verified customer                          | `String` |
+| `data.address2`     | Second address of the verified customer                         | `String` |
+| `data.uuid`         | User data ID                                                    | `String` |

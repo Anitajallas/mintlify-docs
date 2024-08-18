@@ -1,0 +1,68 @@
+## You can verify your customers identity using their passport number
+
+The passport validity check using ZeeH's endpoint helps you to get in touch with their information on a verified national level.
+
+
+### Request Endpoint
+
+**POST**
+ `{{url}}/kenya_kyc/lookup_passport`
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Passport Details retrieved",
+  "response_code": "00",
+  "data": {
+    "identity_type": "PASSPORT NUMBER",
+    "identity_number": "AK0000000",
+    "identity_name": "John Doe",
+    "date_of_birth": "18/04/1991 12:00:00 AM",
+    "gender": "M",
+    "photo": "",
+    "transaction_id": "kjdfhgjkdgjd",
+    "usr_password": "9$10",
+    "place_of_birth": "",
+    "place_of_live": "",
+    "date_of_issue": "4/18/2021 12:00:00 AM",
+    "id_serial_number": "",
+    "expiry_date": "",
+    "signature": ""
+  }
+}
+```
+
+#### Payload Fields
+
+```json
+{
+    "passportNumber": "AK0000000"
+}
+```
+200 OK Response
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Passport Details retrieved",
+  "response_code": "00",
+  "data": {
+    "identity_type": "PASSPORT NUMBER",
+    "identity_number": "AK0000000",
+    "identity_name": "John Doe",
+    "date_of_birth": "18/04/1991 12:00:00 AM",
+    "gender": "M",
+    "photo": "",
+    "transaction_id": "kjdfhgjkdgjd",
+    "usr_password": "9$10",
+    "place_of_birth": "",
+    "place_of_live": "",
+    "date_of_issue": "4/18/2021 12:00:00 AM",
+    "id_serial_number": "",
+    "expiry_date": "",
+    "signature": ""
+  }
+}
+```

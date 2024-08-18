@@ -1,0 +1,34 @@
+## Connected accounts
+
+Pin Checker
+
+Request Endpoint
+
+**POST**
+ `{{url}}/kenya_kyc/lookup_pin_checker`
+
+#### Payload
+``` json
+{
+    "pin": "A123456789B",
+    "mode": "taxpin"
+}
+```
+
+200 OK Response
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Pin Details retrieved",
+  "response_code": "00",
+  "data": {
+    "pin": "A123456789B",
+    "taxpayer_name": "ABB APP Limited",
+    "pin_status": "Active",
+    "itax_status": "iPage Updated",
+    "obligation_details": "Income Tax - Company Registered 29/01/2013"
+  }
+}
+```

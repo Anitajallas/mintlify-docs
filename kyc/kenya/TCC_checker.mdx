@@ -1,0 +1,31 @@
+## TCC Checker 
+These endpoints fetch more advanced information about an account.  It gets the list of financial account that has been onboarded in association to a specific app's public key.
+
+Request Endpoint
+
+**POST**
+ `{{ur}}/kenya_kyc/lookup_tcc_checker`
+
+#### Payload
+```json
+{
+    "tccNumber": "KRAMT123456789B"
+}
+```
+200 OK Response
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "TCC Details retrieved",
+  "response_code": "00",
+  "data": {
+    "pin_number": "A123456789B",
+    "tcc_number": "KRAMT123456789B",
+    "name": "ABB Pay Limited",
+    "tcc_status": "Expired",
+    "expiry_date": "13/04/2023"
+  }
+}
+```

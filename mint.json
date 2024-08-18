@@ -19,6 +19,10 @@
     {
       "name": "Support",
       "url": "mailto: anita@smartcomply.com"
+    },
+    {
+      "name": "View in Postman ",
+      "url": "https://documenter.getpostman.com/view/24557562/2sA3Qv8r7p"
     }
   ],
   "topbarCtaButton": {
@@ -54,42 +58,107 @@
       ]
     },
     {
-      "group": "KYC",
+      "group": "Onboarding Suite",
       "pages": [
         {
-          "group": "Nigeria",
+          "group": "KYC",
           "pages": [
-            "kyc/nigeria/driver_license",
-            "kyc/nigeria/passport_verification",
-            "kyc/nigeria/tin"
+            {
+              "group": "Nigeria",
+              "pages": [
+                "kyc/nigeria/driver_license",
+                "kyc/nigeria/passport_verification",
+                "kyc/nigeria/tin",
+                "kyc/nigeria/nuban",
+                "kyc/nigeria/nuban_advance",
+                "kyc/nigeria/phone_number_basic",
+                "kyc/nigeria/phone_number_advance",
+                "kyc/nigeria/CAC",
+                "kyc/nigeria/CAC_advance",
+                "kyc/nigeria/nin",
+                "kyc/nigeria/nin_with_face",
+                "kyc/nigeria/VNIN",
+                "kyc/nigeria/VIN",
+                "kyc/nigeria/BVN",
+                "kyc/nigeria/BVN_advance",
+                "kyc/nigeria/BVN_advance_IGREE",
+                "kyc/nigeria/BVN_basic_IGREE",
+                "kyc/nigeria/BVN_with_face"
+              ]
+            },
+            {
+              "group": "Kenya",
+              "pages": [
+                "kyc/kenya/driver's_license",
+                "kyc/kenya/alien_ID",
+                "kyc/kenya/passport",
+                "kyc/kenya/BRS_search",
+                "kyc/kenya/BRS_advance",
+                "kyc/kenya/national_id_advance",
+                "kyc/kenya/national_id_basic",
+                "kyc/kenya/pin_checker",
+                "kyc/kenya/serial_number",
+                "kyc/kenya/TCC_checker",
+                "kyc/kenya/WHT_checker"
+              ]
+            },
+            {
+              "group": "Ghana",
+              "pages": [
+                "kyc/ghana/driver_license",
+                "kyc/ghana/voter's_identification",
+                "kyc/ghana/passport",
+                "kyc/ghana/TIN",
+                "kyc/ghana/SSINT",
+                "kyc/ghana/SSINT_with_face",
+                "kyc/ghana/meter_number",
+                "kyc/ghana/meter_payment_history"
+
+              ]
+            },
+            {
+              "group": "Rwanda",
+              "pages": [
+                "kyc/rwanda/national_id",
+                "kyc/rwanda/passport"
+              ]
+            },
+            {
+              "group": "Uganda",
+              "pages": [
+                "kyc/uganda/national_id"
+              ]
+            }
           ]
         },
         {
-          "group": "Kenya",
+          "group": "Credit Report",
           "pages": [
-            "pages/account_verification",
-            "pages/lending"
-          ]
-        },
-        {
-          "group": "Ghana",
-          "pages": [
-            "kyc/ghana/driver_license"
-          ]
-        },
-        {
-          "group": "Rwanda",
-          "pages": [
-            "kyc/rwanda/national_id",
-            "kyc/rwanda/passport"
-          ]
-        },
-        {
-          "group": "Uganda",
-          "pages": [
-            "kyc/uganda/national_id"
+            {
+              "group": "Business",
+              "pages": [
+                "credit/business/crc-business_credit_history",
+                "credit/business/first-central_business_credit_history",
+                "credit/business/Premium_Business_Credit_History"
+              ]
+            },
+            {
+              "group": "Individual",
+              "pages": [
+                "credit/individual/CRC-Credit_history",
+                "credit/individual/CRC_full_credit_report"
+              ]
+            }
           ]
         }
+      ]
+    },
+    {
+      "group": "Fraud & Transaction Monitoring",
+      "pages": [
+        "api-integration/introduction",
+        "api-integration/quickstart",
+        "api-integration/error_codes"
       ]
     },
     {

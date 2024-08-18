@@ -1,0 +1,48 @@
+You can verify your customers' identity using their Phone Number.
+
+This helps to verify customers using their phone numbers.
+
+### Basic Phone Lookup
+
+#### Request Endpoint
+**Generate simple customer phone data object**
+
+**POST** `{{url}}/nigeria_kyc/lookup_phone_number_basic`
+
+
+#### Response Fields
+- **Sample request:**
+  ```json
+  {
+      "phone_number": "09011111111"
+  }
+  ```
+Response Codes:
+
+200: OK - Represents a successfully completed request
+404: Not Found - Record not found. Indicates the phone number passed might be invalid
+400: Bad Request - The phone number parameter is invalid. Request is not completed successfully
+200 OK Response:
+
+``` json
+{
+    "success": true,
+    "statusCode": 200,
+    "message": "Phone Number Basic Details retrieved",
+    "response_code": "00",
+    "data": {
+        "firstName": "JOHN",
+        "middleName": "JOSEPH",
+        "lastName": "DOE",
+        "dateOfBirth": "2000-10-21",
+        "gender": "",
+        "phoneNumber": "08050003000",
+        "nin": "",
+        "maritalStatus": "",
+        "email": "",
+        "image": "",
+        "residenceAddress": "",
+        "residenceState": ""
+    }
+}
+```

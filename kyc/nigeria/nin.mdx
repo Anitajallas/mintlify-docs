@@ -1,0 +1,73 @@
+### User Verification using the National Identification Number (NIN)
+
+This endpoint allows you to fetch and verify customer details using the National Identification Number (NIN). The NIN provides robust information about an individual.
+
+#### Request Endpoint
+**Generate user data from their NIN**
+
+**POST** `{{url}}/nigeria_kyc/lookup_nin`
+
+#### Payload
+```json
+{
+    "nin": "70123456789"
+}
+```
+
+200 OK Response
+
+``` json
+{
+    "success": true,
+    "statusCode": 200,
+    "message": "National Identification Number Details retrieved",
+    "response_code": "00",
+    "data": {
+        "title": "mr",
+        "lastName": "DOE",
+        "firstName": "JOHN",
+        "middleName": "JOSEPH",
+        "gender": "male",
+        "dateOfBirth": "2000-10-21",
+        "birthLga": "Olamaboro",
+        "birthState": "Kogi",
+        "centralID": "",
+        "educationalLevel": "secondary",
+        "email": null,
+        "nin": "12345678901",
+        "employmentStatus": "unemployed",
+        "height": "180",
+        "maritalStatus": "separated",
+        "religion": "christianity",
+        "telephoneNo": "08050003000",
+        "residenceAddress": "MR SNUFUSS'S HOUSE SNUFUSS STREET PHASE 3",
+        "residenceLga": "Gwagwalada",
+        "residenceState": "FCT Abuja",
+        "residenceTown": "GWAGWALADA",
+        "residenceStatus": "birth",
+        "selfOriginLga": "Olamaboro",
+        "selfOriginPlace": "OGUGU",
+        "selfOriginState": "Kogi",
+        "spokenLanguage": "IGALA",
+        "nokAddress1": "NO 6 ADUM ROAD OGUGU CEENTRE",
+        "nokAddress2": "",
+        "nokFirstname": "JOHN",
+        "nokLga": "Olamaboro",
+        "nokMiddleName": "",
+        "nokPostalCode": "",
+        "nokState": "Kogi",
+        "nokSurname": "DOE",
+        "nokTown": "OGUGU",
+        "oSpokenLang": "****",
+        "pFirstName": "",
+        "pMiddleName": "",
+        "profession": "STUDENT",
+        "pSurname": "",
+        "trackingId": "S2R0NYFO01113TR",
+        "userId": "",
+        "vnin": "",
+        "image": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAHSAV4DASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/",
+        "signature": "/9j/4AAQSkZJRgABAQEAlgCWAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCADIAPoDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/"
+    }
+}
+```

@@ -1,0 +1,78 @@
+You can verify your customers' identity using their NUBAN Number.
+
+The NUBAN check using ZeeH's endpoint helps you access their information on a verified national level.
+
+
+**POST:** `{{url}}/nigeria_kyc/lookup_nuban_advance`
+
+
+### Status Codes
+
+- **200:** OK. Data is successfully returned.
+- **400:** Bad Request. The NUBAN parameter is invalid. Request is not completed successfully.
+- **404:** Not Found. NUBAN parameter is not found. Request is not completed successfully.
+
+### Example Response
+```json
+{
+    "success": true,
+    "statusCode": 200,
+    "message": "NUBAN and BVN Details retrieved",
+    "response_code": "00",
+    "data": {
+        "bvn": "22129204082",
+        "firstName": "ABRAHAM",
+        "middleName": "OLADIRAN",
+        "lastName": "FATOKI",
+        "dateOfBirth": "2022-04-01",
+        "phoneNumber1": "08145672310",
+        "gender": "Male",
+        "image": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDR7Z7UV4Vo/jfUtFIEOpJcQDrBcOGH4HqK9D0b4l6DqShLu4jsJ8ciVxsP0anclx7HZUVkf8JV4e/6D2l/+Bkf+NH/CVeHf+g9pf/gZH/jTuKxr0Vkf8JV4dz/yHtL/APAyP/Gj/hKvDv8A0HtL/wDAyP8AxpDsa9FZH/CVeHf+g9pf/gZH/jR/wlXh3/oPaX/4GR/40CP/2Q==",
+        "email": "test@gmail.com",
+        "enrollmentBank": "058",
+        "enrollmentBranch": "Ibadan",
+        "levelOfAccount": "Level 3 - High Level Accounts",
+        "lgaOfOrigin": "Egbeda",
+        "lgaOfResidence": "Ido",
+        "maritalStatus": "Single",
+        "nameOnCard": "FATOKI OLADIRAN ABRAHAM",
+        "nin": "",
+        "phoneNumber2": "",
+        "registrationDate": "",
+        "residentialAddress": "3, ROAD 3E, DIVINE HOUSE, ALAAGB BANTA, IBADAN.",
+        "stateOfOrigin": "Oyo State",
+        "stateOfResidence": "Oyo State",
+        "title": "",
+        "watchListed": "NO"
+    }
+}
+```
+
+Response Fields
+
+| Field               | Description                                                   | Type    |
+|---------------------|---------------------------------------------------------------|---------|
+| `status`            | This is the returned status of the request, either success or failed | `String` |
+| `code`              | This is the operational code                                  | `Number` |
+| `data`              | This is an array of objects containing every transaction data | `Object` |
+| `data.nuban`        | NUBAN of the verified customer                                | `String` |
+| `data.accountName`  | Full name of the verified customer                            | `String` |
+| `data.identityNumber` | Account Number of the verified customer                     | `String` |
+| `data.identityType` | Identity type of the verified customer, e.g., BVN             | `String` |
+| `data.bank`         | Bank of the verified customer                                 | `String` |
+| `data.accountCurrency` | Currency of the verified account                           | `String` |
+| `data.firstName`    | First name of the verified customer                           | `String` |
+| `data.lastName`     | Last name of the verified customer                            | `String` |
+| `data.otherNames`   | Other names of the verified customer                          | `String` |
+| `data.gender`       | Gender of the verified customer                               | `String` |
+| `data.dob`          | Date of birth of the verified customer                        | `String` |
+| `data.phone`        | Phone number of the verified customer                         | `String` |
+| `data.postalCode`   | Postal code of the verified customer                          | `String` |
+| `data.stateCode`    | State code of the verified customer                           | `String` |
+| `data.countryCode`  | Country code of the verified customer                         | `String` |
+| `data.countryOfBirth` | Country of birth of the verified customer                   | `String` |
+| `data.nationality`  | Nationality of the verified customer                          | `String` |
+| `data.expiryDate`   | Expiry date of the verified customer                          | `String` |
+| `data.address1`     | First address of the verified customer                        | `String` |
+| `data.address2`     | Second address of the verified customer                       | `String` |
+| `data.uuid`         | User data ID                                                  | `String` |

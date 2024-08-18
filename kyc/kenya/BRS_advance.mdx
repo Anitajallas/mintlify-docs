@@ -1,0 +1,48 @@
+## Business Verification using the Business Registration Service Advance.
+
+An endpoint to fetch and verify business details using Business Registration Service Advance
+It is a means of identification that contains robust information of an individual .
+
+
+**POST**
+ `{{url}}/kenya_kyc/lookup_brs_advance`
+
+
+#### Payload
+```json
+{
+    "companyId": "ABC/2010/000111",
+    "checkType": "CR12" // CR12, CR13, LLP
+}
+```
+
+200 OK Response
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Business Registration Service Advance Details retrieved",
+  "response_code": "00",
+  "data": {
+    "company": "John Doe Ventured",
+    "company_number": "ABC/2010/000111",
+    "nominal_share_capital": "160,000.00",
+    "number_and_type_of_shares_(value_per_share)": "ORDINARY: 1600 (KES 100.00 EACH)",
+    "date_of_registration": "18TH OCT, 2016",
+    "registered_office": "P.O BOX 20816 KENYATTA N.HOSPITAL TELEPHONE: +25491234567, EMAIL: INFO@EXAMPLE.COM COUNTY: NAIROBI, DISTRICT: WESTLANDS DISTRICT , LOCALITY: WESTLANDS STREET: ST DALLA ROAD, BUILDING: 50",
+    "postal_address": "P.O BOX 9087 KENYATTA N.HOSPITAL",
+    "encumbrances": "",
+    "directors": [
+      {
+        "name": "JOHN DOE",
+        "description": "DIRECTOR",
+        "address": "P.O BOX 11034 KENYATTA N.HOSPITAL",
+        "nationality": "KENYAN",
+        "shares": "ORDINARY: 1600"
+      }
+    ],
+    "file_base64": "JVBERi0xLjQKMSAwIG9iago8PAovVGl0bGUgKP7/KQovQ3JlYXRvciAo/v8AdwBrAGgAdABtAGwAdABvAHAAZABmACAAMAAuADEAMgAuADQpCi9Qcm9kdWNlciAo/v8AUQB0ACAANAAuADgALgA3KQovQ3JlYXRpb25EYXRlIChEOjIwMjMwOTIyMTYxOTI1WikKPj4KZW5kb2JqCjMgMCBvYmoKPDwKL1R5cGUgL0V4dEdTdGF0ZQovU0EgdHJ1ZQovU00gMC4wMgovY2EgMS4wCi9DQSAxLjAKL0FJUyBmYWxzZQovU01hc2sgL05vbmU+PgplbmRvYmoKNCAwIG9iagpbL1BhdHRlcm4gL0RldmljZVJHQl0KZW5kb2JqCjcgMCBvYmoKPDwKL1R5cGUgL1hPYmplY3QKL1N1YnR5cGUgL0ltYWdlCi9XaWR0aCAyNzAKL0hlaWdodCAyMTYKL0JpdHNQZXJDb21wb25lbnQgOAovQ29sb3JTcGFjZSAvRGV2aWNlR3JheQovTGVuZ3RoIDggMCBSCi9GaWx0ZXIgL0ZsYXRlRGVjb2RlCj4+CnN0cmVhbQp4nO1debyV0/pfHXUrp7QrRYNs+rlK0UEhok26pnDkJnFpk1muI1Io7S4NuDgJkftjR+jKcArRQDtCqBzRIA27SXWis6tT59QZ1n3X+K53WO+w97t2x+fT95+93zU861nf933Xu4ZnPQuAwNC/eXCyvKLvMdkv0xs+mJ31IvvvOgh3wBs6w3uyXGITOCXLJfpAMTw1uwX+DI/OboF+kA//aJLN8l6Fn2WzOJ+oswN+l8XiBkN4SRaL842xEE7KWmE9IdyctcLSQWsI4W1ZKqvlXgiHZamsNFGk0XFmdor6CcLKUHaKShdnamzsOjIbJU3TSno1GwVlgh81JX/IQjkPaOXAjlkoKCNci7R8XXkxvVExXygvJmOUID3vV1xIu/2olIsUlxIARiI94QVKy8hZjcpYo7SMYNCsCmlaoXRoWYQZz9anPCPEsaorFJYwCpew5y8KiwgMHbCucLqyAq4kBTylrIBAMZ9oO0KR+PZEfG0evYo4n6qrZkRVfxOR/l8l0hVgFdG35ngVwudQrjurEK4CA6nC6+sGL/sJKvur4EUrQs4OqvKHgYseQCXDiwMXrQwjmM5jAxbckQleG7BglWhaxbT+e6ByD/+Nyb09ULmKMZlpHewwcwGTuktBi6QOx3E2tjUITurzXGosOKHZwIdc8eBmtW/lMqubBiY0K+jKNYeFAYnspot8JSCRStDNJuw7XfcbXQUcNuVF1zShUl1ie2t0g64eFFWPWycshD9bv/59dN2hHVsijv0BwjkuD/9fftDlfWyNHrAeznvmOu9aq0HHd4iCY84xx6zXtS92ltET3/Wk89fnPoFdy6T8Bc+SiNfC/rQPGD12MQ3fN0fdqWtfnuMkox9NVRZxSjVdF7fEEvkFi9rawW8NgsI7a2aPXQVZP2umObouJwr+7CTmLr2aVzskG6Uny7dEMjZq4OJxn6/N3mqfjs7QgPGWBGN53EsOYoaJQm6RpzuPJ9pkjZxiUKWinf/aZIolRjaKjjMnaMHjHFq3h4xS7pAmbLibpbHaiHRaYJRieU5Vo/Wj0ISaj81jkqfZvZJ/Lh4xS7lTmvS/NMX2w0wRN8w3C6kcfFT6NfONZhOWHDBrgPCQMVkOnZip+D+ZIAulEA6Spf2MxG8+2xT+vFUGhPsWjWuYURV94DY7BTTsb2VKeOqdr/+khS8AjZvZybnXTkhfu5TNcm"
+  }
+}
+```

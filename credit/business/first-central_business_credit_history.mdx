@@ -1,0 +1,146 @@
+## The Credit History Endpoint furnishes business with a detailed record of their credit-related activities over time. 
+
+It captures comprehensive data including credit accounts, payment timelines, credit utilization, account closures, and any instances of delinquency. By utilizing this endpoint, businesses gain valuable insights into their past credit behavior, allowing them to assess their creditworthiness, track changes, and understand factors influencing their credit standing. This endpoint serves as a valuable tool for businesses to monitor and manage their credit history effectively.
+
+Generate business credit history with first central
+
+
+**POST**
+ `{{url}}/credit_reports/first_central_business_history`
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Business Credit History",
+  "response_code": "00",
+  "data": {
+    "_id": "636e768d8215a2e2fb06cfde",
+    "business_reg_no": "RC123456",
+    "businessId": "64db7ab8a26e603218838892",
+    "name": "CAPITALFIELD ASSET MGT LTD",
+    "phone": "23408036732620",
+    "dateOfRegistration": "2003-08-20",
+    "address": "ELEGANZA HOUSE,15B JOSEPH WESLEY STR.BROAD STREET   025 NG   LAGOS NIGERIA ",
+    "website": "",
+    "taxIdentificationNumber": "",
+    "noOfDirectors": 0,
+    "industry": "",
+    "businessType": "SMALLANDMEDIUMSCALEENTERPRISE",
+    "email": "capitalasset@gmail.com",
+    "score": {
+      "totalNoOfLoans": 9,
+      "totalNoOfActiveLoans": 3,
+      "totalNoOfClosedLoans": 6,
+      "totalNoOfInstitutions": 2,
+      "totalOverdue": 54931635,
+      "totalBorrowed": 135582,
+      "highestLoanAmount": 45194,
+      "totalOutstanding": 54931635,
+      "totalMonthlyInstallment": 0,
+      "totalNoOfOverdueAccounts": 3,
+      "totalNoOfPerformingLoans": 6,
+      "totalNoOfDelinquentFacilities": 3,
+      "firstCentralEnquiryResultID": "24327937",
+      "firstCentralEnquiryEngineID": "178572277",
+      "directors": false,
+      "loanPerformance": false,
+      "creditEnquiries": false,
+      "loanHistory": false
+    },
+    "searchedDate": "2023-11-23T16:17:16.672Z"
+  }
+}
+```
+
+### Sample request
+
+```json
+{"rcNumber":"RC123456"}
+```
+
+200 OK Response
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Business Credit History",
+  "response_code": "00",
+  "data": {
+    "_id": "636e768d8215a2e2fb06cfde",
+    "business_reg_no": "RC123456",
+    "businessId": "64db7ab8a26e603218838892",
+    "name": "CAPITALFIELD ASSET MGT LTD",
+    "phone": "23408036732620",
+    "dateOfRegistration": "2003-08-20",
+    "address": "ELEGANZA HOUSE,15B JOSEPH WESLEY STR.BROAD STREET   025 NG   LAGOS NIGERIA ",
+    "website": "",
+    "taxIdentificationNumber": "",
+    "noOfDirectors": 0,
+    "industry": "",
+    "businessType": "SMALLANDMEDIUMSCALEENTERPRISE",
+    "email": "capitalasset@gmail.com",
+    "score": {
+      "totalNoOfLoans": 9,
+      "totalNoOfActiveLoans": 3,
+      "totalNoOfClosedLoans": 6,
+      "totalNoOfInstitutions": 2,
+      "totalOverdue": 54931635,
+      "totalBorrowed": 135582,
+      "highestLoanAmount": 45194,
+      "totalOutstanding": 54931635,
+      "totalMonthlyInstallment": 0,
+      "totalNoOfOverdueAccounts": 3,
+      "totalNoOfPerformingLoans": 6,
+      "totalNoOfDelinquentFacilities": 3,
+      "firstCentralEnquiryResultID": "24327937",
+      "firstCentralEnquiryEngineID": "178572277",
+      "directors": false,
+      "loanPerformance": false,
+      "creditEnquiries": false,
+      "loanHistory": false
+    },
+    "searchedDate": "2023-11-23T16:17:16.672Z"
+  }
+}
+```
+
+# Field Descriptions
+
+| Field                                  | Description                                                                                                         | Type   |
+|----------------------------------------|---------------------------------------------------------------------------------------------------------------------|--------|
+| `status`                               | This is the returned status of the request either success or failed.                                                | String |
+| `code`                                 | This is the operational code.                                                                                         | Number |
+| `data`                                 | This is an array of objects which contains every transaction data.                                                   | Object |
+| `data._id`                             | The unique identifier or specific code assigned to a particular user within the database.                           | String |
+| `data.bvn`                             | The BVN of the user.                                                                                                  | String |
+| `data.customerId`                      | The unique identifier or specific code assigned to a particular customer.                                           | String |
+| `data.businessId`                      | The unique identifier or specific code assigned to a particular business.                                           | String |
+| `data.name`                            | The full name of the BVN holder.                                                                                     | String |
+| `data.phone`                           | The phone number of the BVN holder.                                                                                  | String |
+| `data.gender`                          | The gender of the BVN holder.                                                                                        | String |
+| `data.dateOfBirth`                     | The date of birth of the BVN holder.                                                                                 | String |
+| `data.address`                         | The address of the BVN holder.                                                                                       | String |
+| `data.email`                           | The email of the BVN holder.                                                                                        | String |
+| `score`                                | This is an array of objects which contains every score.                                                              | Object |
+| `score.totalNoOfDelinquentFacilities`  | The count of accounts or credit facilities that are overdue or behind on payments according to the credit report. | Number |
+| `score.lastReportedDate`               | The most recent date on which information about an account, transaction, or activity was updated or submitted to the credit bureau. | Number |
+| `score.totalNoOfLoans`                 | The overall count of active loan accounts listed in the credit report.                                               | Number |
+| `score.totalNoOfInstitutions`          | The count of different financial institutions or lenders where the user holds accounts listed within their credit report or financial records. | Number |
+| `score.totalNoOfActiveLoans`           | The count of currently open and operational loan accounts listed in a user's credit report or financial records.     | Number |
+| `score.totalBorrowed`                  | The amount of money that an individual has borrowed across all loans, credit lines, or financial obligations listed within their credit report or financial records. | Number |
+| `score.totalOutstanding`               | The overall amount of money that remains unpaid or outstanding across all active loans, credit accounts, or financial obligations listed within the credit report or financial records. | Number |
+| `score.totalOverdue`                   | The amount that is past due or overdue across all active loans or credit accounts listed within the credit report or financial records. | Number |
+| `score.maxNoOfDays`                    | The longest duration an account or payment has been overdue.                                                          | Number |
+| `score.totalNoOfClosedLoans`           | The overall count of loan accounts that have been successfully paid off or closed by the individual and are no longer active in their credit report or financial records. | Number |
+| `score.crcReportOrderNumber`           | The report order number of the credit bureau.                                                                        | String |
+| `searchedDate`                        | The date the credit report was searched.                                                                             | String |
+
+
+
+
+
+
+
+What are API limits?

@@ -1,0 +1,27 @@
+## An endpoint to fetch and verify customers details using WHT checker
+It is a means of identification that contains robust information of an individual .
+
+
+**POST**
+ `{{url}}/kenya_kyc/lookup_wht_checker`
+
+
+```json
+{
+    "obligationType": "vat",
+    "certificateNumber": "10000000",
+    "withholderPin": "123456789",
+    "payeePin": "123456789"
+}
+```
+200 OK Response
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "WHT Details retrieved",
+  "response_code": "00",
+  "data": "The Withholding Certificate that you are trying to confirm is VALID."
+}
+```

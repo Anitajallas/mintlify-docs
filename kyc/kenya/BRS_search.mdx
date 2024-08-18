@@ -1,0 +1,38 @@
+## User Verification using the Business Registration Service Search
+
+An endpoint to fetch and verify business details using Business Registration Service Search.
+It is a means of identification that contains robust information of an individual .
+
+
+**POST**
+ `{{url}}/kenya_kyc/lookup_brs_search`
+
+#### Payload
+```json
+{
+    "companyName": "john doe ventures",
+    "checkType": "CR12" // CR12, CR13, LLP
+}
+```
+200 OK Response
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Business Registration Service Search Details retrieved",
+  "response_code": "00",
+  "data": [
+    {
+      "name": "John Doe Ventures",
+      "company_id": "ABC/2014/000111",
+      "verified": false
+    },
+    {
+      "name": "Dolly Ventures",
+      "company_id": "DEF/2016/028721",
+      "verified": true
+    }
+  ]
+}
+```

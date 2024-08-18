@@ -1,0 +1,761 @@
+## The Credit History Endpoint furnishes business with a detailed record of their credit-related activities over time. 
+
+It captures comprehensive data including credit accounts, payment timelines, credit utilization, account closures, and any instances of delinquency. By utilizing this endpoint, businesses gain valuable insights into their past credit behavior, allowing them to assess their creditworthiness, track changes, and understand factors influencing their credit standing. This endpoint serves as a valuable tool for businesses to monitor and manage their credit history effectively.
+
+Generate business credit history with first central
+
+**POST**
+ `{{url}}/credit_reports/premium_business_history`
+
+#### Payload
+
+```json
+
+{"rcNumber":"RC123456"}
+
+```
+
+200 Response 
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Business Credit History",
+  "response_code": "00",
+  "data": {
+    "_id": "636e768d8215a2e2fb06cfde",
+    "business_reg_no": "RC123456",
+    "businessId": "64db7ab8a26e603218838892",
+    "name": "CAPITALFIELD ASSET MGT LTD",
+    "phone": "23408036732620",
+    "dateOfRegistration": "2003-08-20",
+    "address": "ELEGANZA HOUSE,15B JOSEPH WESLEY STR.BROAD STREET   025 NG   LAGOS NIGERIA ",
+    "website": "",
+    "taxIdentificationNumber": "",
+    "noOfDirectors": 0,
+    "industry": "",
+    "businessType": "SMALLANDMEDIUMSCALEENTERPRISE",
+    "email": "capitalasset@gmail.com",
+    "score": {
+      "directors": [
+        {
+          "source": "CRC",
+          "value": []
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": [
+            {
+              "name": "RAPHAEL LEWU FEMI",
+              "identificationNo": null,
+              "dateAppointed": "",
+              "dateofBirth": "Nov 26 1966 12:00AM",
+              "directorid": "15184"
+            },
+            {
+              "name": "RAPHAEL LEWU ",
+              "identificationNo": null,
+              "dateAppointed": "",
+              "dateofBirth": "Feb  3 1963 12:00AM",
+              "directorid": "115057"
+            },
+            {
+              "name": "GLORIA DUBIITIVEH ",
+              "identificationNo": null,
+              "dateAppointed": "",
+              "dateofBirth": "Feb 13 1986 12:00AM",
+              "directorid": "115250"
+            },
+            {
+              "name": "GLORIA DUBIITIVEH ",
+              "identificationNo": null,
+              "dateAppointed": "",
+              "dateofBirth": "Feb 13 1986 12:00AM",
+              "directorid": "130195"
+            },
+            {
+              "name": "RAPHAEL LEWU ",
+              "identificationNo": null,
+              "dateAppointed": "",
+              "dateofBirth": "Feb  3 1963 12:00AM",
+              "directorid": "131868"
+            }
+          ]
+        }
+      ],
+      "totalNoOfLoans": [
+        {
+          "source": "CRC",
+          "value": 24
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": 9
+        }
+      ],
+      "totalNoOfInstitutions": [
+        {
+          "source": "CRC",
+          "value": 12
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": 8
+        }
+      ],
+      "totalNoOfActiveLoans": [
+        {
+          "source": "CRC",
+          "value": 7
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": 6
+        }
+      ],
+      "totalNoOfClosedLoans": [
+        {
+          "source": "CRC",
+          "value": 17
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": 3
+        }
+      ],
+      "highestLoanAmount": [
+        {
+          "source": "CRC",
+          "value": 22980000
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": 500000000
+        }
+      ],
+      "totalBorrowed": [
+        {
+          "source": "CRC",
+          "value": 567401372
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": 1004525869.55
+        }
+      ],
+      "totalOutstanding": [
+        {
+          "source": "CRC",
+          "value": 19732
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": 0
+        }
+      ],
+      "totalOverdue": [
+        {
+          "source": "CRC",
+          "value": 19754
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": 0
+        }
+      ],
+      "totalNoOfPerformingLoans": [
+        {
+          "source": "CRC",
+          "value": 23
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": 12
+        }
+      ],
+      "totalNoOfDelinquentFacilities": [
+        {
+          "source": "CRC",
+          "value": 1
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": 0
+        }
+      ],
+      "creditProfileOverview": [
+        {
+          "source": "CRC",
+          "value": [
+            {
+              "indicator": "Maximum number of days overdue in the last 12 months",
+              "indicatorType": "MAX_OVERDUE_DAYS",
+              "value": "133"
+            },
+            {
+              "indicator": "Maximum number of facilities overdue in the last 12 months",
+              "indicatorType": "MAX_OVERDUE_FACILITY",
+              "value": "1"
+            },
+            {
+              "indicator": "Number of Inquiries in the last 12 months",
+              "indicatorType": "INQUIRY_COUNT_3M",
+              "value": "1"
+            },
+            {
+              "indicator": "Number of Dishonour Cheques",
+              "indicatorType": "CHEQUE_DISHONOURS",
+              "value": "0"
+            },
+            {
+              "indicator": "Number of Suit Filed",
+              "indicatorType": "SUITS_FILED",
+              "value": "0"
+            },
+            {
+              "indicator": "Number of Guaranteed Loans",
+              "indicatorType": "GUARANTEED_LOANS",
+              "value": "0"
+            },
+            {
+              "indicator": "First Credit Reported Date",
+              "indicatorType": "FIRST_REPORTED",
+              "value": "31-May-2011"
+            }
+          ]
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": []
+        }
+      ],
+      "totalMonthlyInstallment": [
+        {
+          "source": "CRC",
+          "value": 0
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": 30124518
+        }
+      ],
+      "totalNoOfOverdueAccounts": [
+        {
+          "source": "CRC",
+          "value": 0
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": 0
+        }
+      ],
+      "loanHistory": [
+        {
+          "source": "CRC",
+          "value": [
+            {
+              "accountNumber": "020301564080010001000",
+              "loanProvider": "GT BANK",
+              "type": "Advance/ Overdraft Facility",
+              "loanAmount": "0",
+              "overdueAmount": "19754",
+              "amountWrittenOff": "",
+              "currency": "NGN",
+              "lastPaymentDate": "",
+              "loanDuration": null,
+              "dateReported": "30-Sep-2022",
+              "performanceStatus": "Sub Standard",
+              "rankings": "3-133",
+              "reason": "Open",
+              "outstandingBalance": "19732",
+              "paymentHistory": [],
+              "loanStatus": "A",
+              "maturityDate": "04-Aug-2020",
+              "numberOfInstallments": "",
+              "numberOfOverdueDays": "133",
+              "collateral": "Unsecured"
+            },
+            {
+              "accountNumber": "140LE03152850001",
+              "loanProvider": "ACCESS BANK PLC",
+              "type": "Others",
+              "loanAmount": "5880000",
+              "overdueAmount": "0",
+              "amountWrittenOff": "",
+              "currency": "NGN",
+              "lastPaymentDate": "",
+              "loanDuration": null,
+              "dateReported": "30-Sep-2019",
+              "performanceStatus": "Performing",
+              "rankings": "1-0",
+              "reason": "Open",
+              "outstandingBalance": "0",
+              "paymentHistory": [],
+              "loanStatus": "A",
+              "maturityDate": "12-Oct-2017",
+              "numberOfInstallments": "",
+              "numberOfOverdueDays": "0",
+              "collateral": "Unsecured"
+            },
+            {
+              "accountNumber": "0020819715",
+              "loanProvider": "ACCESS BANK PLC",
+              "type": "Bonds ",
+              "loanAmount": "10000000",
+              "overdueAmount": "0",
+              "amountWrittenOff": "",
+              "currency": "NGN",
+              "lastPaymentDate": "",
+              "loanDuration": null,
+              "dateReported": "30-Sep-2019",
+              "performanceStatus": "Performing",
+              "rankings": "1-0",
+              "reason": "Open",
+              "outstandingBalance": "0",
+              "paymentHistory": [],
+              "loanStatus": "A",
+              "maturityDate": "02-Mar-2018",
+              "numberOfInstallments": "",
+              "numberOfOverdueDays": "0",
+              "collateral": "Unsecured"
+            },
+            {
+              "accountNumber": "0139550019",
+              "loanProvider": "FIRST CITY MONUMENT BANK LIMITED",
+              "type": "Advance/ Overdraft Facility",
+              "loanAmount": "0",
+              "overdueAmount": "0",
+              "amountWrittenOff": "",
+              "currency": "NGN",
+              "lastPaymentDate": "",
+              "loanDuration": null,
+              "dateReported": "30-Jun-2019",
+              "performanceStatus": "Performing",
+              "rankings": "1-0",
+              "reason": "Open",
+              "outstandingBalance": "0",
+              "paymentHistory": [],
+              "loanStatus": "A",
+              "maturityDate": "30-Mar-2011",
+              "numberOfInstallments": "",
+              "numberOfOverdueDays": "0",
+              "collateral": "Unsecured"
+            },
+            {
+              "accountNumber": "020301564080010001001",
+              "loanProvider": "GT BANK",
+              "type": "Advance/ Overdraft Facility",
+              "loanAmount": "0",
+              "overdueAmount": "0",
+              "amountWrittenOff": "",
+              "currency": "NGN",
+              "lastPaymentDate": "",
+              "loanDuration": null,
+              "dateReported": "30-Apr-2019",
+              "performanceStatus": "Performing",
+              "rankings": "1-0",
+              "reason": "Open",
+              "outstandingBalance": "0",
+              "paymentHistory": [],
+              "loanStatus": "A",
+              "maturityDate": "30-Apr-2019",
+              "numberOfInstallments": "",
+              "numberOfOverdueDays": "0",
+              "collateral": "Unsecured"
+            },
+            {
+              "accountNumber": "1003774130",
+              "loanProvider": "UNITED BANK FOR AFRICA",
+              "type": "Advance/ Overdraft Facility",
+              "loanAmount": "0",
+              "overdueAmount": "0",
+              "amountWrittenOff": "",
+              "currency": "NGN",
+              "lastPaymentDate": "",
+              "loanDuration": null,
+              "dateReported": "31-Dec-2018",
+              "performanceStatus": "Performing",
+              "rankings": "1-0",
+              "reason": "Open",
+              "outstandingBalance": "0",
+              "paymentHistory": [],
+              "loanStatus": "A",
+              "maturityDate": "01-Jan-2000",
+              "numberOfInstallments": "",
+              "numberOfOverdueDays": "0",
+              "collateral": "Unsecured"
+            },
+            {
+              "accountNumber": "231LEFI141070001",
+              "loanProvider": "POLARIS BANK LIMITED",
+              "type": "Lease",
+              "loanAmount": "22980000",
+              "overdueAmount": "0",
+              "amountWrittenOff": "",
+              "currency": "NGN",
+              "lastPaymentDate": "09-Jan-2016",
+              "loanDuration": null,
+              "dateReported": "31-Oct-2018",
+              "performanceStatus": "Performing",
+              "rankings": "1-0",
+              "reason": "Closed",
+              "outstandingBalance": "0",
+              "paymentHistory": [],
+              "loanStatus": "A",
+              "maturityDate": "09-Apr-2016",
+              "numberOfInstallments": "48",
+              "numberOfOverdueDays": "0",
+              "collateral": "Fully Secured"
+            }
+          ]
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": [
+            {
+              "loanProvider": "Fidelity Bank Plc Lagos",
+              "accountNumber": "4010121426",
+              "type": "",
+              "loanAmount": null,
+              "installmentAmount": "0.00",
+              "overdueAmount": "0.00",
+              "lastPaymentDate": "",
+              "loanDuration": "0 Day(s)",
+              "dateReported": "23/04/2008",
+              "performanceStatus": "Performing",
+              "status": "Paid up",
+              "outstandingBalance": "0.00",
+              "paymentHistory": []
+            }
+          ]
+        }
+      ],
+      "creditEnquiries": [
+        {
+          "source": "CRC",
+          "value": [
+            {
+              "loanType": "Overdraft",
+              "date": "10-Nov-2022",
+              "institutionType": "Micro Lenders"
+            },
+            {
+              "loanType": "Term Loan",
+              "date": "14-Oct-2022",
+              "institutionType": "Micro Lenders"
+            }
+          ]
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": [
+            {
+              "loanProvider": "POLARIS BANK LIMITED",
+              "date": "15/01/2022"
+            }
+          ]
+        }
+      ],
+      "loanPerformance": [
+        {
+          "source": "CRC",
+          "value": [
+            {
+              "loanProvider": "KEYSTONE BANK LIMITED",
+              "loanAmount": "NGN   0",
+              "accountNumber": "",
+              "outstandingBalance": "0",
+              "status": "Closed",
+              "performanceStatus": "Performing",
+              "lastUpdatedAt": "",
+              "overdueAmount": "0",
+              "type": "",
+              "loanCount": 1
+            },
+            {
+              "loanProvider": "UNITED BANK FOR AFRICA",
+              "loanAmount": "NGN   6,572",
+              "accountNumber": "",
+              "outstandingBalance": "0",
+              "status": "Closed",
+              "performanceStatus": "Performing",
+              "lastUpdatedAt": "",
+              "overdueAmount": "0",
+              "type": "",
+              "loanCount": 3
+            },
+            {
+              "loanProvider": "FIRST BANK OF NIGERIA LIMITED",
+              "loanAmount": "NGN   0",
+              "accountNumber": "",
+              "outstandingBalance": "0",
+              "status": "Closed",
+              "performanceStatus": "Performing",
+              "lastUpdatedAt": "",
+              "overdueAmount": "0",
+              "type": "",
+              "loanCount": 1
+            },
+            {
+              "loanProvider": "GT BANK",
+              "loanAmount": "NGN   0",
+              "accountNumber": "",
+              "outstandingBalance": "19,732",
+              "status": "Open",
+              "performanceStatus": "Not Performing",
+              "lastUpdatedAt": "",
+              "overdueAmount": "19,754",
+              "type": "",
+              "loanCount": 2
+            },
+            {
+              "loanProvider": "KEYSTONE BANK LIMITED",
+              "loanAmount": "USD   0",
+              "accountNumber": "",
+              "outstandingBalance": "0",
+              "status": "Closed",
+              "performanceStatus": "Performing",
+              "lastUpdatedAt": "",
+              "overdueAmount": "0",
+              "type": "",
+              "loanCount": 1
+            },
+            {
+              "loanProvider": "ACCESS BANK PLC",
+              "loanAmount": "NGN   537,080,000",
+              "accountNumber": "",
+              "outstandingBalance": "0",
+              "status": "Closed",
+              "performanceStatus": "Performing",
+              "lastUpdatedAt": "",
+              "overdueAmount": "0",
+              "type": "",
+              "loanCount": 6
+            },
+            {
+              "loanProvider": "WEMA BANK PLC",
+              "loanAmount": "NGN   7,105,000",
+              "accountNumber": "",
+              "outstandingBalance": "0",
+              "status": "Closed",
+              "performanceStatus": "Performing",
+              "lastUpdatedAt": "",
+              "overdueAmount": "0",
+              "type": "",
+              "loanCount": 1
+            },
+            {
+              "loanProvider": "POLARIS BANK LIMITED",
+              "loanAmount": "NGN   23,209,800",
+              "accountNumber": "",
+              "outstandingBalance": "0",
+              "status": "Closed",
+              "performanceStatus": "Performing",
+              "lastUpdatedAt": "",
+              "overdueAmount": "0",
+              "type": "",
+              "loanCount": 3
+            },
+            {
+              "loanProvider": "STERLING BANK PLC",
+              "loanAmount": "NGN   0",
+              "accountNumber": "",
+              "outstandingBalance": "0",
+              "status": "Closed",
+              "performanceStatus": "Performing",
+              "lastUpdatedAt": "",
+              "overdueAmount": "0",
+              "type": "",
+              "loanCount": 1
+            },
+            {
+              "loanProvider": "UNION BANK OF NIGERIA PLC",
+              "loanAmount": "NGN   0",
+              "accountNumber": "",
+              "outstandingBalance": "0",
+              "status": "Closed",
+              "performanceStatus": "Performing",
+              "lastUpdatedAt": "",
+              "overdueAmount": "0",
+              "type": "",
+              "loanCount": 3
+            },
+            {
+              "loanProvider": "FIRST CITY MONUMENT BANK LIMITED",
+              "loanAmount": "NGN   0",
+              "accountNumber": "",
+              "outstandingBalance": "0",
+              "status": "Closed",
+              "performanceStatus": "Performing",
+              "lastUpdatedAt": "",
+              "overdueAmount": "0",
+              "type": "",
+              "loanCount": 1
+            },
+            {
+              "loanProvider": "OCEANIC BANK INTERNATIONAL PLC",
+              "loanAmount": "NGN   0",
+              "accountNumber": "",
+              "outstandingBalance": "0",
+              "status": "Closed",
+              "performanceStatus": "Performing",
+              "lastUpdatedAt": "",
+              "overdueAmount": "0",
+              "type": "",
+              "loanCount": 1
+            }
+          ]
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": [
+            {
+              "accountNumber": "9200402741",
+              "loanProvider": "ECOBANK Nigeria PLC Lagos",
+              "loanAmount": 35483.21,
+              "outstandingBalance": 0,
+              "overdueAmount": 0,
+              "noOfPerforming": 1,
+              "noOfNonPerforming": 0,
+              "loanCount": 1,
+              "performanceStatus": "Performing",
+              "status": "Closed"
+            },
+            {
+              "accountNumber": "9200402741",
+              "loanProvider": "Guaranty Trust Bank Plc",
+              "loanAmount": 0,
+              "outstandingBalance": 0,
+              "overdueAmount": 0,
+              "noOfPerforming": 1,
+              "noOfNonPerforming": 0,
+              "loanCount": 1,
+              "performanceStatus": "Performing",
+              "status": "Closed"
+            },
+            {
+              "accountNumber": "9200402741",
+              "loanProvider": "Wema Bank Lagos",
+              "loanAmount": 4490386.34,
+              "outstandingBalance": 0,
+              "overdueAmount": 0,
+              "noOfPerforming": 2,
+              "noOfNonPerforming": 0,
+              "loanCount": 2,
+              "performanceStatus": "Performing",
+              "status": "Closed"
+            },
+            {
+              "accountNumber": "9200402741",
+              "loanProvider": "Access Bank Plc Lagos",
+              "loanAmount": 0,
+              "outstandingBalance": 0,
+              "overdueAmount": 0,
+              "noOfPerforming": 2,
+              "noOfNonPerforming": 0,
+              "loanCount": 2,
+              "performanceStatus": "Performing",
+              "status": "Closed"
+            },
+            {
+              "accountNumber": "9200402741",
+              "loanProvider": "Nova Merchant Bank Limited",
+              "loanAmount": 1000000000,
+              "outstandingBalance": 0,
+              "overdueAmount": 0,
+              "noOfPerforming": 2,
+              "noOfNonPerforming": 0,
+              "loanCount": 2,
+              "performanceStatus": "Performing",
+              "status": "Closed"
+            },
+            {
+              "accountNumber": "9200402741",
+              "loanProvider": "United Bank for Africa Lagos",
+              "loanAmount": 0,
+              "outstandingBalance": 0.03,
+              "overdueAmount": 0.03,
+              "noOfPerforming": 1,
+              "noOfNonPerforming": 0,
+              "loanCount": 1,
+              "performanceStatus": "Performing",
+              "status": "Open"
+            },
+            {
+              "accountNumber": "9200402741",
+              "loanProvider": "Fidelity Bank Plc Lagos",
+              "loanAmount": 0,
+              "outstandingBalance": 0,
+              "overdueAmount": 0,
+              "noOfPerforming": 1,
+              "noOfNonPerforming": 0,
+              "loanCount": 1,
+              "performanceStatus": "Performing",
+              "status": "Closed"
+            },
+            {
+              "accountNumber": "9200402741",
+              "loanProvider": "Stanbic IBTC Bank PLC",
+              "loanAmount": 0,
+              "outstandingBalance": 0,
+              "overdueAmount": 0,
+              "noOfPerforming": 2,
+              "noOfNonPerforming": 0,
+              "loanCount": 2,
+              "performanceStatus": "Performing",
+              "status": "Closed"
+            }
+          ]
+        }
+      ],
+      "bureauStatus": {
+        "crc": "success",
+        "firstCentral": "success"
+      },
+      "lastReportedDate": [
+        {
+          "source": "CRC",
+          "value": "10/Nov/2022"
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": null
+        }
+      ]
+    },
+    "searchedDate": "2023-11-23T16:17:36.391Z"
+  }
+}
+```
+
+# Field Descriptions
+
+| Field                                  | Description                                                                                                         | Type   |
+|----------------------------------------|---------------------------------------------------------------------------------------------------------------------|--------|
+| `status`                               | This is the returned status of the request either success or failed.                                                | String |
+| `code`                                 | This is the operational code.                                                                                         | Number |
+| `data`                                 | This is an array of objects which contains every transaction data.                                                   | Object |
+| `data._id`                             | The unique identifier or specific code assigned to a particular user within the database.                           | String |
+| `data.rc`                              | The RC (Registration Code) of the user.                                                                             | String |
+| `data.customerId`                      | The unique identifier or specific code assigned to a particular customer.                                           | String |
+| `data.businessId`                      | The unique identifier or specific code assigned to a particular business.                                           | String |
+| `data.name`                            | The full name of the BVN holder.                                                                                     | String |
+| `data.phone`                           | The phone number of the BVN holder.                                                                                  | String |
+| `data.gender`                          | The gender of the BVN holder.                                                                                        | String |
+| `data.dateOfBirth`                     | The date of birth of the BVN holder.                                                                                 | String |
+| `data.address`                         | The address of the BVN holder.                                                                                       | String |
+| `data.email`                           | The email of the BVN holder.                                                                                        | String |
+| `score`                                | This is an array of objects which contains every score.                                                              | Object |
+| `score.totalNoOfDelinquentFacilities`  | The count of accounts or credit facilities that are overdue or behind on payments according to the credit report. | Number |
+| `score.lastReportedDate`               | The most recent date on which information about an account, transaction, or activity was updated or submitted to the credit bureau. | Number |
+| `score.totalNoOfLoans`                 | The overall count of active loan accounts listed in the credit report.                                               | Number |
+| `score.totalNoOfInstitutions`          | The count of different financial institutions or lenders where the user holds accounts listed within their credit report or financial records. | Number |
+| `score.totalNoOfActiveLoans`           | The count of currently open and operational loan accounts listed in a user's credit report or financial records.     | Number |
+| `score.totalBorrowed`                  | The amount of money that an individual has borrowed across all loans, credit lines, or financial obligations listed within their credit report or financial records. | Number |
+| `score.totalOutstanding`               | The overall amount of money that remains unpaid or outstanding across all active loans, credit accounts, or financial obligations listed within the credit report or financial records. | Number |
+| `score.totalOverdue`                   | The amount that is past due or overdue across all active loans or credit accounts listed within the credit report or financial records. | Number |
+| `score.maxNoOfDays`                    | The longest duration an account or payment has been overdue.                                                          | Number |
+| `score.totalNoOfClosedLoans`           | The overall count of loan accounts that have been successfully paid off or closed by the individual and are no longer active in their credit report or financial records. | Number |
+| `score.crcReportOrderNumber`           | The report order number of the credit bureau.                                                                        | String |
+| `searchedDate`                        | The date the credit report was searched.                                                                             | String |
