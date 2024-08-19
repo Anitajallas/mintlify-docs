@@ -5,7 +5,7 @@
     "dark": "/logo/smartdark.svg",
     "light": "/logo/smartwhite.svg"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/logo/smartdark.svg",
   "colors": {
     "primary": "#0D9373",
     "light": "#07C983",
