@@ -1,0 +1,79 @@
+## Fraud Detection Request
+
+This endpoint evaluates the risk level of a transaction by calculating a fraud percentage based on a predefined threshold and limit. All fields are required. Ensure that the transaction_id is unique for each request to maintain data integrity.
+
+### Request Endpoint
+**POST:** `{{url}}/api/v1/monitoring/fraud_monitoring/`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **201 Created:** Transaction processed successfully. Fraud score calculated based on threshold.
+- **400 Bad Request:** Missing or invalid fields in the request.
+- **500 Internal Server Error:** Unexpected error during processing. The request body is not set correctly.
+
+### Payload Example Request
+```json
+{
+  "transaction_id": "13274",
+  "amount": 25000.00,
+  "currency": "NGN",
+  "transaction_type": "card",
+  "timestamp": "2024-05-23T14:30:00Z",
+  "card_details": {
+    "bin": "345676",
+    "last4": "9809"
+  },
+  "merchant_details": {
+    "merchant_name": "ABC Stores",
+    "merchant_location": "Lagos, Nigeria"
+  },
+  "customer_details": {
+    "customer_name": "John Doe",
+    "customer_email": "anita@gmail.com",
+    "customer_phone": "+2347012345678",
+    "bvn": "1234567890"
+  },
+  "additional_info": {
+    "ip_address": "102.89.1.1",
+    "country_code": "234",
+    "location": "Lagos, Nigeria"
+  }
+}
+```
+
+201 Created Response
+```json
+{
+    "status": "Success",
+    "data": {
+        "status": "completed",
+        "comment": []
+    },
+    "message": "Transaction was successfully processed"
+}
+```
+
+### Request Body
+| Field               | Description                                                              | Type   |
+|---------------------|--------------------------------------------------------------------------|--------|
+| `transaction_id`    | This is the unique identifier for the transaction                        | `String` |
+| `amount`            | The total transaction amount                                             | `Float` |
+| `currency`          | This is currency code for the transaction (e.g., USD, NGN)               | `String` |
+| `transaction_type`  | Type of the transaction (e.g., card)                                     | `String` |
+| `timestamp`         | ISO 8601 date and time of the transaction.                               | `String` |
+| `card_details`      | Details of the card being used for the transaction                       | `Object` |
+| `- bin`             | First six digits of the card number                                      | `String` |
+| `- last4`           | Last four digits of the card number                                      | `String` |
+| `merchant_details`  | Details of the merchant                                                  | `Object` |
+| `- merchant_name`    | Name of the merchant                                                    | `String` |
+| `- merchant_location` | Location of the merchant                                               | `String` |
+| `customer_details`   | Information about the verified customer initiating the transaction.     | `Object` |
+| `- customer_name`     | Customer's full name                                                    | `String` |
+| `- customer_email`    | Customer's email address                                                | `String` |
+| `- customer_phone`    | Customer's phone number with country code                               | `String` |
+| `- bvn`              | Customer's Bank Verification Number (BVN)                                | `String` |
+| `additional_info`    | Additional details regarding the transaction                            | `Object` |
+| `- ip_address`        | IP address of the customer during the transaction                       | `String` |
+| `- country_code`        | Country code associated with the transaction                       | `String` |
+| `- location`           | Customer's location (can be formatted as "lat=-30.6556,lon=-65.7655")  | `String` |

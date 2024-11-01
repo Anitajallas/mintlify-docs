@@ -1,0 +1,67 @@
+This endpoint retrieves the results of a completed KYC check for a specific entity, providing detailed information on the entity's risk level and any associated findings, including sanctions, social media mentions, and adverse media.
+
+### Request Endpoint
+**GET:** `{{url}}/api/v1/monitoring/kyc_search/{id}/`
+
+- **Media-Type:** `application/json`
+
+Path Parameter:
+- **id (integer):** Unique identifier for the KYC request.
+
+### Status Codes
+- **200 OK:** The request was successful, and the KYC result data is returned as expected.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
+- **404 Not Found:** No KYC result found for the specified identifier.
+
+### Payload Example Request
+```json
+{
+  "status": "success",
+  "data": {
+    "id": 17,
+    "entity_name": "ABDUL MANAN MOHAMMAD ISHAK",
+    "branch_id": 3,
+    "status": "completed",
+    "result": {
+      "risk_level": "low",
+      "total_hits": 1,
+      "pep_results": [],
+      "search_term": "ABDUL MANAN MOHAMMAD ISHAK",
+      "social_media": [],
+      "sanction_results": [
+        {
+          "name": "Abdul Manan Mohammad Ishak",
+          "types": [
+            "sanction",
+            "warnings",
+            "fitness-probity"
+          ],
+          "source": "Smartcomply",
+          "country": "Afghanistan",
+          "recorded_date": "15 Aug. 2012"
+        }
+      ],
+      "total_blacklist_hits": 0,
+      "adverse_media_results": []
+    }
+  },
+  "message": "Success"
+}
+```
+
+### Request Body
+| Field               | Description                                                               | Type   |
+|---------------------|---------------------------------------------------------------------------|--------|
+| `id`                | Unique identifier for each KYC search result                             | `Number` |
+| `entity_name`       | Name of the entity that was searched                                     | `Float` |
+| `branch_id`         | ID of the branch associated with this KYC search.                        | `Number` |
+| `status`            | Status of the KYC search (e.g., "completed")                            | `String` |
+| `result`            | KYC Results for the entity                                               | `Object` |
+| `- risk_level`      | Risk level assessed for the entity (e.g., "low", "high")                 | `String` |
+| `- total_hits`      | Total flagged hits across all categories                                 | `Number` |
+| `- pep_results`     | PEP (Politically Exposed Persons) results, detailing flagged individuals| `Array` |
+| `- search_term`     | Term used to conduct the search                                         | `String` |
+| `- social_media`    | Social media profiles identified for the entity                          | `Array` |
+| `- sanction_results`| Sanction records found                                                   | `Array` |
+| `- total_blacklist_hits`| Total number of blacklist flags.                                     | `Number` |
+| `- adverse_media_results`| Relevant adverse media articles or records.                         | `Array` |

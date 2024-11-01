@@ -1,0 +1,55 @@
+This endpoint initiates a Know Your Customer (KYC) check for a specified entity. The KYC check reviews the individual against various databases and sources, such as sanctions and PEP (Politically Exposed Persons) lists, helping organizations assess potential risks.
+
+### Request Endpoint
+**POST:** `{{url}}/api/v1/monitoring/kyc_search/`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+
+- **200 OK:** The request was successful, and the KYC check has been processed as expected.
+- **201 Created:** The KYC check has been initiated successfully, and results are being generated.
+- **400 Bad Request:** The request could not be completed due to invalid or missing parameters.
+
+### Payload
+```json
+{
+	"entity_name": "John Doe",
+	"sources": "Sanctions, PEPs",
+	"continous_monitoring": "false"
+}
+```
+
+
+### Request Body
+| Field               | Description                                                                                                    | Type    |           |
+|---------------------|----------------------------------------------------------------------------------------------------------------|---------|-----------|
+| `entity_name`       | The name of the entity to be checked                                                                          | `String` | `Required`|
+| `sources`           | The data sources for the KYC check, such as "Sanctions" or "PEPs" (comma-separated)                           | `Float`  | `Optional`|
+| `continuous_monitoring`| Indicates if continuous monitoring should be enabled ("true" or "false"). Defaults to "false" if not specified | `String` | `Optional`|
+
+
+201 Created Response
+```json
+{
+  "status": "success",
+  "data": {
+    "id": 40,
+    "entity_name": "Hushpuppi",
+    "branch_id": 3,
+    "status": "running"
+  },
+  "message": "Your KYC check for Hushpuppi has commenced. You will be notified as soon as the results are available."
+}
+```
+
+### Response Fields
+| Field               | Description                                                              | Type   |
+|---------------------|--------------------------------------------------------------------------|--------|
+| `status`            | Status of the request, indicating success or failure                     | `String` |
+| `data`              | Contains details of the initiated KYC check                              | `Object` |
+| `- id`              | The unique identifier for the KYC request                                 | `Number` |
+| `- entity_name`     | The name of the entity for which the KYC check was requested             | `String` |
+| `- branch_id`       | The identifier for the branch associated with this KYC check             | `Number` |
+| `- status`         | Current status of the KYC check; for example, "running."                 | `String` |
+| `message`          | Descriptive message confirming that the KYC check has started and noting that results will be available soon.  | `String` |

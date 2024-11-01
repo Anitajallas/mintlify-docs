@@ -1,0 +1,211 @@
+This endpoint initiates the transaction screening process, evaluating a transaction against predefined criteria, such as sanctions lists, high-risk countries, and suspicious keywords. Transactions that meet any criteria trigger alerts for further review.
+
+### Request Endpoint
+**POST:** `{{url}}/api/v1/monitoring/transaction_screening`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **201 Created:** Transaction screened successfully.
+- **400 Bad Request:** Invalid transaction data or missing required fields.
+- 403 Forbidden: Transaction flagged or blocked due to screening criteria.
+- **500 Internal Server Error:** Unexpected error during processing. The request body is not set correctly.
+
+### Payload Example Request
+```json
+{
+  "transactionId": "1234567892",
+  "transactionType": "Transfer",
+  "amount": "10000.00",
+  "currency": "NGN",
+  "transactionDate": "2024-07-06T12:34:56Z",
+  "sender": {
+    "name": "QUDRATULLAH JAMAL",
+    "accountNumber": "123456789012",
+    "address": {
+      "street": "123 Main St",
+      "city": "Lagos",
+      "state": "Lagos",
+      "postalCode": "10001",
+      "country": "NIGERIA"
+    },
+    "identification": {
+      "type": "Passport",
+      "number": "A12345678",
+      "country": "USA"
+    }
+  },
+  "receiver": {
+    "name": "Jane Smith",
+    "accountNumber": "987654321098",
+    "address": {
+      "street": "456 Elm St",
+      "city": "San Francisco",
+      "state": "CA",
+      "postalCode": "94101",
+      "country": "USA"
+    },
+    "identification": {
+      "type": "National ID",
+      "number": "B98765432",
+      "country": "USA"
+    }
+  },
+  "details": {
+    "purpose": "Payment for services",
+    "reference": "INV-2024-001"
+  }
+}
+```
+
+### Request Body
+
+| Field               | Description                                                              | Type   |
+|---------------------|--------------------------------------------------------------------------|--------|
+| `transactionId`     | This is the unique identifier for the transaction                        | `String` |
+| `transactionType`   | Type of the transaction (e.g., Transfer)                                 | `String` |
+| `amount`            | The total transaction amount                                             | `String` |
+| `currency`          | This is currency code for the transaction (e.g., USD, NGN)               | `String` |
+| `transactionDate`   | ISO 8601 date and time of the transaction.                               | `String` |
+| `sender`            | Information about the transaction sender                                 | `Object` |
+| `- name`             | Full name of the sender                                                 | `String` |
+| `- accountNumber`    | Sender's account number                                                 | `String` |
+| `- address`          | Sender's address information                                            | `Object` |
+| `-- street`          | Street address of the sender                                            | `String` |
+| `-- city`            | City of the sender                                                      | `String` |
+| `-- state`           | State or region of the sender                                           | `String` |
+| `-- postalCode`       | Postal or ZIP code of the sender’s location                            | `String` |
+| `-- country`         | Country of the sender                                                   | `String` |
+| `- identification`   | Sender’s identification details                                         | `Object` |
+| `-- type`            | Type of identification (e.g Passport, National ID)                                    | `String` |
+| `-- number`          | Identification number                                                   | `String` |
+| `-- country`         | Issuing country of the identification                                    | `String` |
+| `receiver`           | Information about the transaction receiver                               | `Object` |
+| `- name`             | Full name of receiver                                                    | `String` |
+| `- accountNumber`    | Receiver's account number                                               | `String` |
+| `- address`          | Receiver’s address information                                          | `Object` |
+| `-- street`          | Street address of the receiver                                          | `String` |
+| `-- city`            | City of the receiver                                                    | `String` |
+| `-- state`           | State or region of the receiver                                         | `String` |
+| `-- postalCode`       | Postal or ZIP code of the receiver’s location                          | `String` |
+| `-- country`         | Country of the receiver                                                 | `String` |
+| `- identification`   | Receiver’s identification details                                         | `Object` |
+| `-- type`            | Type of identification (e.g Passport, National ID)                       | `String` |
+| `-- number`          | Receiver’s Identification number                                         | `String` |
+| `-- country`         | Issuing country of the identification                                    | `String` 
+| `details`            | Additional details regarding the transaction                            | `Object` |
+| `- purpose`         | Purpose of the transaction                                                 | `String` |
+| `- reference`        | Reference identifier for the transaction                                 | `String` |
+
+
+201 Created Response
+```json
+{
+    "transactionId": 1234567892,
+    "transactionType": "Transfer",
+    "amount": 10000.0,
+    "currency": "NGN",
+    "transactionDate": "2024-07-06T12:34:56Z",
+    "sender": {
+        "name": "QUDRATULLAH JAMAL",
+        "accountNumber": "123456789012",
+        "address": {
+            "street": "123 Main St",
+            "city": "Lagos",
+            "state": "Lagos",
+            "postalCode": "10001",
+            "country": "NIGERIA"
+        },
+        "identification": {
+            "type": "Passport",
+            "number": "A12345678",
+            "country": "USA"
+        }
+    },
+    "receiver": {
+        "name": "Jane Smith",
+        "accountNumber": "987654321098",
+        "address": {
+            "street": "456 Elm St",
+            "city": "San Francisco",
+            "state": "CA",
+            "postalCode": "94101",
+            "country": "USA"
+        },
+        "identification": {
+            "type": "National ID",
+            "number": "B98765432",
+            "country": "USA"
+        }
+    },
+    "description": null,
+    "status": null,
+    "details": {
+        "purpose": "Payment for services",
+        "reference": "INV-2024-001"
+    },
+    "sanction": {
+        "entity_name": null,
+        "recorded_date": null,
+        "country": null,
+        "sanction_body": null
+    },
+    "screeningStatus": "Approved",
+    "matches": [],
+    "comments": "Transaction approved with no matches found.",
+    "additionalActions": []
+}
+```
+
+### Response Fields
+
+| Field               | Description                                                              | Type   |
+|---------------------|--------------------------------------------------------------------------|--------|
+| `transactionId`     | This is the unique identifier for the transaction                        | `String` |
+| `transactionType`   | Type of the transaction (e.g., Transfer)                                 | `String` |
+| `amount`            | The total transaction amount                                             | `String` |
+| `currency`          | This is currency code for the transaction (e.g., USD, NGN)               | `String` |
+| `transactionDate`   | ISO 8601 date and time of the transaction.                               | `String` |
+| `sender`            | Information about the transaction sender                                 | `Object` |
+| `- name`             | Full name of the sender                                                 | `String` |
+| `- accountNumber`    | Sender's account number                                                 | `String` |
+| `- address`          | Sender's address information                                            | `Object` |
+| `-- street`          | Street address of the sender                                            | `String` |
+| `-- city`            | City of the sender                                                      | `String` |
+| `-- state`           | State or region of the sender                                           | `String` |
+| `-- postalCode`       | Postal or ZIP code of the sender’s location                            | `String` |
+| `-- country`         | Country of the sender                                                   | `String` |
+| `- identification`   | Sender’s identification details                                         | `Object` |
+| `-- type`            | Type of identification (e.g Passport, National ID)                                    | `String` |
+| `-- number`          | Identification number                                                   | `String` |
+| `-- country`         | Issuing country of the identification                                    | `String` |
+| `receiver`           | Information about the transaction receiver                               | `Object` |
+| `- name`             | Full name of receiver                                                    | `String` |
+| `- accountNumber`    | Receiver's account number                                               | `String` |
+| `- address`          | Receiver’s address information                                          | `Object` |
+| `-- street`          | Street address of the receiver                                          | `String` |
+| `-- city`            | City of the receiver                                                    | `String` |
+| `-- state`           | State or region of the receiver                                         | `String` |
+| `-- postalCode`       | Postal or ZIP code of the receiver’s location                          | `String` |
+| `-- country`         | Country of the receiver                                                 | `String` |
+| `- identification`   | Receiver’s identification details                                         | `Object` |
+| `-- type`            | Type of identification (e.g Passport, National ID)                       | `String` |
+| `-- number`          | Receiver’s Identification number                                         | `String` |
+| `-- country`         | Issuing country of the identification                                    | `String` 
+| `description`        | Description of the transaction                                           | `String` |
+| `status`             | Current status of the transaction                                         | `String` |
+| `details`            | Additional details regarding the transaction                             | `Object` |
+| `- purpose`         | Purpose of the transaction                                                | `String` |
+| `- reference`        | Reference identifier for the transaction                                 | `String` |
+| `sanction`           | Details of any sanctions applied                                         | `Object` |
+| `- entity_name`      | Name of the sanctioned entity                                            | `String` |
+| `- recorded_date`    | Date sanction was recorded                                               | `String` |
+| `- country`          | Country of the sanctioned entity                                         | `String` |
+| `- sanction_body`    | Sanctioning authority                                                    | `String` |
+| `screeningStatus`    | Outcome status of the transaction screening                              | `String` |
+| `matches`            | List of any matches found in screening                                   | `Array` |
+| `comments`           | Comments or notes regarding screening results                            | `String` |
+| `additionalActions`  | List of additional actions required based on screening                   | `Array` |
+
+
+
