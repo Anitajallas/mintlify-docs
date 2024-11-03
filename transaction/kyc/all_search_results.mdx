@@ -1,0 +1,130 @@
+## Get All KYC Search Results
+
+This endpoint retrieves all KYC (Know Your Customer) search results associated with your account. The KYC system evaluates individual entities and assigns a risk level, aggregating data from multiple sources to identify potential flags like PEP (Politically Exposed Persons) hits, sanctions, social media profiles, and adverse media.
+
+### Request Endpoint
+**GET:** `{{url}}/api/v1/monitoring/kyc_search/`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **200 OK:** The request was successful, and the KYC search results data is returned as expected.
+- **400 Bad Request:** The request could not be completed due to invalid parameters.
+- **404 Not Found:** The requested KYC data could not be found.
+
+Sample 200 OK Response
+```json
+{
+  "status": "success",
+  "data": [
+    {
+      "id": 17,
+      "entity_name": "ABDUL MANAN MOHAMMAD ISHAK",
+      "branch_id": 3,
+      "status": "completed",
+      "result": {
+        "risk_level": "low",
+        "total_hits": 1,
+        "pep_results": [],
+        "search_term": "ABDUL MANAN MOHAMMAD ISHAK",
+        "social_media": [],
+        "sanction_results": [
+          {
+            "name": "Abdul Manan Mohammad Ishak",
+            "types": [
+              "sanction",
+              "warnings",
+              "fitness-probity"
+            ],
+            "source": "Smartcomply",
+            "country": "Afghanistan",
+            "recorded_date": "15 Aug. 2012"
+          }
+        ],
+        "total_blacklist_hits": 0,
+        "adverse_media_results": []
+      }
+    },
+    {
+      "id": 41,
+      "entity_name": "Heritage Bank",
+      "branch_id": 3,
+      "status": "completed",
+      "result": {
+        "risk_level": "high",
+        "total_hits": 5,
+        "pep_results": [
+          {
+            "name": "Managing Director/CEO, Heritage Bank Plc",
+            "gender": null,
+            "source": "Smartcomply",
+            "country": "Nigeria",
+            "pep_types": [
+              "pep"
+            ]
+          },
+          {
+            "name": "Executive Director, Heritage Bank Plc",
+            "gender": null,
+            "source": "Smartcomply",
+            "country": "Nigeria",
+            "pep_types": [
+              "pep"
+            ]
+          }
+        ],
+        "search_term": "Heritage Bank",
+        "social_media": [
+          {
+            "bio": "Community Business & Personal Banking in Auburn, WA",
+            "url": "https://www.facebook.com/HeritageBankNW/",
+            "platform": "Facebook",
+            "description": "Visit your local Heritage Bank at 1001 D Street NE in Auburn, WA to find business & personal banking solutions to fit your needs."
+          }
+        ],
+        "sanction_results": [],
+        "total_blacklist_hits": 0,
+        "adverse_media_results": [
+          {
+            "url": "https://thewillnews.com/well-pay-heritage-bank-customers-within-one-week-ndic/",
+            "date": "June 5, 2024",
+            "title": "We'll pay Heritage Bank customers within one week - NDIC",
+            "types": [
+              "adverse-media-v2-other-financial"
+            ],
+            "snippet": "The Nigerian Deposit Insurance Corporation (NDIC) says the payment of depositors in Heritage Bank will commence before the end of..."
+          },
+          {
+            "url": "https://thewillnews.com/breaking-cbn-revokes-operational-license-of-heritage-bank-plc/",
+            "date": "June 5, 2024",
+            "title": "CBN revokes operational license of Heritage Bank Plc",
+            "types": [
+              "adverse-media-v2-other-financial"
+            ],
+            "snippet": "The Central Bank of Nigeria (CBN) has revoked the banking license of Heritage Bank Plc with immediate effect."
+          }
+        ]
+      }
+    }
+  ],
+  "message": "Success"
+}
+
+```
+
+### Response Fields
+| Field               | Description                                                              | Type   |
+|---------------------|--------------------------------------------------------------------------|--------|
+| `id`                | Unique identifier for each KYC search result                             | `Number` |
+| `entity_name`       | Name of the entity that was searched                                     | `Float` |
+| `branch_id`         | ID of the branch associated with this KYC search.                        | `Number` |
+| `status`            | Status of the KYC search (e.g., "completed")                            | `String` |
+| `result`            | KYC Results for the entity                                               | `Object` |
+| `- risk_level`      | Risk level assessed for the entity (e.g., "low", "high")                 | `String` |
+| `- total_hits`      | Total flagged hits across all categories                                 | `Number` |
+| `- pep_results`     | PEP (Politically Exposed Persons) results, detailing flagged individuals| `Array` |
+| `- search_term`     | Term used to conduct the search                                         | `String` |
+| `- social_media`    | Social media profiles identified for the entity                          | `Array` |
+| `- sanction_results`| Sanction records found                                                   | `Array` |
+| `- total_blacklist_hits`| Total number of blacklist flags.                                     | `Number` |
+| `- adverse_media_results`| Relevant adverse media articles or records.                         | `Array` |

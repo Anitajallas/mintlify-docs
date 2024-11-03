@@ -29,12 +29,6 @@
     "name": "Dashboard",
     "url": "https://adhere-app.smartcomply.com"
   },
-  "tabs": [
-    {
-      "name": "Transaction Monitoring",
-      "url": "transaction"
-    }
-  ],
   
   "navigation": [
     {
@@ -152,9 +146,49 @@
     {
       "group": "Fraud & Transaction Monitoring",
       "pages": [
-        "api-integration/introduction",
-        "api-integration/quickstart",
-        "api-integration/error_codes"
+        {
+          "group": "Threshold",
+          "pages": [
+            "transaction/threshold/retrieve_threshold",
+            "transaction/threshold/set_threshold"
+          ]
+        },
+        {
+          "group": "Limit",
+          "pages": [
+            "transaction/limit/retrieve_limit",
+            "transaction/limit/set_limit"
+          ]
+        },
+        {
+          "group": "Card Transaction",
+          "pages": [
+            "transaction/card_transaction/card_transaction_monitoring",
+            "transaction/card_transaction/fraud_request"
+          ]
+        },
+        {
+          "group": "Transaction Monitoring",
+          "pages": [
+            "transaction/transaction_monitoring/transaction_monitoring",
+            "transaction/transaction_monitoring/transaction_request"
+          ]
+        },
+        {
+          "group": "Kyc",
+          "pages": [
+            "transaction/kyc/all_search_results",
+            "transaction/kyc/entity_kyc_search",
+            "transaction/kyc/run_kyc_check"
+          ]
+        },
+        {
+          "group": "Transaction Screening",
+          "pages": [
+            "transaction/transaction_screening/overview",
+            "transaction/transaction_screening/check_screening"
+          ]
+        }
       ]
     },
     {

@@ -1,0 +1,35 @@
+## Set Threshold To Trigger Fraud Alert
+
+The Set Threshold functionality enables users to define specific thresholds in the transaction monitoring system to detect and respond to potential fraud.
+Setting a Threshold allows users establish a predefined value or criterion that, when exceeded by a transaction’s fraud score, triggers a fraud alert for further investigation.
+
+### Request Endpoint
+**POST:** `{{url}}/api/v1/threshhold/`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+
+- **200:** OK. Data is successfully returned.
+- **201:** Created. The threshold information is set successfully.
+- **400:** Bad Request. The threshold information cannot be gotten. Request is not completed successfully.
+- **404:** Not Found. The threshold information is not found. Request is not completed successfully.
+
+
+### Payload
+```json
+{
+    "threshhold":"7"
+}
+```
+
+200 OK Response
+```json
+
+```
+
+### Response Fields
+
+| Field             | Description                                                           | Type    |
+|-------------------|-----------------------------------------------------------------------|---------|
+| `threshold`       | This is the threshold currently set to trigger fraud alert            | `String` |

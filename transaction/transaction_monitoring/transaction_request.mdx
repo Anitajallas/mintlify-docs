@@ -1,0 +1,78 @@
+## Post Transaction Monitoring Request
+
+The Transaction Monitoring API endpoint processes transactions in real-time, calculating the fraud percentage based on your predefined thresholds and limits. This endpoint allows for detailed monitoring of transactions to detect and flag potentially fraudulent activity. All fields in the request are required to ensure a comprehensive assessment, and each transaction's reference field must be unique for accurate tracking.
+
+### Request Endpoint
+**POST:** `{{url}}/api/v1/monitoring/transaction_monitoring/`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+
+- **201 Created:** Transaction processed successfully. Fraud score calculated based on threshold.
+- **400 Bad Request:** Missing or invalid fields in the request.
+- **500 Internal Server Error:** Unexpected error during processing. The request body is not set correctly.
+
+### Payload Example Request
+```json
+{
+  "transaction_id": "18772",
+  "amount": 1500.00,
+  "currency": "USD",
+  "transaction_type": "transfer",
+  "account_type": "corporate", //individual or corporate
+  "status": "completed",
+  "origin_account": {
+    "account_number": "9876543210",
+    "bank_code": "001"
+  },
+  "destination_account": {
+    "account_number": "0123456789",
+    "bank_code": "002"
+  },
+  "customer_details": {
+    "customer_name": "Jane Doe",
+    "customer_email": "jane.doe@example.com"
+  },
+  "additional_info": {
+    "ip_address": "192.168.1.1",
+    "location": "San Francisco, CA", //"lat=-30.6556,lon=-65.7655"
+    "transaction_description": "Payment for order #789"
+  }
+}
+```
+
+201 Created Response
+```json
+{
+    "status": "Success",
+    "data": {
+        "status": "completed",
+        "comment": []
+    },
+    "message": "Transaction was successfully processed"
+}
+```
+
+### Request Body
+| Field               | Description                                                              | Type   |
+|---------------------|--------------------------------------------------------------------------|--------|
+| `transaction_id`    | This is the unique identifier for the transaction                        | `String` |
+| `amount`            | The transaction amount                                                   | `Float` |
+| `currency`          | This is transaction currency (e.g., USD, NGN)                            | `String` |
+| `transaction_type`  | Type of the transaction (e.g., transfer, card)                           | `String` |
+| `account_type`      | Account type associated with the transaction (individual or corporate)   | `String` |
+| `status`            | Status of the transaction (e.g., completed, pending)                     | `String` |
+| `origin_account`    | Details of the originating account                                       | `Object` |
+| `- account_number`    | Account number of the originating account                               | `String` |
+| `- bank_code`          | Bank code of the originating account                                   | `String` |
+| `destination_account` | Details of the destination account                                     | `Object` |
+| `- account_number`    | Account number of the destination account                               | `String` |
+| `- bank_code`         | Bank code of the destination account                                    | `String` |
+| `customer_details`   | Information about the verified customer initiating the transaction.     | `Object` |
+| `- customer_name`     | Customer's full name                                                    | `String` |
+| `- customer_email`    | Customer's email address                                                | `String` |
+| `additional_info`    | Additional details regarding the transaction                            | `Object` |
+| `- ip_address`        | IP address of the customer during the transaction                       | `String` |
+| `- location`           | Customer's location (can be formatted as "lat=-30.6556,lon=-65.7655")  | `String` |
+| `- transaction_description` | Description of the transaction (e.g., Payment for order #789)     | `String` |

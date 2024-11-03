@@ -1,0 +1,26 @@
+## Get Threshold To Trigger Fraud Alert
+
+A threshold refers to a predefined value or criterion that triggers a fraud alert when exceeded.
+This endpoint allows you to retrieve the threshold to trigger the fraud alert to indicate potential fraudulent activity.
+
+**GET:** `{{url}}/api/v1/threshhold/`
+
+### Status Codes
+
+- **200:** OK. Data is successfully returned.
+- **400:** Bad Request. The threshold information cannot be gotten. Request is not completed successfully.
+- **404:** Not Found. The threshold information is not found. Request is not completed successfully.
+
+
+### Example Response
+```json
+{
+  "threshhold": 7
+}
+```
+
+### Response Fields
+
+| Field             | Description                                                           | Type    |
+|-------------------|-----------------------------------------------------------------------|---------|
+| `threshold`       | This is the threshold currently set to trigger fraud alert            | `String` |

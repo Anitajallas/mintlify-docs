@@ -11,7 +11,7 @@ After completing your business KYC, you will be issued a secret key. This key is
 Smartcomply uses an API key to secure API requests. You will need to include your secret key in the `Authorization` header of every API request.
 
 
-- **Base URL (production):** `https://adhere-api/v1/monitoring`
+- **Base URL (production):** `https://adhere-api.smartcomply.com`
 - **media-type:** `application/json`
 
 ### HEADERS
@@ -19,8 +19,8 @@ Smartcomply uses an API key to secure API requests. You will need to include you
 ### Sample Request:
 
 ```bash
-curl -X GET "https://api.smartcomply.com/v1/endpoint" \
--H "Secret_Key: YOUR_SECRET_KEY" \
+curl -X GET "https://adhere-api.smartcomply.com/api/v1/endpoint" \
+-H "x-access-token: YOUR_SECRET_KEY" \
 -H "Content-Type: application/json" 
 ```
 

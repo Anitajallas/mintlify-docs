@@ -1,0 +1,30 @@
+## Set Transaction Limit
+
+This endpoint allows users to specify maximum allowable values for different transaction parameters, like transaction amount or frequency. By setting these limits, organizations can monitor and control unusual transaction patterns. 
+If a transaction exceeds the specified limit, it may be flagged for review or automatically declined to help prevent fraud.
+
+### Request Endpoint
+**POST:** `{{url}}/api/v1/limit/`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+
+- **200 OK:** The request was successful, and the transaction limit data has been returned as expected.
+- **201 Created:** The transaction limit has been set successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing transaction limit information.
+- **404 Not Found:** The specified transaction limit could not be found.
+
+### Payload
+```json
+{
+    "amount": 200000
+}
+```
+
+200 OK Response
+```json
+{
+  "message": "Limit set successfully."
+}
+```
