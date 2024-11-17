@@ -145,15 +145,68 @@ This endpoint initiates the transaction screening process, evaluating a transact
         "reference": "INV-2024-001"
     },
     "sanction": {
-        "entity_name": null,
-        "recorded_date": null,
-        "country": null,
-        "sanction_body": null
+        "sender_name": "QUDRATULLAH JAMAL",
+        "sender_record": [
+            {
+                "id": 60,
+                "entity_name": "QUDRATULLAH JAMAL",
+                "recorded_date": "29 Nov. 2011",
+                "country": "Afghanistan",
+                "sanction_body": null,
+                "sanction_types": [
+                    "sanction",
+                    "warnings"
+                ],
+                "other_names": [],
+                "other_information": {
+                    "dob": "Approximately 1963",
+                    "pob": "Gardez, Paktia Province, Afghanistan",
+                    "title": "Maulavi",
+                    "other_info": "Member of Taliban Supreme Council and member of Taliban Cultural Commission as at 2010. Believed to be in Afghanistan/Pakistan border area. Review pursuant to Security Council resolution 1822 (2008) was concluded on 21 Jul. 2010.",
+                    "designations": "Minister of Information under the Taliban regime"
+                },
+                "date_created": "2024-06-07T00:30:16.953121Z",
+                "date_updated": "2024-06-23T19:58:11.526561Z"
+            },
+            {
+                "id": 662,
+                "entity_name": "qudratullah jamal",
+                "recorded_date": "2022-04-27T18:12:14",
+                "country": "Afghanistan",
+                "sanction_body": "Swiss SECO Sanctions/Embargoes",
+                "sanction_types": [
+                    "sanction",
+                    "warnings"
+                ],
+                "other_names": [
+                    "قدرت الله جمال",
+                    "haji sahib"
+                ],
+                "other_information": {
+                    "dob": [
+                        "1963"
+                    ],
+                    "last_seen": "2024-06-22T20:02:02",
+                    "birth_place": [
+                        "Gardez, Paktika Province, Afghanistan"
+                    ]
+                },
+                "date_created": "2024-06-23T17:30:59.378659Z",
+                "date_updated": "2024-07-12T14:13:34.465282Z"
+            }
+        ],
+        "receiver_name": "Jane Smith",
+        "receiver_record": null
     },
-    "screeningStatus": "Approved",
-    "matches": [],
-    "comments": "Transaction approved with no matches found.",
-    "additionalActions": []
+    "screeningStatus": "Denied",
+    "comments": "Transaction denied due to a high-confidence match with the Sanctions List.",
+    "additionalActions": [
+        {
+            "actionType": "Notify Customer",
+            "assignedTo": "Customer Service",
+            "notes": "Inform the customer about the transaction denial and provide instructions for further steps."
+        }
+    ]
 }
 ```
 
@@ -198,14 +251,39 @@ This endpoint initiates the transaction screening process, evaluating a transact
 | `- purpose`         | Purpose of the transaction                                                | `String` |
 | `- reference`        | Reference identifier for the transaction                                 | `String` |
 | `sanction`           | Details of any sanctions applied                                         | `Object` |
-| `- entity_name`      | Name of the sanctioned entity                                            | `String` |
-| `- recorded_date`    | Date sanction was recorded                                               | `String` |
-| `- country`          | Country of the sanctioned entity                                         | `String` |
-| `- sanction_body`    | Sanctioning authority                                                    | `String` |
+| `- sender_name`      | Name of the sender being screened for sanctions	                        | `String` |
+| `- sender_record`    | List of records matching the sender in the sanctions database            | `Array` |
+| `-- id`              | Unique ID for the sanctioned record                                      | `String` |
+| `-- entity_name`     | Name of the entity in the sanction record                                | `String` |
+| `-- recorded_date`   | Date the sanction was recorded                                           | `String` |
+| `-- country`         | Country of the sanctioned entity                                         | `String` |
+| `-- sanction_body`   | Sanctioning authority (e.g., UN, OFAC, etc.)                             | `String` |
+| `-- sanction_types`  | Types of sanctions applied to the entity (e.g., warning, embargo)        | `Array` |
+| `-- other_names`     | Alternate names for the sanctioned entity                                | `Array` |
+| `-- other_information`| Additional details about the sanction, such as DOB, POB, etc.           | `Object` |
+| `--- dob`            | Date of birth of the sanctioned individual                               | `String/Array` |
+| `--- pob`            | Place of birth of the sanctioned individual                              | `String/Array` |
+| `--- title`          | Titles or ranks held by the sanctioned individual                        | `String` |
+| `--- designations`   | Designations or roles held by the sanctioned individual                  | `String` |
+| `--- other_info`     | Additional descriptive information about the sanction                    | `String` |
+| `-- date_created`    | Date the sanction record was created                                     | `String` |
+| `-- date_updated`    | Date the sanction record was last updated                                | `String` |
+| `- receiver_name`    | Name of the receiver being screened for sanctions                        | `String` |
+| `- receiver_record`  | Sanction details matching the receiver (if any)                          | `Object` |
+| `-- id`              | Unique ID for the sanctioned record                                      | `String` |
+| `-- entity_name`     | Name of the entity in the sanction record                                | `String` |
+| `-- recorded_date`   | Date the sanction was recorded                                           | `String` |
+| `-- country`         | Country of the sanctioned entity                                         | `String` |
+| `-- sanction_body`   | Sanctioning authority (e.g., UN, OFAC, etc.)                             | `String` |
+| `-- sanction_types`  | Types of sanctions applied to the entity (e.g., warning, embargo)        | `Array` |
+| `-- other_names`     | Alternate names for the sanctioned receiver                              | `Array` |
+| `-- other_information`| Additional details about the sanction, such as DOB, POB, etc.           | `Object` |
+| `--- notes`          | Miscellaneous notes related to the receiver’s sanctions                  | `String` |
+| `-- date_created`    | Date the receiver's sanction record was created                          | `String` |
+| `-- date_updated`    | Date the receiver's sanction record was last updated                     | `String` |
 | `screeningStatus`    | Outcome status of the transaction screening                              | `String` |
-| `matches`            | List of any matches found in screening                                   | `Array` |
 | `comments`           | Comments or notes regarding screening results                            | `String` |
 | `additionalActions`  | List of additional actions required based on screening                   | `Array` |
-
-
-
+| `- actionType`       | Type of action to be taken                                               | `String` |
+| `- assignedTo`       | Role or team assigned to handle the action                               | `String` |
+| `- notes`            | Additional instructions or notes related to the action                   | `String` |
