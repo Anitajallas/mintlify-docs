@@ -2,13 +2,12 @@ You can verify your customers' identity using their Phone Number.
 
 This helps to verify customers using their phone numbers.
 
-### Basic Phone Lookup
+### Advanced Phone Lookup
 
 #### Request Endpoint
 **Generate simple customer phone data object**
 
-`POST` `{{url}}/nigeria_kyc/phone_number_basic`
-
+`POST` `{{url}}/nigeria_kyc/phone_no_advanced`
 
 #### Sample Payload
 
@@ -18,26 +17,26 @@ This helps to verify customers using their phone numbers.
   }
 ```
 
-
 200 OK Response:
 
 ``` json
 {
     "status": "success",
     "data": {
-        "firstName": "TISEOLUWA",
-        "middleName": "JOHN",
-        "lastName": "AKINSANYA",
-        "dateOfBirth": "1909-09-19",
-        "gender": "male",
-        "phoneNumber": "09011001100"
         "nin": "",
-        "maritalStatus": "",
         "email": "",
         "image": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0a\nHBwgJC4nICIsIxwcKDcpLDAxNHwAAK",
-        "residenceAddress": "",
-        "residenceState": ""
+        "gender": "male",
+        "lastName": "AKINSANYA",
+        "firstName": "TISEOLUWA",
+        "middleName": "JOHN",
+        "dateOfBirth": "1909-09-19",
+        "phoneNumber": "09011001100"
+        "maritalStatus": "",
+        "residenceAddress": "3 ROAD 3E DIVINE HOUSE",
+        "residenceState": "3 ROAD 3E DIVINE HOUSE"
     },
     "message": "success"
 }
 ```
+

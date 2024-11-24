@@ -6,12 +6,10 @@ The BVN Endpoint offers a set of fields to verify a user's Bank Verification Num
 
 This endpoint generates a concise BVN response object.
 
-**POST**
-
-`{{url}}/nigeria_kyc/lookup_bvn`
+`POST` `{{url}}/nigeria_kyc/bvn`
 
 
-#### Sample Request
+#### Sample Payload
 
 ```json
 {
@@ -23,19 +21,18 @@ This endpoint generates a concise BVN response object.
 
 ```json
 {
-    "success": true,
-    "statusCode": 200,
-    "message": "Bank Verification Number Details retrieved",
-    "response_code": "00",
+    "status": "success",
     "data": {
         "bvn": "22000000001",
-        "firstName": "JOHN",
-        "middleName": "JOSEPH",
-        "lastName": "DOE",
-        "dateOfBirth": "2000-10-01",
-        "phoneNumber1": "08050003000",
+        "image": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL",
         "gender": "male",
-        "image": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAGQASwDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/"
-    }
+        "customer": "",
+        "lastName": "AKINSANYA",
+        "firstName": "TISEOLUWA",
+        "middleName": "JOHN",
+        "dateOfBirth": "1909-09-19",
+        "phoneNumber1": "09011001100"
+    },
+    "message": "success"
 }
 ```
