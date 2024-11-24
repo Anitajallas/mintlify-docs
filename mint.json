@@ -56,24 +56,24 @@
             {
               "group": "Nigeria",
               "pages": [
-                "kyc/nigeria/driver_license",
-                "kyc/nigeria/passport_verification",
-                "kyc/nigeria/tin",
-                "kyc/nigeria/nuban",
-                "kyc/nigeria/nuban_advance",
-                "kyc/nigeria/phone_number_basic",
-                "kyc/nigeria/phone_number_advance",
+                "kyc/nigeria/Drivers_License",
+                "kyc/nigeria/Passport_Verification",
+                "kyc/nigeria/TIN",
+                "kyc/nigeria/Nuban",
+                "kyc/nigeria/Nuban_Advanced",
+                "kyc/nigeria/Phone_Number_Basic",
+                "kyc/nigeria/Phone_Number_Advanced",
                 "kyc/nigeria/CAC",
-                "kyc/nigeria/CAC_advance",
-                "kyc/nigeria/nin",
-                "kyc/nigeria/nin_with_face",
+                "kyc/nigeria/CAC_Advanced",
+                "kyc/nigeria/NIN",
+                "kyc/nigeria/NIN_With_Face",
                 "kyc/nigeria/VNIN",
                 "kyc/nigeria/VIN",
                 "kyc/nigeria/BVN",
-                "kyc/nigeria/BVN_advance",
-                "kyc/nigeria/BVN_advance_IGREE",
-                "kyc/nigeria/BVN_basic_IGREE",
-                "kyc/nigeria/BVN_with_face"
+                "kyc/nigeria/BVN_Advanced",
+                "kyc/nigeria/BVN_Advance_IGREE",
+                "kyc/nigeria/BVN_Basic_IGREE",
+                "kyc/nigeria/BVN_With_Face"
               ]
             },
             {
@@ -175,11 +175,11 @@
           ]
         },
         {
-          "group": "Kyc",
+          "group": "KYC",
           "pages": [
-            "transaction/kyc/all_search_results",
-            "transaction/kyc/entity_kyc_search",
-            "transaction/kyc/run_kyc_check"
+            "transaction/kyc/All_Search_Results",
+            "transaction/kyc/Entity_KYC_Search",
+            "transaction/kyc/Run_KYC_Check"
           ]
         },
         {
