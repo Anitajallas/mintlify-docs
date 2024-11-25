@@ -1,13 +1,9 @@
-You can verify your customers' identity using their Phone Number.
+## Verify your customers' identities using their Phone Number
 
-This helps to verify customers using their phone numbers.
+Easily confirm your customers' identities through their phone numbers for accurate and reliable verification.
 
-### Basic Phone Lookup
 
-#### Request Endpoint
-**Generate simple customer phone data object**
-
-`POST` `{{url}}/nigeria_kyc/phone_number_basic`
+`POST` `{{url}}/onboarding/nigeria_kyc/phone_number_basic`
 
 
 #### Sample Payload
@@ -34,10 +30,10 @@ This helps to verify customers using their phone numbers.
         "nin": "",
         "maritalStatus": "",
         "email": "",
-        "image": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0a\nHBwgJC4nICIsIxwcKDcpLDAxNHwAAK",
+        "image": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0a\nHBwgJC4nICIsIxwcKDcpLDAxNHwAAK", # base-64
         "residenceAddress": "",
         "residenceState": ""
     },
-    "message": "success"
+    "message": "Phone Number details retrieved successfully"
 }
 ```

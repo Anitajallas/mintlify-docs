@@ -1,17 +1,11 @@
-### Connected Accounts
+## Verify your customers' identities using their CAC 
 
-This endpoint generates concise information about an account.
+Adhere's CAC verification endpoint provides access to accurate and verified information on registered businesses.
 
-### Simple CAC Lookup
+`POST` `{{url}}/onboarding/nigeria_kyc/cac`
 
-This endpoint generates a concise description of the details of the application.
 
-#### Request Endpoint
-**Generate simple customer data object**
-
-**POST** `{{url}}/nigeria_kyc/lookup_cac`
-
-#### Payload
+## Sample Payload
 ``` json
 {    
     "rc_number": "1261103",
@@ -23,14 +17,11 @@ This endpoint generates a concise description of the details of the application.
 
 ``` json
 {
-  "success": true,
-  "statusCode": 200,
-  "message": "Business Registration Details retrieved",
-  "response_code": "00",
+  "status": "success",
   "data": [
     {
       "state": null,
-      "address": "27,BADAGRYROAD,,COKER,LAGOS",
+      "address": "27,BADAGRYROAD,COKER,LAGOS",
       "status": "ACTIVE",
       "city": null,
       "email": null,
@@ -54,6 +45,7 @@ This endpoint generates a concise description of the details of the application.
       "approvedName": "BAYO OJAOLA COMM. ENT.",
       "id": 2938882
     }
-  ]
+  ],
+  "message": "Business Registration details retrieved successfully",
 }
 ```

@@ -1,0 +1,37 @@
+## Verify your customers' identities using their passport identification numbers.
+
+Adhere's passport validity check endpoint provides access to verified national-level information, ensuring accurate and reliable identity verification.
+
+## Sample Payload
+
+```json
+{
+    "passport_number": "Z18679232",
+    "surname": "John"
+}
+```
+
+200 OK Response
+
+```json
+{
+  "status": "success",
+  "data": {
+    "passportNumber": "Z18679232",
+    "dateOfIssue": "20/09/2023",
+    "expiryDate": "19/09/2028",
+    "documentType": "Standard Passport",
+    "issuePlace": "OGUN STATE",
+    "lastName": "JOHN",
+    "firstName": "EMMANUEL",
+    "middleName": "IFEANYI",
+    "dateOfBirth": "10/04/2000", 
+    "gender": "Male",
+    "image": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0a\nHBwgJC4nICIsIxwcKDcpLDAxNHwAAK", # base-64
+    "referenceID": "23445", 
+    "phoneNumber": "09011002200"
+    },
+    "message": "International Passport details retrieved successfully"
+}
+
+```
