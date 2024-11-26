@@ -19,26 +19,64 @@ Utilize Adhere's NIN with Face verification endpoint to retrieve and validate cu
 
 ``` json
 {
-  "status": "success",
-  "data": {
-    "nin_data": {
-      "title": "mr",
-      "surname": "JOHN",
-      "firstName": "DOE",
-      "gender": "m",
-      "birthDate": "01-04-2002",
-      "birthLga": "",
-      "birthState": "",
-      "centralID": "",
-      "educationalLevel": "",
-      "email": "johndoe24@gmail.com",
-      "nin": "012345678",
-      "employmentStatus": "",
-      "height": "",
-      "maritalStatus": null,
-      "photo": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL"  # base-64
+    "status": "success",
+    "data": {
+        "nin_data": {
+            "title": "",
+            "lastName": "UCHE",
+            "firstName": "KARIM",
+            "gender": "male",
+            "dateOfBirth": "2002-11-09",
+            "birthLga": "",
+            "birthState": "",
+            "centralID": "",
+            "educationalLevel": "",
+            "email": null,
+            "nin": "90187493033",
+            "employmentStatus": "",
+            "height": "",
+            "maritalStatus": null,
+            "image": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/" # base 64,
+            "middleName": "OLUWADARASIMI",
+            "religion": "",
+            "telephoneNo": "09088118811",
+            "residenceAddress": "5, ODEYEMI STREET, ANIMASHAUN",
+            "residenceLga": "Ifo",
+            "residenceState": "Ogun",
+            "residenceTown": "",
+            "residenceStatus": "",
+            "selfOriginLga": "",
+            "selfOriginPlace": "",
+            "selfOriginState": "Ogun",
+            "signature": "",
+            "spokenLanguage": "",
+            "nokAddress1": "",
+            "nokAddress2": "",
+            "nokFirstname": "",
+            "nokLga": "",
+            "nokMiddleName": "",
+            "nokPostalCode": "",
+            "nokState": "",
+            "nokSurname": "",
+            "nokTown": "",
+            "oSpokenLang": "****",
+            "pFirstName": "",
+            "pMiddleName": "",
+            "profession": null,
+            "pSurname": "",
+            "trackingId": "",
+            "userId": "",
+            "vnin": ""
+        },
+        "face_data": {
+            "message": "Fatch Match",
+            "confidence": 99.9974136352539
+        },
+        "verification": {
+            "status": "VERIFIED",
+            "reference": "8314a5fc-bdb5-40c8-98bd-72aef9f1a868"
+        }
     },
-  "message": "National Identification Number details retrieved successfully",
-  }
+    "message": "National Identification Number details retrieved successfully"
 }
 ```
