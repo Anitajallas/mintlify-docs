@@ -1,19 +1,17 @@
-## User Verification using the National Identification Number (NIN)
+## Verify your customers' identities using their National Identification Number (NIN) With Face
 
-An endpoint to fetch and verify customer details using the National Identification Number (NIN) and Image URL. It is a means of identification that contains robust information about an individual.
+Utilize Adhere's NIN with Face verification endpoint to retrieve and validate customer details using their National Identification Number (NIN) and an Image URL. This method provides a comprehensive means of identification, combining robust personal information with facial verification for enhanced accuracy.
 
-## Generates user data from their NIN and image
+#### Request Endpoint
 
-### Endpoint
+`POST` `{{url}}/onboarding/nigeria_kyc/nin_with_face`
 
-POST `{{url}}/nigeria_kyc/lookup_nin_with_face`
-
-### Payload
+#### Sample Payload
 
 ```json
 {
-  "nin": "123456789",
-  "imageUrl": "https://res.cloudinary.com/dh3i1wodq/image/upload/v1675417496/cbimage_3_drqdoc.jpg"
+  "identification_number": "012345678",
+  "image_url": "https://res.cloudinary.com/dh3i1wodq/image/upload/v1675410981/profile.jpg"
 }
 ```
 
@@ -21,28 +19,64 @@ POST `{{url}}/nigeria_kyc/lookup_nin_with_face`
 
 ``` json
 {
-  "success": true,
-  "statusCode": 200,
-  "message": "National Identification Number Details retrieved",
-  "response_code": "00",
-  "data": {
-    "nin_data": {
-      "title": "",
-      "surname": "JOHN",
-      "firstName": "DOE",
-      "gender": "m",
-      "birthDate": "01-04-2002",
-      "birthLga": "",
-      "birthState": "",
-      "centralID": "",
-      "educationalLevel": "",
-      "email": null,
-      "nin": "12345678911",
-      "employmentStatus": "",
-      "height": "",
-      "maritalStatus": null,
-      "photo": "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"
-    }
-  }
+    "status": "success",
+    "data": {
+        "nin_data": {
+            "title": "",
+            "lastName": "UCHE",
+            "firstName": "KARIM",
+            "gender": "male",
+            "dateOfBirth": "2002-11-09",
+            "birthLga": "",
+            "birthState": "",
+            "centralID": "",
+            "educationalLevel": "",
+            "email": null,
+            "nin": "90187493033",
+            "employmentStatus": "",
+            "height": "",
+            "maritalStatus": null,
+            "image": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/" # base 64,
+            "middleName": "OLUWADARASIMI",
+            "religion": "",
+            "telephoneNo": "09088118811",
+            "residenceAddress": "5, ODEYEMI STREET, ANIMASHAUN",
+            "residenceLga": "Ifo",
+            "residenceState": "Ogun",
+            "residenceTown": "",
+            "residenceStatus": "",
+            "selfOriginLga": "",
+            "selfOriginPlace": "",
+            "selfOriginState": "Ogun",
+            "signature": "",
+            "spokenLanguage": "",
+            "nokAddress1": "",
+            "nokAddress2": "",
+            "nokFirstname": "",
+            "nokLga": "",
+            "nokMiddleName": "",
+            "nokPostalCode": "",
+            "nokState": "",
+            "nokSurname": "",
+            "nokTown": "",
+            "oSpokenLang": "****",
+            "pFirstName": "",
+            "pMiddleName": "",
+            "profession": null,
+            "pSurname": "",
+            "trackingId": "",
+            "userId": "",
+            "vnin": ""
+        },
+        "face_data": {
+            "message": "Fatch Match",
+            "confidence": 99.9974136352539
+        },
+        "verification": {
+            "status": "VERIFIED",
+            "reference": "8314a5fc-bdb5-40c8-98bd-72aef9f1a868"
+        }
+    },
+    "message": "National Identification Number details retrieved successfully"
 }
 ```

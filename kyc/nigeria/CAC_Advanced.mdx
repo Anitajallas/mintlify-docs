@@ -1,0 +1,53 @@
+## Verify your customers' identities using their CAC 
+
+Adhere's CAC verification endpoint provides access to accurate and verified information on registered businesses.
+
+#### Request Endpoint
+
+`POST` `{{url}}/onboarding/nigeria_kyc/cac_advanced`
+
+
+#### Sample Payload
+``` json
+{    
+    "registration_number": "1261103",
+    "company_name": "JOYCE VENTURES"
+}
+```
+
+200 OK Response
+
+``` json
+{
+  "status": "success",
+  "data": [
+    {
+      "state": null,
+      "address": "27,BADAGRYROAD,COKER,LAGOS",
+      "status": "ACTIVE",
+      "city": null,
+      "email": null,
+      "companyStatus": "INACTIVE",
+      "lga": null,
+      "rcNumber": "461919",
+      "registrationDate": "2002-09-15T23:00:00.000+00:00",
+      "approvedName": "EL-KRIS INTERNATIONAL COMPANY LIMITED",
+      "id": 619422
+    },
+    {
+      "state": null,
+      "address": "ONAFOWOKAN ST  , SHOMOLU,LAGOS",
+      "status": "ACTIVE",
+      "city": null,
+      "email": null,
+      "companyStatus": "INACTIVE",
+      "lga": null,
+      "rcNumber": "461919",
+      "registrationDate": "1981-12-15T23:00:00.000+00:00",
+      "approvedName": "BAYO OJAOLA COMM. ENT.",
+      "id": 2938882
+    }
+  ],
+  "message": "Business Registration details retrieved successfully",
+}
+```

@@ -1,0 +1,36 @@
+## Verify your customers' identities using their Voters' Identification Number
+
+Leverage Adhere's VNIN verification endpoint to securely retrieve and validate customer details using their Voters' Identification Number (VIN).
+
+#### Request Endpoint
+
+`POST` `{{url}}/onboarding/nigeria_kyc/voters_id`
+
+#### Sample Payload
+
+```json
+{
+  "voters_id": "91F6B1F5BE295355586"
+}
+```
+
+200 OK Response
+
+```json
+{
+  "status": "success",
+  "data": {
+    "full_name": "JOHN DOE S",
+    "voter_identification_number": "90F5B1C5B1234567890",
+    "gender": "Male",
+    "occupation": "STUDENT",
+    "time_of_registration": "2011-01-18 13:59:46",
+    "state": "ONDO",
+    "local_government": "IDANRE",
+    "registration_area_ward": "ISALU JIGBOKIN",
+    "polling_unit": "OJAJIGBOKIN, O/S IN FRONT OF ABANA I & II",
+    "polling_unit_code": "28/08/08/005"
+  },
+  "message": "Voters Identification details retrieved successfully",
+}
+```

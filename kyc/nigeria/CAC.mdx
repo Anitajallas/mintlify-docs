@@ -1,59 +1,40 @@
-### Connected Accounts
+## Verify your customers' identities using their CAC 
 
-This endpoint generates concise information about an account.
-
-### Simple CAC Lookup
-
-This endpoint generates a concise description of the details of the application.
+Adhere's CAC verification endpoint provides access to accurate and verified information on registered businesses.
 
 #### Request Endpoint
-**Generate simple customer data object**
 
-**POST** `{{url}}/nigeria_kyc/lookup_cac`
+`POST` `{{url}}/onboarding/nigeria_kyc/cac`
 
-#### Payload
+#### Sample Payload
 ``` json
 {    
-    "rc_number": "1261103",
-    "company_name": "ADAFRUIT LIMITED"
+    "registration_number": "1261103",
+    "company_name": "JOYCE VENTURES"
+
 }
 ```
 
 200 OK Response
 
 ``` json
+
 {
-  "success": true,
-  "statusCode": 200,
-  "message": "Business Registration Details retrieved",
-  "response_code": "00",
+  "status": "success",
   "data": [
     {
-      "state": null,
-      "address": "27,BADAGRYROAD,,COKER,LAGOS",
-      "status": "ACTIVE",
-      "city": null,
-      "email": null,
-      "companyStatus": "INACTIVE",
-      "lga": null,
-      "rcNumber": "461919",
-      "registrationDate": "2002-09-15T23:00:00.000+00:00",
-      "approvedName": "EL-KRIS INTERNATIONAL COMPANY LIMITED",
-      "id": 619422
-    },
-    {
-      "state": null,
-      "address": "ONAFOWOKAN ST  , SHOMOLU,LAGOS",
-      "status": "ACTIVE",
-      "city": null,
-      "email": null,
-      "companyStatus": "INACTIVE",
-      "lga": null,
-      "rcNumber": "461919",
-      "registrationDate": "1981-12-15T23:00:00.000+00:00",
-      "approvedName": "BAYO OJAOLA COMM. ENT.",
-      "id": 2938882
+      "id": 8693434,
+      "lga": "Ibadan North West",
+      "city": "Mokola Ibadan",
+      "email": "joyceventures@gmail.com",
+      "state": "OYO",
+      "address": " Okunmade street, Opposite Veterinary Hospital",
+      "rcNumber": "1261103",
+      "approvedName": "JOYCE VENTURES",
+      "registrationDate": "2023-07-11T08:39:54.898+00:00"
     }
-  ]
+  ],
+  "message": "Business Registration details retrieved successfully"
 }
 ```
+

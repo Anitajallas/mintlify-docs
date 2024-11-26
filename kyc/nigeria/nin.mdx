@@ -1,16 +1,16 @@
-### User Verification using the National Identification Number (NIN)
+## Verify your customers' identities using their National Identification Number (NIN) With Face
 
-This endpoint allows you to fetch and verify customer details using the National Identification Number (NIN). The NIN provides robust information about an individual.
+Leverage Adhere's NIN verification endpoint to securely access and validate customer details. The National Identification Number (NIN) offers comprehensive and reliable information about an individual, ensuring seamless identity verification.
 
 #### Request Endpoint
-**Generate user data from their NIN**
 
-**POST** `{{url}}/nigeria_kyc/lookup_nin`
+`POST` `{{url}}/onboarding/nigeria_kyc/nin`
 
-#### Payload
+#### Sample Payload
+
 ```json
 {
-    "nin": "70123456789"
+    "identification_number": "70123456789"
 }
 ```
 
@@ -18,10 +18,7 @@ This endpoint allows you to fetch and verify customer details using the National
 
 ``` json
 {
-    "success": true,
-    "statusCode": 200,
-    "message": "National Identification Number Details retrieved",
-    "response_code": "00",
+    "status": "success",
     "data": {
         "title": "mr",
         "lastName": "DOE",
@@ -66,8 +63,8 @@ This endpoint allows you to fetch and verify customer details using the National
         "trackingId": "S2R0NYFO01113TR",
         "userId": "",
         "vnin": "",
-        "image": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAHSAV4DASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/",
-        "signature": "/9j/4AAQSkZJRgABAQEAlgCWAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCADIAPoDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/"
-    }
+        "image": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL" # base-64
+    },
+    "message": "National Identification Number details retrieved successfully",
 }
 ```

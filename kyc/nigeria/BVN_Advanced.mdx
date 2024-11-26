@@ -4,10 +4,9 @@ Adhere's BVN verification endpoint enables businesses to conduct accurate and re
 
 The endpoint provides access to comprehensive personal information, including name, phone number, date of birth, National Identification Number (NIN), local government area of origin, state of origin, customer image, and more. It also supports the auto-completion of account data, helping to identify users linked to specific financial institutions while enhancing both security and operational efficiency.
 
-
 #### Request Endpoint
 
-`POST` `{{url}}/onboarding/nigeria_kyc/bvn`
+`POST` `{{url}}/onboarding/nigeria_kyc/bvn_advanced`
 
 #### Sample Payload
 
@@ -18,20 +17,32 @@ The endpoint provides access to comprehensive personal information, including na
 ```
 
 200 OK Response
-
 ```json
 {
     "status": "success",
     "data": {
-        "bvn": "22000000001",
-        "image": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL", # base-64
+        "bvn": "22476562817",
+        "image": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJCuG/wAa0U+5yOnY/9k=", # base-64
+        "title": "Mr",
         "gender": "male",
-        "customer": "",
         "lastName": "AKINSANYA",
         "firstName": "TISEOLUWA",
         "middleName": "JOHN",
+        "nameOnCard": "TISEOLUWA JOHN AKINSANYA",
         "dateOfBirth": "1909-09-19",
-        "phoneNumber1": "09011001100"
+        "lgaOfOrigin": "Ado-Odo/Ota",
+        "watchListed": "NO",
+        "phoneNumber1": "09011001100",
+        "phoneNumber2": "",
+        "maritalStatus": "Single",
+        "stateOfOrigin": "Ogun State",
+        "enrollmentBank": "033",
+        "levelOfAccount": "Level 1 - Low Level Accounts",
+        "lgaOfResidence": "Ifo",
+        "enrollmentBranch": "0517-OTA 2",
+        "registrationDate": "01-January-2001",
+        "stateOfResidence": "Ogun State",
+        "residentialAddress": "1, ADESHINA STREET, IFO"
     },
     "message": "Bank Verification Number details retrieved successfully"
 }

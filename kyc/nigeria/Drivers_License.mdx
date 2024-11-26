@@ -1,0 +1,37 @@
+## Verify your customers' identities using their Driver's License
+
+Adhere's driver's license verification endpoint allows you to access accurate, verified national-level information for reliable identity confirmation.
+
+#### Request Endpoint
+
+`POST` `{{url}}/onboarding/nigeria_kyc/driver_license`
+
+#### Sample Payload
+
+```json
+{
+    "license_number": "FKJ12345AB56"
+}
+```
+
+200 OK Response
+
+```json
+{
+  "status": "success",
+  "data": {
+    "licenseNo": "ARR10892UU00",
+    "lastName": "EDIKAN",
+    "firstName": "EFE",
+    "middleName": "MUNACHI",
+    "gender": "male",
+    "issuedDate": "2013-10-28",
+    "expiryDate": "2018-11-28",
+    "stateOfIssue": "OYO",
+    "dateOfBirth": "1994-08-11",
+    "image": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0a\nHBwgJC4nICIsIxwcKDcpLDAxNHwAAK", # base-64
+  },
+  "message": "Driver License details retrieved successfully"
+}
+
+```
