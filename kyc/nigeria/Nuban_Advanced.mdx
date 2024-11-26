@@ -2,6 +2,8 @@
 
 Adhere's NUBAN check provides access to verified customer information at a national level, ensuring accuracy and reliability.
 
+#### Request Endpoint
+
 `POST` `{{url}}/onboarding/nigeria_kyc/nuban_advanced`
 
 #### Sample Payload
@@ -17,9 +19,7 @@ Adhere's NUBAN check provides access to verified customer information at a natio
 
 ``` json
 {
-  "success": true,
-  "statusCode": 200,
-  "response_code": "00",
+  "status": "success",
   "data": {
     "account_currency": "566",
     "account_name": "MICHEAL ADEOSUN GABRIEL",

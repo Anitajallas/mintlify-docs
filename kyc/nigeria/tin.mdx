@@ -2,24 +2,24 @@
 
 You can verify your customers' identity using their Tax Identification Number (TIN) through the API.
 
+#### Request Endpoint
 
 `POST` `{{url}}/onboarding/nigeria_kyc/tin`
+
 
 #### Sample Payload
 
 ```json
 {
-    "tin": "N-01234567"
+    "tax_identification_number": "N-01234567"
 }
 ```
 
-## Response
+200 OK Response
 
 ```bash
 {
-    "success": true,
-    "statusCode": 200,
-    "response_code": "00",
+    "status": "success",
     "data": {
         "search": "07012345678",
         "taxpayer_name": "FISAYOMI KAYODE NIG LTD",

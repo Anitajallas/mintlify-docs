@@ -1,19 +1,20 @@
-# Ensures Customer Identity Verification
+## Verify your customers' identities using their Bank Verification Number (BVN) With Face
 
-The BVN Endpoint allows you to verify a user's Bank Verification Number (BVN), which is essential for Know Your Customer (KYC) and user verification purposes. This endpoint can also auto-complete account data and help reduce fraud by providing personal information such as name, phone number, date of birth, national identification number (NIN), local government area of origin, state of origin, image, and more. The BVN can help identify users from specific financial institutions.
+Adhere's BVN verification endpoint enables businesses to conduct accurate and reliable KYC (Know Your Customer) processes and user verification. This service ensures the validation of a customer's Bank Verification Number (BVN), offering a dependable solution for fraud prevention and seamless onboarding.
 
-## Advanced BVN Lookup With Image URL
+The endpoint provides access to comprehensive personal information, including name, phone number, date of birth, National Identification Number (NIN), local government area of origin, state of origin, customer image, and more. It also supports the auto-completion of account data, helping to identify users linked to specific financial institutions while enhancing both security and operational efficiency.
 
-This endpoint generates a more detailed BVN response object and includes user data from BVN and image.
+#### Request Endpoint
 
-**POST** `{{url}}/nigeria_kyc/lookup_bvn_with_face`
+`POST` `{{url}}/onboarding/nigeria_kyc/bvn_with_face`
+
 
 ### Sample Request
 
 ```json
 {
-    "bvn": "22200000000",
-    "imageUrl": "https://salesunbox.s3.amazonaws.com/use-case%2021712313474306.png"
+  "bank_verification_number": "22200000000",
+  "image_upload": "https://res.cloudinary.com/dh3i1wodq/image/upload/v1675410981/profile.jpg"
 }
 ```
 
@@ -22,10 +23,6 @@ This endpoint generates a more detailed BVN response object and includes user da
 ```json
 
 {
-  "success": true,
-  "statusCode": 200,
-  "message": "Bank Verification Number details retrieved",
-  "response_code": "00",
   "data": {
     "firstName": "abraham",
     "middleName": "oladiran",
@@ -44,7 +41,8 @@ This endpoint generates a more detailed BVN response object and includes user da
     "stateOfOrigin": "oyo state",
     "stateOfResidence": "oyo state",
     "nin": null,
-    "base64Image": "/9j/4AAQSkZJBAAD/2wBcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAGQASwDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD0YCnACmg0oPFUZjqXFJRQAxqYaexqM0mCGdzUcx/dt9KkNRTf6pvpSGO005hz6imrxej05p2m/wCp/Cmrj7ZTQmWzSZyaU02mA7PanCmU8HPFADhS0lLQIWlNJRTABS0lGaAF7U2lzSUAFJS0lFwFopKKQC0uaSimAuTS5ptLQAZooopgFJRRQAtApKKQC0UlFAEVOFMFOBqSh1GaSigBjHJpjU80xjigQw1FP/qm+lSZqKfJhfHpSKHadxD33tz1FaMdrvJwKsRWGGJJ61Dmi1C5kPCA21QT9KsRaaSN3rWrHbJH2GakUAGs3UfQ0UEZCWEhk9QKvJYgrhlGat7wDwOauJHvjB7mhSkxuKWxgy6UXcYJUe1XItNESYJzkdMVtfZ2MXyLk0vkSbSWT7"
-  }
+    "base64Image": "/9j/4AAQSkZJBAAD/2wBcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj" # base 64
+  },
+  "message": "Bank Verification Number details retrieved successfully"
 }
-``` 
+```
