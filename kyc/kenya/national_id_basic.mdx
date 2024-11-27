@@ -1,18 +1,28 @@
-## You can verify your customers identity using their National Identification Basic
+## Verify your customers identity using their National Identification Basic
 
 The National ID Basic check using Adhere's endpoint helps you to get in touch with their information on a verified national Identification.
+Adhere's National Identification Basic endpoint allows you to access accurate, verified national-level information for reliable identity confirmation.
 
 
 Request Endpoint
 
-**POST**
- `{{url}}/kenya_kyc/lookup_national_id_basic`
+`POST` `{{url}}/kenya_kyc/lookup_national_id_basic`
+
+
+#### Sample Payload
+
+``` json
+
+{
+    "national_id": 1010101010
+}
+```
 
 #### Response Fields
 ```json
 {
     "firstName": "john",
     "lastName": "doe",
-    "nationalID": 12345678
+    "nationalID": 1010101010
 }
 ```

@@ -1,18 +1,17 @@
-## You can verify your customers identity using their passport number
+## Verify your customers identity using their passport number
 
-The passport validity check using Adhere's endpoint helps you to get in touch with their information on a verified national level.
+Adhere's passport validity check endpoint provides access to verified national-level information, ensuring accurate and reliable identity verification.
 
 
 ### Request Endpoint
 
-**POST**
- `{{url}}/kenya_kyc/lookup_passport`
+`POST` `{{url}}/onboarding/kenya_kyc/passport`
 
 ```json
 {
   "success": true,
   "statusCode": 200,
-  "message": "Passport Details retrieved",
+  "message": "Passport details retrieved",
   "response_code": "00",
   "data": {
     "identity_type": "PASSPORT NUMBER",
@@ -37,7 +36,7 @@ The passport validity check using Adhere's endpoint helps you to get in touch wi
 
 ```json
 {
-    "passportNumber": "AK0000000"
+    "passport_number": "AK0000000"
 }
 ```
 200 OK Response
@@ -46,7 +45,7 @@ The passport validity check using Adhere's endpoint helps you to get in touch wi
 {
   "success": true,
   "statusCode": 200,
-  "message": "Passport Details retrieved",
+  "message": "Passport details retrieved",
   "response_code": "00",
   "data": {
     "identity_type": "PASSPORT NUMBER",

@@ -4,8 +4,7 @@ Easily confirm your customers' identities through their phone numbers for accura
 
 #### Request Endpoint
 
-`POST` `{{url}}/onboarding/nigeria_kyc/phone_number_basic`
-
+`POST` `{{url}}/onboarding/nigeria_kyc/phone_no_advanced`
 
 #### Sample Payload
 
@@ -15,26 +14,26 @@ Easily confirm your customers' identities through their phone numbers for accura
   }
 ```
 
-
 200 OK Response
 
 ``` json
 {
     "status": "success",
     "data": {
-        "firstName": "TISEOLUWA",
-        "middleName": "JOHN",
-        "lastName": "AKINSANYA",
-        "dateOfBirth": "1909-09-19",
-        "gender": "male",
-        "phoneNumber": "09011001100"
         "nin": "",
-        "maritalStatus": "",
         "email": "",
         "image": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0a\nHBwgJC4nICIsIxwcKDcpLDAxNHwAAK", # base-64
-        "residenceAddress": "",
-        "residenceState": ""
+        "gender": "male",
+        "lastName": "AKINSANYA",
+        "firstName": "TISEOLUWA",
+        "middleName": "JOHN",
+        "dateOfBirth": "1909-09-19",
+        "phoneNumber": "09011001100"
+        "maritalStatus": "",
+        "residenceAddress": "3 ROAD 3E DIVINE HOUSE",
+        "residenceState": "3 ROAD 3E DIVINE HOUSE"
     },
     "message": "Phone Number details retrieved successfully"
 }
 ```
+
