@@ -68,10 +68,10 @@
                 "kyc/nigeria/NIN",
                 "kyc/nigeria/NIN_With_Face",
                 "kyc/nigeria/VNIN",
-                "kyc/nigeria/VIN",
+                "kyc/nigeria/Voters_ID",
                 "kyc/nigeria/BVN",
                 "kyc/nigeria/BVN_Advanced",
-                "kyc/nigeria/BVN_Advance_IGREE",
+                "kyc/nigeria/BVN_Advanced_IGREE",
                 "kyc/nigeria/BVN_Basic_IGREE",
                 "kyc/nigeria/BVN_With_Face"
               ]
