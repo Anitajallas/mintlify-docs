@@ -1,15 +1,15 @@
-## TCC Checker 
-These endpoints fetch more advanced information about an account.  It gets the list of financial account that has been onboarded in association to a specific app's public key.
+## Fetch more advanced information about your customers' connected account
+
+Adhere's TCC Checker endpoint fetches more advanced information about an account. It gets the list of financial account that has been onboarded in association to a specific app's public key.
 
 Request Endpoint
 
-**POST**
- `{{ur}}/kenya_kyc/lookup_tcc_checker`
+`POST` `{{ur}}/onboarding/kenya_kyc/tcc_checker`
 
 #### Payload
 ```json
 {
-    "tccNumber": "KRAMT123456789B"
+    "tcc_number": "KRAMT123456789B"
 }
 ```
 200 OK Response

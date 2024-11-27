@@ -1,0 +1,129 @@
+This endpoint initiates a Know Your Customer (KYC) check for a specified entity. The KYC check reviews the individual against various databases and sources, such as sanctions and PEP (Politically Exposed Persons) lists, helping organizations assess potential risks.
+
+### Request Endpoint
+**POST:** `{{url}}/api/v1/monitoring/kyc_search/`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+
+- **200 OK:** The request was successful, and the KYC check has been processed as expected.
+- **201 Created:** The KYC check has been initiated successfully, and results are being generated.
+- **400 Bad Request:** The request could not be completed due to invalid or missing parameters.
+
+### Payload
+```json
+{
+	"entity_name": "John Doe",
+	"sources": "Sanctions, PEPs",
+	"continous_monitoring": false
+}
+```
+
+
+### Request Body
+| Field               | Description                                                                                                    | Type    |           |
+|---------------------|----------------------------------------------------------------------------------------------------------------|---------|-----------|
+| `entity_name`       | The name of the entity to be checked                                                                          | `String` | `Required`|
+| `sources`           | The data sources for the KYC check, such as "Sanctions" or "PEPs" (comma-separated)                           | `Float`  | `Optional`|
+| `continuous_monitoring`| Indicates if continuous monitoring should be enabled (true or false). Defaults to "false" if not specified | `String` | `Optional`|
+
+
+## Response
+### Record not found 
+200 OK Response
+```json
+{
+    "status": "Success",
+    "data": {
+        "id": 287,
+        "pep_result": null,
+        "sanction_result": null,
+        "search_term": "John Doe"
+    },
+    "message": "Record does not exist"
+}
+```
+
+#### Response Fields
+| Field               | Description                                                              | Type   |
+|---------------------|--------------------------------------------------------------------------|--------|
+| `status`            | Status of the request, indicating success or failure                     | `String` |
+| `data`              | Contains details of the initiated KYC check                              | `Object` |
+| `- id`              | The unique identifier for the KYC request                                 | `Number` |
+| `- entity_name`     | The name of the entity for which the KYC check was requested             | `String` |
+| `- branch_id`       | The identifier for the branch associated with this KYC check             | `Number` |
+| `- status`         | Current status of the KYC check; for example, "running."                 | `String` |
+| `message`          | Descriptive message about the status of the check                        | `String` |
+
+#### In progress Response
+```json
+{
+    "status": "Success",
+    "data": {
+        "id": 289,
+        "pep_result": [
+            {
+                "entity_name": "ibrahim babangida adamu",
+                "gender": "Not Available",
+                "country": "Nigeria",
+                "pep_types": [
+                    "pep-class-1"
+                ],
+                "other_names": [
+                    "ibrahim babangida adamu"
+                ],
+                "other_information": {
+                    "recorded_date": "2023-11-23T15:52:24",
+                    "political_post": [
+                        "role.pep"
+                    ]
+                }
+            },
+            {
+                "entity_name": "Ibrahim Babangida Adamu",
+                "gender": "male",
+                "country": "ng",
+                "pep_types": [],
+                "other_names": [],
+                "other_information": {
+                    "title": "Alhaji",
+                    "target": true,
+                    "address": null,
+                    "last_seen": "2024-05-22T19:19:01",
+                    "first_seen": "2023-11-23T15:52:24"
+                }
+            }
+        ],
+        "sanction_result": null,
+        "search_term": "Babangida Adamu",
+        "adverse_media_result": "Your Adverse media check for Babangida Adamu has commenced. You will be notified as soon as the results are available."
+    },
+    "message": "Success"
+}
+```
+
+#### Response Fields
+| Field               | Description                                                                         | Type   |
+|---------------------|-------------------------------------------------------------------------------------|--------|
+| `status`            | Status of the request, indicating success or failure                                | `String` |
+| `data`              | Contains details of the initiated KYC check                                         | `Object` |
+| `- id`              | The unique identifier for the KYC request                                           | `Number` |
+| `- pep_result`      | List of politically exposed person (PEP) records related to the search term         | `Array` |
+| `-- entity_name`    | The name of the entity for which the KYC check was requested                        | `String` |
+| `-- gender`         | Gender of the identified entity (e.g., "male," "female," or "Not Available")        | `String` |
+| `-- country`        | Country associated with the PEP entity                                              | `String` |
+| `-- pep_types`      | Categories of PEP classification, such as "pep-class-1" or similar classifications  | `Array` |
+| `-- other_names`    | Alternate names or aliases used by the entity                                       | `Array` |
+| `-- other_information`| Additional information about the PEP entity                                       | `Object` |
+| `--- recorded_date` | Date when the entity was first recorded as a PEP                                    | `String` |
+| `--- political_post`| List of political roles or positions held by the PEP entity                         | `Array` |
+| `--- title`         | Title or honorific associated with the PEP entity (e.g., "Alhaji")                  | `String` |
+| `--- target`        | Indicates if the entity is flagged as a target for further investigation (true or false) | `Boolean` |
+| `--- address`       | Address information of the entity, if available                                     | `String` |
+| `--- last_seen`     | Date when the entity was last seen in the PEP database                              | `String` |
+| `--- first_seen`    | Date when the entity was first seen in the PEP database                             | `String` |
+| `sanction_result`   | Contains sanction records if any are associated with the search term                | `Object/Null` |
+| `search_term`       | The search term or entity name provided for the KYC check                           | `String` |
+| `adverse_media_result`| Status or message indicating the progress of adverse media checks for the search term| `String` |
+| `message`          | Descriptive message about the status of the check                                    | `String` |

@@ -79,17 +79,17 @@
             {
               "group": "Kenya",
               "pages": [
-                "kyc/kenya/driver's_license",
-                "kyc/kenya/alien_ID",
-                "kyc/kenya/passport",
-                "kyc/kenya/BRS_search",
-                "kyc/kenya/BRS_advance",
-                "kyc/kenya/national_id_advance",
-                "kyc/kenya/national_id_basic",
-                "kyc/kenya/pin_checker",
-                "kyc/kenya/serial_number",
-                "kyc/kenya/TCC_checker",
-                "kyc/kenya/WHT_checker"
+                "kyc/kenya/Drivers_License",
+                "kyc/kenya/Passport_Verification",
+                "kyc/kenya/National_ID_Advance",
+                "kyc/kenya/National_ID_Basic",
+                "kyc/kenya/Serial_Number",
+                "kyc/kenya/Alien_ID",
+                "kyc/kenya/Pin_Checker",
+                "kyc/kenya/TCC_Checker",
+                "kyc/kenya/WHT_Checker",
+                "kyc/kenya/BRS_Search",
+                "kyc/kenya/BRS_Advance"
               ]
             },
             {
@@ -163,30 +163,30 @@
         {
           "group": "Card Transaction",
           "pages": [
-            "transaction/card_transaction/card_transaction_monitoring",
-            "transaction/card_transaction/fraud_request"
+            "transaction/card_transaction/card_transaction_overview",
+            "transaction/card_transaction/post_fraud_request"
           ]
         },
         {
           "group": "Transaction Monitoring",
           "pages": [
-            "transaction/transaction_monitoring/transaction_monitoring",
-            "transaction/transaction_monitoring/transaction_request"
+            "transaction/transaction_monitoring/transaction_monitoring_overview",
+            "transaction/transaction_monitoring/post_transaction_request"
           ]
         },
         {
           "group": "KYC",
           "pages": [
-            "transaction/kyc/All_Search_Results",
-            "transaction/kyc/Entity_KYC_Search",
-            "transaction/kyc/Run_KYC_Check"
+            "transaction/kyc/Get_All_Search_Results",
+            "transaction/kyc/Get_Entity_Kyc_By_Id",
+            "transaction/kyc/Post_Kyc_Check"
           ]
         },
         {
           "group": "Transaction Screening",
           "pages": [
             "transaction/transaction_screening/overview",
-            "transaction/transaction_screening/check_screening"
+            "transaction/transaction_screening/post_transaction_screening"
           ]
         }
       ]

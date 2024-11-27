@@ -1,0 +1,65 @@
+## Verify your customers' identity using their Driver's license
+
+Adhere's driver's license verification endpoint allows you to access accurate, verified national-level information for reliable identity confirmation.
+
+
+### Request Endpoint
+
+`POST` `{{url}}/onboarding/kenya_kyc/driver_license`
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Drivers License details retrieved",
+  "response_code": "00",
+  "data": {
+    "identity_type": "Drivers License",
+    "identity_number": "DXG100",
+    "identity_name": "John Doe Test",
+    "date_of_birth": "1985-02-05",
+    "gender": "Male",
+    "photo": "/9j/4AAQSkZJRgABAgAAAQABAAD2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjMjL/wAARCAHSAV4DASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/", , # base-64
+    "transaction_id": "",
+    "place_of_birth": "Nairobi",
+    "place_of_live": "Westlands",
+    "date_of_issue": "2013-09-02",
+    "id_serial_number": "237890241",
+    "expiry_date": "2018-09-02"
+  }
+}
+```
+
+#### Payload Fields
+
+```json
+{
+    "license_number": "DXG100",
+    "customer_name": "John Doe"
+}
+```
+
+200 OK Response
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Drivers License details retrieved",
+  "response_code": "00",
+  "data": {
+    "identity_type": "Drivers License",
+    "identity_number": "DXG100",
+    "identity_name": "John Doe Test",
+    "date_of_birth": "1985-02-05",
+    "gender": "Male",
+    "photo": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAHSAV4DASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/",
+    "transaction_id": "",
+    "place_of_birth": "Nairobi",
+    "place_of_live": "Westlands",
+    "date_of_issue": "2013-09-02", 
+    "id_serial_number": "237890241",
+    "expiry_date": "2018-09-02"
+  }
+}
+```

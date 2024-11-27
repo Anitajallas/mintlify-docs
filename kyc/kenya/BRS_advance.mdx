@@ -1,18 +1,16 @@
-## Business Verification using the Business Registration Service Advance.
+## Verify Businesses using the Business Registration Service Advance
 
-An endpoint to fetch and verify business details using Business Registration Service Advance
-It is a means of identification that contains robust information of an individual .
+Adhere's BRS Search endpoint fetches and verifies business details using a means of identification that contains robust information about an individual through the Business Registration Service Advance
 
 
-**POST**
- `{{url}}/kenya_kyc/lookup_brs_advance`
+`POST` `{{url}}/onboarding/kenya_kyc/brs_advance`
 
 
 #### Payload
 ```json
 {
-    "companyId": "ABC/2010/000111",
-    "checkType": "CR12" // CR12, CR13, LLP
+    "company_name": "ABC/2010/000111",
+    "check_type": "CR12" // CR12, CR13, LLP
 }
 ```
 
