@@ -1,0 +1,64 @@
+## Fetch Address Using NIN
+
+Adhere's Address endpoint provides access to fetch an address using your customers' information.
+
+#### Request Endpoint
+
+`POST` `{{BASE URL}}/api/onboarding/nigeria_kyc/identity_address/`
+
+#### Sample Payload
+``` json
+{    
+    "first_name": "John",
+    "last_name": "Doe",
+    "time_range": 2, # minimum  time range (in months) that the address must've been verified eg 6 for 6 months, 2 for 2 months
+    "phone_number": "08000000000",
+    "nin": "10000000001",
+    "state": "Lagos"
+}
+```
+
+200 OK Response
+
+``` json
+{
+  "status": "success",
+  "data": {
+      id: 1,
+      applicant: {
+          firstname: "John",
+          lastname: "Doe",
+          phone:"08000000000",
+          idType: "nin",
+          idNumber: "10000000001",
+          middlename: "Cameron',
+          photo: "https://images.verifyme.ng/278783775/fjjjjler7834.jpg",
+          gender: "Male",
+          birthdate: '17/01/1988',
+      },
+      createdAt: "",
+      completedAt: "",
+      lattitude: "9.081999",
+      longitude: "8.675277",
+      photos: ["https://picsum.photos/id/768/200/300.jpg", "https://picsum.photos/id/768/200/300.jpg"],
+      neighbor: {
+          name: "Tunde Adetunji",
+          comment: "Very friendly",
+          phone: "080900000000",
+      },
+      status: {
+          status: "In Progress",
+          subStatus: "In Progress",
+          state: "In Progress",
+      },
+      city: "oshodi",
+      street: "270 Murtala Muhammed Way, Alagomeji. Yaba",
+      lga: "lagos mainland",
+      state: "Lagos",
+      country: "Nigeria",
+      reference: "1732800207805106"
+  },
+  "message": "Address details retrieved successfully"
+}
+```
+
