@@ -4,7 +4,7 @@ This endpoint allows users to specify maximum allowable values for different tra
 If a transaction exceeds the specified limit, it may be flagged for review or automatically declined to help prevent fraud.
 
 ### Request Endpoint
-`GET:` `{{url}}/api/v1/monitoring/fraud_settings`
+`POST:` `{{url}}/api/v1/monitoring/limit`
 
 - **Media-Type:** `application/json`
 
@@ -18,15 +18,21 @@ If a transaction exceeds the specified limit, it may be flagged for review or au
 ### Payload
 ```json
 {
-    "branch": 49,
-    "limit": 100000,
-    "administrator": 53
+    "limit": 100000
 }
 ```
+
+### Payload Fields
+
+| Field             | Description                                                                | Type    |
+|-------------------|-----------------------------------------------------------------------------|---------|
+| `limit`           | This is the maximum allowable values for specific transaction parameters    | `Number` |
 
 200 OK Response
 ```json
 {
-  "message": "Limit set successfully."
+  "status":"Success",
+  "data":[],
+  "message":"Limit updated successfully"
 }
 ```

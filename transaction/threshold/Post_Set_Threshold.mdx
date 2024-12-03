@@ -4,7 +4,7 @@ The Set Threshold functionality enables users to define specific thresholds in t
 Setting a Threshold allows users establish a predefined value or criterion that, when exceeded by a transaction’s fraud score, triggers a fraud alert for further investigation.
 
 ### Request Endpoint
-`GET` `{{url}}/api/v1/monitoring/fraud_settings`
+`POST` `{{url}}/api/v1/monitoring/threshold`
 
 - **Media-Type:** `application/json`
 
@@ -19,17 +19,22 @@ Setting a Threshold allows users establish a predefined value or criterion that,
 ### Payload
 ```json
 {
-    "threshhold":"7"
+    "threshhold": 1000
 }
 ```
 
-200 OK Response
-```json
-
-```
-
-### Response Fields
+### Payload Fields
 
 | Field             | Description                                                           | Type    |
 |-------------------|-----------------------------------------------------------------------|---------|
-| `threshold`       | This is the threshold currently set to trigger fraud alert            | `String` |
+| `threshold`       | The threshhold is the value set to trigger fraud alert            | `String` |
+
+
+200 OK Response
+```json
+{
+  "status":"Success",
+  "data":[],
+  "message":"Threshold updated successfully"
+}
+```
