@@ -149,15 +149,15 @@
         {
           "group": "Threshold",
           "pages": [
-            "transaction/threshold/retrieve_threshold",
-            "transaction/threshold/set_threshold"
+            "transaction/threshold/Get_Threshold",
+            "transaction/threshold/Post_Set_Threshold"
           ]
         },
         {
           "group": "Limit",
           "pages": [
-            "transaction/limit/retrieve_limit",
-            "transaction/limit/set_limit"
+            "transaction/limit/Get_Limit",
+            "transaction/limit/Post_Set_Limit"
           ]
         },
         {
