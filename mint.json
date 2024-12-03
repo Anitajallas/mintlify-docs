@@ -163,8 +163,8 @@
         {
           "group": "Card Transaction",
           "pages": [
-            "transaction/card_transaction/card_transaction_overview",
-            "transaction/card_transaction/post_fraud_request"
+            "transaction/card_transaction/Card_Transaction_Overview",
+            "transaction/card_transaction/Post_Fraud_Request"
           ]
         },
         {
