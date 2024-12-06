@@ -81,12 +81,12 @@
               "pages": [
                 "kyc/kenya/Drivers_License",
                 "kyc/kenya/Passport_Verification",
-                "kyc/kenya/national_id_advance",
-                "kyc/kenya/national_id_basic",
+                "kyc/kenya/National_ID_Advance",
+                "kyc/kenya/National_ID_Basic",
                 "kyc/kenya/serial_number",
                 "kyc/kenya/alien_ID",
                 "kyc/kenya/pin_checker",
-                "kyc/kenya/TCC_checker",
+                "kyc/kenya/TCC_Checker",
                 "kyc/kenya/WHT_checker",
                 "kyc/kenya/BRS_search",
                 "kyc/kenya/BRS_advance"
@@ -116,7 +116,7 @@
             {
               "group": "Uganda",
               "pages": [
-                "kyc/uganda/national_id"
+                "kyc/uganda/National_Id"
               ]
             }
           ]
@@ -177,9 +177,9 @@
         {
           "group": "KYC",
           "pages": [
-            "transaction/kyc/get_all_search_results",
-            "transaction/kyc/get_entity_kyc_by_id",
-            "transaction/kyc/post_kyc_check"
+            "transaction/kyc/Get_All_Search_Results",
+            "transaction/kyc/Get_Entity_Kyc_By_Id",
+            "transaction/kyc/Post_Kyc_Check"
           ]
         },
         {

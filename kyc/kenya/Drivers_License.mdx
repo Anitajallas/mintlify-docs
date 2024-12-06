@@ -5,7 +5,13 @@ Adhere's driver's license verification endpoint allows you to access accurate, v
 
 ### Request Endpoint
 
-`POST` `{{BASE URL}}/api/onboarding/kenya_kyc/driver_license`
+`POST:` `{{BASE URL}}/api/onboarding/kenya_kyc/driver_license`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **201 Created:** The request was successful, and the customer's driver license information is returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
 
 ```json
 {

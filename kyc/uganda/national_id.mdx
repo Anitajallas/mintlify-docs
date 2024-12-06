@@ -1,23 +1,25 @@
-# Verify Customer Identity Using Their National Identification
+## Verify Customer Identity Using Their National Identification
 
-Verifying a customer using their National Identification Number through Adhere's endpoint allows you to access their information on a verified national level.
+Adhere's National Identification endpoint allows you to verify customers using their National Identification Number, allowing you to access their information on a verified national level for reliable identity confirmation.
 
-## Request Endpoint
+### Request Endpoint
+`POST:` `{{BASE URL}}/api/onboarding/uganda_kyc/national_id`
 
-Generates user data from the National Identification Number.
+- **Media-Type:** `application/json`
 
-**Method:** `POST`  
-**Endpoint:** `/uganda_kyc/lookup_national_id`  
-**Media Type:** `application/json`
+### Status Codes
+- **201 Created:** The request was successful, and the customer's information is returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
 
-### Payload Fields
+#### Payload Fields
 
 ```json
 {
     "surname": "Doe",
-    "givenName": "John",
-    "dateOfBirth": "1990-01-01",
-    "documentId": "1234567890",
-    "nationalID": "NO0987654321BE"
+    "given_name": "John",
+    "date_of_birth": "1990-01-01",
+    "document_id": "1234567890",
+    "national_id": "NO0987654321BE"
 }
 ```
+
