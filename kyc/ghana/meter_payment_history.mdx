@@ -1,13 +1,22 @@
-## An endpoint to fetch and verify meter payment history
+## Fetch and verify meter payment history
 
+Adhere's Meter Payment History endpoint generates a concise description of the details of a meter payment history.
 
-**GET**
- `{{url}}/ghana_kyc/lookup_meter_payment_history`
+### Request Endpoint
 
+`POST:` `{{BASE URL}}/api/onboarding/ghana_kyc/meter_payment_history`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **201 Created:** The request was successful, and the detail of the application is returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
+
+### Payload
 
 ```json
 {
-    "meterNumber": "",
-    "verificationType": ""
+    "meter_number": "0008709362",
+    "verification_type": "meter verification"
 }
 ```

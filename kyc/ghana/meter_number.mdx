@@ -1,16 +1,22 @@
-This endpoint generates a concise information about an account.
+## Generates a concise information about a meter
 
-Pin Checker
+Adhere's Meter Number endpoint generates a concise description of the details of a meter.
 
-Request Endpoint
+### Request Endpoint
 
-**POST**
- `{{url}}/ghana_kyc/lookup_meter_number`
+`POST:` `{{BASE URL}}/api/onboarding/ghana_kyc/meter_number`
 
-####Payload
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **201 Created:** The request was successful, and the detail of the application is returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
+
+### Payload
+
 ```json
 {
-    "meterNumber": "0008709362",
-    "verificationType": "meter verification"
+    "meter_number": "0008709362",
+    "verification_type": "meter verification"
 }
 ```

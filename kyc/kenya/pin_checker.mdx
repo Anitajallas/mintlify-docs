@@ -2,9 +2,15 @@
 
 Adhere's Pin Checker generates a concise description of the details of the application.
 
-Request Endpoint
+### Request Endpoint
 
-`POST` `{{BASE URL}}/api/onboarding/kenya_kyc/pin_checker`
+`POST:` `{{BASE URL}}/api/onboarding/kenya_kyc/pin_checker`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **201 Created:** The request was successful, and the detail of the application is returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
 
 #### Payload
 ``` json

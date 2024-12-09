@@ -7,6 +7,8 @@ Adhere's passport validity check endpoint provides access to verified national-l
 
 `POST` `{{BASE URL}}/api/onboarding/kenya_kyc/passport`
 
+- **Media-Type:** `application/json`
+
 ```json
 {
   "success": true,
@@ -31,6 +33,11 @@ Adhere's passport validity check endpoint provides access to verified national-l
   }
 }
 ```
+
+### Status Codes
+- **201 Created:** The request was successful, and the customer's information is returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
+
 
 #### Payload Fields
 

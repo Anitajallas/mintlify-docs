@@ -3,8 +3,14 @@
 Adhere's WHT Checker endpoint fetches and verifies customers' details using a means of identification that contains robust information about an individual.
 
 
-`POST` `{{BASE URL}}/api/onboarding/kenya_kyc/wht_checker`
+### Request Endpoint
+`POST:` `{{BASE URL}}/api/onboarding/kenya_kyc/wht_checker`
 
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **201 Created:** The request was successful, and the customer's information is returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
 
 ```json
 {

@@ -1,13 +1,19 @@
-## You can verify your customers identity using their passport identification number
+## Verify your customers' identity using their Voters Identification Number
 
-The Voters Identification check using Adhere's endpoint helps you to get in touch with their information on a verified national level.
+Adhere's Voters Identification Number endpoint allows businesses to verify a customer using their Voters identification number, providing access to details associated with a verified passport for a streamlined and reliable identity verification process.
 
 
 ### Request Endpoint
 
 Generates user data using Voters ID
 
-**POST** `{{url}}/ghana_kyc/lookup_voters_id`
+`POST:` `{{BASE URL}}/api/onboarding/ghana_kyc/voters_id`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **201 Created:** The request was successful, and the customer's information is returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
 
 #### Request Fields
 

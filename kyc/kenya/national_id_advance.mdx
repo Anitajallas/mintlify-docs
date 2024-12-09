@@ -2,9 +2,16 @@
 
 Adhere's National Identification Advance endpoint allows you to access accurate, verified national-level information for reliable identity confirmation.
 
-Request Endpoint
+### Request Endpoint
 
-`POST` `{{BASE URL}}/api/onboarding/kenya_kyc/national_id_advance`
+`POST:` `{{BASE URL}}/api/onboarding/kenya_kyc/national_id_advance`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **201 Created:** The request was successful, and the customer's information is returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
+
 
 #### Sample Payload
 

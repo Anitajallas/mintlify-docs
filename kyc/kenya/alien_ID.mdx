@@ -5,10 +5,15 @@ Adhere's Alien Identification endpoint allows you to access accurate, verified n
 
 Request Endpoint
 
+`POST:` `{{BASE URL}}/api/onboarding/kenya_kyc/aliend_id`
 
-`POST` `{{BASE URL}}/api/onboarding/kenya_kyc/aliend_id`
+- **Media-Type:** `application/json`
 
-#### Response Fields
+### Status Codes
+- **201 Created:** The request was successful, and the customer's information is returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
+
+#### Payload Fields
 
 ``` json
 {
