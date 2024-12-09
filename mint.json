@@ -84,7 +84,7 @@
                 "kyc/kenya/National_ID_Advance",
                 "kyc/kenya/National_ID_Basic",
                 "kyc/kenya/serial_number",
-                "kyc/kenya/alien_ID",
+                "kyc/kenya/Alien_ID",
                 "kyc/kenya/pin_checker",
                 "kyc/kenya/TCC_Checker",
                 "kyc/kenya/WHT_checker",
@@ -109,14 +109,14 @@
             {
               "group": "Rwanda",
               "pages": [
-                "kyc/rwanda/national_id",
-                "kyc/rwanda/passport"
+                "kyc/rwanda/National_ID",
+                "kyc/rwanda/Passport"
               ]
             },
             {
               "group": "Uganda",
               "pages": [
-                "kyc/uganda/National_Id"
+                "kyc/uganda/National_ID"
               ]
             }
           ]

@@ -1,17 +1,22 @@
-You can verify your customers identity using their Social Security and National Insurance Trust with face
+## Verify your customers identity using their Social Security and National Insurance Trust with face
 
-Social Security and National Insurance Trust with face
+Adhere's Social Security and National Insurance Trust with face check using Adhere's SSNIT with face endpoint allows businesses to verify a customer with their SSNIT information and face image, providing access to details associated with a verified passport for a streamlined and reliable identity verification process.
 
-#### Request Endpoint
+### Request Endpoint
 
-**POST**
- `{{url}}/ghana_kyc/lookup_ssnit_with_face`
+`POST:` `{{BASE URL}}/api/onboarding/ghana_kyc/ssnit_with_face`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **201 Created:** The request was successful, and the customer's information is returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
 
 #### Request Fields
 
 ```json
 {
-    "ssnitNumber": "C987464748983",
-    "imageUrl": "https://res.cloudinary.com/dh3i1wodq/image/upload/v1675417496/cbimage_3_drqdoc.jpg"
+    "ssnit_number": "C987464748983",
+    "image_upload": "https://res.cloudinary.com/dh3i1wodq/image/upload/v1675417496/cbimage_3_drqdoc.jpg"
 }
 ```
