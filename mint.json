@@ -73,7 +73,10 @@
                 "kyc/nigeria/BVN_Advanced",
                 "kyc/nigeria/BVN_Advanced_IGREE",
                 "kyc/nigeria/BVN_basic_IGREE",
-                "kyc/nigeria/BVN_with_face"
+                "kyc/nigeria/BVN_with_face",
+                "kyc/nigeria/FRSC_with_face",
+                "kyc/nigeria/Address_Verification",
+                "kyc/nigeria/Get_Identity_Address"
               ]
             },
             {

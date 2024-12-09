@@ -1,0 +1,42 @@
+## Verify your customers' identities using their Federal Road Safety Corps (FRSC) Number With Face
+
+Utilize Adhere's FRSC with Face verification endpoint to retrieve and validate customer details using their Federal Road Safety Corps (FRSC) Number and an Image URL. This method provides a comprehensive means of identification, combining robust personal information with facial verification for enhanced accuracy.
+
+#### Request Endpoint
+
+`POST` `{{BASE URL}}/api/onboarding/nigeria_kyc/frsc_with_face`
+
+#### Sample Payload
+
+```json
+{
+  "identification_number": "012345678",
+  "image_url": "https://res.cloudinary.com/dh3i1wodq/image/upload/v1675410981/profile.jpg"
+}
+```
+
+200 OK Response
+
+``` json
+{
+    "status": "success",
+    "data": {
+        "bvn": "10000000001",
+        "firstname": "John",
+        "lastname": "Doe",
+        "middlename": "Favor",
+        "gender": "Male",
+        "phone": "080000000001",
+        "birthdate": "08-03-1992",
+        "nationality": "Nigerian",
+        "photo": "base64 image",
+        "photoMatching": {
+            "match": true,
+            "matchScore": 99.899765,
+            "matchingThreshold": 80,
+            "maxScore": 100
+        }
+    }
+    "message": "Federal Road Safety Corps details retrieved successfully"
+}
+```
