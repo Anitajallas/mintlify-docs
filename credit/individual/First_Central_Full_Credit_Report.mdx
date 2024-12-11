@@ -1,0 +1,20 @@
+## Generate full credit report data with First Central
+
+Adhere's Credit History endpoint furnishes users with a detailed record of their credit-related activities over time. It captures comprehensive data, including credit accounts, payment timelines, credit utilization, account closures, and instances of delinquency. By utilizing this endpoint, users gain valuable insights into their past credit behavior, allowing them to assess their creditworthiness, track changes, and understand factors influencing their credit standing. This endpoint serves as a valuable tool for users to monitor and manage their credit history effectively.
+
+### Request Endpoint
+
+`POST:` `{{BASE URL}}/api/onboarding/individual/first_central_full/`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **201 Created:** The request was successful, and the business' credit information with first central is returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
+
+#### Payload Fields
+``` json
+{
+    "bvn": "22244545518"
+}
+```

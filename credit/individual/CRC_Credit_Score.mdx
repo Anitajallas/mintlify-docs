@@ -1,0 +1,84 @@
+## Generate credit score data with CRC
+
+Adhere's Credit Score endpoint provides users with essential insights into their credit history, enabling them to evaluate their creditworthiness, monitor changes, and identify the factors that impact their credit standing.
+
+### Request Endpoint
+
+`POST:` `{{BASE URL}}/api/onboarding/individual/credit_scores_crc/`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **200 OK:** The request was successful, and the business' credit information is returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
+
+### Payload Fields
+
+```json
+{
+    "bvn": "22244545518"
+}
+```
+
+### 200 OK Response
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "CRC Credit Score",
+  "response_code": "00",
+  "data": {
+    "_id": "64f600608aaf9386c646de32",
+    "bvn": "22244545518",
+    "customerId": "505327",
+    "businessId": "64db7ab8a26e603218838892",
+    "name": "ADELEKE EMMANUEL AYORINDE",
+    "phone": "",
+    "gender": "Male",
+    "dateOfBirth": "29/12/1994",
+    "address": "",
+    "email": "",
+    "score": {
+      "totalNoOfDelinquentFacilities": 0,
+      "hasLoans": "YES",
+      "ficoScore": {
+        "score": 717,
+        "rating": "GOOD",
+        "reasons": "Applicant is young relative to the other applicants scored. The length of time accounts have been established on the credit report is short relative to the other applicants scored. Time since most recent account opening on the credit report is too short relative to the other applicants scored. The length of time accounts have been established on the credit report is short relative to the other applicants scored."
+      },
+      "lastReportedDate": "30-SEP-2023",
+      "crcReportOrderNumber": "W-0097887747/2023"
+    },
+    "searchedDate": "2023-11-23T14:25:54.210Z"
+  }
+}
+```
+
+### Field Descriptions
+
+| Field                            | Description                                                                                                         | Type     |
+|----------------------------------|---------------------------------------------------------------------------------------------------------------------|----------|
+| `status`                           | This is the returned status of the request either success or failed.                                                 | String   |
+| `code`                             | This is the operational code                                                                                        | Number   |
+| `data`                             | This is an array of objects which contains every transaction data                                                   | Object   |
+| `- _id`                         | The unique identifier or specific code assigned to a particular user within the database                            | String   |
+| `- bvn`                         | The bvn of the user                                                                                                 | String   |
+| `- customerId`                  | The unique identifier or specific code assigned to a particular customer                                            | String   |
+| `- businessId`                  | The unique identifier or specific code assigned to a particular business                                            | String   |
+| `- name`                        | The full name of the BVN holder                                                                                     | String   |
+| `- phone`                       | The phone number of the BVN holder                                                                                  | String   |
+| `- gender`                      | The gender of the BVN holder                                                                                        | String   |
+| `- dateOfBirth`                 | The date of birth of the BVN holder                                                                                 | String   |
+| `- address`                     | The address of the BVN holder                                                                                       | String   |
+| `- email`                       | The email of the BVN holder                                                                                         | String   |
+| `- score`                            | This is an array of objects which contains every score                                                              | Object   |
+| `-- totalNoOfDelinquentFacilities` | The count of accounts or credit facilities that are overdue or behind on payments according to the credit report  | Number  |
+| `-- hasLoans`                   | This refers to whether an individual has an active loan or credit account listed within their credit report or financial records | String  |
+| `-- ficoScore`                        | The credit scoring model used to assess an individual's credit risk and determine their creditworthiness           | Num  |
+| `--- score`                  | The credit score of an individual                                                                                    | Number  |
+| `--- rating`                 | This refers to the rating of an individual based on their creditworthiness                                           | String  |
+| `--- reasons`                | This refers to the factors or explanations influencing an individual credit score                                    | String  |
+| `-- lastReportedDate`                 | This refers to the most recent date on which information about an account, transaction, or activity was updated or submitted to the credit bureau  | String    |
+| `-- crcReportOrderNumber`             | The report order number of the credit bureau                                                                         | String  |
+| `-searchedDate`                     | The date the credit report was searched                                                                              | String  |

@@ -1,11 +1,10 @@
-## Monitor and Manage Your Business's Credit History
+## Generate credit history data with Credit Registry
 
-Adhere's Credit History endpoint provides businesses with a detailed record of their credit-related activities, including credit accounts, payment timelines, credit utilization, account closures, and instances of delinquency. By leveraging this endpoint, businesses can assess their creditworthiness, track changes over time, and gain insights into factors influencing their credit standing for effective credit management.
-
+Adhere's First Central Credit Summary endpoint provides users with a comprehensive record of their credit-related activities, including credit accounts, payment timelines, credit utilization, account closures, and instances of delinquency. By leveraging this endpoint, users can gain valuable insights into their credit behavior, assess their creditworthiness, and understand factors influencing their credit standing for effective monitoring and management.
 
 ### Request Endpoint
 
-`POST:` `{{BASE URL}}/api/onboarding/business/crc/`
+`POST:` `{{BASE URL}}/api/onboarding/individual/credit_registry_summary/`
 
 - **Media-Type:** `application/json`
 
@@ -14,12 +13,11 @@ Adhere's Credit History endpoint provides businesses with a detailed record of t
 - **400 Bad Request:** The request could not be completed due to invalid or missing information.
 
 
-
 ### Payload Fields
 
 ```json
 {
-  "registration_number": "RC123456"
+    "bvn": "22244545518"
 }
 ```
 
@@ -30,35 +28,39 @@ Adhere's Credit History endpoint provides businesses with a detailed record of t
 {
   "success": true,
   "statusCode": 200,
-  "message": "Business Credit History",
+  "message": "Credit Registry Credit History",
   "response_code": "00",
   "data": {
-    "_id": "636e768d8215a2e2fb06cfde",
-    "business_reg_no": "RC123456",
+    "_id": "64f600608aaf9386c646de32",
+    "bvn": "22244545518",
+    "customerId": "505327",
     "businessId": "64db7ab8a26e603218838892",
-    "name": "CAPITALFIELD ASSET MGT LTD",
-    "phone": "23408036732620",
-    "dateOfRegistration": "2003-08-20",
-    "address": "ELEGANZA HOUSE,15B JOSEPH WESLEY STR.BROAD STREET   025 NG   LAGOS NIGERIA ",
+    "name": "ADELEKE EMMANUEL AYORINDE",
+    "phone": "",
+    "gender": "Male",
+    "dateOfBirth": "29/12/1994",
+    "address": "",
+    "email": "",
     "score": {
-      "totalNoOfDelinquentFacilities": 1,
-      "lastReportedDate": "10/Nov/2022",
-      "totalNoOfLoans": 24,
-      "totalNoOfInstitutions": 12,
-      "totalBorrowed": 567401372,
-      "totalOutstanding": 19732,
-      "totalOverdue": 19754,
-      "totalNoOfPerformingLoans": 23,
-      "totalNoOfClosedLoans": 17,
-      "totalNoOfActiveLoans": 7,
-      "crcReportOrderNumber": "W-0063381978/2022",
-      "highestLoanAmount": 22980000,
+      "totalNoOfLoans": 16,
+      "totalNoOfInstitutions": 5,
+      "totalNoOfActiveLoans": 1,
+      "totalNoOfClosedLoans": 15,
+      "totalNoOfPerformingLoans": 16,
+      "totalNoOfDelinquentFacilities": 0,
+      "highestLoanAmount": 1134330,
+      "totalMonthlyInstallment": 0,
+      "totalBorrowed": 3761267,
+      "totalOutstanding": 0,
+      "totalOverdue": 0,
+      "maxNoOfDays": 0,
+      "creditors": false,
       "creditEnquiries": false,
-      "creditProfileOverview": false,
+      "creditEnquiriesSummary": false,
       "loanPerformance": false,
       "loanHistory": false
     },
-    "searchedDate": "2023-11-23T16:16:47.279Z"
+    "searchedDate": "2023-11-23T14:46:37.552Z"
   }
 }
 ```

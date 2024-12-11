@@ -1,0 +1,757 @@
+## Generate full credit report data with Credit Registry
+
+Adhere's First Central Credit Summary endpoint provides users with a comprehensive record of their credit-related activities, including credit accounts, payment timelines, credit utilization, account closures, and instances of delinquency. By leveraging this endpoint, users can gain valuable insights into their credit behavior, assess their creditworthiness, and understand factors influencing their credit standing for effective monitoring and management.
+
+### Request Endpoint
+
+`POST:` `{{BASE URL}}/api/onboarding/individual/credit_registry_summary/`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **200 OK:** The request was successful, and the business' credit information is returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
+
+### Payload Fields
+
+```json
+{
+    "bvn": "22244545518"
+}
+```
+
+### 200 OK Response
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Credit Registry Full Credit Report",
+  "response_code": "00",
+  "data": {
+    "_id": "64f600608aaf9386c646de32",
+    "bvn": "22244545518",
+    "customerId": "505327",
+    "businessId": "64db7ab8a26e603218838892",
+    "name": "ADELEKE EMMANUEL AYORINDE",
+    "phone": "",
+    "gender": "Male",
+    "dateOfBirth": "29/12/1994",
+    "address": "",
+    "email": "",
+    "score": {
+      "totalNoOfLoans": 16,
+      "totalNoOfInstitutions": 5,
+      "totalNoOfActiveLoans": 1,
+      "totalNoOfClosedLoans": 15,
+      "totalNoOfPerformingLoans": 16,
+      "totalNoOfDelinquentFacilities": 0,
+      "highestLoanAmount": 1134330,
+      "totalMonthlyInstallment": 0,
+      "totalBorrowed": 3761267,
+      "totalOutstanding": 0,
+      "totalOverdue": 0,
+      "maxNoOfDays": 0,
+      "creditors": [
+        {
+          "Subscriber_ID": "737248693595559931",
+          "Name": "NewEdge Finance Limited",
+          "Phone": "008618824674241",
+          "Address": "2a Isaac John Street Ikeja Lagos"
+        },
+        {
+          "Subscriber_ID": "736632735185454328",
+          "Name": "Page International Financial Service Limited",
+          "Phone": "01 6317243",
+          "Address": "23 Norman Williams St, \t\t  Ikoyi Lagos"
+        },
+        {
+          "Subscriber_ID": "733232733232034497",
+          "Name": "Sterling Bank Plc",
+          "Phone": "014484481",
+          "Address": "Sterling Towers 20 Marina Lagos Island Lagos"
+        },
+        {
+          "Subscriber_ID": "733600733600695178",
+          "Name": "United Bank for Africa Plc",
+          "Phone": "012808822, 016319822, 07002255822",
+          "Address": "Uba House  57 Marina Street Lagos Island Lagos"
+        },
+        {
+          "Subscriber_ID": "732699732699949972",
+          "Name": "Zenith Bank Plc",
+          "Phone": "012610249",
+          "Address": "Zenith Heights plot 87 Ajose Adeogun Street Victoria Island Lagos"
+        }
+      ],
+      "creditEnquiries": [
+        {
+          "loanProvider": "Lifegate Microfinance Bank Limited",
+          "reason": "KYCCheck",
+          "date": "2023-11-23T00:00:00",
+          "contactPhone": "08129078564\t\t"
+        },
+        {
+          "loanProvider": "Blue Ridge Microfinance Bank Limited",
+          "reason": "Search",
+          "date": "2023-11-15T00:00:00",
+          "contactPhone": "N/A"
+        },
+        {
+          "loanProvider": "Blue Ridge Microfinance Bank Limited",
+          "reason": "Search",
+          "date": "2023-11-05T00:00:00",
+          "contactPhone": "N/A"
+        },
+        {
+          "loanProvider": "Lifegate Microfinance Bank Limited",
+          "reason": "KYCCheck",
+          "date": "2023-10-12T00:00:00",
+          "contactPhone": "08129078564\t\t"
+        },
+        {
+          "loanProvider": "Lifegate Microfinance Bank Limited",
+          "reason": "KYCCheck",
+          "date": "2023-09-05T00:00:00",
+          "contactPhone": "08129078564\t\t"
+        },
+        {
+          "loanProvider": "Lifegate Microfinance Bank Limited",
+          "reason": "KYCCheck",
+          "date": "2023-09-04T00:00:00",
+          "contactPhone": "08129078564\t\t"
+        },
+        {
+          "loanProvider": "Lifegate Microfinance Bank Limited",
+          "reason": "KYCCheck",
+          "date": "2023-07-24T00:00:00",
+          "contactPhone": "08129078564\t\t"
+        },
+        {
+          "loanProvider": "Globus Bank limited",
+          "reason": "Business credit",
+          "date": "2022-03-10T00:00:00",
+          "contactPhone": "01-2259001"
+        },
+        {
+          "loanProvider": "Sterling Bank Plc",
+          "reason": "General credit inquiry",
+          "date": "2021-12-21T00:00:00",
+          "contactPhone": "014484481"
+        },
+        {
+          "loanProvider": "Sterling Bank Plc",
+          "reason": "General credit inquiry",
+          "date": "2021-12-20T00:00:00",
+          "contactPhone": "014484481"
+        },
+        {
+          "loanProvider": "CreditRegistry Nigeria",
+          "reason": "Credit report order by owner",
+          "date": "2021-08-27T00:00:00",
+          "contactPhone": "N/A"
+        },
+        {
+          "loanProvider": "RenMoney MFB Limited",
+          "reason": "(Other)",
+          "date": "2020-10-24T00:00:00",
+          "contactPhone": "070073666639"
+        },
+        {
+          "loanProvider": "RenMoney MFB Limited",
+          "reason": "(Other)",
+          "date": "2020-10-23T00:00:00",
+          "contactPhone": "070073666639"
+        },
+        {
+          "loanProvider": "RenMoney MFB Limited",
+          "reason": "(Other)",
+          "date": "2020-10-22T00:00:00",
+          "contactPhone": "070073666639"
+        }
+      ],
+      "creditEnquiriesSummary": {
+        "Last3MonthCount": "3",
+        "Last12MonthCount": "4",
+        "Last36MonthCount": "6"
+      },
+      "loanPerformance": [
+        {
+          "loanProvider": "Sterling Bank Plc",
+          "accountNumber": "0086575839",
+          "loanAmount": 0,
+          "outstandingBalance": 0,
+          "status": "Open",
+          "performanceStatus": "Performing",
+          "overdueAmount": 0,
+          "type": "",
+          "loanDuration": "162",
+          "repaymentFrequency": "",
+          "repaymentBehavior": "None",
+          "paymentProfile": "NNNNNNNNNNNNNNNNNN0N0N00",
+          "dateAccountOpened": "2021-12-20T00:00:00",
+          "lastUpdatedAt": "2023-08-22T11:24:36.21",
+          "loanCount": 1,
+          "monthlyInstallmentAmt": 0
+        },
+        {
+          "loanProvider": "NewEdge Finance Limited",
+          "accountNumber": "1502272832",
+          "loanAmount": 35000,
+          "outstandingBalance": 0,
+          "status": "Closed",
+          "performanceStatus": "Paid Off (Closed)",
+          "overdueAmount": 0,
+          "type": "Salary Advance",
+          "loanDuration": "7",
+          "repaymentFrequency": "Weekly",
+          "repaymentBehavior": "None",
+          "paymentProfile": "NNNNNNNN00NNNNNNNNNNNNNN",
+          "dateAccountOpened": "2022-05-22T00:00:00",
+          "lastUpdatedAt": "2023-05-12T07:37:45.837",
+          "loanCount": 1,
+          "monthlyInstallmentAmt": 0
+        },
+        {
+          "loanProvider": "Sterling Bank Plc",
+          "accountNumber": "0086583069",
+          "loanAmount": 303960,
+          "outstandingBalance": 0,
+          "status": "Closed",
+          "performanceStatus": "Paid Off (Closed)",
+          "overdueAmount": 0,
+          "type": "Secured Loan",
+          "loanDuration": "250",
+          "repaymentFrequency": "003",
+          "repaymentBehavior": "Delinquent (over 60 days) - 2 times",
+          "paymentProfile": "NNNNNNNNNNNNNNNN00303000",
+          "dateAccountOpened": "2021-12-21T00:00:00",
+          "lastUpdatedAt": "2022-09-19T22:41:37.973",
+          "loanCount": 1,
+          "monthlyInstallmentAmt": 41671
+        },
+        {
+          "loanProvider": "NewEdge Finance Limited",
+          "accountNumber": "1501388632",
+          "loanAmount": 35000,
+          "outstandingBalance": 0,
+          "status": "Closed",
+          "performanceStatus": "Paid Off (Closed)",
+          "overdueAmount": 0,
+          "type": "Salary Advance",
+          "loanDuration": "7",
+          "repaymentFrequency": "Weekly",
+          "repaymentBehavior": "None",
+          "paymentProfile": "NNNNNNNN00NNNNNNNNNNNNNN",
+          "dateAccountOpened": "2021-11-16T00:00:00",
+          "lastUpdatedAt": "2023-05-12T07:02:19.09",
+          "loanCount": 1,
+          "monthlyInstallmentAmt": 0
+        },
+        {
+          "loanProvider": "NewEdge Finance Limited",
+          "accountNumber": "1500717705",
+          "loanAmount": 35000,
+          "outstandingBalance": 0,
+          "status": "Closed",
+          "performanceStatus": "Paid Off (Closed)",
+          "overdueAmount": 0,
+          "type": "Salary Advance",
+          "loanDuration": "21",
+          "repaymentFrequency": "Monthly",
+          "repaymentBehavior": "None",
+          "paymentProfile": "NNNNNNNN00NNNNNNNNNNNNNN",
+          "dateAccountOpened": "2021-07-04T00:00:00",
+          "lastUpdatedAt": "2023-05-12T06:22:28.37",
+          "loanCount": 1,
+          "monthlyInstallmentAmt": 0
+        },
+        {
+          "loanProvider": "United Bank for Africa Plc",
+          "accountNumber": "SF099911020938",
+          "loanAmount": 1134330,
+          "outstandingBalance": 0,
+          "status": "Closed",
+          "performanceStatus": "Paid Off (Closed)",
+          "overdueAmount": 0,
+          "type": "Term Loan",
+          "loanDuration": "368",
+          "repaymentFrequency": "003",
+          "repaymentBehavior": "None",
+          "paymentProfile": "NNNNNNNNNNNNNNNN00000000",
+          "dateAccountOpened": "2021-05-21T00:00:00",
+          "lastUpdatedAt": "2023-04-04T06:28:12.897",
+          "loanCount": 1,
+          "monthlyInstallmentAmt": 97107
+        },
+        {
+          "loanProvider": "NewEdge Finance Limited",
+          "accountNumber": "1500466404",
+          "loanAmount": 30000,
+          "outstandingBalance": 0,
+          "status": "Closed",
+          "performanceStatus": "Paid Off (Closed)",
+          "overdueAmount": 0,
+          "type": "Salary Advance",
+          "loanDuration": "21",
+          "repaymentFrequency": "Monthly",
+          "repaymentBehavior": "None",
+          "paymentProfile": "NNNNNNNNNNNNNNNNNNNNNNNN",
+          "dateAccountOpened": "2021-05-08T00:00:00",
+          "lastUpdatedAt": "2023-05-11T18:14:19.517",
+          "loanCount": 1,
+          "monthlyInstallmentAmt": 0
+        },
+        {
+          "loanProvider": "NewEdge Finance Limited",
+          "accountNumber": "1500331207",
+          "loanAmount": 21500,
+          "outstandingBalance": 0,
+          "status": "Closed",
+          "performanceStatus": "Paid Off (Closed)",
+          "overdueAmount": 0,
+          "type": "Salary Advance",
+          "loanDuration": "21",
+          "repaymentFrequency": "Monthly",
+          "repaymentBehavior": "None",
+          "paymentProfile": "NNNNNNNN00NNNNNNNNNNNNNN",
+          "dateAccountOpened": "2021-04-07T00:00:00",
+          "lastUpdatedAt": "2023-05-12T08:45:07.293",
+          "loanCount": 1,
+          "monthlyInstallmentAmt": 0
+        },
+        {
+          "loanProvider": "NewEdge Finance Limited",
+          "accountNumber": "1500243936",
+          "loanAmount": 19500,
+          "outstandingBalance": 0,
+          "status": "Closed",
+          "performanceStatus": "Paid Off (Closed)",
+          "overdueAmount": 0,
+          "type": "Salary Advance",
+          "loanDuration": "14",
+          "repaymentFrequency": "Forthnightly",
+          "repaymentBehavior": "None",
+          "paymentProfile": "NNNNNNNN0NNNNNNNNNNNNNNN",
+          "dateAccountOpened": "2021-03-16T00:00:00",
+          "lastUpdatedAt": "2023-05-12T08:48:35.657",
+          "loanCount": 1,
+          "monthlyInstallmentAmt": 0
+        },
+        {
+          "loanProvider": "NewEdge Finance Limited",
+          "accountNumber": "1500114497",
+          "loanAmount": 16500,
+          "outstandingBalance": 0,
+          "status": "Closed",
+          "performanceStatus": "Paid Off (Closed)",
+          "overdueAmount": 0,
+          "type": "Salary Advance",
+          "loanDuration": "21",
+          "repaymentFrequency": "Monthly",
+          "repaymentBehavior": "None",
+          "paymentProfile": "NNNNNNNN00NNNNNNNNNNNNNN",
+          "dateAccountOpened": "2021-02-10T00:00:00",
+          "lastUpdatedAt": "2023-05-12T12:10:50.767",
+          "loanCount": 1,
+          "monthlyInstallmentAmt": 0
+        },
+        {
+          "loanProvider": "NewEdge Finance Limited",
+          "accountNumber": "1500007486",
+          "loanAmount": 14500,
+          "outstandingBalance": 0,
+          "status": "Closed",
+          "performanceStatus": "Paid Off (Closed)",
+          "overdueAmount": 0,
+          "type": "Salary Advance",
+          "loanDuration": "14",
+          "repaymentFrequency": "Forthnightly",
+          "repaymentBehavior": "None",
+          "paymentProfile": "NNNNNNNN00NNNNNNNNNNNNNN",
+          "dateAccountOpened": "2021-01-12T00:00:00",
+          "lastUpdatedAt": "2023-05-12T13:20:07.03",
+          "loanCount": 1,
+          "monthlyInstallmentAmt": 0
+        },
+        {
+          "loanProvider": "NewEdge Finance Limited",
+          "accountNumber": "2128329",
+          "loanAmount": 13000,
+          "outstandingBalance": 0,
+          "status": "Closed",
+          "performanceStatus": "Paid Off (Closed)",
+          "overdueAmount": 0,
+          "type": "Salary Advance",
+          "loanDuration": "14",
+          "repaymentFrequency": "Forthnightly",
+          "repaymentBehavior": "None",
+          "paymentProfile": "NNNNNNNN00NNNNNNNNNNNNNN",
+          "dateAccountOpened": "2020-03-14T00:00:00",
+          "lastUpdatedAt": "2023-05-12T15:02:28.99",
+          "loanCount": 1,
+          "monthlyInstallmentAmt": 0
+        },
+        {
+          "loanProvider": "Zenith Bank Plc",
+          "accountNumber": "1006538940",
+          "loanAmount": 53883,
+          "outstandingBalance": 0,
+          "status": "Closed",
+          "performanceStatus": "Paid Off (Closed)",
+          "overdueAmount": 0,
+          "type": "Overdraft",
+          "loanDuration": "180",
+          "repaymentFrequency": "                          ",
+          "repaymentBehavior": "None",
+          "paymentProfile": "NNNNNNNNNNNNNNNNNNNNNNNN",
+          "dateAccountOpened": "2020-02-13T00:00:00",
+          "lastUpdatedAt": "2020-06-07T18:50:07.39",
+          "loanCount": 1,
+          "monthlyInstallmentAmt": 0
+        },
+        {
+          "loanProvider": "Zenith Bank Plc",
+          "accountNumber": "283200000000002",
+          "loanAmount": 1079094,
+          "outstandingBalance": 0,
+          "status": "Closed",
+          "performanceStatus": "Paid Off (Closed)",
+          "overdueAmount": 0,
+          "type": "Term Loan",
+          "loanDuration": "1103",
+          "repaymentFrequency": "000",
+          "repaymentBehavior": "None",
+          "paymentProfile": "NNNNNNNNNNNNNNNNNNNNNNNN",
+          "dateAccountOpened": "2019-10-18T00:00:00",
+          "lastUpdatedAt": "2021-07-22T12:45:38.87",
+          "loanCount": 1,
+          "monthlyInstallmentAmt": 0
+        },
+        {
+          "loanProvider": "Page International Financial Service Limited",
+          "accountNumber": "PM19020035779799",
+          "loanAmount": 300000,
+          "outstandingBalance": 0,
+          "status": "Closed",
+          "performanceStatus": "Paid Off (Closed)",
+          "overdueAmount": 0,
+          "type": "Revolving Loan",
+          "loanDuration": "3",
+          "repaymentFrequency": "M",
+          "repaymentBehavior": "Non-performing (lost - 360 days) - 13 times",
+          "paymentProfile": "NNN000N00000080NN0N0000N",
+          "dateAccountOpened": "2019-08-02T00:00:00",
+          "lastUpdatedAt": "2023-10-13T18:33:43.007",
+          "loanCount": 1,
+          "monthlyInstallmentAmt": 112752
+        },
+        {
+          "loanProvider": "Page International Financial Service Limited",
+          "accountNumber": "PM19020035764935",
+          "loanAmount": 670000,
+          "outstandingBalance": 0,
+          "status": "Closed",
+          "performanceStatus": "Paid Off (Closed)",
+          "overdueAmount": 0,
+          "type": "Revolving Loan",
+          "loanDuration": "12",
+          "repaymentFrequency": "M",
+          "repaymentBehavior": "None",
+          "paymentProfile": "NNN000N00000000000N0000N",
+          "dateAccountOpened": "2019-02-14T00:00:00",
+          "lastUpdatedAt": "2023-10-13T18:39:05.293",
+          "loanCount": 1,
+          "monthlyInstallmentAmt": 86996
+        }
+      ],
+      "loanHistory": [
+        {
+          "loanProvider": "Sterling Bank Plc",
+          "loanProviderAddress": "Sterling Towers\r\n20 Marina Lagos Island Lagos",
+          "accountNumber": "0086575839",
+          "type": "",
+          "loanAmount": 0,
+          "installmentAmount": 0,
+          "overdueAmount": 0,
+          "lastPaymentDate": "1900-01-01T00:00:00",
+          "loanDuration": "162",
+          "dateReported": "2022-01-29T05:45:26.603",
+          "disbursedDate": "2021-12-20T00:00:00",
+          "maturityDate": "2023-07-31T00:00:00",
+          "performanceStatus": "Performing",
+          "status": "Open",
+          "outstandingBalance": 0,
+          "collateral": "",
+          "collateralValue": 0,
+          "guarantor": "",
+          "purpose": "NA",
+          "paymentHistory": "NNNNNNNNNNNNNNNNNN0N0N00",
+          "lastUpdatedAt": "2023-08-22T11:24:36.21"
+        },
+        {
+          "loanProvider": "NewEdge Finance Limited",
+          "loanProviderAddress": "2a Isaac John Street Ikeja Lagos",
+          "accountNumber": "1502272832",
+          "type": "Salary Advance",
+          "loanAmount": 35000,
+          "installmentAmount": null,
+          "overdueAmount": 0,
+          "lastPaymentDate": "2022-05-28T00:00:00",
+          "loanDuration": "7",
+          "dateReported": "2023-03-21T23:21:54.593",
+          "disbursedDate": "2022-05-22T00:00:00",
+          "maturityDate": "2023-04-30T00:00:00",
+          "performanceStatus": "Paid Off (Closed)",
+          "status": "Closed",
+          "outstandingBalance": 0,
+          "collateral": "",
+          "collateralValue": 0,
+          "guarantor": "",
+          "purpose": "NA",
+          "paymentHistory": "NNNNNNNN00NNNNNNNNNNNNNN",
+          "lastUpdatedAt": "2023-05-12T07:37:45.837"
+        },
+        {
+          "loanProvider": "Sterling Bank Plc",
+          "loanProviderAddress": "Sterling Towers\r\n20 Marina Lagos Island Lagos",
+          "accountNumber": "0086583069",
+          "type": "Secured Loan",
+          "loanAmount": 303960,
+          "installmentAmount": 41671,
+          "overdueAmount": 0,
+          "lastPaymentDate": "1900-01-01T00:00:00",
+          "loanDuration": "250",
+          "dateReported": "2022-01-29T05:45:26.603",
+          "disbursedDate": "2021-12-21T00:00:00",
+          "maturityDate": "2022-09-19T00:00:00",
+          "performanceStatus": "Paid Off (Closed)",
+          "status": "Closed",
+          "outstandingBalance": 0,
+          "collateral": "",
+          "collateralValue": 0,
+          "guarantor": "",
+          "purpose": "NA",
+          "paymentHistory": "NNNNNNNNNNNNNNNN00303000",
+          "lastUpdatedAt": "2022-09-19T22:41:37.973"
+        },
+        {
+          "loanProvider": "United Bank for Africa Plc",
+          "loanProviderAddress": "Uba House \r\n57 Marina Street Lagos Island Lagos",
+          "accountNumber": "SF099911020938",
+          "type": "Term Loan",
+          "loanAmount": 1134330,
+          "installmentAmount": 97107,
+          "overdueAmount": 0,
+          "lastPaymentDate": "2022-05-24T00:00:00",
+          "loanDuration": "368",
+          "dateReported": "2021-06-24T07:16:53.887",
+          "disbursedDate": "2021-05-21T00:00:00",
+          "maturityDate": "2023-04-03T00:00:00",
+          "performanceStatus": "Paid Off (Closed)",
+          "status": "Closed",
+          "outstandingBalance": 0,
+          "collateral": "",
+          "collateralValue": 0,
+          "guarantor": "",
+          "purpose": "NA",
+          "paymentHistory": "NNNNNNNNNNNNNNNN00000000",
+          "lastUpdatedAt": "2023-04-04T06:28:12.897"
+        },
+        {
+          "loanProvider": "NewEdge Finance Limited",
+          "loanProviderAddress": "2a Isaac John Street Ikeja Lagos",
+          "accountNumber": "1500114497",
+          "type": "Salary Advance",
+          "loanAmount": 16500,
+          "installmentAmount": null,
+          "overdueAmount": 0,
+          "lastPaymentDate": "2021-03-03T00:00:00",
+          "loanDuration": "21",
+          "dateReported": "2023-03-22T03:06:26.743",
+          "disbursedDate": "2021-02-10T00:00:00",
+          "maturityDate": "2023-04-30T00:00:00",
+          "performanceStatus": "Paid Off (Closed)",
+          "status": "Closed",
+          "outstandingBalance": 0,
+          "collateral": "",
+          "collateralValue": 0,
+          "guarantor": "",
+          "purpose": "NA",
+          "paymentHistory": "NNNNNNNN00NNNNNNNNNNNNNN",
+          "lastUpdatedAt": "2023-05-12T12:10:50.767"
+        },
+        {
+          "loanProvider": "NewEdge Finance Limited",
+          "loanProviderAddress": "2a Isaac John Street Ikeja Lagos",
+          "accountNumber": "1500007486",
+          "type": "Salary Advance",
+          "loanAmount": 14500,
+          "installmentAmount": null,
+          "overdueAmount": 0,
+          "lastPaymentDate": "2021-01-26T00:00:00",
+          "loanDuration": "14",
+          "dateReported": "2023-03-22T03:06:26.743",
+          "disbursedDate": "2021-01-12T00:00:00",
+          "maturityDate": "2023-04-30T00:00:00",
+          "performanceStatus": "Paid Off (Closed)",
+          "status": "Closed",
+          "outstandingBalance": 0,
+          "collateral": "",
+          "collateralValue": 0,
+          "guarantor": "",
+          "purpose": "NA",
+          "paymentHistory": "NNNNNNNN00NNNNNNNNNNNNNN",
+          "lastUpdatedAt": "2023-05-12T13:20:07.03"
+        },
+        {
+          "loanProvider": "NewEdge Finance Limited",
+          "loanProviderAddress": "2a Isaac John Street Ikeja Lagos",
+          "accountNumber": "2128329",
+          "type": "Salary Advance",
+          "loanAmount": 13000,
+          "installmentAmount": null,
+          "overdueAmount": 0,
+          "lastPaymentDate": "2020-03-24T00:00:00",
+          "loanDuration": "14",
+          "dateReported": "2023-03-22T05:00:29.363",
+          "disbursedDate": "2020-03-14T00:00:00",
+          "maturityDate": "2023-04-30T00:00:00",
+          "performanceStatus": "Paid Off (Closed)",
+          "status": "Closed",
+          "outstandingBalance": 0,
+          "collateral": "",
+          "collateralValue": 0,
+          "guarantor": "",
+          "purpose": "NA",
+          "paymentHistory": "NNNNNNNN00NNNNNNNNNNNNNN",
+          "lastUpdatedAt": "2023-05-12T15:02:28.99"
+        },
+        {
+          "loanProvider": "Zenith Bank Plc",
+          "loanProviderAddress": "Zenith Heights\r\nplot 87 Ajose Adeogun Street Victoria Island Lagos",
+          "accountNumber": "1006538940",
+          "type": "Overdraft",
+          "loanAmount": 53883,
+          "installmentAmount": 0,
+          "overdueAmount": 0,
+          "lastPaymentDate": "2020-04-23T00:00:00",
+          "loanDuration": "180",
+          "dateReported": "2020-05-11T13:59:43.09",
+          "disbursedDate": "2020-02-13T00:00:00",
+          "maturityDate": "2020-05-31T00:00:00",
+          "performanceStatus": "Paid Off (Closed)",
+          "status": "Closed",
+          "outstandingBalance": 0,
+          "collateral": "                          ",
+          "collateralValue": 0,
+          "guarantor": "",
+          "purpose": "NA",
+          "paymentHistory": "NNNNNNNNNNNNNNNNNNNNNNNN",
+          "lastUpdatedAt": "2020-06-07T18:50:07.39"
+        },
+        {
+          "loanProvider": "Zenith Bank Plc",
+          "loanProviderAddress": "Zenith Heights\r\nplot 87 Ajose Adeogun Street Victoria Island Lagos",
+          "accountNumber": "283200000000002",
+          "type": "Term Loan",
+          "loanAmount": 1079094,
+          "installmentAmount": 0,
+          "overdueAmount": 0,
+          "lastPaymentDate": "2021-03-25T00:00:00",
+          "loanDuration": "1103",
+          "dateReported": "2020-05-11T13:59:43.09",
+          "disbursedDate": "2019-10-18T00:00:00",
+          "maturityDate": "2021-07-21T00:00:00",
+          "performanceStatus": "Paid Off (Closed)",
+          "status": "Closed",
+          "outstandingBalance": 0,
+          "collateral": "",
+          "collateralValue": 0,
+          "guarantor": "",
+          "purpose": "NA",
+          "paymentHistory": "NNNNNNNNNNNNNNNNNNNNNNNN",
+          "lastUpdatedAt": "2021-07-22T12:45:38.87"
+        },
+        {
+          "loanProvider": "Page International Financial Service Limited",
+          "loanProviderAddress": "23 Norman Williams St, \t\t\r\n Ikoyi Lagos",
+          "accountNumber": "PM19020035779799",
+          "type": "Revolving Loan",
+          "loanAmount": 300000,
+          "installmentAmount": 112752,
+          "overdueAmount": 0,
+          "lastPaymentDate": "2019-10-23T00:00:00",
+          "loanDuration": "3",
+          "dateReported": "2019-08-16T10:23:59.883",
+          "disbursedDate": "2019-08-02T00:00:00",
+          "maturityDate": "2023-09-30T00:00:00",
+          "performanceStatus": "Paid Off (Closed)",
+          "status": "Closed",
+          "outstandingBalance": 0,
+          "collateral": "",
+          "collateralValue": 0,
+          "guarantor": "",
+          "purpose": "NA",
+          "paymentHistory": "NNN000N00000080NN0N0000N",
+          "lastUpdatedAt": "2023-10-13T18:33:43.007"
+        },
+        {
+          "loanProvider": "Page International Financial Service Limited",
+          "loanProviderAddress": "23 Norman Williams St, \t\t\r\n Ikoyi Lagos",
+          "accountNumber": "PM19020035764935",
+          "type": "Revolving Loan",
+          "loanAmount": 670000,
+          "installmentAmount": 86996,
+          "overdueAmount": 0,
+          "lastPaymentDate": "2020-02-23T00:00:00",
+          "loanDuration": "12",
+          "dateReported": "2019-03-22T19:02:45.997",
+          "disbursedDate": "2019-02-14T00:00:00",
+          "maturityDate": "2023-09-30T00:00:00",
+          "performanceStatus": "Paid Off (Closed)",
+          "status": "Closed",
+          "outstandingBalance": 0,
+          "collateral": "",
+          "collateralValue": 0,
+          "guarantor": "",
+          "purpose": "NA",
+          "paymentHistory": "NNN000N00000000000N0000N",
+          "lastUpdatedAt": "2023-10-13T18:39:05.293"
+        }
+      ]
+    },
+    "searchedDate": "2023-11-23T14:47:42.824Z"
+  }
+}
+```
+
+
+| Field	                   | Description	                                                                                                         |Type       |
+|--------------------------|------------------------------------------------------------------------------------------------------------------------|-----------|
+| `status`                   | This is the returned status of the request either success or failed.                                                   | String    |
+| `code`                     | This is the operational code                                                                                           | Number    |
+| `data`                     | This is an array of objects which contains every transaction data                                                      | Object    |
+| `- _id `                | The unique identifier or specific code assigned to a particular user within the database                               | String    |
+| `- bvn`                 | The bvn of the user                                                                                                    | String    |
+| `- customerId`          | The unique identifier or specific code assigned to a particular customer                                               | String    |
+| `- businessId          | The unique identifier or specific code assigned to a particular business                                               | String    |
+| `- name                | The full name of the BVN holder                                                                                        | String    |
+| `- phone               | The phone number of the BVN holder                                                                                     | String    |
+| `- gender              | The gender of the BVN holder                                                                                           | String    |
+| `- dateOfBirth         | The date of birth of the BVN holder                                                                                    | String    |
+| `- address             | The address of the BVN holder                                                                                          | String    |
+| `- email               | The email of the BVN holder                                                                                            | String    |
+| `- score                    | This is an array of objects which contains every score                                                                 | Object    |
+| `-- totalNoOfDelinquentFacilities` | The count of accounts or credit facilities that are overdue or behind on payments according to the credit report    |Number |
+| `-- lastReportedDate`    | The most recent date on which information about an account, transaction, or activity was updated or submitted to the credit bureau    |Number |
+| `-- totalNoOfLoans`      | The overall count of active loan accounts listed in the credit report.                                                | Number    |
+| `-- totalNoOfInstitutions` | The count of different financial institutions or lenders where the user holds accounts listed within their credit report or financial records. | Number |
+| `-- totalNoOfActiveLoans` | The count of currently open and operational loan accounts listed in a user's credit report or financial records.     | Number    |
+| `-- totalBorrowed`       | The amount of money that an individual has borrowed across all loans, credit lines, or financial obligations listed within their credit report or financial records.  |Number |
+| `-- totalOutstanding`    | The overall amount of money that remains unpaid or outstanding across all active loans, credit accounts, or financial obligations listed within the credit report or financial records. |Number |
+| `-- totalOverdue`        | The amount that is past due or overdue across all active loans or credit accounts listed within the credit report or financial records.   | Number |
+| `-- maxNoOfDays`         | The longest duration an account or payment has been overdue                                                           | Number
+| `-- totalNoOfClosedLoans`    | The overall count of loan accounts that have been successfully paid off or closed by the individual and are no longer active in their credit report or financial records. | Number |
+| `-- crcReportOrderNumber`    | The report order number of the credit bureau                                                                      | String    |
+| `searchedDate`             | The date the credit report was searched                                                                                | String    |

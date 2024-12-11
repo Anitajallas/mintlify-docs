@@ -1,0 +1,21 @@
+## Generate credit history data with First Central
+
+Adhere's First Central Credit Summary endpoint provides users with a comprehensive record of their credit-related activities, including credit accounts, payment timelines, credit utilization, account closures, and instances of delinquency. By leveraging this endpoint, users can gain valuable insights into their credit behavior, assess their creditworthiness, and understand factors influencing their credit standing for effective monitoring and management.
+
+### Request Endpoint
+
+`POST:` `{{BASE URL}}/api/onboarding/individual/first_central_summary/`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **201 Created:** The request was successful, and the business' credit information is returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
+
+
+#### Payload Fields
+``` json
+{
+    "bvn": "22244545518"
+}
+```
