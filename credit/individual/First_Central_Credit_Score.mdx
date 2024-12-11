@@ -1,0 +1,68 @@
+## Generate credit score data with First Central
+
+Adhere's Credit Score endpoint provides users with essential insights into their credit history, enabling them to evaluate their creditworthiness, monitor changes, and identify the factors that impact their credit standing.
+
+### Request Endpoint
+
+`POST:` `{{BASE URL}}/api/onboarding/individual/credit_scores_first_central/`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **200 OK:** The request was successful, and the business' credit information is returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
+
+### Payload Fields
+
+```json
+{
+    "bvn": "22244545518"
+}
+```
+
+### 200 OK Response
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "First Central Credit Score",
+  "response_code": "00",
+  "data": {
+    "_id": "64f600608aaf9386c646de32",
+    "bvn": "22244545518",
+    "customerId": "505327",
+    "businessId": "64db7ab8a26e603218838892",
+    "name": "ADELEKE EMMANUEL AYORINDE",
+    "phone": "",
+    "gender": "Male",
+    "dateOfBirth": "29/12/1994",
+    "address": "",
+    "email": "",
+    "searchedDate": "2023-11-23T14:37:04.152Z",
+    "score": {
+      "totalConsumerScore": "835",
+      "description": "LOW RISK",
+      "totalAccounts": "23",
+      "scoreDate": "11/23/2023",
+      "noOfAcctScore": "55/55",
+      "totalaccountinGoodcondition": "23",
+      "totalaccountinBadcondition": "0",
+      "totalOutstandingDebt": "30,719.00",
+      "totalAccountarrear": "0",
+      "totalAmountOverdue": "0.00",
+      "repaymentHistoryScore": "192/192",
+      "totalAmountOwedScore": "165/165",
+      "typesOfCreditScore": "40/55",
+      "lengthOfCreditHistoryScore": "83/83",
+      "totalForeignOutstandingDebt": "0.00",
+      "totalForeignAccounts": "0",
+      "firstCentralEnquiryResultID": "37181617",
+      "firstCentralEnquiryEngineID": "2436350"
+    }
+  }
+}
+```
+
+
+

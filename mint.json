@@ -131,15 +131,19 @@
               "group": "Business",
               "pages": [
                 "credit/business/crc-business_credit_history",
-                "credit/business/first-central_business_credit_history",
-                "credit/business/Premium_Business_Credit_History"
+                "credit/business/first-central_business_credit_history"
               ]
             },
             {
               "group": "Individual",
               "pages": [
-                "credit/individual/CRC-Credit_history",
-                "credit/individual/CRC_full_credit_report"
+                "credit/individual/First_Central_Credit_Summary",
+                "credit/individual/First_Central_Full_Credit_Report",
+                "credit/individual/Credit_Registry_Credit_Summary",
+                "credit/individual/Credit_Registry_Full_Credit_Report",
+                "credit/individual/Credit_Report_Premium",
+                "credit/individual/First_Central_Credit_Score",
+                "credit/individual/CRC_Credit_Score"
               ]
             }
           ]
@@ -181,7 +185,7 @@
           "group": "KYC",
           "pages": [
             "transaction/kyc/Get_All_Search_Results",
-            "transaction/kyc/Get_Entity_Kyc_By_Id",
+            "transaction/kyc/Get_Entity_Kyc_By_ID",
             "transaction/kyc/Post_Kyc_Check"
           ]
         },
