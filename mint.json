@@ -84,12 +84,12 @@
               "pages": [
                 "kyc/kenya/Drivers_License",
                 "kyc/kenya/Passport_Verification",
-                "kyc/kenya/National_ID_Advance",
-                "kyc/kenya/National_ID_Basic",
+                "kyc/kenya/national_id_advance",
+                "kyc/kenya/national_id_basic",
                 "kyc/kenya/serial_number",
-                "kyc/kenya/Alien_ID",
+                "kyc/kenya/alien_ID",
                 "kyc/kenya/pin_checker",
-                "kyc/kenya/TCC_Checker",
+                "kyc/kenya/TCC_checker",
                 "kyc/kenya/WHT_checker",
                 "kyc/kenya/BRS_search",
                 "kyc/kenya/BRS_advance"
@@ -112,14 +112,14 @@
             {
               "group": "Rwanda",
               "pages": [
-                "kyc/rwanda/National_ID",
-                "kyc/rwanda/Passport"
+                "kyc/rwanda/national_id",
+                "kyc/rwanda/passport"
               ]
             },
             {
               "group": "Uganda",
               "pages": [
-                "kyc/uganda/National_ID"
+                "kyc/uganda/national_id"
               ]
             }
           ]
@@ -170,8 +170,8 @@
         {
           "group": "Card Transaction",
           "pages": [
-            "transaction/card_transaction/Card_Transaction_Overview",
-            "transaction/card_transaction/Post_Fraud_Request"
+            "transaction/card_transaction/card_transaction_overview",
+            "transaction/card_transaction/post_fraud_request"
           ]
         },
         {
@@ -184,9 +184,9 @@
         {
           "group": "KYC",
           "pages": [
-            "transaction/kyc/Get_All_Search_Results",
-            "transaction/kyc/Get_Entity_Kyc_By_ID",
-            "transaction/kyc/Post_Kyc_Check"
+            "transaction/kyc/get_all_search_results",
+            "transaction/kyc/get_entity_kyc_by_id",
+            "transaction/kyc/post_kyc_check"
           ]
         },
         {
