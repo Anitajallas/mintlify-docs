@@ -4,13 +4,18 @@ Leverage Adhere's VNIN verification endpoint to securely retrieve and validate c
 
 #### Request Endpoint
 
-`POST` `{{BASE_URL}}/api/onboarding/nigeria_kyc/voters_id/`
+`POST` `{{BASE URL}}/api/onboarding/nigeria_kyc/voters_id/`
 
 #### Sample Payload
 
 ```json
 {
-  "voters_id": "91F6B1F5BE295355586"
+  "voters_id": "91F6B1F5BE295355586",
+  "first_name": "John",
+  "last_name": "Doe",
+  "date_of_birth": "1994-08-11",
+  "lga": "Lagos",
+  "state": "Lagos"
 }
 ```
 
