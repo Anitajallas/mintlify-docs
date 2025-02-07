@@ -8,10 +8,29 @@ The Transaction Monitoring API endpoint processes transactions in real-time, cal
 - **Media-Type:** `application/json`
 
 ### Status Codes
-
-- **201 Created:** Transaction processed successfully. Fraud score calculated based on threshold.
+- **201 Created:** Transaction processed successfully.
 - **400 Bad Request:** Missing or invalid fields in the request.
 - **500 Internal Server Error:** Unexpected error during processing. The request body is not set correctly.
+
+### Suspicious Activity Codes:
+- **450** - Suspicious Transaction Detected (Requires Manual Review)
+- **451** - High-Risk Transaction (Potential Fraud)
+- **452** - Unusual Transaction Behavior (Pattern Anomaly)
+- **453** - Velocity Check Failed (Too Many Transactions in Short Time)
+- **454** - Geographic Inconsistency (Unusual Location)
+- **455** - Transaction Amount Too High (Above Threshold)
+- **456** - Blacklisted Account or Entity
+- **457** - Repeated Failed Transactions (Possible Fraud Attempt)
+
+### Safe Activity code
+- **200** - Transaction Approved (No Issues)
+- **201** - Transaction Successfully Processed (Created)
+- **202** - Transaction Pending Review (Routine Check, No Immediate Risk)
+- **210** - Trusted Transaction (Verified and Safe)
+- **211** - Low-Risk Transaction (No Anomalies Detected)
+- **212** - Recurring Transaction Approved (Previously Authorized Pattern)
+- **220** - Whitelisted Entity (Pre-approved Account or Business)
+- **221** - Known Customer (Transaction Aligns with User History)
 
 ### Payload Example Request
 ```json
