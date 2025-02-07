@@ -1,10 +1,16 @@
-## Verify your customers' Address
+## Customers' Address Verification Request
 
-Adhere's Physical Address verification endpoint provides access to accurate and verified information about your customers'address living in Lagos.
+Adhere's Physical Address verification endpoint provides access to accurate and verified information about your customers' address living in Lagos.
 
 #### Request Endpoint
 
 `POST` `{{BASE_URL}}/api/onboarding/nigeria_kyc/physical_address_verification_lagos/`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **200 OK:** Physical Address verification request received successfully
+- **400 Bad Request:** Missing or invalid fields in the request
 
 #### Sample Payload
 ``` json
@@ -27,42 +33,9 @@ Adhere's Physical Address verification endpoint provides access to accurate and 
 
 ``` json
 {
-  "status": "success",
-  "data": {
-      id: 1,
-      applicant: {
-          firstname: "John",
-          lastname: "Doe",
-          phone:"08000000000",
-          idType: "nin",
-          idNumber: "10000000001",
-          middlename: "Cameron',
-          photo: "https://images.verifyme.ng/278783775/fjjjjler7834.jpg",
-          gender: "Male",
-          birthdate: '17/01/1988',
-      },
-      createdAt: "",
-      completedAt: "",
-      lattitude: "9.081999",
-      longitude: "8.675277",
-      photos: ["https://picsum.photos/id/768/200/300.jpg", "https://picsum.photos/id/768/200/300.jpg"],
-      neighbor: {
-          name: "Tunde Adetunji",
-          comment: "Very friendly",
-          phone: "080900000000",
-      },
-      status: {
-          status: "In Progress",
-          subStatus: "In Progress",
-          state: "In Progress",
-      },
-      city: "oshodi",
-      street: "270 Murtala Muhammed Way, Alagomeji. Yaba",
-      lga: "lagos mainland",
-      state: "Lagos",
-      country: "Nigeria",
-      reference: "1732800207805106"
-  }
+    "status": 'success',
+    "data": "",
+    "message": "Physical Address Verification request received successfully, You will be notified via email when the verification is completed",
 }
 ```
 
