@@ -1,0 +1,40 @@
+## Customers' Address Verification Confirmation
+
+Adhere's Physical Address verification confirmation endpoint provides access to accurate and verified information about your customers' address.
+
+#### Request Endpoint
+
+`POST` `{{BASE_URL}}/api/onboarding/nigeria_kyc/physical_address_verification_confirmation/`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **200 OK:** Physical Address verification request received successfully
+- **400 Bad Request:** Missing or invalid fields in the request
+
+#### Sample Payload
+``` json
+{    
+    "identity_check_id": 2,
+    "city": "oshodi",
+    "lga": "lagos mainland",
+    "landmark": "lagos",
+    "street": "270 Murtala Muhammed Way, Alagomeji. Yaba",
+    "first_name": "John",
+    "last_name": "Doe",
+    "birth_date": "17/01/1988",
+    "phone_number": "08000000000",
+    "nin": "10000000001",
+    "state": "Lagos"
+}
+```
+
+200 OK Response
+
+``` json
+{
+    "status": 'success',
+    "data": "",
+    "message": "Physical Address Confirmed successfully"
+}
+```
