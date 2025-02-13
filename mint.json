@@ -83,9 +83,9 @@
                 "kyc/nigeria/BVN_with_face",
                 "kyc/nigeria/FRSC_with_face",
                 "kyc/nigeria/Address_Verification",
-                "kyc/nigeria/Get_Identity_Address",
                 "kyc/nigeria/Physical_Address_Verification_Lagos",
-                "kyc/nigeria/Physical_Address_Verification_Other"
+                "kyc/nigeria/Physical_Address_Verification_Other",
+                "kyc/nigeria/Physical_Address_Verification_Confirmation"
               ]
             },
             {
