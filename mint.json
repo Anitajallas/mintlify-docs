@@ -48,6 +48,13 @@
       ]
     },
     {
+      "group": "Biometrics",
+      "pages": [
+        "biometrics/face_comparism",
+        "biometrics/face_liveliness"
+      ]
+    },
+    {
       "group": "Onboarding Suite",
       "pages": [
         {

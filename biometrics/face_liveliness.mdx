@@ -1,0 +1,46 @@
+## Face Liveliness Check
+Face authentication with liveliness check
+
+Suggest Edits
+Liveliness check is a feature that ensures the person being authenticated is physically present and not just a photograph or video.
+
+With this endpoint, users can provide their facial features as input to the system, which will then perform a liveliness check to ensure that the user is present and not just a still image or pre-recorded video. This ensures the security and reliability of the authentication process, as it reduces the risk of unauthorized access by fraudulent means.
+
+#### Request Endpoint
+
+`POST` `{{BASE_URL}}/api/onboarding/biometrics/face/liveliness_check/`
+
+
+#### Sample Payload
+
+```json
+{
+    "image": " https://res.cloudinary.com/dh3i1wodq/image/upload/v1675417496/cbimage_3_drqdoc.jpg", 
+}
+```
+
+200 OK Response
+
+``` json
+{
+  "status": "success",
+  "data": {
+   "status":true,
+   "detail":"Liveliness Detected",
+   "response_code":"00",
+   "confidence":0.9999987030029297,
+   "confidence_in_percentage":99.99987030029297,
+   "verification":{
+      "status":"VERIFIED",
+      "reference":"067cbed9-acda-4d30-97c2-7f8e0c2ad687"
+   },
+   "widget_info":{
+      
+   },
+   "session":{
+      
+   }
+},
+  "message": "Bank Verification Number details retrieved successfully"
+}
+```

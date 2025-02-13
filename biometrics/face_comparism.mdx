@@ -1,0 +1,34 @@
+## Face Comparison
+Compare two (2) face images
+
+This endpoint allows merchants to perform a comparison of two face images using the face biometric By using this endpoint, merchants can compare two face images to determine whether they are of the same person or not.
+
+This can be particularly useful in scenarios such as online payments or identity verification, where it is essential to confirm the identity of the person making a transaction or accessing sensitive informati
+#### Request Endpoint
+
+`POST` `{{BASE_URL}}/api/onboarding/biometrics/face/comparison
+
+
+#### Sample Payload
+
+```json
+{
+   image_one: https://res.cloudinary.com/dh3i1wodq/image/upload/v1675417496/cbimage_3_drqdoc.jpg
+   image_two: https://res.cloudinary.com/dh3i1wodq/image/upload/v1677955197/face_image_tkmmwz.jpg
+}
+```
+
+200 OK Response
+
+``` json
+{
+  "status": "success",
+  "data": {
+    "status": true,
+    "response_code": "00",
+    "message": "Fatch Match",
+    "confidence": 100
+},
+  "message": "Face comparism done successfully"
+}
+```
