@@ -48,10 +48,16 @@
       ]
     },
     {
+      "group": "Libraries",
+      "pages": [
+        "libraries/smartcomply_sdk"
+      ]
+    },
+    {
       "group": "Biometrics",
       "pages": [
-        "biometrics/face_comparism",
-        "biometrics/face_liveliness"
+          "biometrics/face_comparism",
+          "biometrics/face_liveliness"
       ]
     },
     {
