@@ -34,8 +34,22 @@ Adhere's Physical Address verification endpoint provides access to accurate and 
 ``` json
 {
     "status": 'success',
-    "data": "",
+    "data": {
+        "identity_check_id": 2,
+        "status": "pending",
+        "city": "oshodi",
+        "lga": "lagos mainland",
+        "landmark": "lagos",
+        "street": "270 Murtala Muhammed Way, Alagomeji. Yaba",
+        "first_name": "John",
+        "last_name": "Doe",
+        "birth_date": "17/01/1988",
+        "phone_number": "08000000000",
+        "nin": "10000000001",
+        "state": "Lagos"
+    },
     "message": "Physical Address Verification request received successfully, You will be notified via email when the verification is completed",
 }
 ```
 
+Note: The endpoint can be tested using the exact payload defined above, without passing an access token in your headers.

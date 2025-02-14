@@ -15,17 +15,7 @@ Adhere's Physical Address verification confirmation endpoint provides access to 
 #### Sample Payload
 ``` json
 {    
-    "identity_check_id": 2,
-    "city": "oshodi",
-    "lga": "lagos mainland",
-    "landmark": "lagos",
-    "street": "270 Murtala Muhammed Way, Alagomeji. Yaba",
-    "first_name": "John",
-    "last_name": "Doe",
-    "birth_date": "17/01/1988",
-    "phone_number": "08000000000",
-    "nin": "10000000001",
-    "state": "Lagos"
+    "identity_check_id": 2
 }
 ```
 
@@ -34,7 +24,21 @@ Adhere's Physical Address verification confirmation endpoint provides access to 
 ``` json
 {
     "status": 'success',
-    "data": "",
+    "data": {
+        "status": "completed",
+        "city": "oshodi",
+        "lga": "lagos mainland",
+        "landmark": "lagos",
+        "street": "270 Murtala Muhammed Way, Alagomeji. Yaba",
+        "first_name": "John",
+        "last_name": "Doe",
+        "birth_date": "17/01/1988",
+        "phone_number": "08000000000",
+        "nin": "10000000001",
+        "state": "Lagos"
+    },
     "message": "Physical Address Confirmed successfully"
 }
 ```
+
+Note: The endpoint can be tested using the exact payload defined above, without passing an access token in your headers.
