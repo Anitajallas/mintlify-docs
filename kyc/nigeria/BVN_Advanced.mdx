@@ -10,6 +10,7 @@ The endpoint provides access to comprehensive personal information, including na
 
 #### Sample Payload
 
+
 ```json
 {
     "bvn": "22000000001"
@@ -21,14 +22,14 @@ The endpoint provides access to comprehensive personal information, including na
 {
     "status": "success",
     "data": {
-        "bvn": "22476562817",
+        "bvn": "22000000001",
         "image": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJCuG/wAa0U+5yOnY/9k=", # base-64
         "title": "Mr",
         "gender": "male",
-        "lastName": "AKINSANYA",
-        "firstName": "TISEOLUWA",
-        "middleName": "JOHN",
-        "nameOnCard": "TISEOLUWA JOHN AKINSANYA",
+        "lastName": "OMOLE",
+        "firstName": "ABRAHAM",
+        "middleName": "ISAAC",
+        "nameOnCard": "",
         "dateOfBirth": "1909-09-19",
         "lgaOfOrigin": "Ado-Odo/Ota",
         "watchListed": "NO",
@@ -38,12 +39,14 @@ The endpoint provides access to comprehensive personal information, including na
         "stateOfOrigin": "Ogun State",
         "enrollmentBank": "033",
         "levelOfAccount": "Level 1 - Low Level Accounts",
-        "lgaOfResidence": "Ifo",
+        "lgaOfResidence": "",
         "enrollmentBranch": "0517-OTA 2",
-        "registrationDate": "01-January-2001",
+        "registrationDate": "2017-09-05",
         "stateOfResidence": "Ogun State",
-        "residentialAddress": "1, ADESHINA STREET, IFO"
+        "residentialAddress": ""
     },
     "message": "Bank Verification Number details retrieved successfully"
 }
 ```
+
+Note: The endpoint can be tested using the exact payload defined above, without passing an access token in your headers.
