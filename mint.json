@@ -210,7 +210,8 @@
       "group" : "Loan Fraud Check",
       "pages": [
         "loan/introduction",
-        "loan/fraud_check"
+        "loan/individual_fraud_check",
+        "loan/business_fraud_check"
       ]
     }
   ]
