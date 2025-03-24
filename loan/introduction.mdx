@@ -23,7 +23,7 @@ Our API is designed to evaluate and mitigate fraud risk in loan applications. It
 ## Technical Overview
 
     Integration Workflow:
-    Upon receiving a loan application, the system calls the Zeeh API to retrieve the applicant’s credit history. This data, combined with the application’s financial and personal details, is processed to compute the fraud risk score.
+    Upon receiving a loan application, the system retrieve the applicant’s credit history based on the BVN or RC number provided. This data, combined with the application’s financial and personal details, is processed to compute the fraud risk score.
 
     Risk Score Calculation:
     The computed fraud risk score is derived from various criteria including credit report insights, financial ratios, and applicant demographics. The resulting score directly influences the final recommendation for the loan application.

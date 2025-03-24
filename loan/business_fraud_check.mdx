@@ -1,0 +1,66 @@
+When a business decides to request for a loan, the following are the information our API requires you to provide so as to ascertain the risk of granting a loan to such business.
+
+
+#### Request Endpoint
+
+`POST` `{{BASE_URL}}/api/v1/loan/fraud_check/`
+
+- **Media-Type:** `application/form-data`
+
+#### Sample Payload
+
+```json
+{
+  "business_name"": "Test Business",
+  "business_address": "!23 Main Street, Marina",
+  "rc_number": ""RC-123456,
+  "city": "Lagos",
+  "country": "Nigeria",
+  "phone_number": "2349012345678",
+  "email_address": "testbusiness@gmail.com",
+  "identification_type": "Passport",
+  "identification_number": "A123456789",
+  "annual_revenue": "",
+  "bank_name": "Access Bank",
+  "account_number": "1234567890",
+  "loan_amount_requested": 2500000,
+  "purpose_of_loan": "Business Expansion",
+  "loan_repayment_duration_type": "weeks",
+  "loan_repayment_duration_value": 21,
+  "collateral_required": false,
+  "is_business": true,
+  "run_aml_check": true,
+  "business_plan": "test_business_plan.pdf",
+  "financial_statement": "test_financial_statement.pdf"
+}
+```
+
+200 OK Response
+```json
+{
+  "status": "Success",
+  "data": {
+    "id": 567,
+    "branch": 101,
+    "business_name"": "Test Business",
+    "business_address": "!23 Main Street, Marina",
+    "rc_number": ""RC-123456,
+    "city": "Lagos",
+    "country": "Nigeria",
+    "phone_number": "2349012345678",
+    "email_address": "testbusiness@gmail.com",
+    "annual_revenue": "",
+    "bank_name": "Access Bank",
+    "account_number": "1234567890",
+    "loan_amount_requested": 2500000,
+    "purpose_of_loan": "Business Expansion",
+    "collateral_required": false,
+    "is_business": true,
+    "business_plan": "",
+    "financial_statement": "",
+    "status": "reviewed"
+  },
+  "message": "Loan fraud check processed successfully"
+}
+```
+
