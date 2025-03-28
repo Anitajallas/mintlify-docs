@@ -1,0 +1,32 @@
+---
+## Loan Fraud Check
+---
+
+Welcome to the Loan Fraud Check API documentation
+
+Our API is designed to evaluate and mitigate fraud risk in loan applications. It leverages external credit report data from Zeeh and combines it with comprehensive applicant information to compute a fraud risk score. This score is then used to generate actionable recommendations—such as "Approve", "Approve with caution", "Review", or "Reject"—ensuring that each loan application is thoroughly assessed.
+
+## Key Features
+
+    Real-time Credit Report Integration:
+    Utilizes Zeeh’s API to fetch up-to-date credit histories, providing a dynamic basis for risk evaluation.
+
+    Comprehensive Risk Assessment:
+    Applies a rule-based approach to calculate a fraud risk score by analyzing factors like credit history, loan-to-income ratio, applicant age, and other financial details.
+
+    Actionable Recommendations:
+    Delivers clear, data-driven guidance for loan approval decisions, tailored to both individual and business applicants.
+
+    Robust Data Validation:
+    Implements strict validation at both the model and serializer levels to ensure data integrity and adherence to business rules.
+
+## Technical Overview
+
+    Integration Workflow:
+    Upon receiving a loan application, the system retrieve the applicant’s credit history based on the BVN or RC number provided. This data, combined with the application’s financial and personal details, is processed to compute the fraud risk score.
+
+    Risk Score Calculation:
+    The computed fraud risk score is derived from various criteria including credit report insights, financial ratios, and applicant demographics. The resulting score directly influences the final recommendation for the loan application.
+
+    Error Handling:
+    Comprehensive error handling is built in to capture and log any issues during API calls or data processing, ensuring that problems can be quickly identified and addressed.
