@@ -2,6 +2,9 @@
 
 Easily confirm your customers' identities through their phone numbers for accurate and reliable verification.
 
+You can use this to verify the phone number connected to a user's NIN. For other numbers or additional numbers linked to an NIN, use [this](https://docs.smartcomply.com/kyc/nigeria/Phone_Number_Advanced).
+
+
 #### Request Endpoint
 
 `POST` `{{BASE_URL}}/api/onboarding/nigeria_kyc/phone_no_basic/`
@@ -22,19 +25,14 @@ Easily confirm your customers' identities through their phone numbers for accura
 {
     "status": "success",
     "data": {
-        "firstName": "TISEOLUWA",
-        "middleName": "JOHN",
-        "lastName": "AKINSANYA",
-        "dateOfBirth": "1909-09-19",
-        "gender": "male",
-        "phoneNumber": "09011001100"
-        "nin": "",
-        "maritalStatus": "",
-        "email": "",
-        "image": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0a\nHBwgJC4nICIsIxwcKDcpLDAxNHwAAK", # base-64
-        "residenceAddress": "",
-        "residenceState": ""
+      "surname": "AKINSANYA",
+      "firstName": "TISEOLUWA",
+      "middleName": "JOHN",
+      "dateOfBirth": "1909-09-19",
+      "phoneNumber": "09011001100"
     },
     "message": "Phone Number details retrieved successfully"
 }
 ```
+
+Note: The endpoint can be tested using the exact payload defined above, without passing an access token in your headers.

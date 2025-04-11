@@ -1,0 +1,60 @@
+## Available Library/SDK for Quick Integration
+
+SDKs refer to software development kits. These are sets of tools that allow developers to integrate with our program on Prembly.
+
+The first step to integrating with our SDKs at Prembly is to visit the SDK libraries below to select the language your system supports.
+
+Our SDKs support **React Native**, **Flutter SDK**, **React JS**.
+
+You would require a **Configuration ID**, **Webhook URL**, and **Live Public Key** to successfully integrate and use the SDKs.
+
+### Available SDK/Libraries
+
+- **React Native SDK**  
+  [https://www.npmjs.com/package/react-native-identity-kyc](https://www.npmjs.com/package/react-native-identity-kyc)
+
+- **Flutter SDK**  
+  [https://pub.dev/packages/flutter_identity_kyc](https://pub.dev/packages/flutter_identity_kyc)
+
+- **React JS**  
+  [https://www.npmjs.com/package/react-identity-kyc](https://www.npmjs.com/package/react-identity-kyc)
+
+---
+
+### Sample Script
+
+Below is a sample script to initiate the widget on your application.
+
+```html
+<script>
+function initiateWidget() {  
+  var verificationEngine = IdentityKYC.verify({  
+    merchant_key: "your public key – only live public key is supported for now",  
+    first_name: "",  
+    last_name: "",  
+    email: "",
+    config_id: "your widget id - you can get this from the checker widget page on the dashboard",
+    user_ref: "",  
+    callback: function (response) {  
+      console.log("callback Response", response);  
+      if(response.status === 'success'){  
+        alert("Information Verified");  
+      } else {  
+        alert(response.message);  
+      }  
+    },  
+  });  
+}
+</script>
+```
+Below is a sample widget on your application.
+<img
+  className="block dark:hidden"
+  src="/images/liveness.jpeg"
+  alt="Hero Light"
+/>
+<img
+  className="hidden dark:block"
+  src="/images/liveness.jpeg"
+  alt="Hero Dark"
+/>
