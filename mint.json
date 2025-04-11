@@ -133,7 +133,8 @@
               "group": "Business",
               "pages": [
                 "credit/business/crc-business_credit_history",
-                "credit/business/first-central_business_credit_history"
+                "credit/business/first-central_business_credit_history",
+                "credit/business/premium_business_credit_history"
               ]
             },
             {
@@ -145,7 +146,10 @@
                 "credit/individual/Credit_Registry_Full_Credit_Report",
                 "credit/individual/Credit_Report_Premium",
                 "credit/individual/First_Central_Credit_Score",
-                "credit/individual/CRC_Credit_Score"
+                "credit/individual/CRC_Credit_Score",
+                "credit/individual/CRC_Credit_History",
+                "credit/individual/CRC_Full_Credit_Report",
+                "credit/individual/Credt_Registry_History_Advanced"
               ]
             }
           ]

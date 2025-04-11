@@ -4,7 +4,7 @@ Adhere's CRC Credit Summary endpoint provides users with a comprehensive record 
 
 ### Request Endpoint
 
-`POST:` `{{BASE_URL}}/api/onboarding/individual/crc_central_summary/`
+`POST:` `{{BASE_URL}}/api/onboarding/individual/crc_summary/`
 
 - **Media-Type:** `application/json`
 
@@ -13,9 +13,78 @@ Adhere's CRC Credit Summary endpoint provides users with a comprehensive record 
 - **400 Bad Request:** The request could not be completed due to invalid or missing information.
 
 
-#### Payload Fields
+### Payload Fields
 ``` json
 {
     "bvn": "22244545518"
 }
 ```
+
+### 200 OK Response
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "CRC Credit History",
+  "response_code": "00",
+  "data": {
+    "_id": "64f600608aaf9386c646de32",
+    "bvn": "22244545518",
+    "customerId": "505327",
+    "businessId": "64db7ab8a26e603218838892",
+    "name": "ADELEKE EMMANUEL AYORINDE",
+    "phone": "",
+    "gender": "Male",
+    "dateOfBirth": "29/12/1994",
+    "address": "",
+    "email": "",
+    "score": {
+      "totalNoOfDelinquentFacilities": "0",
+      "lastReportedDate": "30-SEP-2023",
+      "totalNoOfLoans": "7",
+      "totalNoOfInstitutions": "4",
+      "totalNoOfActiveLoans": "6",
+      "totalBorrowed": "3,541,267",
+      "totalOutstanding": "1",
+      "totalOverdue": "0",
+      "maxNoOfDays": "0",
+      "totalNoOfClosedLoans": 1,
+      "crcReportOrderNumber": "W-0097884391/2023"
+    },
+    "searchedDate": "2023-11-23T14:04:03.722Z"
+  }
+}
+```
+
+### Field Description
+| Field                            | Description                                                                                                         | Type    |
+|----------------------------------|---------------------------------------------------------------------------------------------------------------------|---------|
+| `success`                        | Indicates whether the request was successful or not.                                                                | Boolean |
+| `statusCode`                     | The HTTP status code of the response.                                                                               | Number  |
+| `message`                        | A message describing the result of the request.                                                                     | String  |
+| `response_code`                  | The operational response code.                                                                                      | String  |
+| `data`                           | An object containing detailed information about the individual's credit history.                                    | Object  |
+| `- _id`                          | The unique identifier for the credit history record.                                                                | String  |
+| `- bvn`                          | The Bank Verification Number of the individual.                                                                     | String  |
+| `- customerId`                   | The unique identifier assigned to the customer.                                                                     | String  |
+| `- businessId`                   | The unique identifier assigned to the business.                                                                     | String  |
+| `- name`                         | The full name of the individual.                                                                                    | String  |
+| `- phone`                        | The phone number of the individual, if available.                                                                   | String  |
+| `- gender`                       | The gender of the individual.                                                                                       | String  |
+| `- dateOfBirth`                  | The date of birth of the individual.                                                                                | String  |
+| `- address`                      | The address of the individual, if available.                                                                        | String  |
+| `- email`                        | The email address of the individual, if available.                                                                  | String  |
+| `- score`                        | An object containing detailed credit score information.                                                             | Object  |
+| `-- totalNoOfDelinquentFacilities` | The total number of delinquent facilities.                                                                          | String  |
+| `-- lastReportedDate`            | The date when the credit information was last reported.                                                             | String  |
+| `-- totalNoOfLoans`              | The total number of loans taken by the individual.                                                                  | String  |
+| `-- totalNoOfInstitutions`       | The total number of institutions the individual has loans with.                                                     | String  |
+| `-- totalNoOfActiveLoans`        | The total number of active loans.                                                                                   | String  |
+| `-- totalBorrowed`               | The total amount borrowed by the individual.                                                                        | String  |
+| `-- totalOutstanding`            | The total outstanding amount on loans.                                                                              | String  |
+| `-- totalOverdue`                | The total overdue amount on loans.                                                                                  | String  |
+| `-- maxNoOfDays`                 | The maximum number of days overdue on any loan.                                                                     | String  |
+| `-- totalNoOfClosedLoans`        | The total number of loans that have been closed.                                                                    | Number  |
+| `-- crcReportOrderNumber`        | The order number of the CRC report.                                                                                 | String  |
+| `- searchedDate`                 | The date and time when the credit history was searched.                                                             | String  |
+
