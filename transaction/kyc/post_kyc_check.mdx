@@ -15,6 +15,7 @@ This endpoint initiates a Know Your Customer (KYC) check for a specified entity.
 ```json
 {
 	"entity_name": "John Doe",
+  "entity_type": "person",
 	"sources": "Sanctions, PEPs",
 	"continous_monitoring": false
 }
@@ -25,12 +26,14 @@ This endpoint initiates a Know Your Customer (KYC) check for a specified entity.
 | Field               | Description                                                                                                    | Type    |           |
 |---------------------|----------------------------------------------------------------------------------------------------------------|---------|-----------|
 | `entity_name`       | The name of the entity to be checked                                                                          | `String` | `Required`|
+| `entity_type`       | The type of the entity to be checked (optional)
 | `sources`           | The data sources for the KYC check, such as "Sanctions" or "PEPs" (comma-separated)                           | `Float`  | `Optional`|
 | `continuous_monitoring`| Indicates if continuous monitoring should be enabled (true or false). Defaults to "false" if not specified | `String` | `Optional`|
 
+N.B: When passing entity type, the following are the only allowed fields: person, company, business and organization
 
 ## Response
-### Record not found 
+### Record not found
 200 OK Response
 ```json
 {
