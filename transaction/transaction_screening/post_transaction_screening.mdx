@@ -57,45 +57,42 @@ This endpoint initiates the transaction screening process, evaluating a transact
   }
 }
 ```
-
 ### Request Body
 
-| Field               | Description                                                              | Type   |
-|---------------------|--------------------------------------------------------------------------|--------|
-| `transactionId`     | This is the unique identifier for the transaction                        | `String` |
-| `transactionType`   | Type of the transaction (e.g., Transfer)                                 | `String` |
-| `amount`            | The total transaction amount                                             | `String` |
-| `currency`          | This is currency code for the transaction (e.g., USD, NGN)               | `String` |
-| `transactionDate`   | ISO 8601 date and time of the transaction.                               | `String` |
-| `sender`            | Information about the transaction sender                                 | `Object` |
-| `- name`             | Full name of the sender                                                 | `String` |
-| `- accountNumber`    | Sender's account number                                                 | `String` |
-| `- address`          | Sender's address information                                            | `Object` |
-| `-- street`          | Street address of the sender                                            | `String` |
-| `-- city`            | City of the sender                                                      | `String` |
-| `-- state`           | State or region of the sender                                           | `String` |
-| `-- postalCode`       | Postal or ZIP code of the sender’s location                            | `String` |
-| `-- country`         | Country of the sender                                                   | `String` |
-| `- identification`   | Sender’s identification details                                         | `Object` |
-| `-- type`            | Type of identification (e.g Passport, National ID)                                    | `String` |
-| `-- number`          | Identification number                                                   | `String` |
-| `-- country`         | Issuing country of the identification                                    | `String` |
-| `receiver`           | Information about the transaction receiver                               | `Object` |
-| `- name`             | Full name of receiver                                                    | `String` |
-| `- accountNumber`    | Receiver's account number                                               | `String` |
-| `- address`          | Receiver’s address information                                          | `Object` |
-| `-- street`          | Street address of the receiver                                          | `String` |
-| `-- city`            | City of the receiver                                                    | `String` |
-| `-- state`           | State or region of the receiver                                         | `String` |
-| `-- postalCode`       | Postal or ZIP code of the receiver’s location                          | `String` |
-| `-- country`         | Country of the receiver                                                 | `String` |
-| `- identification`   | Receiver’s identification details                                         | `Object` |
-| `-- type`            | Type of identification (e.g Passport, National ID)                       | `String` |
-| `-- number`          | Receiver’s Identification number                                         | `String` |
-| `-- country`         | Issuing country of the identification                                    | `String` 
-| `details`            | Additional details regarding the transaction                            | `Object` |
-| `- purpose`         | Purpose of the transaction                                                 | `String` |
-| `- reference`        | Reference identifier for the transaction                                 | `String` |
+| Field                           | Type                       | Category      | Notes |
+|---------------------------------|----------------------------|---------------|-------|
+| `transactionId`                 | string \| number           | Recommended   | Links repeat calls to the same transaction. |
+| `transactionType`               | string                     | Optional      | Can be empty if you don’t use it. |
+| `amount`                        | number \| numeric string   | **Required**  | Must be a valid number (e.g., `10000.00`). |
+| `currency`                      | string                     | Optional      | Currency code, e.g., `NGN`, `USD`. |
+| `transactionDate`               | ISO-8601 string            | **Required**  | Use a format like `2024-07-06T12:34:56Z`. |
+| `sender.name`                   | string                     | **Required**  | Needed to screen the sender against lists. |
+| `sender.accountNumber`          | string                     | Optional      | Extra context only. |
+| `sender.address`                | object                     | Optional      | Include for location-based checks. |
+| `sender.address.street`         | string                     | Optional      | — |
+| `sender.address.city`           | string                     | Optional      | — |
+| `sender.address.state`          | string                     | Optional      | — |
+| `sender.address.postalCode`     | string                     | Optional      | — |
+| `sender.address.country`        | string                     | Recommended   | Helps flag high-risk countries. |
+| `sender.identification`         | object                     | Optional      | Extra KYC info if available. |
+| `sender.identification.type`    | string                     | Optional      | e.g., Passport, National ID. |
+| `sender.identification.number`  | string                     | Optional      | — |
+| `sender.identification.country` | string                     | Optional      | Issuing country. |
+| `receiver.name`                 | string                     | **Required**  | Needed to screen the receiver against lists. |
+| `receiver.accountNumber`        | string                     | Optional      | Extra context only. |
+| `receiver.address`              | object                     | Optional      | Include for location-based checks. |
+| `receiver.address.street`       | string                     | Optional      | — |
+| `receiver.address.city`         | string                     | Optional      | — |
+| `receiver.address.state`        | string                     | Optional      | — |
+| `receiver.address.postalCode`   | string                     | Optional      | — |
+| `receiver.address.country`      | string                     | Recommended   | Helps flag high-risk countries. |
+| `receiver.identification`       | object                     | Optional      | Extra KYC info if available. |
+| `receiver.identification.type`  | string                     | Optional      | e.g., Passport, National ID. |
+| `receiver.identification.number`| string                     | Optional      | — |
+| `receiver.identification.country`| string                    | Optional      | Issuing country. |
+| `details`                       | object                     | Optional      | Extra metadata. |
+| `details.purpose`               | string                     | Recommended*  | Helps keyword checks if you didn’t send `description`. |
+| `details.reference`             | string                     | Optional      | Your own reference/invoice number. |
 
 
 201 Created Response
