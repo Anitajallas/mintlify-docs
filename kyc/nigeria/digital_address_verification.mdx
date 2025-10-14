@@ -1,0 +1,57 @@
+## Verify your customers' Address
+
+Adhere's Digital Address verification endpoint provides access to accurate and verified information about your customers'address digitally through various sources to validate information.
+
+#### Request Endpoint
+
+`POST` `{{BASE_URL}}/api/onboarding/nigeria_kyc/digital_address_verification/`
+
+#### Sample Payload
+``` json
+{    
+    "city": "oshodi",
+    "lga": "lagos mainland",
+    "landmark": "lagos",
+    "street": "270 Murtala Muhammed Way, Alagomeji. Yaba",
+    "first_name": "John",
+    "last_name": "Doe",
+    "birth_date": "17/01/1988",
+    "phone_number": "08000000000",
+    "nin": "10000000001",
+    "state": "Lagos"
+
+}
+```
+
+200 OK Response
+
+``` json
+{
+  "status": "success",
+  "data": {
+      id: 1,
+      applicant: {
+          firstname: "John",
+          lastname: "Doe",
+          phone:"08000000000",
+          idType: "nin",
+          idNumber: "10000000001",
+          middlename: "Cameron',
+          gender: "Male",
+          birthdate: '17/01/1988',
+      },
+      createdAt: "",
+      completedAt: "",
+      status: {
+          verification: "In progress",
+      },
+      city: "oshodi",
+      street: "270 Murtala Muhammed Way, Alagomeji. Yaba",
+      lga: "lagos mainland",
+      state: "Lagos",
+      country: "Nigeria",
+      reference: "1732800207805106"
+  }
+}
+```
+

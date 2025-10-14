@@ -72,6 +72,8 @@
                 "kyc/nigeria/Drivers_License",
                 "kyc/nigeria/passport_verification",
                 "kyc/nigeria/nuban",
+                "kyc/nigeria/digital_address_verification",
+                "kyc/nigeria/Digital_Address_Verification_Confirmation",
                 "kyc/nigeria/phone_number_basic",
                 "kyc/nigeria/Phone_Number_Advanced",
                 "kyc/nigeria/CAC",
