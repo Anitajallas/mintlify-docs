@@ -21,6 +21,9 @@ The Transaction Monitoring API endpoint processes transactions in real-time, cal
 - **455** - Transaction Amount Too High (Above Threshold)
 - **456** - Blacklisted Account or Entity
 - **457** - Repeated Failed Transactions (Possible Fraud Attempt)
+- **458** - Micro Draining
+- **459** - Sequential Anomaly
+- **460** - Currency Anomaly
 
 ### Safe Activity code
 - **200** - Transaction Approved (No Issues)
@@ -31,6 +34,7 @@ The Transaction Monitoring API endpoint processes transactions in real-time, cal
 - **212** - Recurring Transaction Approved (Previously Authorized Pattern)
 - **220** - Whitelisted Entity (Pre-approved Account or Business)
 - **221** - Known Customer (Transaction Aligns with User History)
+- **222** - New Customer (No User History)
 
 ### Payload Example Request
 ```json
