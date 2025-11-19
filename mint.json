@@ -33,32 +33,19 @@
   "navigation": [
     {
       "group": "Get Started",
-      "pages": [
-        "introduction",
-        "authentication",
-        "quickstart",
-        "error_codes"
-      ]
+      "pages": ["introduction", "authentication", "quickstart", "error_codes"]
     },
     {
       "group": "Common Use Cases",
-      "pages": [
-        "pages/account_verification",
-        "pages/lending"
-      ]
+      "pages": ["pages/account_verification", "pages/lending"]
     },
     {
       "group": "Libraries",
-      "pages": [
-        "libraries/smartcomply_sdk"
-      ]
+      "pages": ["libraries/smartcomply_sdk"]
     },
     {
       "group": "Biometrics",
-      "pages": [
-          "biometrics/face_comparism",
-          "biometrics/face_liveliness"
-      ]
+      "pages": ["biometrics/face_comparism", "biometrics/face_liveliness"]
     },
     {
       "group": "Onboarding Suite",
@@ -108,29 +95,24 @@
             {
               "group": "Ghana",
               "pages": [
-                "kyc/ghana/driver_license",
-                "kyc/ghana/voter's_identification",
+                "kyc/ghana/driver_License",
+                "kyc/ghana/voter's_Identification",
                 "kyc/ghana/passport",
                 "kyc/ghana/TIN",
                 "kyc/ghana/SSINT",
                 "kyc/ghana/SSINT_with_face",
                 "kyc/ghana/meter_number",
-                "kyc/ghana/meter_payment_history"
-
+                "kyc/ghana/meter_payment_history",
+                "kyc/ghana/ID_Card"
               ]
             },
             {
               "group": "Rwanda",
-              "pages": [
-                "kyc/rwanda/national_id",
-                "kyc/rwanda/passport"
-              ]
+              "pages": ["kyc/rwanda/national_id", "kyc/rwanda/passport"]
             },
             {
               "group": "Uganda",
-              "pages": [
-                "kyc/uganda/national_id"
-              ]
+              "pages": ["kyc/uganda/national_id"]
             }
           ]
         },
@@ -213,7 +195,7 @@
       ]
     },
     {
-      "group" : "Loan Fraud Check",
+      "group": "Loan Fraud Check",
       "pages": [
         "loan/introduction",
         "loan/individual_fraud_check",
