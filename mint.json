@@ -165,7 +165,8 @@
           "group": "Transaction Monitoring",
           "pages": [
             "transaction/transaction_monitoring/transaction_monitoring_overview",
-            "transaction/transaction_monitoring/post_transaction_request"
+            "transaction/transaction_monitoring/post_transaction_request",
+            "transaction/transaction_monitoring/user_journey"
           ]
         },
         {
