@@ -107,15 +107,8 @@
                 "kyc/ghana/meter_payment_history",
                 "kyc/ghana/ID_Card"
               ]
-            },
-            {
-              "group": "Rwanda",
-              "pages": ["kyc/rwanda/national_id", "kyc/rwanda/passport"]
-            },
-            {
-              "group": "Uganda",
-              "pages": ["kyc/uganda/national_id"]
             }
+           
           ]
         },
         {
