@@ -1,0 +1,145 @@
+## Overview
+
+The **User Journey API** tracks and validates critical steps in a user's transaction flow through defined API checkpoints. It ensures that expected events occur in the correct sequence and flags suspicious or out-of-order behavior in real time.
+
+## Authentication
+
+All endpoints require API key authentication.
+
+**Header**
+
+**x-access-token**: YOUR_API_KEY
+
+## Submit event
+
+Submit a user journey event for fraud assessment.
+
+### Request Endpoint
+**POST:** `{{BASE_URL}}/api/v1/journey/event/`
+
+- **Media-Type:** `application/json`
+
+### Payload Example Request
+```json
+{
+  "user_id": "string",
+  "session_id": "string",
+  "event": "LOGIN | OTP_VERIFY | PAYMENT_INIT | PAYMENT_COMPLETE | LOGOUT",
+  "timestamp": "ISO 8601 datetime",
+  "device_id": "string (optional)",
+  "ip_address": "string (optional)",
+  "metadata": {
+    "amount": "number (optional)",
+    "currency": "string (optional)"
+  }
+}
+```
+
+201 Created Response
+```json
+{
+  "status": "Success",
+  "data": {
+    "status": "allow | block | review",
+    "risk_score": 0.0-1.0,
+    "reason": "string",
+    "session_state": "string",
+    "alert_triggered": boolean
+  },
+  "message": "success"
+}
+```
+
+
+## Get Session State
+
+Retrieve the current state of a session.
+
+### Request Endpoint
+**GET:** `{{BASE_URL}}/api/v1/journey/session/{session_id}/`
+
+### 200 Response
+```json
+{
+  "status": "success",
+  "data": {
+    "session_id": "string",
+    "user_id": "string",
+    "current_state": "string",
+    "events": [...],
+    "start_time": "ISO 8601 datetime"
+  },
+  "message": "success"
+}
+```
+
+
+## Clear Session
+
+Clear all stored data for a session.
+
+### Request Endpoint
+**DELETE:** `{{BASE_URL}}/api/v1/journey/session/{session_id}/`
+
+### 204 No Content Response
+```json
+{
+  "message": "Session cleared"
+}
+```
+
+
+## User Analytics
+
+Retrieve fraud and risk statistics for a user.
+
+### Request Endpoint
+**GET:** `{{BASE_URL}}/api/v1/journey/analytics/user/{user_id}/`
+
+### 200 Response
+```json
+{
+  "status": "success",
+  "data": {
+    "user_id": "string",
+    "total_events": number,
+    "average_risk_score": number,
+    "blocked_events": number,
+    "reviewed_events": number,
+    "total_sessions": number,
+    "average_session_risk": number
+  },
+  "message": "Success"
+}
+```
+
+## Health check
+
+Check service health and dependencies.
+
+### Request Endpoint
+**GET:** `{{BASE_URL}}/api/v1/journey/health/`
+
+### 200 Response
+```json
+{
+  "status": "healthy | degraded",
+  "broker": "connected | disconnected",
+  "database": "connected | disconnected",
+  "timestamp": "ISO 8601 datetime"
+}
+```
+
+### Rate Limiting
+- 100 events per minute per user
+- Configurable per client on the Adhere GUI
+
+### Error Codes
+- **200 Success:** Data retrieved successfully.
+- **201 Created:** Event processed successfully.
+- **400 Bad Request:** Missing, malformed, or invalid fields in the request payload.
+- **401 Unauthorized:** Authentication failed or API key is missing or invalid.
+- **403 Forbidden:** The authenticated client does not have permission to access this resource.
+- **404 Not Found:** The requested resource or endpoint does not exist.
+- **429 Too Many Requests:** Rate limit exceeded. Please retry after the specified cooldown period.
+- **500 Internal Server Error:** Unexpected error during processing. The request body is not set correctly.
