@@ -21,14 +21,14 @@ Smartcomply uses an API key to secure API requests. You will need to include you
 ```bash
 curl -X GET "https://adhere-api.smartcomply.com/api/v1/endpoint" \
 -H "x-access-token: YOUR_SECRET_KEY" \
--H "Content-Type: application/json" 
+-H "Content-Type: application/json"
 ```
 
 ## Best Practices
 
-> Keep your secret key secure: Store it in environment variables and avoid hard-coding it in your application.
->
-> Rotate keys periodically: To enhance security, consider rotating your API keys periodically.
->
-> Use different keys for different environments: This helps in isolating issues and managing access control.
+* **Keep your secret key secure**: Store it in environment variables and avoid hard-coding it in your application.
+
+* **Rotate keys periodically**: To enhance security, consider rotating your API keys periodically.
+
+* **Use different keys for different environments**: This helps in isolating issues and managing access control.
 

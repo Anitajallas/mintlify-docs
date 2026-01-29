@@ -33,7 +33,13 @@
   "navigation": [
     {
       "group": "Get Started",
-      "pages": ["introduction", "authentication", "quickstart", "error_codes"]
+      "pages": [
+        "introduction",
+        "quickstart",
+        "authentication",
+        "error_codes",
+        "webhooks"
+      ]
     },
     {
       "group": "Common Use Cases",
@@ -71,7 +77,6 @@
                 "kyc/nigeria/tin",
                 "kyc/nigeria/Voters_ID",
                 "kyc/nigeria/BVN_with_face"
-                
               ]
             },
             {
@@ -104,7 +109,6 @@
                 "kyc/ghana/ID_Card"
               ]
             }
-           
           ]
         },
         {
