@@ -177,6 +177,55 @@ All webhooks follow a consistent JSON structure:
 *   **Events**:
     *   `suspicious_transaction`: Triggered when a transaction is processed and deemed suspicious.
 
+        ```json
+        {
+          "data": {
+            "id": 23,
+            "is_internal_blacklisted": false,
+            "is_blacklisted_by": null,
+            "case_id": "#8N2ZI6",
+            "case_sla": "2025-08-23T09:39:31.551479Z",
+            "case_status": "open",
+            "transaction_id": "9201634916397893719",
+            "amount": 12345.0,
+            "currency": "EUR",
+            "transaction_type": "card",
+            "account_type": "individual",
+            "customer_name": "David Seaman",
+            "customer_email": "davidseaman@example.com",
+            "customer_ip_address": "192.168.0.8",
+            "customer_location": "Yaba, LG",
+            "origin_account_no": "4321567809",
+            "origin_bank_code": "327",
+            "transaction_description": "Payment for order #78901",
+            "destination_account_no": "0123456789",
+            "destination_bank_code": "723",
+            "merchant_name": null,
+            "merchant_location": null,
+            "status": "suspicious",
+            "card_bin": null,
+            "card_last4": null,
+            "bvn": "7890123456",
+            "fraud_percent": null,
+            "tag": [
+              "1 rule(s) triggered"
+            ],
+            "sender_blacklisted": false,
+            "receiver_blacklisted": false,
+            "rules_flagged": [
+              "Any transaction by an individual that exceeds an amount {a}"
+            ],
+            "additional_info": {},
+            "date_created": "2025-08-20T09:39:31.425545Z",
+            "date_updated": "2026-01-16T13:46:07.388489Z",
+            "branch": 2
+          },
+          "event": "suspicious_transaction",
+          "module": "transaction_monitoring",
+          "success": true
+        }
+        ```
+
 ## Testing Locally
 
 Before deploying to production, we recommend testing your webhook implementation locally.
