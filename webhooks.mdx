@@ -1,0 +1,80 @@
+---
+title: 'Webhooks'
+description: 'Learn how to receive and verify webhook notifications from Adhere.'
+---
+
+Adhere uses webhooks to notify your application when specific events occur. This allows you to build automated workflows and integrate Adhere closely with your system.
+
+## Setup & Integration
+
+To start receiving webhook notifications, you need to configure a webhook URL and a Hash Key in your Adhere dashboard under the **Integrations** section.
+
+1.  **Webhook URL**: The endpoint on your server where Adhere will send POST requests.
+2.  **Hash Key**: A secret key used to sign the webhook payload. You must keep this secure and use it to verify that requests are coming from Adhere.
+
+## Security & Verification
+
+All webhook requests from Adhere include a `X-Hub-Signature` header. This header contains the HMAC SHA256 signature of the request body, signed with your Hash Key.
+
+### Verification Steps (Python/Flask Example)
+
+```python
+import hmac
+import hashlib
+import base64
+from flask import request, abort
+
+def verify_webhook(request, hash_key):
+    sig_header = request.headers.get("X-Hub-Signature")
+    if not sig_header:
+        abort(401, "Missing signature")
+
+    # The header format is "sha256=<signature>"
+    _, _, received_sig = sig_header.partition("=")
+
+    # Compute the HMAC SHA256 digest of the raw request body
+    raw_body = request.get_data()
+    digest = hmac.new(
+        hash_key.encode("utf-8"),
+        raw_body,
+        hashlib.sha256
+    ).digest()
+
+    expected_sig = base64.b64encode(digest).decode("utf-8")
+
+    if not hmac.compare_digest(received_sig, expected_sig):
+        abort(401, "Invalid signature")
+```
+
+## Event Payload Structure
+
+All webhooks follow a consistent JSON structure:
+
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| `success` | boolean | Indicates if the event was processed successfully. |
+| `module` | string | The Adhere module that triggered the event (e.g., `transaction_monitoring`, `kyc`). |
+| `event` | string | The specific event type. |
+| `data` | object | The actual payload data (e.g., transaction details, KYC results). |
+
+## Supported Events
+
+### Transaction Monitoring
+*   **Module**: `transaction_monitoring`
+*   **Events**:
+    *   `suspicious_transaction`: Triggered when a transaction is processed and it's status is suspicious.
+    *   `clean_transaction`: Triggered when a transaction is processed and it's status is clean.
+
+  The `data.status` field will also indicate if it is `clean` or `suspicious`.
+
+### KYC
+*   **Module**: `kyc`
+*   **Events**:
+    *   `sanctions`: Triggered when a sanctions screening result is ready.
+
+## Best Practices
+
+*   **Acknowledge Immediately**: Your server should return a `200 OK` response as quickly as possible. Heavy processing should be handled asynchronously.
+*   **Handle Retries**: Adhere will retry failed webhook deliveries (non-2xx responses) up to 3 times with a backoff.
+*   **Verify Signatures**: Always verify the `X-Hub-Signature` to prevent unauthorized requests.
+*   **Use Idempotency**: Ensure your system can handle the same webhook multiple times safely.
