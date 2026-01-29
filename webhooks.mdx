@@ -3,22 +3,49 @@ title: 'Webhooks'
 description: 'Learn how to receive and verify webhook notifications from Adhere.'
 ---
 
+<Info>
+  **In a nutshell:** Webhooks allow you to set up a notification system that can be used to receive updates on certain requests made to the Adhere API.
+</Info>
+
 Adhere uses webhooks to notify your application when specific events occur. This allows you to build automated workflows and integrate Adhere closely with your system.
+
+## Why use Webhooks?
+
+Generally, when you make a request to an API endpoint, you expect to get a near-immediate response. However, some requests may take a long time to process. In order to prevent a timeout error, a pending response is returned. Since your records need to be updated with the final state of the request, you need to either:
+
+1.  **Polling**: Make a request for an update at regular intervals.
+2.  **Webhooks**: Listen to events by using a webhook URL.
+
+<Tip>
+  We recommend using webhooks over polling. Webhooks are more efficient, reduce network overhead, and ensure your system is updated immediately when an event occurs.
+</Tip>
 
 ## Setup & Integration
 
-To start receiving webhook notifications, you need to configure a webhook URL and a Hash Key in your Adhere dashboard under the **Integrations** section.
+To start receiving webhook notifications, follow these steps to configure your environment:
 
-1.  **Webhook URL**: The endpoint on your server where Adhere will send POST requests.
-2.  **Hash Key**: A secret key used to sign the webhook payload. You must keep this secure and use it to verify that requests are coming from Adhere.
+<Steps>
+  <Step title="Configure Webhook URL">
+    Provide the endpoint on your server where Adhere will send `POST` requests. This should be a publicly accessible URL.
+  </Step>
+  <Step title="Set Hash Key">
+    A secret key used to sign the webhook payload. You must keep this secure and use it to verify that requests are coming from Adhere.
+  </Step>
+  <Step title="Save Configuration">
+    Save your settings in the Adhere dashboard under the **Integrations** section.
+  </Step>
+</Steps>
 
 ## Security & Verification
 
 All webhook requests from Adhere include a `X-Hub-Signature` header. This header contains the HMAC SHA256 signature of the request body, signed with your Hash Key.
 
-### Verification Steps (Python/Flask Example)
+### Verifying Signatures
 
-```python
+To ensure that a webhook request is genuinely from Adhere, you should verify the signature before processing the payload.
+
+<CodeGroup>
+```python Python
 import hmac
 import hashlib
 import base64
@@ -46,6 +73,92 @@ def verify_webhook(request, hash_key):
         abort(401, "Invalid signature")
 ```
 
+```javascript Node.js
+const crypto = require('crypto');
+
+function verifyWebhook(req, hashKey) {
+  const signature = req.headers['x-hub-signature'];
+  if (!signature) {
+    throw new Error('Missing signature');
+  }
+
+  const [algo, receivedSig] = signature.split('=');
+  const hmac = crypto.createHmac('sha256', hashKey);
+  const digest = hmac.update(req.rawBody).digest('base64');
+
+  if (receivedSig !== digest) {
+    throw new Error('Invalid signature');
+  }
+}
+```
+
+```php PHP
+function verify_webhook($request_body, $hash_key, $received_sig) {
+    $expected_sig = base64_encode(hash_hmac('sha256', $request_body, $hash_key, true));
+
+    if (!hash_equals($received_sig, $expected_sig)) {
+        http_response_code(401);
+        exit("Invalid signature");
+    }
+}
+```
+
+```go Go
+import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/base64"
+	"io/ioutil"
+	"net/http"
+	"strings"
+)
+
+func verifyWebhook(w http.ResponseWriter, r *http.Request, hashKey string) bool {
+	sigHeader := r.Header.Get("X-Hub-Signature")
+	if sigHeader == "" {
+		return false
+	}
+
+	// Header format is "sha256=<signature>"
+	parts := strings.Split(sigHeader, "=")
+	if len(parts) != 2 {
+		return false
+	}
+	receivedSig := parts[1]
+
+	body, _ := ioutil.ReadAll(r.Body)
+	h := hmac.New(sha256.New, []byte(hashKey))
+	h.Write(body)
+	expectedSig := base64.StdEncoding.EncodeToString(h.Sum(nil))
+
+	return hmac.Equal([]byte(receivedSig), []byte(expectedSig))
+}
+```
+
+```csharp .NET
+using System.Security.Cryptography;
+using System.Text;
+
+public bool VerifyWebhook(string requestBody, string hashKey, string receivedSig)
+{
+    var keyBytes = Encoding.UTF8.GetBytes(hashKey);
+    var bodyBytes = Encoding.UTF8.GetBytes(requestBody);
+
+    using (var hmac = new HMACSHA256(keyBytes))
+    {
+        var hashBytes = hmac.ComputeHash(bodyBytes);
+        var expectedSig = Convert.ToBase64String(hashBytes);
+
+        return expectedSig == receivedSig;
+    }
+}
+```
+</CodeGroup>
+
+<Warning>
+  Always verify the `X-Hub-Signature` header to prevent unauthorized requests from interacting with your server.
+</Warning>
+
 ## Event Payload Structure
 
 All webhooks follow a consistent JSON structure:
@@ -62,15 +175,22 @@ All webhooks follow a consistent JSON structure:
 ### Transaction Monitoring
 *   **Module**: `transaction_monitoring`
 *   **Events**:
-    *   `suspicious_transaction`: Triggered when a transaction is processed and it's status is suspicious.
-    *   `clean_transaction`: Triggered when a transaction is processed and it's status is clean.
+    *   `suspicious_transaction`: Triggered when a transaction is processed and deemed suspicious.
 
-  The `data.status` field will also indicate if it is `clean` or `suspicious`.
+## Testing Locally
 
+Before deploying to production, we recommend testing your webhook implementation locally.
+
+1.  **Use ngrok**: Use [ngrok](https://ngrok.com/) to create a secure tunnel to your local server.
+2.  **Set Webhook URL**: Update your Adhere dashboard with the ngrok URL (e.g., `https://your-subdomain.ngrok-free.app/webhooks`).
+3.  **Inspect Requests**: Use the ngrok dashboard or [Webhook.site](https://webhook.site/) to inspect the payloads and headers sent by Adhere.
 
 ## Best Practices
 
-*   **Acknowledge Immediately**: Your server should return a `200 OK` response as quickly as possible. Heavy processing should be handled asynchronously.
-*   **Handle Retries**: Adhere will retry failed webhook deliveries (non-2xx responses) up to 3 times with a backoff.
-*   **Verify Signatures**: Always verify the `X-Hub-Signature` to prevent unauthorized requests.
-*   **Use Idempotency**: Ensure your system can handle the same webhook multiple times safely.
+*   **Acknowledge Immediately**: Your server should return a `200 OK` response as quickly as possible. Heavy processing should be handled asynchronously using a task queue.
+*   **Handle Retries**: Adhere will retry failed webhook deliveries (non-2xx responses) up to 3 times with an exponential backoff.
+*   **Use Idempotency**: Ensure your system can handle the same webhook multiple times safely. Use the event's unique ID to track processed events.
+
+<Note>
+  If your server does not return a 2xx response, Adhere will consider the delivery as failed and will attempt to retry.
+</Note>
