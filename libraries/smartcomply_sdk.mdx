@@ -1,60 +1,131 @@
 ## Available Library/SDK for Quick Integration
 
-SDKs refer to software development kits. These are sets of tools that allow developers to integrate with our program.
+The Adhere Web SDK provides a seamless, secure way to verify user presence (Liveness) and match their identity against official documents. Our SDK handles the heavy lifting of frame capture, face extraction, and secure transmission, while our backend uses AI to verify results asynchronously.
 
-The first step to integrating with our SDKs at Prembly is to visit the SDK libraries below to select the language your system supports.
+#### Getting started
 
-Our SDKs support **React Native**, **Flutter SDK**, **React JS**.
+To initialize the SDK, you will need:
 
-You would require a **Configuration ID**, **Webhook URL**, and **Live Public Key** to successfully integrate and use the SDKs.
+- **Public API Key - `apiKey`:** Found in your Adhere Dashboard settings.
+- **Configuration ID - `clientID`:** The unique ID for your specific liveness workflow.
 
-### Available SDK/Libraries
+#### Installation
 
-- **React Native SDK**  
-  [https://www.npmjs.com/package/react-native-identity-kyc](https://www.npmjs.com/package/react-native-identity-kyc)
-
-- **Flutter SDK**  
-  [https://pub.dev/packages/flutter_identity_kyc](https://pub.dev/packages/flutter_identity_kyc)
-
-- **React JS**  
-  [https://www.npmjs.com/package/react-identity-kyc](https://www.npmjs.com/package/react-identity-kyc)
-
----
-
-### Sample Script
-
-Below is a sample script to initiate the widget on your application.
+For web applications, include our library via CDN or install it via NPM (upcoming).
 
 ```html
-<script>
-function initiateWidget() {  
-  var verificationEngine = IdentityKYC.verify({  
-    merchant_key: "your public key – only live public key is supported for now",  
-    first_name: "",  
-    last_name: "",  
-    email: "",
-    config_id: "your widget id - you can get this from the checker widget page on the dashboard",
-    user_ref: "",  
-    callback: function (response) {  
-      console.log("callback Response", response);  
-      if(response.status === 'success'){  
-        alert("Information Verified");  
-      } else {  
-        alert(response.message);  
-      }  
-    },  
-  });  
-}
-</script>
+<script src="https://cdn.adhere.com/sdk/v1/liveness.js"></script>
 ```
-Below is a sample widget on your application.
-<img
-  className="block dark:hidden"
-  src="/images/liveness.jpeg"
-  alt="Hero Light"
-/>
-<img
-  className="hidden dark:block"
-  src="/images/liveness.jpeg"
-  alt="Hero Dark"
-/>
+
+#### Implementation
+
+Initialize the verification engine by calling the sdk.launch() method. This launches a secure overlay that guides the user through the liveness challenges (e.g., blinking, head rotation) and document upload.
+
+```javascript
+const sdk = new AdhereSDK({
+  apiKey: "your-api-key",
+  clientID: "your-client-id",
+  // Callback Props
+  onSuccess: (data) => {
+    console.log("Process complete!", data.entryId);
+  },
+  onError: (err) => {
+    alert("Something went wrong: " + err.message);
+  },
+  onClose: () => {
+    console.log("User exited the widget early.");
+  },
+});
+
+// Launch SDK
+document.getElementById("test-launch-btn").onclick = () => sdk.launch();
+```
+
+## Webhook Integration
+
+Since face matching involves complex asynchronous processing, the final result is sent to your server via a Webhook.
+
+#### Payload Schema
+
+When the verification is complete, Adhere will send a POST request to your configured Webhook URL.
+
+**Sample JSON Payload**
+
+```JSON
+{
+  "event": "liveness.completed",
+  "data": {
+    "entry_id": 43,
+    "status": "passed",
+    "is_verified": true,
+    "match_score": 0.31375,
+    "metadata": {
+      "user-agent": "",
+      "ip_address": "192.168.0.1",
+    }
+  },
+  "timestamp": "2026-02-17T02:13:58Z"
+}
+```
+
+#### Field definitions
+
+| Field         | Description                                                               | Type      |
+| ------------- | ------------------------------------------------------------------------- | --------- |
+| `status`      | The status of the session (passed, failed, expired).                      | `string`  |
+| `is_verified` | Whether we successfully matched the selfie to the ID.                     | `boolean` |
+| `match_score` | The "Distance" between faces. Lower is better. Facenet threshold is 0.40. | `float`   |
+| `entry_id`    | Unique identifier for this verification record.                           | `String`  |
+
+#### Explaining the Match Score (Distance)
+
+**Match score** is a measure of "how different" two faces are. It is represents the mathematical distance between the selfie and the ID. A lower score indicates a higher probability of a match. While our system flags is_verified: true for any score below `0.40`, we recommend a manual audit for any scores falling in the `Borderline` range (`0.40 - 0.50`) to account for extreme lighting or age differences in documents.
+
+| Score Range     | Interpretation   | Action Recommended |
+| --------------- | ---------------- | ------------------ |
+| **0.0 - 0.25**  | Identical match  | Auto-Approve       |
+| **0.25 - 0.40** | Strong match     | Auto-Approve       |
+| **0.40 - 0.50** | Borderline match | **Manual Review**  |
+| **0.50+**       | Different people | Reject             |
+
+## Security & Best Practices
+
+#### Verify the Source - Webhook Signatures
+
+To ensure that webhook requests are coming from Adhere, we include an `X-Adhere-Signature` in the header of every request. You should verify this signature before processing the data.
+
+**Verification Steps**
+
+- Retrieve your `webhook_secret` from the Adhere Dashboard.
+
+- Get the raw body of the POST request.
+
+- Compute the HMAC hex digest using the SHA256 hash function and your secret key.
+
+- Compare your computed signature with the one in the `X-Adhere-Signature` header.
+
+**Example (Node.js/Express)**
+
+```javascript
+app.post("/webhook", (req, res) => {
+  const signature = req.headers["x-adhere-signature"];
+  const secret = process.env.ADHERE_WEBHOOK_SECRET;
+
+  const computedSignature = crypto
+    .createHmac("sha256", secret)
+    .update(JSON.stringify(req.body))
+    .digest("hex");
+
+  if (signature === computedSignature) {
+    // Legit request
+    res.status(200).send("Verified");
+  } else {
+    // Possible spoofing attempt
+    res.status(401).send("Invalid Signature");
+  }
+});
+```
+
+#### Handle Retries
+
+Our systems expect a 200 OK response. If your server is down, we will retry the notification 3 times with exponential backoff (5, 15, and 30 minutes).
