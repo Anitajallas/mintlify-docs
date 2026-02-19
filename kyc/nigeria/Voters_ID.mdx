@@ -1,6 +1,6 @@
 ## Verify your customers' identities using their Voters' Identification Number
 
-Leverage Adhere's VNIN verification endpoint to securely retrieve and validate customer details using their Voters' Identification Number (VIN).
+Adhere's Voters' Identification Number verification endpoint provides access to accurate and verified information about your customers' identities digitally through various sources to validate information.
 
 #### Request Endpoint
 
@@ -10,12 +10,12 @@ Leverage Adhere's VNIN verification endpoint to securely retrieve and validate c
 
 ```json
 {
-  "voters_id": "91F6B1F5BE295355586",
-  "first_name": "John",
-  "last_name": "Doe",
-  "date_of_birth": "1994-08-11",
-  "lga": "Lagos",
-  "state": "Lagos"
+	"voters_id": "91F6B1F5BE295355586",
+	"first_name": "John",
+	"last_name": "Doe",
+	"date_of_birth": "1994-08-11",
+	"lga": "Lagos",
+	"state": "Lagos"
 }
 ```
 
@@ -23,21 +23,19 @@ Leverage Adhere's VNIN verification endpoint to securely retrieve and validate c
 
 ```json
 {
-  "status": "success",
-  "data": {
-    "full_name": "JOHN DOE S",
-    "voter_identification_number": "90F5B1C5B1234567890",
-    "gender": "Male",
-    "occupation": "STUDENT",
-    "time_of_registration": "2011-01-18 13:59:46",
-    "state": "ONDO",
-    "local_government": "IDANRE",
-    "registration_area_ward": "ISALU JIGBOKIN",
-    "polling_unit": "OJAJIGBOKIN, O/S IN FRONT OF ABANA I & II",
-    "polling_unit_code": "28/08/08/005"
-  },
-  "message": "Voters Identification details retrieved successfully",
+	"status": "success",
+	"data": {
+		"full_name": "JOHN DOE S",
+		"voter_identification_number": "90F5B1C5B1234567890",
+		"gender": "Male",
+		"occupation": "STUDENT",
+		"time_of_registration": "2011-01-18 13:59:46",
+		"state": "ONDO",
+		"local_government": "IDANRE",
+		"registration_area_ward": "ISALU JIGBOKIN",
+		"polling_unit": "OJAJIGBOKIN, O/S IN FRONT OF ABANA I & II",
+		"polling_unit_code": "28/08/08/005"
+	},
+	"message": "Voters Identification details retrieved successfully"
 }
 ```
-
-
