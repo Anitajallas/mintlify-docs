@@ -1,64 +1,59 @@
-## Verify your customers' identities using their Bank Verification Number (BVN) With Face
+## Verify your customers' identities using their Bank Verification Number (BVN) With Face Match
 
-Adhere's BVN verification endpoint enables businesses to conduct accurate and reliable KYC (Know Your Customer) processes and user verification. This service ensures the validation of a customer's Bank Verification Number (BVN), offering a dependable solution for fraud prevention and seamless onboarding.
-
-The endpoint provides access to comprehensive personal information, including name, phone number, date of birth, National Identification Number (NIN), local government area of origin, state of origin, customer image, and more. It also supports the auto-completion of account data, helping to identify users linked to specific financial institutions while enhancing both security and operational efficiency.
+Adhere's Bank Verification Number (BVN) with Face Match verification endpoint provides access to accurate and verified information about your customers' identities digitally through various sources to validate information. This endpoint allows you to verify your customers' identities using their BVN and a facial image, ensuring a higher level of security and accuracy in the verification process.
 
 #### Request Endpoint
 
 `POST` `{{BASE_URL}}/api/onboarding/nigeria_kyc/bvn_with_face/`
 
-
 ### Sample Request
 
 ```json
 {
-  "bvn": "22000000001",
-  "image_upload": "https://res.cloudinary.com/dh3i1wodq/image/upload/v1675410981/profile.jpg"
+	"bvn": "22000000001",
+	"image_upload": "https://res.cloudinary.com/dh3i1wodq/image/upload/v1675410981/profile.jpg"
 }
 ```
 
 200 OK Response
 
 ```json
-
 {
-    "status": "success",
-    "data": {
-        "firstName": "ABRAHAM",
-        "lastName": "OMOLE",
-        "middleName": "ISAAC",
-        "dateOfBirth": "19-Sept-1909",
-        "phoneNumber1": "09011001100",
-        "email": null,
-        "gender": "Male",
-        "stateOfOrigin": "Ogun State",
-        "bvn": "22200000000",
-        "nin": null,
-        "registrationDate": "2017-09-05",
-        "lgaOfOrigin": "Ado-Odo/Ota",
-        "maritalStatus": "Single",
-        "watchListed": false,
-        "base64Image": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL=",
-        "title": "",
-        "stateOfResidence": "",
-        "enrollmentBranch": "",
-        "levelOfAccount": "",
-        "residentialAddress": "",
-        "enrollmentBank": "",
-        "nameOnCard": "",
-        "phoneNumber2": "",
-        "nationality": "",
-        "lgaOfResidence": "",
-        "number": "22200000000",
-        "face_data": {
-            "status": true,
-            "response_code": "00",
-            "message": "Fatch Match",
-            "confidence": 99.99658203125
-        }
-    },
-    "message": "Bank Verification Number details retrieved successfully"
+	"status": "success",
+	"data": {
+		"firstName": "ABRAHAM",
+		"lastName": "OMOLE",
+		"middleName": "ISAAC",
+		"dateOfBirth": "19-Sept-1909",
+		"phoneNumber1": "09011001100",
+		"email": null,
+		"gender": "Male",
+		"stateOfOrigin": "Ogun State",
+		"bvn": "22200000000",
+		"nin": null,
+		"registrationDate": "2017-09-05",
+		"lgaOfOrigin": "Ado-Odo/Ota",
+		"maritalStatus": "Single",
+		"watchListed": false,
+		"base64Image": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL=",
+		"title": "",
+		"stateOfResidence": "",
+		"enrollmentBranch": "",
+		"levelOfAccount": "",
+		"residentialAddress": "",
+		"enrollmentBank": "",
+		"nameOnCard": "",
+		"phoneNumber2": "",
+		"nationality": "",
+		"lgaOfResidence": "",
+		"number": "22200000000",
+		"face_data": {
+			"status": true,
+			"response_code": "00",
+			"message": "Fatch Match",
+			"confidence": 99.99658203125
+		}
+	},
+	"message": "Bank Verification Number details retrieved successfully"
 }
 ```
-
