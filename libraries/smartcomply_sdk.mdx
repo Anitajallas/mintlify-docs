@@ -18,28 +18,74 @@ For web applications, include our library via CDN or install it via NPM (upcomin
 ```
 
 #### Implementation
+**Create a Session**
 
-Initialize the verification engine by calling the sdk.launch() method. This launches a secure overlay that guides the user through the liveness challenges (e.g., blinking, head rotation) and document upload.
+Before initializing the SDK, your server must request a short-lived `sessionToken`.
+- **Endpoint:** `POST /v1/sdk/sessions/create/`
+
+- **Header**: `Authorization: Api-Key <YOUR_API_KEY>`
+
+- **Body**: `{"client_id": "<YOUR_SDK_CONFIG_ID>"}`
+
+*Response:*
+
+```JSON
+{ "token": "4505e4b3-f92b-46e5-9008-a98eeaabb6e5" }
+```
+
+**Initialize the SDK**
+
+Pass the `token` received into the SDK constructor. Initialize the verification engine by calling the `sdk.launch()` method. This launches a secure overlay that guides the user through the liveness challenges (e.g., blinking, head rotation) and document upload.
 
 ```javascript
 const sdk = new AdhereSDK({
-  apiKey: "your-api-key",
-  clientID: "your-client-id",
-  // Callback Props
+  session: "4505e4b3-f92b-46e5-9008-a98eeaabb6e5",
+  timeout: 15000, // can be undefined
+
+  // callback Props
   onSuccess: (data) => {
-    console.log("Process complete!", data.entryId);
+    console.log("Verification submitted:", data);
   },
-  onError: (err) => {
-    alert("Something went wrong: " + err.message);
-  },
-  onClose: () => {
-    console.log("User exited the widget early.");
-  },
+
+  onError: (error) => {
+    console.error("Something went wrong: " + error.message);
+  }
 });
 
-// Launch SDK
+// launch SDK
 document.getElementById("test-launch-btn").onclick = () => sdk.launch();
 ```
+
+#### Callback Specifications
+
+**onSuccess(payload)**
+
+Triggered when the session is successfully completed.
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| data | `SuccessDataType` | The created liveness entry session. |
+| status | `Integer` | 200 |
+| message | `String` | Human-readable message |
+
+```typescript
+type SuccessDataType = {
+  entryId: number;
+  identifier: string;
+  identifier_type: string;
+  video_url: string;
+  autoshot_url: string;
+  document_url: string;
+}
+```
+
+**onError(error)**
+
+Triggered during network failures, permission denials, or session expiration.
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| error | `Error` | The error object |
+| code | `String` | **Unique error code**: e.g. AUTH_ERROR, TIMEOUT_ERROR, ENTRY_CREATION_ERROR, SUBMISSION_ERROR, or UNKNOWN_ERROR. |
+| message | `String` | Human-readable explanation of the error. |
 
 ## Webhook Integration
 
@@ -128,4 +174,4 @@ app.post("/webhook", (req, res) => {
 
 #### Handle Retries
 
-Our systems expect a 200 OK response. If your server is down, we will retry the notification 3 times with exponential backoff (5, 15, and 30 minutes).
+Our systems expect a 200 OK response. If your server is down, we will retry the notification 3 times with exponential backoff (10 minute cap) + jitter.
