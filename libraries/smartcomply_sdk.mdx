@@ -1,6 +1,6 @@
 ## Available Library/SDK for Quick Integration
 
-The Adhere Web SDK provides a seamless, secure way to verify user presence (Liveness) and match their identity against official documents. Our SDK handles the heavy lifting of frame capture, face extraction, and secure transmission, while our backend uses AI to verify results asynchronously.
+The Adhere Web SDK provides a seamless, secure way to verify user presence (Liveness) and match their identity against official documents. Our SDK handles the heavy lifting of frame capture, face extraction, secure transmission, and verification asynchronously.
 
 #### Getting started
 
@@ -11,21 +11,28 @@ To initialize the SDK, you will need:
 
 #### Installation
 
-For web applications, include our library via CDN or install it via NPM (upcoming).
+For web applications, install our library via NPM.
+- **Web**: [@smartcomply/web-sdk](https://www.npmjs.com/package/@smartcomply/web-sdk)
+- **React-Native**: (Upcoming)
 
 ```html
-<script src="https://cdn.adhere.com/sdk/v1/liveness.js"></script>
+npm i @smartcomply/web-sdk@latest
 ```
 
 #### Implementation
 **Create a Session**
 
 Before initializing the SDK, your server must request a short-lived `sessionToken`.
-- **Endpoint:** `POST /v1/sdk/sessions/create/`
+- **Base URL:** `https://adhere-api.smartcomply.com`
+
+- **Endpoint:** `POST {BASE_URL}/v1/sdk/sessions/create/`
 
 - **Header**: `Authorization: Api-Key <YOUR_API_KEY>`
 
 - **Body**: `{"client_id": "<YOUR_SDK_CONFIG_ID>"}`
+
+- **Content-Type:** `application/json`
+
 
 *Response:*
 
@@ -38,6 +45,8 @@ Before initializing the SDK, your server must request a short-lived `sessionToke
 Pass the `token` received into the SDK constructor. Initialize the verification engine by calling the `sdk.launch()` method. This launches a secure overlay that guides the user through the liveness challenges (e.g., blinking, head rotation) and document upload.
 
 ```javascript
+import AdhereSDK from "@smartcomply/web-sdk";
+
 const sdk = new AdhereSDK({
   session: "4505e4b3-f92b-46e5-9008-a98eeaabb6e5",
   timeout: 15000, // can be undefined
@@ -49,6 +58,10 @@ const sdk = new AdhereSDK({
 
   onError: (error) => {
     console.error("Something went wrong: " + error.message);
+  }
+
+  onExpire: () => {
+    console.error("Verification session expired");
   }
 });
 
