@@ -98,14 +98,6 @@
             {
               "group": "Ghana",
               "pages": [
-                "kyc/ghana/driver_License",
-                "kyc/ghana/voter's_Identification",
-                "kyc/ghana/passport",
-                "kyc/ghana/TIN",
-                "kyc/ghana/SSINT",
-                "kyc/ghana/SSINT_with_face",
-                "kyc/ghana/meter_number",
-                "kyc/ghana/meter_payment_history",
                 "kyc/ghana/ID_Card"
               ]
             }
