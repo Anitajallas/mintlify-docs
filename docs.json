@@ -183,6 +183,10 @@
                 "group": "Common Use Cases",
                 "pages": ["pages/account_verification", "pages/lending"]
               },
+               {
+                "group": "Biometrics",
+                "pages": ["v1/biometrics/face_comparism", "v1/biometrics/face_liveliness"]
+              },
               {
                 "group": "Onboarding Suite",
                 "pages": [
@@ -265,6 +269,20 @@
                 "group": "Fraud & Transaction Monitoring",
                 "pages": [
                   {
+                    "group": "Threshold",
+                    "pages": [
+                      "v1/transaction/threshold/Get_Threshold",
+                      "v1/transaction/threshold/Post_Set_Threshold"
+                    ]
+                  },
+                  {
+                    "group": "Limit",
+                    "pages": [
+                      "v1/transaction/limit/Get_Limit",
+                      "v1/transaction/limit/Post_Set_Limit"
+                    ]
+                  },
+                  {
                     "group": "Card Transaction",
                     "pages": [
                       "v1/transaction/card_transaction/card_transaction_overview",
@@ -275,9 +293,7 @@
                     "group": "Transaction Monitoring",
                     "pages": [
                       "v1/transaction/transaction_monitoring/transaction_monitoring_overview",
-                      "v1/transaction/transaction_monitoring/post_transaction_request",
-                      "v1/transaction/transaction_monitoring/user_journey"
-                    ]
+                      "v1/transaction/transaction_monitoring/post_transaction_request"                    ]
                   },
                   {
                     "group": "KYC",

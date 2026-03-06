@@ -19,7 +19,6 @@ The Transaction Monitoring API endpoint processes transactions in real-time, cal
 - **453** - Velocity Check Failed (Too Many Transactions in Short Time)
 - **454** - Geographic Inconsistency (Unusual Location)
 - **455** - Transaction Amount Too High (Above Threshold)
-- **456** - Blacklisted Account or Entity
 - **457** - Repeated Failed Transactions (Possible Fraud Attempt)
 
 ### Safe Activity code
@@ -52,13 +51,11 @@ The Transaction Monitoring API endpoint processes transactions in real-time, cal
   "customer_details": {
     "customer_name": "Muhammad Ibrahim Isah",
     "customer_email": "Tila.doe@example.com",
-    "bvn": "22430372151"
   },
   "additional_info": {
     "ip_address": "192.168.1.1",
     "location": "San Francisco, CA", //"lat=-30.6556,lon=-65.7655"
     "transaction_description": "Payment for order #789",
-    "run_kyc": "true"
   }
 }
 ```
@@ -98,4 +95,3 @@ The Transaction Monitoring API endpoint processes transactions in real-time, cal
 | `- ip_address`        | IP address of the customer during the transaction                       | `String` |
 | `- location`           | Customer's location (can be formatted as "lat=-30.6556,lon=-65.7655")  | `String` |
 | `- transaction_description` | Description of the transaction (e.g., Payment for order #789)     | `String` |
-| `run_kyc` | Run KYC check on the customer (Optional) | `Boolean` |
