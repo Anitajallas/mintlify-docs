@@ -33,18 +33,996 @@ This endpoint initiates a Know Your Customer (KYC) check for a specified entity.
 
 
 ## Response
-### Record not found
 200 OK Response
 ```json
 {
-    "status": "Success",
+    "status": "success",
     "data": {
-        "id": 287,
-        "pep_result": null,
-        "sanction_result": null,
-        "search_term": "John Doe"
+        "id": 6036,
+        "entity_name": "Qudratullah Jamal",
+        "branch_id": 2,
+        "status": "completed",
+        "result": {
+            "risk_level": "high",
+            "total_hits": 76,
+            "total_blacklist_hits": 6,
+            "pep_results": [
+                {
+                    "entity_name": "qudratullah jamal",
+                    "gender": "Not Available",
+                    "country": "Unknown",
+                    "pep_types": [
+                        "pep-class-1"
+                    ],
+                    "other_names": [
+                        "qudratullah jamal"
+                    ],
+                    "other_information": {
+                        "recorded_date": "2022-04-27T18:12:14",
+                        "political_post": [
+                            "sanction"
+                        ]
+                    }
+                }
+            ],
+            "sanction_results": [
+                {
+                    "entity_name": "QUDRATULLAH JAMAL",
+                    "recorded_date": "29 Nov. 2011",
+                    "country": "Afghanistan",
+                    "sanction_body": null,
+                    "sanction_types": [
+                        "sanction",
+                        "warnings"
+                    ],
+                    "other_names": [],
+                    "other_information": {
+                        "dob": "Approximately 1963",
+                        "pob": "Gardez, Paktia Province, Afghanistan",
+                        "title": "Maulavi",
+                        "other_info": "Member of Taliban Supreme Council and member of Taliban Cultural Commission as at 2010. Believed to be in Afghanistan/Pakistan border area. Review pursuant to Security Council resolution 1822 (2008) was concluded on 21 Jul. 2010.",
+                        "designations": "Minister of Information under the Taliban regime"
+                    }
+                },
+                {
+                    "entity_name": "qudratullah jamal",
+                    "recorded_date": "2022-04-27T18:12:14",
+                    "country": "Afghanistan",
+                    "sanction_body": "Australian Sanctions Consolidated List",
+                    "sanction_types": [
+                        "sanction",
+                        "warnings"
+                    ],
+                    "other_names": [
+                        "قدرت الله جمال",
+                        "haji sahib"
+                    ],
+                    "other_information": {
+                        "dob": [
+                            "1963"
+                        ],
+                        "email": "Unknown",
+                        "notes": "Unknown",
+                        "gender": "Unknown",
+                        "last_seen": "2025-02-20T12:02:02",
+                        "birth_place": [
+                            "Gardez, Paktika Province, Afghanistan"
+                        ]
+                    }
+                },
+                {
+                    "entity_name": "QUDRATULLAH JAMAL",
+                    "recorded_date": null,
+                    "country": null,
+                    "sanction_body": null,
+                    "sanction_types": [],
+                    "other_names": [],
+                    "other_information": {}
+                },
+                {
+                    "entity_name": "qudratullah jamal",
+                    "recorded_date": "2022-04-27T18:12:14",
+                    "country": "Afghanistan",
+                    "sanction_body": "Swiss SECO Sanctions/Embargoes",
+                    "sanction_types": [
+                        "sanction",
+                        "warnings"
+                    ],
+                    "other_names": [
+                        "قدرت الله جمال",
+                        "haji sahib"
+                    ],
+                    "other_information": {
+                        "dob": [
+                            "1963"
+                        ],
+                        "last_seen": "2024-06-22T20:02:02",
+                        "birth_place": [
+                            "Gardez, Paktika Province, Afghanistan"
+                        ]
+                    }
+                },
+                {
+                    "entity_name": "qudratullah jamal",
+                    "recorded_date": "2023-04-20T10:42:49",
+                    "country": "Afghanistan",
+                    "sanction_body": "UK HMT/OFSI Consolidated List of Targets",
+                    "sanction_types": [
+                        "sanction",
+                        "warnings"
+                    ],
+                    "other_names": [
+                        "sahib",
+                        "قدرت الله جمال"
+                    ],
+                    "other_information": {
+                        "dob": [
+                            "1963"
+                        ],
+                        "email": "Unknown",
+                        "notes": "Unknown",
+                        "gender": "Unknown",
+                        "last_seen": "2024-11-29T06:14:02",
+                        "birth_place": "Unknown"
+                    }
+                },
+                {
+                    "entity_name": "qudratullah jamal",
+                    "recorded_date": "2025-04-02T06:47:03",
+                    "country": "Islamic Republic of Afghanistan",
+                    "sanction_body": "TÃ¼rkiye Asset Freezing Sanctions List (MASAK), EU Financial Sanctions Files (FSF), UN Security Council Consolidated Sanctions, Japan Economic Sanctions and List of Eligible People, EU Consolidated Travel Bans, French National Asset Freezing System, Bulgarian Persons of Interest, UK FCDO Sanctions List, Polish Sanctions Countering Money Laundering and Terror Financing, Argentina RePET Sanctions, Qatar Unified Record of Persons and Entities on Sanction List, UK HMT/OFSI Consolidated List of Targets, Australian Sanctions Consolidated List, Monaco National Fund Freezing List, Ukraine SFMS Blacklist, Swiss SECO Sanctions/Embargoes, Belgian Financial Sanctions, South Africa Targeted Financial Sanctions, Israel Terrorists Organizations and Unauthorized Associations lists, Indonesian List of Suspected Terrorists and Terrorist Organizations, Moldovan Sanctions for Terrorism and Proliferation of WMD",
+                    "sanction_types": [
+                        "sanctions"
+                    ],
+                    "other_names": [
+                        "Молави Кудратуллах Джамал",
+                        "قدرت الله جمال",
+                        "قدرت الله جمال Jamal",
+                        "SAHIB",
+                        "Haji Sahib"
+                    ],
+                    "other_information": {
+                        "id": "NK-a8GaVuetYPU5ZaoT48kMch",
+                        "reason": [
+                            "Minister of Information under the Taliban regime.",
+                            "2010年現在、タリバーン最高評議会及びタリバーン文化委員会のメンバー。アフガニスタンとパキスタンの国境地帯にいると思われている。安全保障理事会決議1822（2008年）に基づく見直しは2010年7月21日に終了した。",
+                            "Minister of Information",
+                            "Member of Taliban Supreme Council and member of Taliban Cultural Commission as at 2010. Believed to be in Afghanistan/Pakistan border area. Review pursuant to Security Council resolution 1822 (2008) was concluded on 21 Jul. 2010. click here",
+                            "Title: Maulavi. Designation: Minister of Information under the Taliban regime. Believed to be in the Afghanistan/Pakistan border area. Member of Taliban Supreme Council and member of Taliban Cultural Commission as at 2010. Review pursuant to Security Council resolution 1822 (2008) was concluded on 21 Jul. 2010.",
+                            "Member of Taliban Supreme Council and member of Taliban Cultural Commission as at 2010. Believed to be in Afghanistan/Pakistan border area. Review pursuant to Security Council resolution 1822 (2008) was concluded on 21 Jul. 2010. INTERPOL-UN Security Council Special Notice web link: https://www.interpol.int/en/How-we-work/Notices/View-UN-Notices-Individuals click here",
+                            "Member of Taliban Supreme Council and member of Taliban Cultural Commission as at 2010. Believed to be in Afghanistan/Pakistan border area. Review pursuant to Security Council resolution 1822 (2008) was concluded on 21 Jul. 2010.",
+                            "Believed to be in Afghanistan/Pakistan border area. Review pursuant to Security Council Resolution 1822 (2008) was concluded on 21 Jul. 2010. https://www. interpol.int/en/notice/search/un/1427404",
+                            "Member of Taliban Supreme Council and member of Taliban Cultural Commission as at 2010. Believed to be in Afghanistan/Pakistan border area. Review pursuant to Security Council resolution 1822 (2008) was concluded on 21 Jul 2010.",
+                            "Anggota Taliban Dewan Agung dan anggota Komisi Budaya Taliban pada 2010. Diyakini berada di wilayah perbatasan Afganistan/Pakistan;",
+                            "Ministre de l'information sous le régime Taliban - Membre du Conseil suprême des Taliban et de la Commission culturelle des Taliban à compter de 2010. Se trouverait dans la région frontalière entre l'Afghanistan et le Pakistan."
+                        ],
+                        "position": [
+                            "Minister of Information under the Taliban regime",
+                            "министър на информацията",
+                            "Minister of Information （情報大臣）",
+                            "Minister of Information"
+                        ],
+                        "birth_date": [
+                            "1963"
+                        ],
+                        "source_url": [
+                            "https://gels-avoirs.dgtresor.gouv.fr/Gels/RegistreDetail?idRegistre=3341",
+                            "https://www.dans.bg/images/stories/FID/Reshenie_265_MS_23042003_Spisyk_ZMFT.pdf"
+                        ],
+                        "birth_place": [
+                            "Gardez, Paktia Province",
+                            "Gardez, Paktia province, AFGHANISTAN",
+                            "Gardez, Afghanistan",
+                            "Paktia Province, Afghanistan",
+                            "Gardez, province de Paktiya : AFGHANISTAN",
+                            "Gardez, Paktia Province, Afghanistan",
+                            "Gardez, province de Paktiya",
+                            "Gardez, Paktia Province\nAfghanistan",
+                            "Gardez, Paktika Province, Afghanistan",
+                            "Gardez, Paktia, Afganistan"
+                        ]
+                    }
+                }
+            ],
+            "adverse_media_results": [
+                {
+                    "url": "https://fiu.gov.ua/assets/userfiles/Terror/BlackListFullEng.pdf",
+                    "date": "2026-03-06T12:58:24Z",
+                    "title": "List of persons related to commitment of terrorist activity",
+                    "types": [
+                        "adverse-media-v2-property"
+                    ],
+                    "snippet": "... Jamal street, Al-Dahima alley, Al-Hudaydah, Yemen;. Nationality (C16): Yemen; Identif. number (C25): Yemeni identity card number 216040;. Extra information ...",
+                    "relevance_score": 1
+                },
+                {
+                    "url": "https://mvep.gov.hr/UserDocsImages/2024/datoteke/20240530-FULL.pdf",
+                    "date": "2026-03-06T12:58:24Z",
+                    "title": "European Union Consolidated Financial Sanctions List",
+                    "types": [
+                        "adverse-media-v2-property"
+                    ],
+                    "snippet": "May 30, 2024 ... ... Qudratullah Jamal Title: Maulavi Function: Minister of Information ... Property Management Directorate. Birth information: • Birth date ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://rm.coe.int/european-committee-crime-problems-cdpc-committee-of-experts-on-the-eva/168071687c",
+                    "date": "2026-03-06T12:58:24Z",
+                    "title": "european committee on crime problems - https: //rm. coe. int",
+                    "types": [
+                        "adverse-media-v2-property"
+                    ],
+                    "snippet": "g) Institutions that legitimize or register ownership right and real estate agencies (according ... QUDRATULLAH, JAMAL. 64. RAHMATULLAH, KAKAZADA. 65. ABDUL ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://ofsistorage.blob.core.windows.net/publishlive/2022format/ConList.pdf",
+                    "date": "2026-03-06T12:58:24Z",
+                    "title": "CONSOLIDATED LIST OF FINANCIAL SANCTIONS TARGETS IN ...",
+                    "types": [
+                        "adverse-media-v2-financial aml/cft"
+                    ],
+                    "snippet": "... Money Exchange (TAe.010) and associated also with Khairullah Barakzai (TAi ... JAMAL 1: QUDRATULLAH 2: n/a 3: n/a 4: n/a 5: n/a. Name (non-Latin script): ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://download1.fbr.gov.pk/Docs/20201161812159993FBR-NPOsData.xlsx",
+                    "date": "2026-03-06T12:58:24Z",
+                    "title": "FBR Registered NPOs",
+                    "types": [
+                        "adverse-media-v2-financial aml/cft"
+                    ],
+                    "snippet": "... JAMAL SHABAN, MUHAMMAD AMIR, NUSRAT NASAB, ROZINA S KARMALIANI, SHANDANA HAMAYUN KHAN, SHOAIB SULTAN KHAN, SOHAIL, ZAFAR IQBAL QURESHI. 72, 69, 7223229, AGAHE ...",
+                    "relevance_score": 1
+                },
+                {
+                    "url": "https://mvep.gov.hr/UserDocsImages/2025/datoteke/20250219-FULL.pdf",
+                    "date": "2026-03-06T12:58:24Z",
+                    "title": "European Union Consolidated Financial Sanctions List",
+                    "types": [
+                        "adverse-media-v2-financial aml/cft"
+                    ],
+                    "snippet": "Feb 19, 2025 ... ... Qudratullah Jamal Title: Maulavi Function: Minister of Information ... Money Exchange and associated also with Khairullah Barakzai ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://spectrumlocalnews.com/us/snplus/news/2025/06/29/tourists-are-trickling-into-afghanistan-",
+                    "date": "2026-03-06T12:58:25Z",
+                    "title": "Tourists are trickling into Afghanistan - Spectrum News",
+                    "types": [
+                        "adverse-media-v2-fraud-linked"
+                    ],
+                    "snippet": "Jun 29, 2025 ... ... Qudratullah Jamal told The Associated Press in an early June interview. ... As it struggles to attract foreign investment, the lucrative ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://main.un.org/securitycouncil/sites/default/files/uqoo4en-all_0.html",
+                    "date": "2026-03-06T12:58:25Z",
+                    "title": "United Nations Security Council Consolidated List",
+                    "types": [
+                        "adverse-media-v2-fraud-linked"
+                    ],
+                    "snippet": "2021 ) Other information: Facilitator who provides financial support for and financial ... TAi.047 Name: 1: QUDRATULLAH 2: JAMAL 3: na 4: na. Name (original ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://docs.un.org/en/S/2001/1250",
+                    "date": "2026-03-06T12:58:25Z",
+                    "title": "S/2001/1250 Security Council - the United Nations",
+                    "types": [
+                        "adverse-media-v2-fraud-linked"
+                    ],
+                    "snippet": "Dec 28, 2001 ... Maulavi Qudratullah Jamal, Minister of Information;. Mullah Abdul Baqi, Vice-Minister of Information and Culture;. Maulavi Abdul Rahman Ahmad ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:52002PC0117",
+                    "date": "2026-03-06T12:58:25Z",
+                    "title": "EUR-Lex - 52002PC0117 - EN - European Union",
+                    "types": [
+                        "adverse-media-v2-fraud-linked"
+                    ],
+                    "snippet": "... financial resources in respect of the Taliban of Afghanistan /* COM/2002 ... Jamal, Qudratullah, Maulavi (Minister of Information). Jan, Ahmad, Maulavi ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://assets.publishing.service.gov.uk/media/6218fb1dd3bf7f4f02760844/Afghanistan.pdf",
+                    "date": "2026-03-06T12:58:25Z",
+                    "title": "CONSOLIDATED LIST OF FINANCIAL SANCTIONS TARGETS IN ...",
+                    "types": [
+                        "adverse-media-v2-fraud-linked"
+                    ],
+                    "snippet": "Feb 25, 2022 ... Responsible for Afghan Taliban activity in Federally Administrated Tribal Areas, Pakistan as at 2008. ... Name 6: JAMAL 1: QUDRATULLAH 2: n/a 3: n ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=CELEX:02011D0486-20150801",
+                    "date": "2026-03-06T12:58:25Z",
+                    "title": "B COUNCIL DECISION 2011/486/CFSP of 1 August 2011 ...",
+                    "types": [
+                        "adverse-media-v2-fraud-linked"
+                    ],
+                    "snippet": "Aug 1, 2015 ... financial assets or economic resources which are: (a) necessary ... (60) Qudratullah Jamal (alias Haji Sahib). Title: Maulavi. Grounds ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://caselaw.shc.gov.pk/caselaw/public/reported-judgements-detail-all/963/-1",
+                    "date": "2026-03-06T12:58:25Z",
+                    "title": "Caselaw - High Court of Sindh",
+                    "types": [
+                        "adverse-media-v2-narcotics-aml-cft"
+                    ],
+                    "snippet": "Abid Jamal. (Plaintiff) VS Jamaluddin Ahmed & Others. (Defendant), 25-SEP-18, No, Hon'ble Mr. Justice Zulfiqar Ahmad Khan(Author). 126, Nil, Const. P. 1722/2017 ...",
+                    "relevance_score": 1
+                },
+                {
+                    "url": "https://downey-n1.cs.northwestern.edu/downloads/OTyper_data_aaai18/FIGER_data/all_entity_str.txt",
+                    "date": "2026-03-06T12:58:25Z",
+                    "title": "all_entity_str.txt",
+                    "types": [
+                        "adverse-media-v2-narcotics-aml-cft"
+                    ],
+                    "snippet": "... drug norge laureates blagdan drup gramzda drut desny hanatarash malcolm ... qudratullah matthei schlichting engert cerny sikharulidze ryjewo atacama ...",
+                    "relevance_score": 1
+                },
+                {
+                    "url": "https://caselaw.shc.gov.pk/caselaw/public/rpt-jo-list/709/1/-1",
+                    "date": "2026-03-06T12:58:25Z",
+                    "title": "Search Result on selected Judge - Caselaw - High Court of Sindh",
+                    "types": [
+                        "adverse-media-v2-narcotics-aml-cft"
+                    ],
+                    "snippet": "... crime nor any active role had been assigned, excepting that the car alleged ... Jamal Fabrics (Pvt) Ltd (Petitioner) VS Fed. of Pakistan and Others ...",
+                    "relevance_score": 1
+                },
+                {
+                    "url": "https://main.un.org/securitycouncil/sites/default/files/uqoo4en-all_0.html",
+                    "date": "2026-03-06T12:58:26Z",
+                    "title": "United Nations Security Council Consolidated List",
+                    "types": [
+                        "adverse-media-v2-violence-aml-cft"
+                    ],
+                    "snippet": "... organized smuggling network in Kandahar and Helmand provinces, Afghanistan. ... TAi.047 Name: 1: QUDRATULLAH 2: JAMAL 3: na 4: na. Name (original script): ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://rm.coe.int/european-committee-crime-problems-cdpc-committee-of-experts-on-the-eva/168071687c",
+                    "date": "2026-03-06T12:58:26Z",
+                    "title": "european committee on crime problems - https: //rm. coe. int",
+                    "types": [
+                        "adverse-media-v2-violence-aml-cft"
+                    ],
+                    "snippet": "“terrorism – ideology of violence and practice of violent influence on decision-making by ... QUDRATULLAH, JAMAL. 64. RAHMATULLAH, KAKAZADA. 65. ABDUL RAUF ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://www.justice.gov/sites/default/files/eoir/legacy/2014/09/29/icg_07242008.pdf",
+                    "date": "2026-03-06T12:58:26Z",
+                    "title": "TALIBAN PROPAGANDA: WINNING THE WAR OF WORDS?",
+                    "types": [
+                        "adverse-media-v2-violence-aml-cft"
+                    ],
+                    "snippet": "Jul 24, 2008 ... Qudratullah Jamal similarly condemned the “fast” life- style ... highlighting its violent tactics and links to criminal groups. Instead ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://ofsistorage.blob.core.windows.net/publishlive/2022format/ConList.html",
+                    "date": "2026-03-06T12:58:26Z",
+                    "title": "CONSOLIDATED LIST OF FINANCIAL SANCTIONS TARGETS IN ...",
+                    "types": [
+                        "adverse-media-v2-violence-aml-cft"
+                    ],
+                    "snippet": "Name 6: JAMAL 1: QUDRATULLAH 2: n/a 3: n/a 4: n/a 5: n/a. Name (non-Latin ... (UK Statement of Reasons):The Main Directorate for Combatting Organized Crime ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://fiu.gov.ua/assets/userfiles/Terror/BlackListFullEng.pdf",
+                    "date": "2026-03-06T12:58:26Z",
+                    "title": "List of persons related to commitment of terrorist activity",
+                    "types": [
+                        "adverse-media-v2-violence-aml-cft"
+                    ],
+                    "snippet": "... Jamal Lounici; Possible version of spelling name (C10): PE; Category of ... financing cases. Review pursuant to Security Council resolution 2610 (2021) ...",
+                    "relevance_score": 1
+                },
+                {
+                    "url": "https://www.fic.na/uploads/Publications/Circulars/2014%20Circulars/UNSC_Updates/FIC%20Circular%2023%20of%202014%20on%20UNSCR%20Lists%20Circular%2023_Attachment%20D4%20for%20List%201737%20containing%20Guidelines%20on%20Prohibited%20materials%20Circular%2023.pdf",
+                    "date": "2026-03-06T12:58:26Z",
+                    "title": "FINANCIAL INTELLIGENCE CENTRE (FIC) Circular No.23 of 2014",
+                    "types": [
+                        "adverse-media-v2-violence-aml-cft"
+                    ],
+                    "snippet": "by the Bahraini High Criminal Court for financing terrorism, undergoing terrorist training, facilitating the ... Name: 1: QUDRATULLAH 2: JAMAL 3: na 4: na. Name ( ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://law.stanford.edu/wp-content/uploads/2016/03/ALEP-Law-of-Obligations-1st-Ed_English.pdf",
+                    "date": "2026-03-06T12:58:26Z",
+                    "title": "LAW OF OBLIGATIONS OF AFGHANISTAN - Stanford Law School",
+                    "types": [
+                        "adverse-media-v2-violence-aml-cft"
+                    ],
+                    "snippet": "As part of the contract, Qudratullah must replace the blades on three of the snowplows. Qudratullah has great relations with the city because he has a ...",
+                    "relevance_score": 1
+                },
+                {
+                    "url": "https://www.fic.na/uploads/Publications/Circulars/2014%20Circulars/UNSC_Updates/FIC%20Circular%2026%20of%202014%20on%20UNSCR%20Lists_Attachment%20D4%20for%20List%201737%20containing%20Guidelines%20on%20Prohibited%20materials%20Circular%2026.pdf",
+                    "date": "2026-03-06T12:58:26Z",
+                    "title": "FINANCIAL INTELLIGENCE CENTRE (FIC) Circular No.26 of 2014",
+                    "types": [
+                        "adverse-media-v2-violence-aml-cft"
+                    ],
+                    "snippet": "by the Bahraini High Criminal Court for financing terrorism, undergoing terrorist training, facilitating the ... TAi.047 Name: 1: QUDRATULLAH 2: JAMAL 3: na 4: na.",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://www.un.org/french/sc/committees/consolidated.htm",
+                    "date": "2026-03-06T12:58:26Z",
+                    "title": "Consolidated List Sanctions List - the United Nations",
+                    "types": [
+                        "adverse-media-v2-terrorism"
+                    ],
+                    "snippet": "... terrorist training abroad, and for membership in a terrorist organization. ... A.k.a.: a) Muhammad Jamal Group b) Jamal Network c) Abu Ahmed Group d) Al ...",
+                    "relevance_score": 1
+                },
+                {
+                    "url": "https://www.opensanctions.org/entities/NK-a8GaVuetYPU5ZaoT48kMch/",
+                    "date": "2026-03-06T12:58:26Z",
+                    "title": "Maulavi Qudratullah Jamal - OpenSanctions",
+                    "types": [
+                        "adverse-media-v2-terrorism"
+                    ],
+                    "snippet": "... terror financing, as well as UN Security Council resolutions 2253 and 1988 ... A list of persons and companies sanctioned for involvement with terrorism financing ...",
+                    "relevance_score": 4
+                },
+                {
+                    "url": "https://docs.un.org/en/S/2001/1250",
+                    "date": "2026-03-06T12:58:26Z",
+                    "title": "S/2001/1250 Security Council - the United Nations",
+                    "types": [
+                        "adverse-media-v2-terrorism"
+                    ],
+                    "snippet": "Dec 28, 2001 ... Customs also plays an important role in preventing and suppressing the financing of terrorist acts as it controls ... Maulavi Qudratullah Jamal, ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:52002PC0117",
+                    "date": "2026-03-06T12:58:26Z",
+                    "title": "EUR-Lex - 52002PC0117 - EN - European Union",
+                    "types": [
+                        "adverse-media-v2-terrorism"
+                    ],
+                    "snippet": "... financing, planning, facilitation, preparation or perpetration of terrorist acts. ... Jamal, Qudratullah, Maulavi (Minister of Information). Jan, Ahmad, Maulavi ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://fiu.gov.ua/assets/userfiles/Terror/BlackListFullEng.pdf",
+                    "date": "2026-03-06T12:58:26Z",
+                    "title": "List of persons related to commitment of terrorist activity",
+                    "types": [
+                        "adverse-media-v2-terrorism"
+                    ],
+                    "snippet": "... Organization of Al-Qaida in the Islamic Maghreb (QDe.014). Father's name ... Jamal Lounici; Possible version of spelling name (C10): PE; Category of.",
+                    "relevance_score": 1
+                },
+                {
+                    "url": "https://data.europa.eu/apps/eusanctionstracker/individuals/",
+                    "date": "2026-03-06T12:58:26Z",
+                    "title": "Individuals | EU sanctions tracker",
+                    "types": [
+                        "adverse-media-v2-terrorism"
+                    ],
+                    "snippet": "Jamal Mustafa Abdallah Sultan Al-Tikriti · Mizban Khadr Hadi · Taha Muhyi ... Qudratullah Jamal · Ahmad Jan Akhunzada · Abdullah Jan Agha · A. Kabir · Rahmatullah ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://www.cbn.gov.ng/OUT/CIRCULARS/BSD/2009/CIRCULAR%20ON%20TERRORIST%20INDIVIDUAL%20AND%20ORGANISATIONS.PDF",
+                    "date": "2026-03-06T12:58:26Z",
+                    "title": "circular on Terrorist individual and organisations",
+                    "types": [
+                        "adverse-media-v2-terrorism"
+                    ],
+                    "snippet": "Oct 27, 2009 ... Further to our circulars on Anti-Money Laundering/Counter Terrorism Financing ... Name: 1: QUDRATULLAH 2: JAMAL. TI.K.137.01. Name: 1: RAHMATULLAH ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://www.justice.gov/sites/default/files/eoir/legacy/2014/09/29/icg_07242008.pdf",
+                    "date": "2026-03-06T12:58:26Z",
+                    "title": "TALIBAN PROPAGANDA: WINNING THE WAR OF WORDS?",
+                    "types": [
+                        "adverse-media-v2-terrorism"
+                    ],
+                    "snippet": "Jul 24, 2008 ... or interviews with “armed organisations and terrorist groups”, reports ... alias for Qudratullah Jamal)77 as the only representa- tive ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://main.un.org/securitycouncil/sites/default/files/en_all_21july.html",
+                    "date": "2026-03-06T12:58:26Z",
+                    "title": "United Nations Security Council Consolidated List",
+                    "types": [
+                        "adverse-media-v2-cybercrime"
+                    ],
+                    "snippet": "... Identity Card 3573010405480001 b) Indonesia National Identity Card 353010405480001 Address: Jalan Ir. ... TAi.047 Name: 1: QUDRATULLAH 2: JAMAL 3: na 4: na. Name ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://mvep.gov.hr/UserDocsImages/2025/datoteke/20250910-FULL.pdf",
+                    "date": "2026-03-06T12:58:26Z",
+                    "title": "European Union Consolidated Financial Sanctions List",
+                    "types": [
+                        "adverse-media-v2-cybercrime"
+                    ],
+                    "snippet": "Sep 10, 2025 ... Identity information: • Name/Alias: Nasiruddin Haqqani Function: A ... Qudratullah Jamal Title: Maulavi Function: Minister of ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://fiu.gov.ua/assets/userfiles/Terror/BlackListFullEng.pdf",
+                    "date": "2026-03-06T12:58:26Z",
+                    "title": "List of persons related to commitment of terrorist activity",
+                    "types": [
+                        "adverse-media-v2-cybercrime"
+                    ],
+                    "snippet": "... Jamal street, Al-Dahima alley, Al-Hudaydah, Yemen;. Nationality (C16): Yemen; Identif. number (C25): Yemeni identity ... attack on the USS Cole in 2000 ...",
+                    "relevance_score": 1
+                },
+                {
+                    "url": "https://pfi.public.lu/dam-assets/pdf/blanchiment/sanctions/2025/ue-liste-consolide-des-sanctions-financires-internationales-jour-au-03072025.pdf",
+                    "date": "2026-03-06T12:58:26Z",
+                    "title": "European Union Consolidated Financial Sanctions List",
+                    "types": [
+                        "adverse-media-v2-cybercrime"
+                    ],
+                    "snippet": "Jul 3, 2025 ... ... Identity information: • Name/Alias: Siraj Haqqani. • Name/Alias ... Qudratullah Jamal Title: Maulavi Function: Minister of Information ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://www.fic.na/uploads/Publications/Circulars/2014%20Circulars/UNSC_Updates/FIC%20Circular%2023%20of%202014%20on%20UNSCR%20Lists%20Circular%2023_Attachment%20D4%20for%20List%201737%20containing%20Guidelines%20on%20Prohibited%20materials%20Circular%2023.pdf",
+                    "date": "2026-03-06T12:58:26Z",
+                    "title": "FINANCIAL INTELLIGENCE CENTRE (FIC) Circular No.23 of 2014",
+                    "types": [
+                        "adverse-media-v2-cybercrime"
+                    ],
+                    "snippet": "Yemeni identity card number 216040 Address: Jamal street, Al-Dahima ... Name: 1: QUDRATULLAH 2: JAMAL 3: na 4: na. Name (original script): لامج تردق.",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://www.fscmontserrat.org/wp-content/uploads/2011/02/Consolidated-list-of-Financial-Sanction-Al-Qaida-29-August-2014.pdf",
+                    "date": "2026-03-06T12:58:26Z",
+                    "title": "CONSOLIDATED LIST OF FINANCIAL SANCTIONS TARGETS IN ...",
+                    "types": [
+                        "adverse-media-v2-cybercrime"
+                    ],
+                    "snippet": "Aug 29, 2014 ... Name 6: JAMAL 1: QUDRATULLAH 2: n/a 3: n/a 4: n/a 5: n/a. Title ... of online censorship and cyber crime. Listed on: 12/03/2013 Last ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://rm.coe.int/european-committee-crime-problems-cdpc-committee-of-experts-on-the-eva/168071687c",
+                    "date": "2026-03-06T12:58:26Z",
+                    "title": "european committee on crime problems - https: //rm. coe. int",
+                    "types": [
+                        "adverse-media-v2-cybercrime"
+                    ],
+                    "snippet": "QUDRATULLAH, JAMAL. 64. RAHMATULLAH, KAKAZADA. 65. ABDUL RAUF, KHADEM ... and collate data within the copy of identity card with data from the original act;.",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://justice.gov.nr/wp-content/uploads/2023/12/fiu_notice_on_united_nations_security_council_consolidated_list.pdf",
+                    "date": "2026-03-06T12:58:27Z",
+                    "title": "[Section 126] REPUBLIC OF NAURU ANTI-MONEY LAUNDERING ...",
+                    "types": [
+                        "adverse-media-v2-general-aml-cft"
+                    ],
+                    "snippet": "ANTI-MONEY LAUNDERING AND TARGETED FINANCIAL SANCTIONS ACT 2023. UNITED ... TAi.047 Name: 1: QUDRATULLAH 2: JAMAL 3: na 4: na. Name (original script):.",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://www.nationalassembly.gov.bz/wp-content/uploads/2023/04/Money-Laundering-and-Terrorism-Prevention-Amendment-Bill-2023.pdf",
+                    "date": "2026-03-06T12:58:27Z",
+                    "title": "Money-Laundering-and-Terrorism-Prevention-Amendment-Bill-2023 ...",
+                    "types": [
+                        "adverse-media-v2-general-aml-cft"
+                    ],
+                    "snippet": "Apr 4, 2023 ... (a) an AML/CFT regulated financial institution which is subject to ... TAi.047 Name: 1: QUDRATULLAH 2: JAMAL 3: na 4: na. Name (original ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://mvep.gov.hr/UserDocsImages/2024/datoteke/20240530-FULL.pdf",
+                    "date": "2026-03-06T12:58:27Z",
+                    "title": "European Union Consolidated Financial Sanctions List",
+                    "types": [
+                        "adverse-media-v2-general-aml-cft"
+                    ],
+                    "snippet": "May 30, 2024 ... ... Qudratullah Jamal Title: Maulavi Function: Minister of Information under the Taliban regime. • Name/Alias: Haji Sahib. Birth information ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://download1.fbr.gov.pk/Docs/20201161812159993FBR-NPOsData.xlsx",
+                    "date": "2026-03-06T12:58:27Z",
+                    "title": "FBR Registered NPOs",
+                    "types": [
+                        "adverse-media-v2-general-aml-cft"
+                    ],
+                    "snippet": "... JAMAL SHABAN, MUHAMMAD AMIR, NUSRAT NASAB, ROZINA S KARMALIANI, SHANDANA ... THE FINANCIAL MARKETS ASSOCIATION OF PAKISTAN, PLOT # G-4,BLOCK 7, 23RD ...",
+                    "relevance_score": 1
+                },
+                {
+                    "url": "https://data.europa.eu/apps/eusanctionstracker/individuals/",
+                    "date": "2026-03-06T12:58:27Z",
+                    "title": "Individuals | EU sanctions tracker",
+                    "types": [
+                        "adverse-media-v2-regulatory"
+                    ],
+                    "snippet": "Jamal Mustafa Abdallah Sultan Al-Tikriti · Mizban Khadr Hadi · Taha Muhyi ... Qudratullah Jamal · Ahmad Jan Akhunzada · Abdullah Jan Agha · A. Kabir · Rahmatullah ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://mvep.gov.hr/UserDocsImages/2024/datoteke/20240530-FULL.pdf",
+                    "date": "2026-03-06T12:58:27Z",
+                    "title": "European Union Consolidated Financial Sanctions List",
+                    "types": [
+                        "adverse-media-v2-regulatory"
+                    ],
+                    "snippet": "May 30, 2024 ... ... Legal basis: 2017/404 (OJ L63). Programme: AFG - Afghanistan. Identity information: • Name/Alias: Qudratullah Jamal Title: Maulavi Function ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:52011PC0465",
+                    "date": "2026-03-06T12:58:27Z",
+                    "title": "EUR-Lex - 52011PC0465 - EN - European Union",
+                    "types": [
+                        "adverse-media-v2-regulatory"
+                    ],
+                    "snippet": "(a) supply immediately any information which would facilitate compliance with this Regulation ... (68) 'Qudratullah Jamal (alias Haji Sahib). Title: Maulavi.",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://rm.coe.int/european-committee-crime-problems-cdpc-committee-of-experts-on-the-eva/168071687c",
+                    "date": "2026-03-06T12:58:27Z",
+                    "title": "european committee on crime problems - https: //rm. coe. int",
+                    "types": [
+                        "adverse-media-v2-regulatory"
+                    ],
+                    "snippet": "compliance with financial remediation plan; c) other prudential actions ... QUDRATULLAH, JAMAL. 64. RAHMATULLAH, KAKAZADA. 65. ABDUL RAUF, KHADEM. 66 ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://unsolprodfiles.blob.core.windows.net/publiclegacyxmlfiles/EN/consolidatedLegacyByNAME.html",
+                    "date": "2026-03-06T12:58:27Z",
+                    "title": "United Nations Security Council Consolidated List",
+                    "types": [
+                        "adverse-media-v2-regulatory"
+                    ],
+                    "snippet": "2021 ) Other information: Facilitator who provides financial support for and financial ... TAi.047 Name: 1: QUDRATULLAH 2: JAMAL 3: na 4: na. Name (original ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://www.longwarjournal.org/archives/2010/02/the_talibans_top_lea.php",
+                    "date": "2026-03-06T12:58:28Z",
+                    "title": "The Afghan Taliban's top leaders - FDD's Long War Journal",
+                    "types": [
+                        "adverse-media-v2-financial-difficulty"
+                    ],
+                    "snippet": "Feb 23, 2010 ... ... collapse of the group. The Afghan Taliban's leadership council ... Maulvi Qudratullah Jamal runs an investigative committee that deals ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://www.afghanistan-analysts.org/en/reports/economy-development-environment/the-new-talebans-opium-ban-the-same-political-strategy-20-years-on/",
+                    "date": "2026-03-06T12:58:28Z",
+                    "title": "The New Taleban's Opium Ban: The same political strategy 20 years ...",
+                    "types": [
+                        "adverse-media-v2-financial-difficulty"
+                    ],
+                    "snippet": "Apr 14, 2022 ... ... collapse triggered by the Taleban's military capture of power. ... Qudratullah Jamal, who told Clark the ban was there to stay. In the ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=CELEX:02011R0753-20160930",
+                    "date": "2026-03-06T12:58:28Z",
+                    "title": "B COUNCIL REGULATION (EU) No 753/2011 of 1 August 2011 ...",
+                    "types": [
+                        "adverse-media-v2-financial-difficulty"
+                    ],
+                    "snippet": "Aug 1, 2011 ... (v) credit, right of set-off, guarantees, performance bonds or other financial commitments; ... (60) Qudratullah Jamal (alias Haji Sahib). Title: ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://ideas.repec.org/r/jae/japmet/v22y2007i2p265-312.html",
+                    "date": "2026-03-06T12:58:28Z",
+                    "title": "Citations of A simple panel unit root test in the presence of cross ...",
+                    "types": [
+                        "adverse-media-v2-financial-difficulty"
+                    ],
+                    "snippet": "Khan, Anwar & Chenggang, Yang & Hussain, Jamal & Kui, Zhou, 2021. \"Impact of technological innovation, financial development and foreign direct investment on ...",
+                    "relevance_score": 1
+                },
+                {
+                    "url": "https://www.nevisfsrc.com/wp-content/uploads/2021/05/Consolidated-List-of-Financial-Sanctions-Targets-in-the-UK-May-17-2021.pdf",
+                    "date": "2026-03-06T12:58:28Z",
+                    "title": "CONSOLIDATED LIST OF FINANCIAL SANCTIONS TARGETS IN ...",
+                    "types": [
+                        "adverse-media-v2-financial-difficulty"
+                    ],
+                    "snippet": "May 17, 2021 ... ... JAMAL 1: QUDRATULLAH 2: n/a 3: n/a 4: n/a 5: n/a. Title: Maulavi DOB: --/--/1963. POB: Gardez, Paktia Province, Afghanistan a.k.a: SAHIB ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://thekabultimes.com/mawlavi-jamal-appointed-deputy-information-and-culture-minister/",
+                    "date": "2026-03-06T12:58:28Z",
+                    "title": "Mawlavi Jamal appointed deputy information and culture minister",
+                    "types": [
+                        "adverse-media-v2-financial-difficulty"
+                    ],
+                    "snippet": "Jul 15, 2024 ... ... Qudratullah Jamal, in an official ceremony, has been appointed as the Financial ... “Afghanistan was in a state of distress and despair for ...",
+                    "relevance_score": 4
+                },
+                {
+                    "url": "https://www.un.org/french/sc/committees/consolidated.htm",
+                    "date": "2026-03-06T12:58:28Z",
+                    "title": "Consolidated List Sanctions List - the United Nations",
+                    "types": [
+                        "adverse-media-v2-violence-non-aml-cft"
+                    ],
+                    "snippet": "2010 Other information: Brigadier General. TAi.047 Name: 1: QUDRATULLAH 2: JAMAL 3: na 4: na ... aggravated assault and battery. In August 2014, a DRC ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://main.un.org/securitycouncil/sites/default/files/en_all_21july.html",
+                    "date": "2026-03-06T12:58:28Z",
+                    "title": "United Nations Security Council Consolidated List",
+                    "types": [
+                        "adverse-media-v2-violence-non-aml-cft"
+                    ],
+                    "snippet": "... physical violence. Gaye was appointed on 2 November 2014 by Nourredine Adam ... TAi.047 Name: 1: QUDRATULLAH 2: JAMAL 3: na 4: na. Name (original script): ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://fiu.gov.ua/assets/userfiles/Terror/BlackListFullEng.pdf",
+                    "date": "2026-03-06T12:58:28Z",
+                    "title": "List of persons related to commitment of terrorist activity",
+                    "types": [
+                        "adverse-media-v2-violence-non-aml-cft"
+                    ],
+                    "snippet": "... Jamal street, Al-Dahima alley, Al-Hudaydah, Yemen;. Nationality (C16): Yemen; Identif. number (C25): Yemeni identity card number 216040;. Extra information ...",
+                    "relevance_score": 1
+                },
+                {
+                    "url": "https://mvep.gov.hr/UserDocsImages/2025/datoteke/20250710-FULL.pdf",
+                    "date": "2026-03-06T12:58:28Z",
+                    "title": "European Union Consolidated Financial Sanctions List",
+                    "types": [
+                        "adverse-media-v2-violence-non-aml-cft"
+                    ],
+                    "snippet": "Jul 10, 2025 ... ... Qudratullah Jamal Title: Maulavi Function: Minister of Information ... Physical description: height: 180 cm; weight: approximately 90 ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://www.afghanistan-analysts.org/en/reports/economy-development-environment/the-new-talebans-opium-ban-the-same-political-strategy-20-years-on/",
+                    "date": "2026-03-06T12:58:28Z",
+                    "title": "The New Taleban's Opium Ban: The same political strategy 20 years ...",
+                    "types": [
+                        "adverse-media-v2-violence-non-aml-cft"
+                    ],
+                    "snippet": "Apr 14, 2022 ... ... Crime (UNODC). The agency estimated that the gross value of the ... Qudratullah Jamal, who told Clark the ban was there to stay. In the ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://www.kentstateuniversitypress.com/wp-content/uploads/preview/9781612774152_preview.pdf",
+                    "date": "2026-03-06T12:58:28Z",
+                    "title": "Terrorism for Self-Glorification - The Kent State University Press »",
+                    "types": [
+                        "adverse-media-v2-violence-non-aml-cft"
+                    ],
+                    "snippet": "As Valerius Maximus observed,. Herostratos had expanded the range of violent crime by adding the element of sacrilege. ... Jamal, Qudratullah,.",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://eprints.lse.ac.uk/25198/1/ARCWP13MinakishiDasApr2006.pdf",
+                    "date": "2026-03-06T12:58:28Z",
+                    "title": "Taliban's War on Women: - LSE Research Online",
+                    "types": [
+                        "adverse-media-v2-violence-non-aml-cft"
+                    ],
+                    "snippet": "Gendered forms of physical violence exist in all conflicts. In Afghanistan ... Qudratullah Jamal,. Taliban Minister of Culture. “If a woman wants to ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://rm.coe.int/european-committee-crime-problems-cdpc-committee-of-experts-on-the-eva/168071687c",
+                    "date": "2026-03-06T12:58:28Z",
+                    "title": "european committee on crime problems - https: //rm. coe. int",
+                    "types": [
+                        "adverse-media-v2-violence-non-aml-cft"
+                    ],
+                    "snippet": "“terrorism – ideology of violence and practice of violent influence on decision-making by ... QUDRATULLAH, JAMAL. 64. RAHMATULLAH, KAKAZADA. 65. ABDUL RAUF, ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://rm.coe.int/european-committee-crime-problems-cdpc-committee-of-experts-on-the-eva/168071687c",
+                    "date": "2026-03-06T12:58:28Z",
+                    "title": "european committee on crime problems - https: //rm. coe. int",
+                    "types": [
+                        "adverse-media-v2-other-financial"
+                    ],
+                    "snippet": "accounting and reporting to be followed by the professional participants of the financial market, ... QUDRATULLAH, JAMAL. 64. RAHMATULLAH, KAKAZADA. 65 ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://www.fscmontserrat.org/wp-content/uploads/2011/02/Consolidated-list-of-Financial-Sanction-Al-Qaida-29-August-2014.pdf",
+                    "date": "2026-03-06T12:58:28Z",
+                    "title": "CONSOLIDATED LIST OF FINANCIAL SANCTIONS TARGETS IN ...",
+                    "types": [
+                        "adverse-media-v2-other-financial"
+                    ],
+                    "snippet": "Aug 29, 2014 ... Name 6: JAMAL 1: QUDRATULLAH 2: n/a 3: n/a 4: n/a 5: n/a. Title ... Company (8) Rushaan Trading Company Address: (1) Aziz Market, in ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://www.fic.na/uploads/Publications/Circulars/2014%20Circulars/UNSC_Updates/FIC%20Circular%2023%20of%202014%20on%20UNSCR%20Lists%20Circular%2023_Attachment%20D4%20for%20List%201737%20containing%20Guidelines%20on%20Prohibited%20materials%20Circular%2023.pdf",
+                    "date": "2026-03-06T12:58:28Z",
+                    "title": "FINANCIAL INTELLIGENCE CENTRE (FIC) Circular No.23 of 2014",
+                    "types": [
+                        "adverse-media-v2-other-financial"
+                    ],
+                    "snippet": "Name: 1: QUDRATULLAH 2: JAMAL 3: na 4: na. Name (original script): لامج تردق ... A.K.A.: Hunjin TRADING Co., Korea Henjin Trading Co., Korea Hengjin Trading ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://main.un.org/securitycouncil/sites/default/files/all_29june.html",
+                    "date": "2026-03-06T12:58:28Z",
+                    "title": "United Nations Security Council Consolidated List",
+                    "types": [
+                        "adverse-media-v2-other-financial"
+                    ],
+                    "snippet": "2021 ) Other information: Facilitator who provides financial support for and financial ... TAi.047 Name: 1: QUDRATULLAH 2: JAMAL 3: na 4: na. Name (original ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://www.un.org/french/sc/committees/consolidated.htm",
+                    "date": "2026-03-06T12:58:29Z",
+                    "title": "Consolidated List Sanctions List - the United Nations",
+                    "types": [
+                        "adverse-media-v2-other-serious"
+                    ],
+                    "snippet": "2010 Other information: Brigadier General. TAi.047 Name: 1: QUDRATULLAH 2: JAMAL 3: na 4: na ... 2010 on charges of criminal conspiracy in relation to a terrorist ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://data.europa.eu/apps/eusanctionstracker/individuals/",
+                    "date": "2026-03-06T12:58:29Z",
+                    "title": "Individuals | EU sanctions tracker",
+                    "types": [
+                        "adverse-media-v2-other-serious"
+                    ],
+                    "snippet": "Jamal Mustafa Abdallah Sultan Al-Tikriti · Mizban Khadr Hadi · Taha Muhyi ... Qudratullah Jamal · Ahmad Jan Akhunzada · Abdullah Jan Agha · A. Kabir · Rahmatullah ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://docs.un.org/en/S/2001/1250",
+                    "date": "2026-03-06T12:58:29Z",
+                    "title": "S/2001/1250 Security Council - the United Nations",
+                    "types": [
+                        "adverse-media-v2-other-serious"
+                    ],
+                    "snippet": "Dec 28, 2001 ... Sub-Paragraph (e) - What steps have been taken to establish terrorist acts as serious criminal offences ... Maulavi Qudratullah Jamal, Minister of ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://fscmontserrat.org/wp-content/uploads/2013/07/HM-Treasury-Sanctionsconlist-29-July-2013.pdf",
+                    "date": "2026-03-06T12:58:29Z",
+                    "title": "Afghanistan - Financial Services Commission Montserrat",
+                    "types": [
+                        "adverse-media-v2-other-serious"
+                    ],
+                    "snippet": "Jul 29, 2013 ... Name 6: JAMAL 1: QUDRATULLAH 2: n/a 3: n/a 4: n/a 5: n/a. Title ... Organisation Name: CENTER TO INVESTIGATE ORGANIZED CRIME. a.k.a: (1) ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://www.justice.gov/sites/default/files/eoir/legacy/2014/09/29/icg_07242008.pdf",
+                    "date": "2026-03-06T12:58:29Z",
+                    "title": "TALIBAN PROPAGANDA: WINNING THE WAR OF WORDS?",
+                    "types": [
+                        "adverse-media-v2-other-serious"
+                    ],
+                    "snippet": "Jul 24, 2008 ... Qudratullah Jamal similarly condemned the “fast” life- style ... highlighting its violent tactics and links to criminal groups. Instead ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://fiu.gov.ua/assets/userfiles/Terror/BlackListFullEng.pdf",
+                    "date": "2026-03-06T12:58:29Z",
+                    "title": "List of persons related to commitment of terrorist activity",
+                    "types": [
+                        "adverse-media-v2-other-serious"
+                    ],
+                    "snippet": "... criminal court of first instance in Yemen. Released on 25 Dec. 2006 after ... Jamal Lounici; Possible version of spelling name (C10): PE; Category of.",
+                    "relevance_score": 1
+                },
+                {
+                    "url": "https://ofsistorage.blob.core.windows.net/publishlive/2022format/ConList.html",
+                    "date": "2026-03-06T12:58:29Z",
+                    "title": "CONSOLIDATED LIST OF FINANCIAL SANCTIONS TARGETS IN ...",
+                    "types": [
+                        "adverse-media-v2-other-serious"
+                    ],
+                    "snippet": "Name 6: JAMAL 1: QUDRATULLAH 2: n/a 3: n/a 4: n/a 5: n/a. Name (non-Latin ... (UK Statement of Reasons):The Main Directorate for Combatting Organized Crime and ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://www.fscmontserrat.org/wp-content/uploads/2011/02/Consolidated-list-of-Financial-Sanctions-24-October-2014.pdf",
+                    "date": "2026-03-06T12:58:29Z",
+                    "title": "CONSOLIDATED LIST OF FINANCIAL SANCTIONS TARGETS IN ...",
+                    "types": [
+                        "adverse-media-v2-other-serious"
+                    ],
+                    "snippet": "Oct 24, 2014 ... Name 6: JAMAL 1: QUDRATULLAH 2: n/a 3: n/a 4: n/a 5: n/a ... Imprisoned in France since 1 Feb 2010 on charges of criminal conspiracy in.",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "https://pfi.public.lu/dam-assets/pdf/blanchiment/sanctions/2025/ue-liste-consolide-des-sanctions-financires-internationales-jour-au-15012025.pdf",
+                    "date": "2026-03-06T12:58:29Z",
+                    "title": "European Union Consolidated Financial Sanctions List",
+                    "types": [
+                        "adverse-media-v2-other-serious"
+                    ],
+                    "snippet": "Jan 15, 2025 ... • Name/Alias: Qudratullah Jamal Title: Maulavi Function: Minister of Information under the Taliban regime. Birth information: • Birth date ...",
+                    "relevance_score": 2
+                },
+                {
+                    "url": "http://www.archive.org/stream/romanizedschool00socigoog/romanizedschool00socigoog_djvu.txt",
+                    "date": "2026-03-06T12:58:29Z",
+                    "title": "Full text of \"Romanized school dictionary, English and Urdu\"",
+                    "types": [
+                        "adverse-media-v2-other-minor"
+                    ],
+                    "snippet": "Crime, s. taqsir, ganih, jmm, qab&hat. Criminal, s. taqsirw&r,ganahg ... jamal. Delicate, a. nafis, barik ; lazzatdar; n&. zuk, namin ; kam-zor ...",
+                    "relevance_score": 1
+                },
+                {
+                    "url": "https://vdoc.pub/documents/islam-in-pakistan-a-history-6mb8t55o9140",
+                    "date": "2026-03-06T12:58:29Z",
+                    "title": "Islam In Pakistan: A History [PDF] [6mb8t55o9140] - VDOC.PUB",
+                    "types": [
+                        "adverse-media-v2-other-minor"
+                    ],
+                    "snippet": "... small town not far from Deoband, and it was there that throngs of visitors ... Jamal al-din “al-Afghani” (d. 1897), the quintessential pan-Islamist of ...",
+                    "relevance_score": 1
+                }
+            ],
+            "search_term": "Qudratullah Jamal",
+            "date_updated": "2026-03-06 12:58:30",
+            "social_media": [
+                {
+                    "bio": "1100+ \"Qudratullah\" profiles | LinkedIn",
+                    "url": "https://www.linkedin.com/pub/dir/Qudratullah/+",
+                    "platform": "LinkedIn",
+                    "description": "Qudratullah Jamal. Attended University of jahan. Kabul. University of jahan. Not seeing who you're looking for? Join now to see all 1100+ ..."
+                },
+                {
+                    "bio": "TOLOnews - X",
+                    "url": "https://x.com/TOLOnews/status/1510158383004930052",
+                    "platform": "X",
+                    "description": "Apr 2, 2022 ... Addressing a gathering in Kabul, the deputy minister of commerce and industry, Qudratullah Jamal, said women can play a \"good role\" in the ..."
+                },
+                {
+                    "bio": "Deputy Minister of Tourism, Finance, and Administrative Affairs Visits ...",
+                    "url": "https://www.facebook.com/MoICAfghanistan/posts/deputy-minister-of-tourism-finance-and-administrative-affairs-visits-herat-provi/627862150336338/",
+                    "platform": "Facebook",
+                    "description": "Jul 28, 2025 ... Deputy Minister of Tourism, Finance, and Administrative Affairs Visits Herat Province Mawlawi Qudratullah Jamal, the Deputy Minister of ..."
+                },
+                {
+                    "bio": "Qudratullah Jamal (@jamalqudratullah) • Instagram photos and videos",
+                    "url": "https://www.instagram.com/jamalqudratullah/",
+                    "platform": "Instagram",
+                    "description": "614 followers · 507 following · 51 posts · @jamalqudratullah: “”"
+                },
+                {
+                    "bio": "Mawlawi Qudratullah Jamal held a meeting with officials ... - YouTube",
+                    "url": "https://www.youtube.com/watch?v=MTIspgK5jhQ",
+                    "platform": "YouTube",
+                    "description": "Jul 17, 2025 ... Mawlawi Qudratullah Jamal held a coordination meeting with officials from the Union of Tourism and Umrah Companies. More."
+                }
+            ]
+        }
     },
-    "message": "Record does not exist"
+    "message": "KYC search queued"
 }
 ```
 
