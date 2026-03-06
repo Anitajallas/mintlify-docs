@@ -98,112 +98,1780 @@ This endpoint initiates the transaction screening process, evaluating a transact
 201 Created Response
 ```json
 {
-    "transactionId": 1234567892,
-    "transactionType": "Transfer",
-    "amount": 10000.0,
-    "currency": "NGN",
-    "transactionDate": "2024-07-06T12:34:56Z",
-    "sender": {
-        "name": "QUDRATULLAH JAMAL",
-        "accountNumber": "123456789012",
-        "address": {
-            "street": "123 Main St",
-            "city": "Lagos",
-            "state": "Lagos",
-            "postalCode": "10001",
-            "country": "NIGERIA"
-        },
-        "identification": {
-            "type": "Passport",
-            "number": "A12345678",
-            "country": "USA"
-        }
-    },
-    "receiver": {
-        "name": "Jane Smith",
-        "accountNumber": "987654321098",
-        "address": {
-            "street": "456 Elm St",
-            "city": "San Francisco",
-            "state": "CA",
-            "postalCode": "94101",
-            "country": "USA"
-        },
-        "identification": {
-            "type": "National ID",
-            "number": "B98765432",
-            "country": "USA"
-        }
-    },
-    "description": null,
-    "status": null,
-    "details": {
-        "purpose": "Payment for services",
-        "reference": "INV-2024-001"
-    },
-    "sanction": {
-        "sender_name": "QUDRATULLAH JAMAL",
-        "sender_record": [
-            {
-                "id": 60,
-                "entity_name": "QUDRATULLAH JAMAL",
-                "recorded_date": "29 Nov. 2011",
-                "country": "Afghanistan",
-                "sanction_body": null,
-                "sanction_types": [
-                    "sanction",
-                    "warnings"
-                ],
-                "other_names": [],
-                "other_information": {
-                    "dob": "Approximately 1963",
-                    "pob": "Gardez, Paktia Province, Afghanistan",
-                    "title": "Maulavi",
-                    "other_info": "Member of Taliban Supreme Council and member of Taliban Cultural Commission as at 2010. Believed to be in Afghanistan/Pakistan border area. Review pursuant to Security Council resolution 1822 (2008) was concluded on 21 Jul. 2010.",
-                    "designations": "Minister of Information under the Taliban regime"
-                },
-                "date_created": "2024-06-07T00:30:16.953121Z",
-                "date_updated": "2024-06-23T19:58:11.526561Z"
+    "status": "success",
+    "data": {
+        "transactionId": "123456789210",
+        "transactionType": "Transfer",
+        "amount": 10000.0,
+        "currency": "NGN",
+        "transactionDate": "2024-07-06T12:34:56Z",
+        "sender": {
+            "name": "QUDRATULLAH JAMAL",
+            "accountNumber": "123456789012",
+            "address": {
+                "street": "123 Main St",
+                "city": "Lagos",
+                "state": "Lagos",
+                "postalCode": "10001",
+                "country": "NIGERIA"
             },
-            {
-                "id": 662,
-                "entity_name": "qudratullah jamal",
-                "recorded_date": "2022-04-27T18:12:14",
-                "country": "Afghanistan",
-                "sanction_body": "Swiss SECO Sanctions/Embargoes",
-                "sanction_types": [
-                    "sanction",
-                    "warnings"
-                ],
-                "other_names": [
-                    "قدرت الله جمال",
-                    "haji sahib"
-                ],
-                "other_information": {
-                    "dob": [
-                        "1963"
-                    ],
-                    "last_seen": "2024-06-22T20:02:02",
-                    "birth_place": [
-                        "Gardez, Paktika Province, Afghanistan"
-                    ]
-                },
-                "date_created": "2024-06-23T17:30:59.378659Z",
-                "date_updated": "2024-07-12T14:13:34.465282Z"
+            "identification": {
+                "type": "Passport",
+                "number": "A12345678",
+                "country": "USA"
             }
-        ],
-        "receiver_name": "Jane Smith",
-        "receiver_record": null
-    },
-    "screeningStatus": "Denied",
-    "comments": "Transaction denied due to a high-confidence match with the Sanctions List.",
-    "additionalActions": [
-        {
-            "actionType": "Notify Customer",
-            "assignedTo": "Customer Service",
-            "notes": "Inform the customer about the transaction denial and provide instructions for further steps."
-        }
-    ]
+        },
+        "receiver": {
+            "name": "Jane Smith",
+            "accountNumber": "987654321098",
+            "address": {
+                "street": "456 Elm St",
+                "city": "borno",
+                "state": "borno",
+                "postalCode": "94101",
+                "country": "USA"
+            },
+            "identification": {
+                "type": "National ID",
+                "number": "B98765432",
+                "country": "USA"
+            }
+        },
+        "description": null,
+        "status": null,
+        "details": {
+            "purpose": "Payment for services",
+            "reference": null
+        },
+        "sanction": {
+            "sender_name": "QUDRATULLAH JAMAL",
+            "sender_record": [
+                {
+                    "entity_name": "Maulavi Qudratullah Jamal",
+                    "entity_type": "Person",
+                    "topics": [
+                        "crime.terror",
+                        "export.control",
+                        "sanction"
+                    ],
+                    "sanction_types": [
+                        "crime.terror",
+                        "export.control",
+                        "sanction"
+                    ],
+                    "match_score": 1.0,
+                    "data": {
+                        "id": "NK-a8GaVuetYPU5ZaoT48kMch",
+                        "caption": "Maulavi Qudratullah Jamal",
+                        "schema": "Person",
+                        "properties": {
+                            "topics": [
+                                "crime.terror",
+                                "export.control",
+                                "sanction"
+                            ],
+                            "lastName": [
+                                "JAMAL",
+                                "SAHIB",
+                                "جمال",
+                                "Джамал",
+                                "Jamal"
+                            ],
+                            "createdAt": [
+                                "2001-01-25"
+                            ],
+                            "birthPlace": [
+                                "Gardez, Paktia Province",
+                                "Gardez, Paktia province, AFGHANISTAN",
+                                "Paktia Province, Afghanistan",
+                                "Afghanistan",
+                                "Gardez, Paktia Province, Afghanistan",
+                                "Gardez, province de Paktiya : AFGHANISTAN",
+                                "Gardez, Paktia province",
+                                "Gardez, Paktia, Afganistan",
+                                "Gardez, province de Paktiya",
+                                "Gardez, Paktika Province, Afghanistan",
+                                "Gardez, Afghanistan"
+                            ],
+                            "firstName": [
+                                "قدرت الله جمال",
+                                "QUDRATULLAH",
+                                "قدرة الله",
+                                "Молави",
+                                "Maulavi",
+                                "Qudratullah"
+                            ],
+                            "alias": [
+                                "SAHIB",
+                                "قدرت الله جمال Jamal",
+                                "ハッジ・サヒブ",
+                                "قدرت الله جمال",
+                                "Haji Sahib",
+                                "Молави Кудратуллах Джамал"
+                            ],
+                            "position": [
+                                "Minister of Information under the Taliban regime",
+                                "министър на информацията",
+                                "Minister of Information",
+                                "Minister of Information （情報大臣）"
+                            ],
+                            "modifiedAt": [
+                                "2025-05-14"
+                            ],
+                            "nationality": [
+                                "af"
+                            ],
+                            "country": [
+                                "af"
+                            ],
+                            "notes": [
+                                "Member of Taliban Supreme Council and member of Taliban Cultural Commission as at 2010. Believed to be in Afghanistan/Pakistan border area. Review pursuant to Security Council resolution 1822 (2008) was concluded on 21 Jul. 2010. click here",
+                                "Believed to be in Afghanistan/Pakistan border area. Review pursuant to Security Council Resolution 1822 (2008) was concluded on 21 Jul. 2010. https://www. interpol.int/en/notice/search/un/1427404",
+                                "Minister of Information under the Taliban regime.",
+                                "Member of Taliban Supreme Council and member of Taliban Cultural Commission as at 2010. Believed to be in Afghanistan/Pakistan border area. Review pursuant to Security Council resolution 1822 (2008) was concluded on 21 Jul. 2010. INTERPOL-UN Security Council Special Notice web link: https://www.interpol.int/en/How-we-work/Notices/View-UN-Notices-Individuals click here",
+                                "2010年現在、タリバーン最高評議会及びタリバーン文化委員会のメンバー。アフガニスタンとパキスタンの国境地帯にいると思われている。安全保障理事会決議1822（2008年）に基づく見直しは2010年7月21日に終了した。",
+                                "(Date of UN designation: 2001-01-25) (Believed to be in Afghanistan/Pakistan border area. Review pursuant to Security Council Resolution 1822 (2008) was concluded on 21 Jul. 2010. INTERPOL-UN Security Council Special Notice web link: https://www. interpol.int/en/notice/search/un/1427404)",
+                                "Ministre de l'information sous le régime Taliban - Membre du Conseil suprême des Taliban et de la Commission culturelle des Taliban à compter de 2010. Se trouverait dans la région frontalière entre l'Afghanistan et le Pakistan.",
+                                "Member of Taliban Supreme Council and member of Taliban Cultural Commission as at 2010. Believed to be in Afghanistan/Pakistan border area. Review pursuant to Security Council resolution 1822 (2008) was concluded on 21 Jul. 2010.",
+                                "TAi.047 Title: Maulavi. Designation: Minister of Information under the Taliban regime. Believed to be in the Afghanistan/Pakistan border area. Member of Taliban Supreme Council and member of Taliban Cultural Commission as at 2010. Review pursuant to Security Council resolution 1822 (2008) was concluded on 21 Jul. 2010.",
+                                "- Memiliki gelar “Maulavi” - Jabatan: Menteri Informasi di bawah rezim Taliban - Anggota Dewan Agung Taliban dan anggota Komisi Kebudayaan Taliban pada tahun 2010 - Diyakini berada di wilayah perbatasan Afganistan/Pakistan",
+                                "Member of Taliban Supreme Council and member of Taliban Cultural Commission as at 2010. Believed to be in Afghanistan/Pakistan border area. Review pursuant to Security Council resolution 1822 (2008) was concluded on 21 Jul. 2010. available.",
+                                "Minister of Information"
+                            ],
+                            "name": [
+                                "قدرت الله جمال",
+                                "Haji Sahib",
+                                "Maulavi Qudratullah Jamal",
+                                "QUDRATULLAH; JAMAL",
+                                "Qudratullah Jamal",
+                                "クドゥラトゥッラー・ジャマル",
+                                "QUDRATULLAH JAMAL",
+                                "قدرة الله جمال",
+                                "קדרת אללה ג'מאל"
+                            ],
+                            "title": [
+                                "Maulavi",
+                                "Maulavi （マウラヴィ）",
+                                "Haji"
+                            ],
+                            "programId": [
+                                "GB-AFG",
+                                "SECO-TALIBAN",
+                                "EU-AFG",
+                                "UN-SC1988"
+                            ],
+                            "birthDate": [
+                                "1963"
+                            ],
+                            "citizenship": [
+                                "af"
+                            ],
+                            "sourceUrl": [
+                                "https://gels-avoirs.dgtresor.gouv.fr/Gels/RegistreDetail?idRegistre=3341",
+                                "https://www.dans.bg/images/stories/FID/Reshenie_265_MS_23042003_Spisyk_ZMFT.pdf",
+                                "http://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=CELEX:32017R0404&from=EN"
+                            ],
+                            "birthCountry": [
+                                "af"
+                            ],
+                            "weakAlias": [
+                                "SAHIB"
+                            ]
+                        },
+                        "datasets": [
+                            "qa_nctc_sanctions",
+                            "gb_hmt_sanctions",
+                            "gb_fcdo_sanctions",
+                            "ua_sfms_blacklist",
+                            "mc_fund_freezes",
+                            "eu_fsf",
+                            "un_sc_sanctions",
+                            "pl_finanse_sanctions",
+                            "be_fod_sanctions",
+                            "tw_shtc",
+                            "bg_omnio_poi",
+                            "ch_seco_sanctions",
+                            "ar_repet",
+                            "jp_mof_sanctions",
+                            "id_dttot",
+                            "tr_fcib",
+                            "eu_travel_bans",
+                            "fr_tresor_gels_avoir",
+                            "za_fic_sanctions",
+                            "md_terror_sanctions",
+                            "il_mod_terrorists",
+                            "au_dfat_sanctions"
+                        ],
+                        "referents": [
+                            "mc-freezes-d78211bfea4b594e21712194da593a7829d58ff1",
+                            "ua-sfms-268",
+                            "arpet-personas-111108",
+                            "au-dfat-47-qudratullah-jamal",
+                            "fr-ga-3341",
+                            "tw-shtc-a682a81072a6b2722d7afd6d3d6d4a050c6c13f2",
+                            "gb-fcdo-afg0040",
+                            "ja-mof-b816fb7e81b63730dd5de617b2b6e1dd6109f8dc",
+                            "ch-seco-79068",
+                            "qa-nctc-111108-qudratullah-jamal",
+                            "zafic-403-qudratullah-jamal",
+                            "ch-seco-18636",
+                            "be-fod-da7fddf798b26f5325cfe0bffb6a100c76097330",
+                            "il-nbctf-53c4bab850bbb7888292f8dcb0b2c29bc86fc341",
+                            "unsc-111108",
+                            "id-dttot-4317da83c382738a96af5d7f59b1ac68bee15559",
+                            "id-dttot-94bc9f27a7eb8bc92e6e6f602c283fa68ee65871",
+                            "gb-hmt-7209",
+                            "omnio-44d2b8a1ac9471fd397ad0d6b57ced7a87a3105d",
+                            "eu-fsf-eu-339-9",
+                            "eu-tb-logical-618",
+                            "md-terr-9eab13fc94aa8d6a01c20ae0adfcb09b3b0c62d8"
+                        ],
+                        "target": true,
+                        "first_seen": "2022-04-27T18:12:14",
+                        "last_seen": "2026-03-04T18:45:01",
+                        "last_change": "2026-03-04T13:45:25",
+                        "score": 1.0,
+                        "explanations": {
+                            "name_match": {
+                                "detail": "['qudratullah jamal' literalMatch: 1.00, weight 1.00]",
+                                "score": 1.0,
+                                "query": "qudratullah jamal",
+                                "candidate": "qudratullah jamal"
+                            },
+                            "isin_security_match": {
+                                "detail": "Does not apply to schema",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "lei_code_match": {
+                                "detail": "No LEI match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "ogrn_code_match": {
+                                "detail": "No OGRN match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "vessel_imo_mmsi_match": {
+                                "detail": "Not a vessel",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "inn_code_match": {
+                                "detail": "No INN match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "bic_code_match": {
+                                "detail": "No BIC match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "uei_code_match": {
+                                "detail": "No NPI match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "npi_code_match": {
+                                "detail": "No NPI match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "address_prop_match": {
+                                "detail": "No addresses provided",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "dob_year_disjoint": {
+                                "detail": "No birth years provided",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "dob_day_disjoint": {
+                                "detail": "No birth dates provided",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            }
+                        },
+                        "match": true,
+                        "token": null
+                    },
+                    "id": "3fe58f7d-b8f5-4cbc-bbb9-55db8bffbcc3",
+                    "is_important": false,
+                    "is_false_positive": false,
+                    "visibility": true,
+                    "match": "0%",
+                    "risk_score": "80%",
+                    "matched": "False match",
+                    "sender_matched_status": null
+                },
+                {
+                    "entity_name": "MUHAMMAD JAMAL",
+                    "entity_type": "Person",
+                    "topics": [
+                        "wanted",
+                        "crime"
+                    ],
+                    "sanction_types": [
+                        "wanted",
+                        "crime"
+                    ],
+                    "match_score": 0.5652173913043478,
+                    "data": {
+                        "id": "interpol-red-2020-3509",
+                        "caption": "MUHAMMAD JAMAL",
+                        "schema": "Person",
+                        "properties": {
+                            "height": [
+                                "1.70"
+                            ],
+                            "birthDate": [
+                                "1980-01-01"
+                            ],
+                            "nationality": [
+                                "pk"
+                            ],
+                            "country": [
+                                "pk"
+                            ],
+                            "lastName": [
+                                "JAMAL"
+                            ],
+                            "hairColor": [
+                                "BLA"
+                            ],
+                            "name": [
+                                "MUHAMMAD JAMAL"
+                            ],
+                            "gender": [
+                                "male"
+                            ],
+                            "topics": [
+                                "wanted",
+                                "crime"
+                            ],
+                            "birthPlace": [
+                                "Dera Ghazi Khan"
+                            ],
+                            "programId": [
+                                "INTERPOL-RN"
+                            ],
+                            "firstName": [
+                                "MUHAMMAD"
+                            ],
+                            "eyeColor": [
+                                "BLA"
+                            ],
+                            "weight": [
+                                "60"
+                            ]
+                        },
+                        "datasets": [
+                            "interpol_red_notices"
+                        ],
+                        "referents": [],
+                        "target": true,
+                        "first_seen": "2024-03-04T17:09:51",
+                        "last_seen": "2026-02-15T00:30:38",
+                        "last_change": "2025-09-15T18:27:02",
+                        "score": 0.5652173913043478,
+                        "explanations": {
+                            "name_match": {
+                                "detail": "['jamal'≈'jamal' symbolMatch [NAME:131600183]: 1.00, weight 1.30] ['qudratullah' extraQueryPart: 0.00, weight 0.80] ['muhammad' extraResultPart: 0.00, weight 0.20]",
+                                "score": 0.5652173913043478,
+                                "query": "qudratullah jamal",
+                                "candidate": "MUHAMMAD JAMAL"
+                            },
+                            "isin_security_match": {
+                                "detail": "Does not apply to schema",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "lei_code_match": {
+                                "detail": "No LEI match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "ogrn_code_match": {
+                                "detail": "No OGRN match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "vessel_imo_mmsi_match": {
+                                "detail": "Not a vessel",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "inn_code_match": {
+                                "detail": "No INN match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "bic_code_match": {
+                                "detail": "No BIC match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "uei_code_match": {
+                                "detail": "No NPI match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "npi_code_match": {
+                                "detail": "No NPI match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "address_prop_match": {
+                                "detail": "No addresses provided",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "dob_year_disjoint": {
+                                "detail": "No birth years provided",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "dob_day_disjoint": {
+                                "detail": "No birth dates provided",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            }
+                        },
+                        "match": false,
+                        "token": null
+                    },
+                    "id": "718b84d8-c207-4974-9ccd-bfe84f6224a3",
+                    "is_important": false,
+                    "is_false_positive": false,
+                    "visibility": true,
+                    "match": "50%",
+                    "risk_score": "80%",
+                    "matched": "True match",
+                    "sender_matched_status": null
+                },
+                {
+                    "entity_name": "Nazir Ahmad Mohammed Jamaleddine",
+                    "entity_type": "Person",
+                    "topics": [
+                        "sanction",
+                        "debarment"
+                    ],
+                    "sanction_types": [
+                        "sanction",
+                        "debarment"
+                    ],
+                    "match_score": 0.5508474576271186,
+                    "data": {
+                        "id": "NK-AurF6MEKwFiWGkGbqw6yk3",
+                        "caption": "Nazir Ahmad Mohammed Jamaleddine",
+                        "schema": "Person",
+                        "properties": {
+                            "birthPlace": [
+                                "Damascus",
+                                "Damascus, Syria",
+                                "Damascus, Syria;",
+                                "Damascus, Syrian Arab Republic",
+                                "Damas",
+                                "Damas : SYRIE",
+                                "Damascus, SYRIAN ARAB REPUBLIC"
+                            ],
+                            "modifiedAt": [
+                                "2025-06-20"
+                            ],
+                            "notes": [
+                                "(also NAZIR AHMAD MOHAMMED JAMALEDDINE)",
+                                "Homme d’affaires influent exerçant ses activités en Syrie en lien avec l’ancien régime d’al-Assad, ayant effectué d’importants investissements dans le secteur du bâtiment, et détenant notamment une participation de contrôle de 90 % dans Apex Development and Projects LLC, qui a conclu un accord de coentreprise d’une valeur de 34,8 millions de dollars pour la construction de Marota City, un projet immobilier et commercial haut de gamme appuyé par l’ancien régime d’al-Assad. Du fait de sa participation au projet de Marota City, Mohammed Nazer Jamal Eddin tire avantage de l’ancien régime d’al-Assad et/ou le soutient. En mai 2019, Jamal Eddin a créé “Trillium Private JSC”, une entreprise de 15 millions de livres syriennes active dans le commerce de matériaux de construction et de produits électriques.",
+                                "N 011612445 (passport-National passport) (issue no. 002-17-L022286)",
+                                "Leading businessperson operating in Syria linked to the former al-Assad regime with significant investments in the construction industry, including a controlling 90 % stake in Apex Development and Projects LLC, which has entered into a USD 34,8 million joint venture for the construction of Marota City, a luxury residential and commercial development backed by the former al-Assad regime. Through his participation in the Marota City development, Mohammed Nazer Jamal Eddin benefits from and/or supports the former al-Assad regime. In May 2019, Jamal Eddin created “Trillium Private JSC”, a 15 million SYP company involved in the trade of building materials and electrical products.",
+                                "(Date of UN designation: 2019-01-21)",
+                                "(also MOHAMMED NAZER JAMAL EDDIN, NATHEER AHMED MOHAMMED JAMAL EDDINE, NATHIER AHMED MOHAMMED JAMAL EDDINE)",
+                                "Numéro de carte d’identité: 010-30208342 (lieu de délivrance: République arabe syrienne)",
+                                "Position: Co-founder and majority shareholder of Apex Development and Projects LLC and founder of A’ayan Company for Projects and Equipment",
+                                "The Director Disqualification Sanction was imposed on 09/04/2025."
+                            ],
+                            "gender": [
+                                "male"
+                            ],
+                            "birthDate": [
+                                "1962-01-02"
+                            ],
+                            "sourceUrl": [
+                                "https://sanctionssearch.ofac.treas.gov/Details.aspx?id=29046",
+                                "https://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=CELEX:32022R0840",
+                                "https://gels-avoirs.dgtresor.gouv.fr/Gels/RegistreDetail?idRegistre=2112",
+                                "https://home.treasury.gov/news/press-releases/sb0183",
+                                "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32025D1095"
+                            ],
+                            "programId": [
+                                "US-SYR-REL",
+                                "GB-SYR",
+                                "EU-SYR",
+                                "SECO-SYRIA"
+                            ],
+                            "idNumber": [
+                                "'010-3028342",
+                                "010-3028342",
+                                "010-30208342",
+                                "N 011612445"
+                            ],
+                            "name": [
+                                "Jamal Aldiyn",
+                                "Nazir Ahmad Mohammed Jamaleddine",
+                                "نذير احمد محمد جمال الدين",
+                                "JAMALEDDINE, Nazir Ahmad Mohammed",
+                                "محمد ناذر جمال الدين",
+                                "Mohammed Jamal Eddine",
+                                "NATHEER AHMED MOHAMMED JAMAL EDDINE",
+                                "Mohammed Nazer Jamal Eddin",
+                                "NATHIER AHMED MOHAMMED JAMAL EDDINE",
+                                "Nazir Ahmad Mohammed JAMALEDDINE",
+                                "Nazir Ahmad",
+                                "Mohammed JamalEddine",
+                                "Nazir Ahmad Jamaleddine"
+                            ],
+                            "country": [
+                                "sy"
+                            ],
+                            "topics": [
+                                "sanction",
+                                "debarment"
+                            ],
+                            "position": [
+                                "Founder of A'ayan Company for Projects and Equipment",
+                                "Cofondateur et actionnaire majoritaire d'Apex Development and Projects LLC",
+                                "Fonction: cofondateur et actionnaire majoritaire d’Apex Development and Projects LLC et fondateur de la société A’ayan Company for Projects and Equipment",
+                                "Co‐founder and majority shareholder of Apex Development and Projects LLC and founder of A’ayan Company for Projects and Equipment. In May 2019, he created “Trillium Private JSC”, a company involved in the trade of building materials and electrical products.",
+                                "Fondateur de la société A'ayan Company for Projects and Equipment",
+                                "Co-founder and majority shareholder of Apex Development and Projects LLC"
+                            ],
+                            "nationality": [
+                                "sy"
+                            ],
+                            "alias": [
+                                "Jamal Aldiyn",
+                                "Nathier Ahmed Mohammed JAMAL EDDINE",
+                                "محمد ناذر جمال الدين",
+                                "Jamal Eddine",
+                                "Mohammed Jamal Eddine",
+                                "Ahmad",
+                                "Natheer Ahmed Mohammed Jamal Eddine",
+                                "Mohammed Nazer Jamal Eddin",
+                                "Nazir",
+                                "Nazir Ahmad",
+                                "Mohammed JamalEddine",
+                                "Ahmad Nazir"
+                            ],
+                            "createdAt": [
+                                "2019-01-22"
+                            ],
+                            "passportNumber": [
+                                "N011612445",
+                                "N 011612445",
+                                "011612445",
+                                "002-17-L022286",
+                                "L022286"
+                            ],
+                            "firstName": [
+                                "Natheer",
+                                "Mohammed Nazer",
+                                "NAZIR AHMAD MOHAMMED",
+                                "Mohammed",
+                                "NATHEER AHMED MOHAMMED",
+                                "Nazer",
+                                "نذير",
+                                "Nathier",
+                                "Ahmad",
+                                "ناذر",
+                                "Nazir",
+                                "محمد",
+                                "NATHIER AHMED MOHAMMED"
+                            ],
+                            "lastName": [
+                                "Jamal Aldiyn",
+                                "Jamal Eddin",
+                                "JamalEddine",
+                                "JAMAL EDDINE",
+                                "Jamaleddine",
+                                "JAMALEDDINE",
+                                "Nazir",
+                                "جمال الدين",
+                                "Jamal Eddine"
+                            ],
+                            "birthCountry": [
+                                "sy"
+                            ],
+                            "middleName": [
+                                "Nazer",
+                                "Ahmed Mohammed",
+                                "Ahmad Mohammed",
+                                "احمد محمد"
+                            ],
+                            "addressEntity": [
+                                "addr-5ac771f26da3ff20b4964e90b5fa5e970a8cd35d"
+                            ],
+                            "address": [
+                                "DAMASCUS",
+                                "Damascus"
+                            ]
+                        },
+                        "datasets": [
+                            "us_ofac_sdn",
+                            "eu_journal_sanctions",
+                            "fr_tresor_gels_avoir",
+                            "ext_us_ofac_press_releases",
+                            "us_trade_csl",
+                            "be_fod_sanctions",
+                            "eu_travel_bans",
+                            "gb_hmt_sanctions",
+                            "gb_fcdo_sanctions",
+                            "us_sam_exclusions",
+                            "mc_fund_freezes",
+                            "eu_fsf",
+                            "ch_seco_sanctions"
+                        ],
+                        "referents": [
+                            "usgsa-s4mrcwj0n",
+                            "mc-freezes-636abc636a3fdf1dcedcc5cf7d993928ae31852b",
+                            "eu-tb-logical-119304",
+                            "usgsa-s4mrcwj0m",
+                            "gb-fcdo-syr0258",
+                            "usgsa-s4mrcwj0z",
+                            "ofac-pr-7048aa31417f5ceea6d551a25e5c955895b73aa6",
+                            "ofac-29046",
+                            "be-fod-6ccf8847ed9a54dca8db40d4efca9f6bb8dba494",
+                            "usgsa-s4mrcw7h2",
+                            "fr-ga-2112",
+                            "ch-seco-40019",
+                            "gb-hmt-13753",
+                            "eu-oj-61539dcdc8619b4d4416329e356587cfe752cc0f",
+                            "eu-fsf-eu-4961-29"
+                        ],
+                        "target": true,
+                        "first_seen": "2023-04-20T09:45:23",
+                        "last_seen": "2026-02-15T06:53:02",
+                        "last_change": "2026-01-28T12:14:01",
+                        "score": 0.5508474576271186,
+                        "explanations": {
+                            "name_match": {
+                                "detail": "['jamal'≈'jamal' symbolMatch [NAME:131600183]: 1.00, weight 1.30] ['qudratullah' extraQueryPart: 0.00, weight 0.80] ['aldiyn' extraResultPart: 0.00, weight 0.26]",
+                                "score": 0.5508474576271186,
+                                "query": "qudratullah jamal",
+                                "candidate": "Jamal Aldiyn"
+                            },
+                            "isin_security_match": {
+                                "detail": "Does not apply to schema",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "lei_code_match": {
+                                "detail": "No LEI match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "ogrn_code_match": {
+                                "detail": "No OGRN match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "vessel_imo_mmsi_match": {
+                                "detail": "Not a vessel",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "inn_code_match": {
+                                "detail": "No INN match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "bic_code_match": {
+                                "detail": "No BIC match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "uei_code_match": {
+                                "detail": "No NPI match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "npi_code_match": {
+                                "detail": "No NPI match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "address_prop_match": {
+                                "detail": "No addresses provided",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "dob_year_disjoint": {
+                                "detail": "No birth years provided",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "dob_day_disjoint": {
+                                "detail": "No birth dates provided",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            }
+                        },
+                        "match": false,
+                        "token": null
+                    },
+                    "id": "5f6f2806-9fc3-45f7-ba68-f117fd4a4c2c",
+                    "is_important": false,
+                    "is_false_positive": false,
+                    "visibility": true,
+                    "match": "0%",
+                    "risk_score": "80%",
+                    "matched": "False match",
+                    "sender_matched_status": null
+                },
+                {
+                    "entity_name": "Sa'id Ahmad Muhammad Al-Jamal",
+                    "entity_type": "Person",
+                    "topics": [
+                        "corp.disqual",
+                        "export.control",
+                        "sanction",
+                        "debarment"
+                    ],
+                    "sanction_types": [
+                        "corp.disqual",
+                        "export.control",
+                        "sanction",
+                        "debarment"
+                    ],
+                    "match_score": 0.5349794238683128,
+                    "data": {
+                        "id": "NK-9ZwpQsJnPrXZ9L732PxX6Z",
+                        "caption": "Sa'id Ahmad Muhammad Al-Jamal",
+                        "schema": "Person",
+                        "properties": {
+                            "lastName": [
+                                "Al Gamal",
+                                "SAEIDI",
+                                "SA'IDI",
+                                "AL-JAMAL",
+                                "Al-Jamal",
+                                "Rami",
+                                "al-Jamal",
+                                "Ahmad",
+                                "Abu-Ali",
+                                "al Gamal"
+                            ],
+                            "firstName": [
+                                "SA'ID AHMAD MUHAMMAD",
+                                "SAEED AHMED MOHAMMED",
+                                "Rami",
+                                "Saeed",
+                                "Ahmad",
+                                "Abu-Ahmad",
+                                "Sa'Id",
+                                "Sa'id"
+                            ],
+                            "birthDate": [
+                                "1978-07-28",
+                                "1979-01-01"
+                            ],
+                            "nationality": [
+                                "ye"
+                            ],
+                            "name": [
+                                "Sa'id Ahmad Muhammad Al-Jamal",
+                                "AL-JAMAL, Sa'id Ahmad Muhammad",
+                                "Saeed al-Jamal",
+                                "Sa'Id AL-JAMAL",
+                                "Sa'id AL-JAMAL",
+                                "ABU-AHMAD RAMI",
+                                "AHMAD SAEIDI",
+                                "Saeed Ahmed Mohammed Al Gamal",
+                                "AHMAD SA'IDI"
+                            ],
+                            "notes": [
+                                "(also SA'ID AHMAD MUHAMMAD AL-JAMAL)",
+                                "Disqualified",
+                                "(also SAEED AHMED MOHAMMED AL GAMAL, ABU-AHMAD RAMI, AHMAD SA'IDI, AHMAD SAEIDI)",
+                                "The Director Disqualification Sanction was imposed on 09/04/2025."
+                            ],
+                            "topics": [
+                                "corp.disqual",
+                                "export.control",
+                                "sanction",
+                                "debarment"
+                            ],
+                            "sourceUrl": [
+                                "https://find-and-update.company-information.service.gov.uk/disqualified-officers/natural/4U3BWBpFoJLPvMTeD9dleialKKU",
+                                "https://sanctionssearch.ofac.treas.gov/Details.aspx?id=32171"
+                            ],
+                            "gender": [
+                                "male"
+                            ],
+                            "alias": [
+                                "Rami Abu Ahmad",
+                                "SAEIDI, Ahmad",
+                                "Sa'id Ahmad Muhammad Al-Jamal",
+                                "Saeed al-Jamal",
+                                "Abu-Ahmad Rami",
+                                "AL GAMAL, Saeed Ahmed Mohammed",
+                                "Saeed Ahmed Mohammed al Gamal",
+                                "Ahmad SAEIDI",
+                                "SA'IDI, Ahmad",
+                                "RAMI, Abu-Ahmad",
+                                "Abu-Ali",
+                                "Saeed Ahmed Mohammed Al Gamal",
+                                "Ahmad SA'IDI"
+                            ],
+                            "weakAlias": [
+                                "Abu-'Ali",
+                                "彩虹",
+                                "Khrpi",
+                                "Caihong",
+                                "Abu Ahmad",
+                                "Abu-Ali",
+                                "Hisham",
+                                "AHMAD, Abu"
+                            ],
+                            "birthPlace": [
+                                "Yemen"
+                            ],
+                            "programId": [
+                                "US-IRAN",
+                                "GB-IRAN"
+                            ],
+                            "birthCountry": [
+                                "ye"
+                            ],
+                            "modifiedAt": [
+                                "2024-02-27"
+                            ],
+                            "passportNumber": [
+                                "U63475649",
+                                "4716186",
+                                "E49297849",
+                                "04716186"
+                            ],
+                            "createdAt": [
+                                "2021-09-15"
+                            ],
+                            "address": [
+                                "Iran"
+                            ],
+                            "country": [
+                                "ye",
+                                "ir"
+                            ],
+                            "middleName": [
+                                "Ahmed Mohammed",
+                                "Ahmad Muhammad"
+                            ],
+                            "uniqueEntityId": [
+                                "TBAAGTFGKJY8",
+                                "TPY2KUX4FBF8",
+                                "TPVMCEM215P3",
+                                "TBBPYXQ3A5X5"
+                            ]
+                        },
+                        "datasets": [
+                            "us_ofac_sdn",
+                            "us_trade_csl",
+                            "tw_shtc",
+                            "gb_hmt_sanctions",
+                            "gb_fcdo_sanctions",
+                            "us_sam_exclusions",
+                            "gb_coh_disqualified"
+                        ],
+                        "referents": [
+                            "usgsa-s4mrtygwj",
+                            "usgsa-s4mrtyhg2",
+                            "gb-fcdo-irn0194",
+                            "gb-hmt-16372",
+                            "usgsa-s4mrtyhg1",
+                            "ofac-32171",
+                            "usgsa-s4mrtygwh",
+                            "tw-shtc-037034e77195835870c91cf573001e22106cdc14",
+                            "gb-coh-4u3bwbpfojlpvmted9dleialkku",
+                            "tw-shtc-15f0de33b4342892c1e919feb9724e4f7749834c",
+                            "usgsa-s4mrj5bdz"
+                        ],
+                        "target": true,
+                        "first_seen": "2023-04-20T10:27:20",
+                        "last_seen": "2026-02-15T06:53:02",
+                        "last_change": "2026-01-28T12:14:01",
+                        "score": 0.5349794238683128,
+                        "explanations": {
+                            "name_match": {
+                                "detail": "['jamal'≈'jamal' symbolMatch [NAME:131600183]: 1.00, weight 1.30] ['qudratullah' extraQueryPart: 0.00, weight 0.80] ['al' extraResultPart: 0.00, weight 0.13] ['saeed' extraResultPart: 0.00, weight 0.20]",
+                                "score": 0.5349794238683128,
+                                "query": "qudratullah jamal",
+                                "candidate": "Saeed al-Jamal"
+                            },
+                            "isin_security_match": {
+                                "detail": "Does not apply to schema",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "lei_code_match": {
+                                "detail": "No LEI match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "ogrn_code_match": {
+                                "detail": "No OGRN match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "vessel_imo_mmsi_match": {
+                                "detail": "Not a vessel",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "inn_code_match": {
+                                "detail": "No INN match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "bic_code_match": {
+                                "detail": "No BIC match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "uei_code_match": {
+                                "detail": "No NPI match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "npi_code_match": {
+                                "detail": "No NPI match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "address_prop_match": {
+                                "detail": "No addresses provided",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "dob_year_disjoint": {
+                                "detail": "No birth years provided",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "dob_day_disjoint": {
+                                "detail": "No birth dates provided",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            }
+                        },
+                        "match": false,
+                        "token": null
+                    },
+                    "id": "e8309a88-67d0-4518-8c5f-afa70dde889f",
+                    "is_important": false,
+                    "is_false_positive": false,
+                    "visibility": true,
+                    "match": "0%",
+                    "risk_score": "80%",
+                    "matched": "False match",
+                    "sender_matched_status": null
+                }
+            ],
+            "receiver_name": "Jane Smith",
+            "receiver_record": [
+                {
+                    "entity_name": "Jane Bennett Smith",
+                    "entity_type": "Person",
+                    "topics": [
+                        "role.rca"
+                    ],
+                    "sanction_types": [
+                        "role.rca"
+                    ],
+                    "match_score": 0.9199999999999999,
+                    "data": {
+                        "id": "Q76279583",
+                        "caption": "Jane Bennett Smith",
+                        "schema": "Person",
+                        "properties": {
+                            "name": [
+                                "ג'יין בנט סמית",
+                                "Jane Bennett Smith",
+                                "জেন বেনেট স্মিথ"
+                            ],
+                            "topics": [
+                                "role.rca"
+                            ],
+                            "alias": [
+                                "Hon. Jane Bennett Smith"
+                            ],
+                            "wikidataId": [
+                                "Q76279583"
+                            ],
+                            "notes": [
+                                "(born 1971)"
+                            ],
+                            "gender": [
+                                "female"
+                            ],
+                            "title": [
+                                "The Honourable"
+                            ],
+                            "birthDate": [
+                                "1971-07-28"
+                            ],
+                            "lastName": [
+                                "Smith"
+                            ],
+                            "firstName": [
+                                "Jane"
+                            ]
+                        },
+                        "datasets": [
+                            "wikidata"
+                        ],
+                        "referents": [],
+                        "target": true,
+                        "first_seen": "2023-07-18T22:03:41",
+                        "last_seen": "2026-02-12T19:10:51",
+                        "last_change": "2026-01-06T19:04:42",
+                        "score": 0.9199999999999999,
+                        "explanations": {
+                            "name_match": {
+                                "detail": "['jane'≈'jane' symbolMatch [NAME:1682564]: 1.00, weight 1.00] ['smith'≈'smith' symbolMatch [NAME:1158446]: 1.00, weight 1.30] ['bennett' extraResultPart: 0.00, weight 0.20]",
+                                "score": 0.9199999999999999,
+                                "query": "jane smith",
+                                "candidate": "Jane Bennett Smith"
+                            },
+                            "isin_security_match": {
+                                "detail": "Does not apply to schema",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "lei_code_match": {
+                                "detail": "No LEI match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "ogrn_code_match": {
+                                "detail": "No OGRN match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "vessel_imo_mmsi_match": {
+                                "detail": "Not a vessel",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "inn_code_match": {
+                                "detail": "No INN match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "bic_code_match": {
+                                "detail": "No BIC match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "uei_code_match": {
+                                "detail": "No NPI match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "npi_code_match": {
+                                "detail": "No NPI match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "address_prop_match": {
+                                "detail": "No addresses provided",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "dob_year_disjoint": {
+                                "detail": "No birth years provided",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "dob_day_disjoint": {
+                                "detail": "No birth dates provided",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            }
+                        },
+                        "match": true,
+                        "token": null
+                    },
+                    "id": "eec6b18b-7a8b-4795-80db-beb91af80126",
+                    "is_important": false,
+                    "is_false_positive": false,
+                    "visibility": true,
+                    "match": "70%",
+                    "risk_score": "83%",
+                    "matched": "True match",
+                    "receiver_matched_status": null
+                },
+                {
+                    "entity_name": "Suzanne Smith",
+                    "entity_type": "Person",
+                    "topics": [
+                        "role.pep"
+                    ],
+                    "sanction_types": [
+                        "role.pep"
+                    ],
+                    "match_score": 0.9199999999999999,
+                    "data": {
+                        "id": "Q131411550",
+                        "caption": "Suzanne Smith",
+                        "schema": "Person",
+                        "properties": {
+                            "classification": [
+                                "State government (past)"
+                            ],
+                            "deathDate": [
+                                "2024-01-06"
+                            ],
+                            "name": [
+                                "Suzanne Smith"
+                            ],
+                            "citizenship": [
+                                "us"
+                            ],
+                            "wikidataId": [
+                                "Q131411550"
+                            ],
+                            "birthDate": [
+                                "1948-07-19"
+                            ],
+                            "topics": [
+                                "role.pep"
+                            ],
+                            "firstName": [
+                                "Suzanne"
+                            ],
+                            "political": [
+                                "Democratic Party"
+                            ],
+                            "position": [
+                                "member of the New Hampshire House of Representatives (2008-2022)"
+                            ],
+                            "notes": [
+                                "American politician and conservationist (1948–2024)"
+                            ],
+                            "lastName": [
+                                "Smith"
+                            ],
+                            "birthPlace": [
+                                "Green Bay"
+                            ],
+                            "alias": [
+                                "Suzanne Jane Smith"
+                            ],
+                            "gender": [
+                                "female"
+                            ]
+                        },
+                        "datasets": [
+                            "ann_pep_positions",
+                            "wd_peps",
+                            "wikidata"
+                        ],
+                        "referents": [],
+                        "target": true,
+                        "first_seen": "2024-12-15T12:48:06",
+                        "last_seen": "2026-02-14T14:20:00",
+                        "last_change": "2026-01-15T03:48:43",
+                        "score": 0.9199999999999999,
+                        "explanations": {
+                            "name_match": {
+                                "detail": "['jane'≈'jane' symbolMatch [NAME:1682564]: 1.00, weight 1.00] ['smith'≈'smith' symbolMatch [NAME:1158446]: 1.00, weight 1.30] ['suzanne' extraResultPart: 0.00, weight 0.20]",
+                                "score": 0.9199999999999999,
+                                "query": "jane smith",
+                                "candidate": "Suzanne Jane Smith"
+                            },
+                            "isin_security_match": {
+                                "detail": "Does not apply to schema",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "lei_code_match": {
+                                "detail": "No LEI match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "ogrn_code_match": {
+                                "detail": "No OGRN match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "vessel_imo_mmsi_match": {
+                                "detail": "Not a vessel",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "inn_code_match": {
+                                "detail": "No INN match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "bic_code_match": {
+                                "detail": "No BIC match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "uei_code_match": {
+                                "detail": "No NPI match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "npi_code_match": {
+                                "detail": "No NPI match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "address_prop_match": {
+                                "detail": "No addresses provided",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "dob_year_disjoint": {
+                                "detail": "No birth years provided",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "dob_day_disjoint": {
+                                "detail": "No birth dates provided",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            }
+                        },
+                        "match": true,
+                        "token": null
+                    },
+                    "id": "78931484-84e7-4dc7-9255-b59e9cbec916",
+                    "is_important": false,
+                    "is_false_positive": false,
+                    "visibility": true,
+                    "match": "50%",
+                    "risk_score": "83%",
+                    "matched": "True match",
+                    "receiver_matched_status": null
+                },
+                {
+                    "entity_name": "Rebecca Smith",
+                    "entity_type": "Person",
+                    "topics": [
+                        "role.pep"
+                    ],
+                    "sanction_types": [
+                        "role.pep"
+                    ],
+                    "match_score": 0.9199999999999999,
+                    "data": {
+                        "id": "Q76736903",
+                        "caption": "Rebecca Smith",
+                        "schema": "Person",
+                        "properties": {
+                            "wikidataId": [
+                                "Q76736903"
+                            ],
+                            "citizenship": [
+                                "gb"
+                            ],
+                            "topics": [
+                                "role.pep"
+                            ],
+                            "name": [
+                                "Rebecca Smith",
+                                "রেবেকা স্মিথ"
+                            ],
+                            "notes": [
+                                "Member of Parliament for South West Devon"
+                            ],
+                            "political": [
+                                "Conservative Party"
+                            ],
+                            "alias": [
+                                "Rebecca Jane Smith"
+                            ],
+                            "website": [
+                                "https://www.rebecca-smith.org.uk/"
+                            ],
+                            "position": [
+                                "member of the 59th Parliament of the United Kingdom (2024-)"
+                            ],
+                            "firstName": [
+                                "Rebecca"
+                            ],
+                            "lastName": [
+                                "Smith"
+                            ],
+                            "gender": [
+                                "female"
+                            ]
+                        },
+                        "datasets": [
+                            "wd_categories",
+                            "wd_peps",
+                            "wikidata"
+                        ],
+                        "referents": [],
+                        "target": true,
+                        "first_seen": "2024-09-28T12:48:04",
+                        "last_seen": "2026-02-15T00:13:23",
+                        "last_change": "2026-01-15T03:48:43",
+                        "score": 0.9199999999999999,
+                        "explanations": {
+                            "name_match": {
+                                "detail": "['jane'≈'jane' symbolMatch [NAME:1682564]: 1.00, weight 1.00] ['smith'≈'smith' symbolMatch [NAME:1158446]: 1.00, weight 1.30] ['rebecca' extraResultPart: 0.00, weight 0.20]",
+                                "score": 0.9199999999999999,
+                                "query": "jane smith",
+                                "candidate": "Rebecca Jane Smith"
+                            },
+                            "isin_security_match": {
+                                "detail": "Does not apply to schema",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "lei_code_match": {
+                                "detail": "No LEI match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "ogrn_code_match": {
+                                "detail": "No OGRN match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "vessel_imo_mmsi_match": {
+                                "detail": "Not a vessel",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "inn_code_match": {
+                                "detail": "No INN match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "bic_code_match": {
+                                "detail": "No BIC match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "uei_code_match": {
+                                "detail": "No NPI match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "npi_code_match": {
+                                "detail": "No NPI match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "address_prop_match": {
+                                "detail": "No addresses provided",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "dob_year_disjoint": {
+                                "detail": "No birth years provided",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "dob_day_disjoint": {
+                                "detail": "No birth dates provided",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            }
+                        },
+                        "match": true,
+                        "token": null
+                    },
+                    "id": "3f363658-a860-482b-93d3-9df4bb37d6a0",
+                    "is_important": false,
+                    "is_false_positive": false,
+                    "visibility": true,
+                    "match": "50%",
+                    "risk_score": "83%",
+                    "matched": "True match",
+                    "receiver_matched_status": null
+                },
+                {
+                    "entity_name": "JANE A SMITH",
+                    "entity_type": "Person",
+                    "topics": [
+                        "debarment"
+                    ],
+                    "sanction_types": [
+                        "debarment"
+                    ],
+                    "match_score": 0.9583333333333333,
+                    "data": {
+                        "id": "us-fed-excl-jane-a-smith-06469-moodus",
+                        "caption": "JANE A SMITH",
+                        "schema": "Person",
+                        "properties": {
+                            "programId": [
+                                "US-HHS-OIG"
+                            ],
+                            "country": [
+                                "us"
+                            ],
+                            "middleName": [
+                                "A"
+                            ],
+                            "firstName": [
+                                "JANE"
+                            ],
+                            "lastName": [
+                                "SMITH"
+                            ],
+                            "topics": [
+                                "debarment"
+                            ],
+                            "address": [
+                                "MOODUS, CT 06469",
+                                "7 TROWBRIDGE ROAD, MOODUS, CT 06469"
+                            ],
+                            "name": [
+                                "JANE A SMITH"
+                            ],
+                            "birthDate": [
+                                "1967-08-03"
+                            ],
+                            "position": [
+                                "NURSE/NURSES AIDE (IND- LIC HC SERV PRO)"
+                            ],
+                            "createdAt": [
+                                "2015-02-19"
+                            ]
+                        },
+                        "datasets": [
+                            "us_hhs_exclusions",
+                            "us_sam_exclusions"
+                        ],
+                        "referents": [],
+                        "target": true,
+                        "first_seen": "2024-05-08T21:57:02",
+                        "last_seen": "2026-02-14T21:57:01",
+                        "last_change": "2026-01-06T21:57:01",
+                        "score": 0.9583333333333333,
+                        "explanations": {
+                            "name_match": {
+                                "detail": "['jane'≈'jane' symbolMatch [NAME:1682564]: 1.00, weight 1.00] ['smith'≈'smith' symbolMatch [NAME:1158446]: 1.00, weight 1.30] ['a' extraResultPart: 0.00, weight 0.10]",
+                                "score": 0.9583333333333333,
+                                "query": "jane smith",
+                                "candidate": "JANE A SMITH"
+                            },
+                            "isin_security_match": {
+                                "detail": "Does not apply to schema",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "lei_code_match": {
+                                "detail": "No LEI match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "ogrn_code_match": {
+                                "detail": "No OGRN match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "vessel_imo_mmsi_match": {
+                                "detail": "Not a vessel",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "inn_code_match": {
+                                "detail": "No INN match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "bic_code_match": {
+                                "detail": "No BIC match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "uei_code_match": {
+                                "detail": "No NPI match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "npi_code_match": {
+                                "detail": "No NPI match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "address_prop_match": {
+                                "detail": "No addresses provided",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "dob_year_disjoint": {
+                                "detail": "No birth years provided",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "dob_day_disjoint": {
+                                "detail": "No birth dates provided",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            }
+                        },
+                        "match": true,
+                        "token": null
+                    },
+                    "id": "0261183c-d835-4f14-a6a0-e7d427567bef",
+                    "is_important": false,
+                    "is_false_positive": false,
+                    "visibility": true,
+                    "match": "70%",
+                    "risk_score": "83%",
+                    "matched": "True match",
+                    "receiver_matched_status": null
+                },
+                {
+                    "entity_name": "LEAH JANE SMITH",
+                    "entity_type": "Person",
+                    "topics": [
+                        "debarment"
+                    ],
+                    "sanction_types": [
+                        "debarment"
+                    ],
+                    "match_score": 0.9199999999999999,
+                    "data": {
+                        "id": "us-fed-excl-leah-jane-smith-39342-marion",
+                        "caption": "LEAH JANE SMITH",
+                        "schema": "Person",
+                        "properties": {
+                            "address": [
+                                "6412 KOOSA DRIVE, MARION, MS 39342"
+                            ],
+                            "topics": [
+                                "debarment"
+                            ],
+                            "lastName": [
+                                "SMITH"
+                            ],
+                            "programId": [
+                                "US-HHS-OIG"
+                            ],
+                            "middleName": [
+                                "JANE"
+                            ],
+                            "firstName": [
+                                "LEAH"
+                            ],
+                            "name": [
+                                "LEAH JANE SMITH"
+                            ],
+                            "birthDate": [
+                                "1985-09-29"
+                            ],
+                            "country": [
+                                "us"
+                            ],
+                            "position": [
+                                "NURSE/NURSES AIDE (IND- LIC HC SERV PRO)"
+                            ]
+                        },
+                        "datasets": [
+                            "us_hhs_exclusions"
+                        ],
+                        "referents": [],
+                        "target": true,
+                        "first_seen": "2024-05-08T21:57:02",
+                        "last_seen": "2026-02-14T21:57:01",
+                        "last_change": "2026-01-06T21:57:01",
+                        "score": 0.9199999999999999,
+                        "explanations": {
+                            "name_match": {
+                                "detail": "['jane'≈'jane' symbolMatch [NAME:1682564]: 1.00, weight 1.00] ['smith'≈'smith' symbolMatch [NAME:1158446]: 1.00, weight 1.30] ['leah' extraResultPart: 0.00, weight 0.20]",
+                                "score": 0.9199999999999999,
+                                "query": "jane smith",
+                                "candidate": "LEAH JANE SMITH"
+                            },
+                            "isin_security_match": {
+                                "detail": "Does not apply to schema",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "lei_code_match": {
+                                "detail": "No LEI match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "ogrn_code_match": {
+                                "detail": "No OGRN match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "vessel_imo_mmsi_match": {
+                                "detail": "Not a vessel",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "inn_code_match": {
+                                "detail": "No INN match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "bic_code_match": {
+                                "detail": "No BIC match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "uei_code_match": {
+                                "detail": "No NPI match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "npi_code_match": {
+                                "detail": "No NPI match",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "address_prop_match": {
+                                "detail": "No addresses provided",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "dob_year_disjoint": {
+                                "detail": "No birth years provided",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            },
+                            "dob_day_disjoint": {
+                                "detail": "No birth dates provided",
+                                "score": 0.0,
+                                "query": null,
+                                "candidate": null
+                            }
+                        },
+                        "match": true,
+                        "token": null
+                    },
+                    "id": "c94f5309-a8a7-4978-bf53-21774dd64a91",
+                    "is_important": false,
+                    "is_false_positive": false,
+                    "visibility": true,
+                    "match": "0%",
+                    "risk_score": "83%",
+                    "matched": "False match",
+                    "receiver_matched_status": null
+                }
+            ]
+        },
+        "screeningStatus": "flagged",
+        "comments": "Transaction denied due to high-risk blacklist match, high risk level, or sanctions match.",
+        "additionalActions": [
+            {
+                "actionType": "Notify Customer",
+                "assignedTo": "Customer Service",
+                "notes": "Inform the customer about the transaction denial."
+            }
+        ]
+    }
 }
 ```
 
