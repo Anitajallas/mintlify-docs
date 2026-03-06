@@ -1,0 +1,84 @@
+## Verify your customers' identities using their National Identification Number (NIN) With Face
+
+Utilize Adhere's NIN with Face verification endpoint to retrieve and validate customer details using their National Identification Number (NIN) and an Image URL. This method provides a comprehensive means of identification, combining robust personal information with facial verification for enhanced accuracy.
+
+#### Request Endpoint
+
+`POST` `{{BASE_URL}}/api/onboarding/nigeria_kyc/nin_with_face/`
+
+#### Sample Payload
+
+```json
+{
+  "identification_number": "012345678",
+  "image_url": "https://res.cloudinary.com/dh3i1wodq/image/upload/v1675410981/profile.jpg"
+}
+```
+
+200 OK Response
+
+``` json
+{
+    "status": "success",
+    "data": {
+        "nin_data": {
+            "title": "",
+            "lastName": "UCHE",
+            "firstName": "KARIM",
+            "gender": "male",
+            "dateOfBirth": "2002-11-09",
+            "birthLga": "",
+            "birthState": "",
+            "centralID": "",
+            "educationalLevel": "",
+            "email": null,
+            "nin": "90187493033",
+            "employmentStatus": "",
+            "height": "",
+            "maritalStatus": null,
+            "image": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/", # base 64,
+            "middleName": "IKENNA",
+            "religion": "",
+            "telephoneNo": "09088118811",
+            "residenceAddress": "5, ODEYEMI STREET, ANIMASHAUN",
+            "residenceLga": "Ifo",
+            "residenceState": "Ogun",
+            "residenceTown": "",
+            "residenceStatus": "",
+            "selfOriginLga": "",
+            "selfOriginPlace": "",
+            "selfOriginState": "Ogun",
+            "signature": "",
+            "spokenLanguage": "",
+            "nokAddress1": "",
+            "nokAddress2": "",
+            "nokFirstname": "",
+            "nokLga": "",
+            "nokMiddleName": "",
+            "nokPostalCode": "",
+            "nokState": "",
+            "nokSurname": "",
+            "nokTown": "",
+            "oSpokenLang": "****",
+            "pFirstName": "",
+            "pMiddleName": "",
+            "profession": null,
+            "pSurname": "",
+            "trackingId": "",
+            "userId": "",
+            "vnin": ""
+        },
+        "face_data": {
+            "message": "Fatch Match",
+            "confidence": 99.9974136352539
+        },
+        "verification": {
+            "status": "VERIFIED",
+            "reference": "8314a5fc-bdb5-40c8-98bd-72aef9f1a868"
+        }
+    },
+    "message": "National Identification Number details retrieved successfully"
+}
+```
+
+

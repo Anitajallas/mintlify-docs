@@ -1,0 +1,41 @@
+## Verify your customers' identities using their CAC 
+
+Adhere's CAC verification endpoint provides access to accurate and verified information on registered businesses.
+
+#### Request Endpoint
+
+`POST` `{{BASE URL}}/api/onboarding/nigeria_kyc/cac/`
+
+#### Sample Payload
+``` json
+{    
+  "registration_number": "1261103",
+  "company_name": "JOYCE VENTURES",
+  "company_type": "RC", # BN or RC or IT
+}
+```
+
+200 OK Response
+
+``` json
+
+{
+  "status": "success",
+  "data": [
+    {
+      "id": 8693434,
+      "lga": "Ibadan North West",
+      "city": "Mokola Ibadan",
+      "email": "joyceventures@gmail.com",
+      "state": "OYO",
+      "address": " Okunmade street, Opposite Veterinary Hospital",
+      "rcNumber": "1261103",
+      "approvedName": "JOYCE VENTURES",
+      "registrationDate": "2023-07-11T08:39:54.898+00:00"
+    }
+  ],
+  "message": "Business Registration details retrieved successfully"
+}
+```
+
+

@@ -1,0 +1,48 @@
+## Verify your customers' identities using their Bank Verification Number (BVN) Advanced
+
+Adhere's Bank Verification Number (BVN) Advanced verification endpoint provides access to detailed and verified information about your customers' identities digitally through various sources to validate information. This endpoint provides comprehensive details about the customer's BVN, including their personal information, enrollment details, and more, ensuring a higher level of security and accuracy in the verification process.
+
+#### Request Endpoint
+
+`POST` `{{BASE_URL}}/api/onboarding/nigeria_kyc/bvn_advanced/`
+
+#### Sample Payload
+
+```json
+{
+	"bvn": "22000000001"
+}
+```
+
+200 OK Response
+
+```json
+{
+    "status": "success",
+    "data": {
+        "bvn": "22000000001",
+        "image": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJCuG/wAa0U+5yOnY/9k=", # base-64
+        "title": "Mr",
+        "gender": "male",
+        "lastName": "OMOLE",
+        "firstName": "ABRAHAM",
+        "middleName": "ISAAC",
+        "nameOnCard": "",
+        "dateOfBirth": "1909-09-19",
+        "lgaOfOrigin": "Ado-Odo/Ota",
+        "watchListed": "NO",
+        "phoneNumber1": "09011001100",
+        "phoneNumber2": "",
+        "maritalStatus": "Single",
+        "stateOfOrigin": "Ogun State",
+        "enrollmentBank": "033",
+        "levelOfAccount": "Level 1 - Low Level Accounts",
+        "lgaOfResidence": "",
+        "enrollmentBranch": "0517-OTA 2",
+        "registrationDate": "2017-09-05",
+        "stateOfResidence": "Ogun State",
+        "residentialAddress": ""
+    },
+    "message": "Bank Verification Number details retrieved successfully"
+}
+```

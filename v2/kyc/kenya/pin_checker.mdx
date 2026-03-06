@@ -1,0 +1,38 @@
+## Generate concise information about your customers' connected account
+
+Adhere's Pin Checker generates a concise description of the details of the application.
+
+### Request Endpoint
+
+`POST:` `{{BASE_URL}}/api/onboarding/kenya_kyc/pin_checker/`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **201 Created:** The request was successful, and the detail of the application is returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
+
+#### Payload
+``` json
+{
+    "pin": "A123456789B"
+}
+```
+
+200 OK Response
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Pin details retrieved",
+  "response_code": "00",
+  "data": {
+    "pin": "A123456789B",
+    "taxpayer_name": "ABB APP Limited",
+    "pin_status": "Active",
+    "itax_status": "iPage Updated",
+    "obligation_details": "Income Tax - Company Registered 29/01/2013"
+  }
+}
+```

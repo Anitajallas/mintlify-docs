@@ -1,0 +1,272 @@
+## Generate CRC Full Credit Report
+
+Adhere's CRC Full Credit Report endpoint provides users with a detailed and comprehensive overview of their credit history. This includes information on credit accounts, payment timelines, credit utilization, account closures, and instances of delinquency. By utilizing this endpoint, users can effectively monitor and manage their credit standing, assess their creditworthiness, and gain insights into factors influencing their credit behavior.
+
+### Request Endpoint
+
+`POST:` `{{BASE_URL}}/api/onboarding/individual/crc_full/`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **201 Created:** The request was successful, and the business' credit information is returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
+
+
+### Payload Fields
+``` json
+{
+    "bvn": "22244545518"
+}
+```
+
+### 200 OK Response
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "CRC Full Credit Report",
+  "response_code": "00",
+  "data": {
+    "_id": "64f600608aaf9386c646de32",
+    "bvn": "22244545518",
+    "customerId": "505327",
+    "businessId": "64db7ab8a26e603218838892",
+    "name": "ADELEKE EMMANUEL AYORINDE",
+    "phone": "",
+    "gender": "Male",
+    "dateOfBirth": "29/12/1994",
+    "address": "",
+    "email": "",
+    "score": {
+      "totalNoOfDelinquentFacilities": 0,
+      "lastReportedDate": "23/Nov/2023",
+      "totalNoOfLoans": 29,
+      "totalNoOfInstitutions": 6,
+      "totalBorrowed": 4145267,
+      "totalOutstanding": 1,
+      "totalOverdue": 0,
+      "maxNoOfDays": null,
+      "totalNoOfPerformingLoans": 29,
+      "totalMonthlyInstallment": null,
+      "totalNoOfClosedLoans": 27,
+      "totalNoOfActiveLoans": 2,
+      "creditEnquiries": [
+        {
+          "loanType": "Overdraft",
+          "date": "12-Oct-2023",
+          "institutionType": "Micro Lenders"
+        },
+        {
+          "loanType": "Overdraft",
+          "date": "05-Sep-2023",
+          "institutionType": "Micro Lenders"
+        },
+        {
+          "loanType": "Overdraft",
+          "date": "04-Sep-2023",
+          "institutionType": "Micro Lenders"
+        }
+      ],
+      "crcReportOrderNumber": "W-0097887830/2023",
+      "loanPerformance": [
+        {
+          "loanProvider": "UNITED BANK FOR AFRICA",
+          "loanAmount": "NGN   1,134,330",
+          "accountNumber": "",
+          "outstandingBalance": "1",
+          "status": "Open",
+          "performanceStatus": "Performing",
+          "lastUpdatedAt": "",
+          "overdueAmount": "0",
+          "type": "",
+          "loanCount": 1
+        },
+        {
+          "loanProvider": "ZENITH BANK PLC",
+          "loanAmount": "NGN   1,132,977",
+          "accountNumber": "",
+          "outstandingBalance": "0",
+          "status": "Closed",
+          "performanceStatus": "Performing",
+          "lastUpdatedAt": "",
+          "overdueAmount": "0",
+          "type": "",
+          "loanCount": 2
+        }
+      ],
+      "highestLoanAmount": 1134330,
+      "totalNoOfOverdueAccounts": null,
+      "loanHistory": [
+        {
+          "loanProvider": "UNITED BANK FOR AFRICA",
+          "accountNumber": "SF099911020938",
+          "type": "Term Loan",
+          "disbursedDate": "",
+          "maturityDate": "24-May-2022",
+          "loanAmount": "1134330",
+          "installmentAmount": "",
+          "overdueAmount": "0",
+          "amountWrittenOff": "",
+          "currency": "NGN",
+          "lastPaymentDate": "",
+          "loanDuration": "",
+          "dateReported": "31-Jul-2022",
+          "performanceStatus": "Performing",
+          "rankings": "1-0",
+          "reason": "Open",
+          "outstandingBalance": "1",
+          "loanStatus": "A",
+          "numberOfOverdueDays": "0",
+          "collateral": "Unsecured",
+          "paymentHistory": {
+            "MONTH1": {
+              "month": "Jul-22",
+              "daysOverdue": "OK"
+            },
+            "MONTH10": {
+              "month": "Oct-21",
+              "daysOverdue": "OK"
+            },
+            "MONTH11": {
+              "month": "Sep-21",
+              "daysOverdue": "OK"
+            },
+            "MONTH12": {
+              "month": "Aug-21",
+              "daysOverdue": "OK"
+            },
+            "MONTH5": {
+              "month": "Mar-22",
+              "daysOverdue": "OK"
+            },
+            "MONTH6": {
+              "month": "Feb-22",
+              "daysOverdue": "OK"
+            },
+            "MONTH7": {
+              "month": "Jan-22",
+              "daysOverdue": "OK"
+            },
+            "MONTH8": {
+              "month": "Dec-21",
+              "daysOverdue": "ND"
+            },
+            "MONTH9": {
+              "month": "Nov-21",
+              "daysOverdue": "OK"
+            }
+          }
+        },
+        {
+          "loanProvider": "STERLING BANK PLC",
+          "accountNumber": "0086575839",
+          "type": "Others",
+          "disbursedDate": "",
+          "maturityDate": "31-May-2022",
+          "loanAmount": "0",
+          "installmentAmount": "",
+          "overdueAmount": "0",
+          "amountWrittenOff": "",
+          "currency": "NGN",
+          "lastPaymentDate": "",
+          "loanDuration": "",
+          "dateReported": "31-May-2022",
+          "performanceStatus": "Performing",
+          "rankings": "1-0",
+          "reason": "Open",
+          "outstandingBalance": "0",
+          "loanStatus": "A",
+          "numberOfOverdueDays": "0",
+          "collateral": "Unsecured",
+          "paymentHistory": {
+            "MONTH1": {
+              "month": "May-22",
+              "daysOverdue": "OK"
+            },
+            "MONTH10": {
+              "month": "Aug-21",
+              "daysOverdue": "ND"
+            },
+            "MONTH11": {
+              "month": "Jul-21",
+              "daysOverdue": "ND"
+            },
+            "MONTH12": {
+              "month": "Jun-21",
+              "daysOverdue": "ND"
+            },
+            "MONTH13": {
+              "month": "May-21",
+              "daysOverdue": "ND"
+            },
+            "MONTH7": {
+              "month": "Nov-21",
+              "daysOverdue": "ND"
+            },
+            "MONTH8": {
+              "month": "Oct-21",
+              "daysOverdue": "ND"
+            },
+            "MONTH9": {
+              "month": "Sep-21",
+              "daysOverdue": "ND"
+            }
+          }
+        }
+      ],
+      "employmentHistory": [
+        {
+          "employerName": "ARM INVESTMENT MANAGERS",
+          "position": null,
+          "address": "1 MEKUNWEN ROAD OYINKAN ABAYOMI ETI OSA",
+          "dateReported": "31-jul-2023"
+        }
+      ]
+    },
+    "searchedDate": "2023-11-23T14:26:42.196Z"
+  }
+}
+```
+
+### Field Description
+
+
+| Field                            | Description                                                                                                         | Type    |
+|----------------------------------|---------------------------------------------------------------------------------------------------------------------|---------|
+| `success`                        | Indicates whether the request was successful or not.                                                                | Boolean |
+| `statusCode`                     | The HTTP status code of the response.                                                                               | Number  |
+| `message`                        | A message describing the result of the request.                                                                     | String  |
+| `response_code`                  | The operational response code.                                                                                      | String  |
+| `data`                           | An object containing detailed information about the individual's credit history.                                    | Object  |
+| `- _id`                          | The unique identifier for the credit history record.                                                                | String  |
+| `- bvn`                          | The Bank Verification Number of the individual.                                                                     | String  |
+| `- customerId`                   | The unique identifier assigned to the customer.                                                                     | String  |
+| `- businessId`                   | The unique identifier assigned to the business.                                                                     | String  |
+| `- name`                         | The full name of the individual.                                                                                    | String  |
+| `- phone`                        | The phone number of the individual, if available.                                                                   | String  |
+| `- gender`                       | The gender of the individual.                                                                                       | String  |
+| `- dateOfBirth`                  | The date of birth of the individual.                                                                                | String  |
+| `- address`                      | The address of the individual, if available.                                                                        | String  |
+| `- email`                        | The email address of the individual, if available.                                                                  | String  |
+| `- score`                        | An object containing detailed credit score information.                                                             | Object  |
+| `-- totalNoOfDelinquentFacilities` | The total number of delinquent facilities.                                                                          | Number  |
+| `-- lastReportedDate`            | The date when the credit information was last reported.                                                             | String  |
+| `-- totalNoOfLoans`              | The total number of loans taken by the individual.                                                                  | Number  |
+| `-- totalNoOfInstitutions`       | The total number of institutions the individual has loans with.                                                     | Number  |
+| `-- totalBorrowed`               | The total amount borrowed by the individual.                                                                        | Number  |
+| `-- totalOutstanding`            | The total outstanding amount on loans.                                                                              | Number  |
+| `-- totalOverdue`                | The total overdue amount on loans.                                                                                  | Number  |
+| `-- maxNoOfDays`                 | The maximum number of days overdue on any loan.                                                                     | Number  |
+| `-- totalNoOfPerformingLoans`    | The total number of loans that are performing.                                                                      | Number  |
+| `-- totalMonthlyInstallment`     | The total monthly installment amount, if available.                                                                 | Number  |
+| `-- totalNoOfClosedLoans`        | The total number of loans that have been closed.                                                                    | Number  |
+| `-- totalNoOfActiveLoans`        | The total number of active loans.                                                                                   | Number  |
+| `-- creditEnquiries`             | A list of credit enquiries made by the individual.                                                                  | Array   |
+| `-- crcReportOrderNumber`        | The order number of the CRC report.                                                                                 | String  |
+| `-- loanPerformance`             | A list of loan performance details.                                                                                 | Array   |
+| `-- highestLoanAmount`           | The highest loan amount taken by the individual.                                                                    | Number  |
+| `-- totalNoOfOverdueAccounts`    | The total number of overdue accounts.                                                                               | Number  |
+| `-- loanHistory`                 | A list of the individual's loan history.                                                                            | Array   |
+| `-- employmentHistory`           | A list of the individual's employment history.                                                                      | Array   |
+| `- searchedDate`                 | The date and time when the credit history was searched.                                                             | String  |

@@ -1,0 +1,36 @@
+## Verify your customers' identities using their Virtual National Identity Number (VNIN)
+
+Leverage Adhere's VNIN verification endpoint to securely retrieve and validate customer details using their Virtual National Identification Number (VNIN).
+
+#### Request Endpoint
+
+`POST` `{{BASE_URL}}/api/onboarding/nigeria_kyc/vnin/`
+
+
+#### Sample Payload
+
+```json
+{
+  "vnin": "AB012345678910YZ"
+}
+```
+
+200 OK Response
+
+```json
+{
+  "data": {
+    "vnin": "AB012345678910YZ",
+    "firstname": "John",
+    "middlename": "Doe",
+    "lastname": "Alamutu",
+    "gender": "M",
+    "mobile": "08012345678",
+    "photo": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQICAQECAQEBAgICAgICAgICAQICA9GXNN69zjdrF0+7aps5Xn0TqWf=",  # base-64
+    "customer": "6bb82c41-e15e-4308-b99d-e9640818eca9"
+  },
+  "message": "Virtual National Identification Number details retrieved successfully",
+}
+```
+
+

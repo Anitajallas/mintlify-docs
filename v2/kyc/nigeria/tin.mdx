@@ -1,0 +1,37 @@
+# Verify Customer Identity Using Their Tax Identification Number (TIN)
+
+You can verify your customers' identity using their Tax Identification Number (TIN) through the API.
+
+#### Request Endpoint
+
+`POST` `{{BASE_URL}}/api/onboarding/nigeria_kyc/tin/`
+
+
+#### Sample Payload
+
+```json
+{
+    "tax_identification_number": "N-01234567"
+}
+```
+
+200 OK Response
+
+```bash
+{
+    "status": "success",
+    "data": {
+        "search": "07012345678",
+        "taxpayer_name": "FISAYOMI KAYODE NIG LTD",
+        "cac_reg_number": "RC012345",
+        "firstin": "12345678-0001",
+        "jittin": "N/A",
+        "tax_office": "MSTO ALIMOSHO",
+        "phone_number": "08109110099",
+        "email": ""
+    }
+    "message": "Tax Identification Number details retrieved successfully"
+}
+```
+
+

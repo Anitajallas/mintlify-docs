@@ -1,0 +1,35 @@
+## Verify your customers' identities using their Bank Verification Number (BVN)
+
+Adhere's BVN verification endpoint enables businesses to conduct accurate and reliable KYC (Know Your Customer) processes and user verification. This service ensures the validation of a customer's Bank Verification Number (BVN), offering a dependable solution for fraud prevention and seamless onboarding.
+
+The endpoint provides access to comprehensive personal information, including name, phone number, date of birth, National Identification Number (NIN), local government area of origin, state of origin, customer image, and more. It also supports the auto-completion of account data, helping to identify users linked to specific financial institutions while enhancing both security and operational efficiency.
+
+
+#### Request Endpoint
+
+`POST` `{{BASE_URL}}/api/onboarding/nigeria_kyc/bvn/`
+
+#### Sample Payload
+
+```json
+{
+    "bvn": "22000000001"
+}
+```
+
+200 OK Response
+
+```json
+{
+    "status": "success",
+    "data": {
+        "lastName": "OMOLE",
+        "firstName": "ABRAHAM",
+        "middleName": "ISAAC",
+        "dateOfBirth": "1909-09-19",
+        "phoneNumber1": "09011001100"
+    },
+    "message": "Bank Verification Number details retrieved successfully"
+}
+```
+

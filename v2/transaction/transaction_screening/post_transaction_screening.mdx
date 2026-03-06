@@ -1,0 +1,286 @@
+This endpoint initiates the transaction screening process, evaluating a transaction against predefined criteria, such as sanctions lists, high-risk countries, and suspicious keywords. Transactions that meet any criteria trigger alerts for further review.
+
+### Request Endpoint
+**POST:** `{{url}}/api/v1/monitoring/transaction_screening`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **201 Created:** Transaction screened successfully.
+- **400 Bad Request:** Invalid transaction data or missing required fields.
+- 403 Forbidden: Transaction flagged or blocked due to screening criteria.
+- **500 Internal Server Error:** Unexpected error during processing. The request body is not set correctly.
+
+### Payload Example Request
+```json
+{
+  "transactionId": "1234567892",
+  "transactionType": "Transfer",
+  "amount": "10000.00",
+  "currency": "NGN",
+  "transactionDate": "2024-07-06T12:34:56Z",
+  "sender": {
+    "name": "QUDRATULLAH JAMAL",
+    "accountNumber": "123456789012",
+    "address": {
+      "street": "123 Main St",
+      "city": "Lagos",
+      "state": "Lagos",
+      "postalCode": "10001",
+      "country": "NIGERIA"
+    },
+    "identification": {
+      "type": "Passport",
+      "number": "A12345678",
+      "country": "USA"
+    }
+  },
+  "receiver": {
+    "name": "Jane Smith",
+    "accountNumber": "987654321098",
+    "address": {
+      "street": "456 Elm St",
+      "city": "San Francisco",
+      "state": "CA",
+      "postalCode": "94101",
+      "country": "USA"
+    },
+    "identification": {
+      "type": "National ID",
+      "number": "B98765432",
+      "country": "USA"
+    }
+  },
+  "details": {
+    "purpose": "Payment for services",
+    "reference": "INV-2024-001"
+  }
+}
+```
+### Request Body
+
+| Field                           | Type                       | Category      | Notes |
+|---------------------------------|----------------------------|---------------|-------|
+| `transactionId`                 | string \| number           | Recommended   | Links repeat calls to the same transaction. |
+| `transactionType`               | string                     | Optional      | Can be empty if you don’t use it. |
+| `amount`                        | number \| numeric string   | **Required**  | Must be a valid number (e.g., `10000.00`). |
+| `currency`                      | string                     | Optional      | Currency code, e.g., `NGN`, `USD`. |
+| `transactionDate`               | ISO-8601 string            | **Required**  | Use a format like `2024-07-06T12:34:56Z`. |
+| `sender.name`                   | string                     | **Required**  | Needed to screen the sender against lists. |
+| `sender.accountNumber`          | string                     | Optional      | Extra context only. |
+| `sender.address`                | object                     | Optional      | Include for location-based checks. |
+| `sender.address.street`         | string                     | Optional      | — |
+| `sender.address.city`           | string                     | Optional      | — |
+| `sender.address.state`          | string                     | Optional      | — |
+| `sender.address.postalCode`     | string                     | Optional      | — |
+| `sender.address.country`        | string                     | Recommended   | Helps flag high-risk countries. |
+| `sender.identification`         | object                     | Optional      | Extra KYC info if available. |
+| `sender.identification.type`    | string                     | Optional      | e.g., Passport, National ID. |
+| `sender.identification.number`  | string                     | Optional      | — |
+| `sender.identification.country` | string                     | Optional      | Issuing country. |
+| `receiver.name`                 | string                     | **Required**  | Needed to screen the receiver against lists. |
+| `receiver.accountNumber`        | string                     | Optional      | Extra context only. |
+| `receiver.address`              | object                     | Optional      | Include for location-based checks. |
+| `receiver.address.street`       | string                     | Optional      | — |
+| `receiver.address.city`         | string                     | Optional      | — |
+| `receiver.address.state`        | string                     | Optional      | — |
+| `receiver.address.postalCode`   | string                     | Optional      | — |
+| `receiver.address.country`      | string                     | Recommended   | Helps flag high-risk countries. |
+| `receiver.identification`       | object                     | Optional      | Extra KYC info if available. |
+| `receiver.identification.type`  | string                     | Optional      | e.g., Passport, National ID. |
+| `receiver.identification.number`| string                     | Optional      | — |
+| `receiver.identification.country`| string                    | Optional      | Issuing country. |
+| `details`                       | object                     | Optional      | Extra metadata. |
+| `details.purpose`               | string                     | Recommended*  | Helps keyword checks if you didn’t send `description`. |
+| `details.reference`             | string                     | Optional      | Your own reference/invoice number. |
+
+
+201 Created Response
+```json
+{
+    "transactionId": 1234567892,
+    "transactionType": "Transfer",
+    "amount": 10000.0,
+    "currency": "NGN",
+    "transactionDate": "2024-07-06T12:34:56Z",
+    "sender": {
+        "name": "QUDRATULLAH JAMAL",
+        "accountNumber": "123456789012",
+        "address": {
+            "street": "123 Main St",
+            "city": "Lagos",
+            "state": "Lagos",
+            "postalCode": "10001",
+            "country": "NIGERIA"
+        },
+        "identification": {
+            "type": "Passport",
+            "number": "A12345678",
+            "country": "USA"
+        }
+    },
+    "receiver": {
+        "name": "Jane Smith",
+        "accountNumber": "987654321098",
+        "address": {
+            "street": "456 Elm St",
+            "city": "San Francisco",
+            "state": "CA",
+            "postalCode": "94101",
+            "country": "USA"
+        },
+        "identification": {
+            "type": "National ID",
+            "number": "B98765432",
+            "country": "USA"
+        }
+    },
+    "description": null,
+    "status": null,
+    "details": {
+        "purpose": "Payment for services",
+        "reference": "INV-2024-001"
+    },
+    "sanction": {
+        "sender_name": "QUDRATULLAH JAMAL",
+        "sender_record": [
+            {
+                "id": 60,
+                "entity_name": "QUDRATULLAH JAMAL",
+                "recorded_date": "29 Nov. 2011",
+                "country": "Afghanistan",
+                "sanction_body": null,
+                "sanction_types": [
+                    "sanction",
+                    "warnings"
+                ],
+                "other_names": [],
+                "other_information": {
+                    "dob": "Approximately 1963",
+                    "pob": "Gardez, Paktia Province, Afghanistan",
+                    "title": "Maulavi",
+                    "other_info": "Member of Taliban Supreme Council and member of Taliban Cultural Commission as at 2010. Believed to be in Afghanistan/Pakistan border area. Review pursuant to Security Council resolution 1822 (2008) was concluded on 21 Jul. 2010.",
+                    "designations": "Minister of Information under the Taliban regime"
+                },
+                "date_created": "2024-06-07T00:30:16.953121Z",
+                "date_updated": "2024-06-23T19:58:11.526561Z"
+            },
+            {
+                "id": 662,
+                "entity_name": "qudratullah jamal",
+                "recorded_date": "2022-04-27T18:12:14",
+                "country": "Afghanistan",
+                "sanction_body": "Swiss SECO Sanctions/Embargoes",
+                "sanction_types": [
+                    "sanction",
+                    "warnings"
+                ],
+                "other_names": [
+                    "قدرت الله جمال",
+                    "haji sahib"
+                ],
+                "other_information": {
+                    "dob": [
+                        "1963"
+                    ],
+                    "last_seen": "2024-06-22T20:02:02",
+                    "birth_place": [
+                        "Gardez, Paktika Province, Afghanistan"
+                    ]
+                },
+                "date_created": "2024-06-23T17:30:59.378659Z",
+                "date_updated": "2024-07-12T14:13:34.465282Z"
+            }
+        ],
+        "receiver_name": "Jane Smith",
+        "receiver_record": null
+    },
+    "screeningStatus": "Denied",
+    "comments": "Transaction denied due to a high-confidence match with the Sanctions List.",
+    "additionalActions": [
+        {
+            "actionType": "Notify Customer",
+            "assignedTo": "Customer Service",
+            "notes": "Inform the customer about the transaction denial and provide instructions for further steps."
+        }
+    ]
+}
+```
+
+### Response Fields
+
+| Field               | Description                                                              | Type   |
+|---------------------|--------------------------------------------------------------------------|--------|
+| `transactionId`     | This is the unique identifier for the transaction                        | `String` |
+| `transactionType`   | Type of the transaction (e.g., Transfer)                                 | `String` |
+| `amount`            | The total transaction amount                                             | `String` |
+| `currency`          | This is currency code for the transaction (e.g., USD, NGN)               | `String` |
+| `transactionDate`   | ISO 8601 date and time of the transaction.                               | `String` |
+| `sender`            | Information about the transaction sender                                 | `Object` |
+| `- name`             | Full name of the sender                                                 | `String` |
+| `- accountNumber`    | Sender's account number                                                 | `String` |
+| `- address`          | Sender's address information                                            | `Object` |
+| `-- street`          | Street address of the sender                                            | `String` |
+| `-- city`            | City of the sender                                                      | `String` |
+| `-- state`           | State or region of the sender                                           | `String` |
+| `-- postalCode`       | Postal or ZIP code of the sender’s location                            | `String` |
+| `-- country`         | Country of the sender                                                   | `String` |
+| `- identification`   | Sender’s identification details                                         | `Object` |
+| `-- type`            | Type of identification (e.g Passport, National ID)                                    | `String` |
+| `-- number`          | Identification number                                                   | `String` |
+| `-- country`         | Issuing country of the identification                                    | `String` |
+| `receiver`           | Information about the transaction receiver                               | `Object` |
+| `- name`             | Full name of receiver                                                    | `String` |
+| `- accountNumber`    | Receiver's account number                                               | `String` |
+| `- address`          | Receiver’s address information                                          | `Object` |
+| `-- street`          | Street address of the receiver                                          | `String` |
+| `-- city`            | City of the receiver                                                    | `String` |
+| `-- state`           | State or region of the receiver                                         | `String` |
+| `-- postalCode`       | Postal or ZIP code of the receiver’s location                          | `String` |
+| `-- country`         | Country of the receiver                                                 | `String` |
+| `- identification`   | Receiver’s identification details                                         | `Object` |
+| `-- type`            | Type of identification (e.g Passport, National ID)                       | `String` |
+| `-- number`          | Receiver’s Identification number                                         | `String` |
+| `-- country`         | Issuing country of the identification                                    | `String` 
+| `description`        | Description of the transaction                                           | `String` |
+| `status`             | Current status of the transaction                                         | `String` |
+| `details`            | Additional details regarding the transaction                             | `Object` |
+| `- purpose`         | Purpose of the transaction                                                | `String` |
+| `- reference`        | Reference identifier for the transaction                                 | `String` |
+| `sanction`           | Details of any sanctions applied                                         | `Object` |
+| `- sender_name`      | Name of the sender being screened for sanctions	                        | `String` |
+| `- sender_record`    | List of records matching the sender in the sanctions database            | `Array` |
+| `-- id`              | Unique ID for the sanctioned record                                      | `String` |
+| `-- entity_name`     | Name of the entity in the sanction record                                | `String` |
+| `-- recorded_date`   | Date the sanction was recorded                                           | `String` |
+| `-- country`         | Country of the sanctioned entity                                         | `String` |
+| `-- sanction_body`   | Sanctioning authority (e.g., UN, OFAC, etc.)                             | `String` |
+| `-- sanction_types`  | Types of sanctions applied to the entity (e.g., warning, embargo)        | `Array` |
+| `-- other_names`     | Alternate names for the sanctioned entity                                | `Array` |
+| `-- other_information`| Additional details about the sanction, such as DOB, POB, etc.           | `Object` |
+| `--- dob`            | Date of birth of the sanctioned individual                               | `String/Array` |
+| `--- pob`            | Place of birth of the sanctioned individual                              | `String/Array` |
+| `--- title`          | Titles or ranks held by the sanctioned individual                        | `String` |
+| `--- designations`   | Designations or roles held by the sanctioned individual                  | `String` |
+| `--- other_info`     | Additional descriptive information about the sanction                    | `String` |
+| `-- date_created`    | Date the sanction record was created                                     | `String` |
+| `-- date_updated`    | Date the sanction record was last updated                                | `String` |
+| `- receiver_name`    | Name of the receiver being screened for sanctions                        | `String` |
+| `- receiver_record`  | Sanction details matching the receiver (if any)                          | `Object` |
+| `-- id`              | Unique ID for the sanctioned record                                      | `String` |
+| `-- entity_name`     | Name of the entity in the sanction record                                | `String` |
+| `-- recorded_date`   | Date the sanction was recorded                                           | `String` |
+| `-- country`         | Country of the sanctioned entity                                         | `String` |
+| `-- sanction_body`   | Sanctioning authority (e.g., UN, OFAC, etc.)                             | `String` |
+| `-- sanction_types`  | Types of sanctions applied to the entity (e.g., warning, embargo)        | `Array` |
+| `-- other_names`     | Alternate names for the sanctioned receiver                              | `Array` |
+| `-- other_information`| Additional details about the sanction, such as DOB, POB, etc.           | `Object` |
+| `--- notes`          | Miscellaneous notes related to the receiver’s sanctions                  | `String` |
+| `-- date_created`    | Date the receiver's sanction record was created                          | `String` |
+| `-- date_updated`    | Date the receiver's sanction record was last updated                     | `String` |
+| `screeningStatus`    | Outcome status of the transaction screening                              | `String` |
+| `comments`           | Comments or notes regarding screening results                            | `String` |
+| `additionalActions`  | List of additional actions required based on screening                   | `Array` |
+| `- actionType`       | Type of action to be taken                                               | `String` |
+| `- assignedTo`       | Role or team assigned to handle the action                               | `String` |
+| `- notes`            | Additional instructions or notes related to the action                   | `String` |

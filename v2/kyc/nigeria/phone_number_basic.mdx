@@ -1,0 +1,38 @@
+## Verify your customers' identities using their Phone Number
+
+Easily confirm your customers' identities through their phone numbers for accurate and reliable verification.
+
+You can use this to verify the phone number connected to a user's NIN. For other numbers or additional numbers linked to an NIN, use [this](https://docs.smartcomply.com/kyc/nigeria/Phone_Number_Advanced).
+
+
+#### Request Endpoint
+
+`POST` `{{BASE_URL}}/api/onboarding/nigeria_kyc/phone_no_basic/`
+
+
+#### Sample Payload
+
+```json
+  {
+    "phone_number": "09011001100"
+  }
+```
+
+
+200 OK Response
+
+``` json
+{
+    "status": "success",
+    "data": {
+      "surname": "AKINSANYA",
+      "firstName": "TISEOLUWA",
+      "middleName": "JOHN",
+      "dateOfBirth": "1909-09-19",
+      "phoneNumber": "09011001100"
+    },
+    "message": "Phone Number details retrieved successfully"
+}
+```
+
+

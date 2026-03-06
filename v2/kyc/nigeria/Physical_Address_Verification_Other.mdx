@@ -1,0 +1,55 @@
+## Customers' Address Verification Request
+
+Adhere's Physical Address verification endpoint provides access to accurate and verified information about your customers' address living outside of Lagos.
+
+#### Request Endpoint
+
+`POST` `{{BASE_URL}}/api/onboarding/nigeria_kyc/physical_address_verification/`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **200 OK:** Physical Address verification request received successfully
+- **400 Bad Request:** Missing or invalid fields in the request
+
+#### Sample Payload
+``` json
+{    
+    "city": "Maitama",
+    "lga": "Abuja Municipal Area Council (AMAC)",
+    "landmark": "Abuja",
+    "street": "20 Shehu Shagari Way FCT Abuja",
+    "first_name": "John",
+    "last_name": "Doe",
+    "birth_date": "17/01/1988",
+    "phone_number": "08000000000",
+    "nin": "10000000001",
+    "state": "Oyo"
+
+}
+```
+
+200 OK Response
+
+``` json
+{
+    "status": 'success',
+    "data": {
+        "identity_check_id": 2,
+        "status": "pending",
+        "city": "Maitama",
+        "lga": "Abuja Municipal Area Council (AMAC)",
+        "landmark": "Abuja",
+        "street": "20 Shehu Shagari Way FCT Abuja",
+        "first_name": "John",
+        "last_name": "Doe",
+        "birth_date": "17/01/1988",
+        "phone_number": "08000000000",
+        "nin": "10000000001",
+        "state": "Oyo"
+    },
+    "message": "Physical Address Verification request received successfully, You will be notified via email when the verification is completed",
+}
+```
+
+

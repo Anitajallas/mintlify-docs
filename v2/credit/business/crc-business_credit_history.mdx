@@ -1,0 +1,95 @@
+## Monitor and Manage Your Business's Credit History
+
+Adhere's Credit History endpoint provides businesses with a detailed record of their credit-related activities, including credit accounts, payment timelines, credit utilization, account closures, and instances of delinquency. By leveraging this endpoint, businesses can assess their creditworthiness, track changes over time, and gain insights into factors influencing their credit standing for effective credit management.
+
+
+### Request Endpoint
+
+`POST:` `{{BASE_URL}}/api/onboarding/business/crc/`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **200 OK:** The request was successful, and the business' credit information is returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
+
+
+
+### Payload Fields
+
+```json
+{
+  "registration_number": "RC123456"
+}
+```
+
+### 200 OK Response
+
+```json
+
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Business Credit History",
+  "response_code": "00",
+  "data": {
+    "_id": "636e768d8215a2e2fb06cfde",
+    "business_reg_no": "RC123456",
+    "businessId": "64db7ab8a26e603218838892",
+    "name": "CAPITALFIELD ASSET MGT LTD",
+    "phone": "23408036732620",
+    "dateOfRegistration": "2003-08-20",
+    "address": "ELEGANZA HOUSE,15B JOSEPH WESLEY STR.BROAD STREET   025 NG   LAGOS NIGERIA ",
+    "score": {
+      "totalNoOfDelinquentFacilities": 1,
+      "lastReportedDate": "10/Nov/2022",
+      "totalNoOfLoans": 24,
+      "totalNoOfInstitutions": 12,
+      "totalBorrowed": 567401372,
+      "totalOutstanding": 19732,
+      "totalOverdue": 19754,
+      "totalNoOfPerformingLoans": 23,
+      "totalNoOfClosedLoans": 17,
+      "totalNoOfActiveLoans": 7,
+      "crcReportOrderNumber": "W-0063381978/2022",
+      "highestLoanAmount": 22980000,
+      "creditEnquiries": false,
+      "creditProfileOverview": false,
+      "loanPerformance": false,
+      "loanHistory": false
+    },
+    "searchedDate": "2023-11-23T16:16:47.279Z"
+  }
+}
+```
+
+### Field Descriptions
+
+| Field                            | Description                                                                                                         | Type   |
+|----------------------------------|---------------------------------------------------------------------------------------------------------------------|--------|
+| `status`                         | This is the returned status of the request either success or failed.                                                | String |
+| `code`                           | This is the operational code.                                                                                         | Number |
+| `data`                           | This is an array of objects which contains every transaction data.                                                   | Object |
+| `- _id`                       | The unique identifier or specific code assigned to a particular user within the database.                           | String |
+| `- bvn`                       | The BVN of the user.                                                                                                  | String |
+| `- customerId`                | The unique identifier or specific code assigned to a particular customer.                                           | String |
+| `- businessId`                | The unique identifier or specific code assigned to a particular business.                                           | String |
+| `- name`                      | The full name of the BVN holder.                                                                                     | String |
+| `- phone`                     | The phone number of the BVN holder.                                                                                  | String |
+| `- gender`                    | The gender of the BVN holder.                                                                                        | String |
+| `- dateOfBirth`               | The date of birth of the BVN holder.                                                                                 | String |
+| `- address`                   | The address of the BVN holder.                                                                                       | String |
+| `- email`                     | The email of the BVN holder.                                                                                        | String |
+| `- score`                          | This is an array of objects which contains every score.                                                              | Object |
+| `-- totalNoOfDelinquentFacilities` | The count of accounts or credit facilities that are overdue or behind on payments according to the credit report. | Number |
+| `-- lastReportedDate`         | The most recent date on which information about an account, transaction, or activity was updated or submitted to the credit bureau. | Number |
+| `-- totalNoOfLoans`           | The overall count of active loan accounts listed in the credit report.                                               | Number |
+| `-- totalNoOfInstitutions`    | The count of different financial institutions or lenders where the user holds accounts listed within their credit report or financial records. | Number |
+| `-- totalNoOfActiveLoans`     | The count of currently open and operational loan accounts listed in a user's credit report or financial records.     | Number |
+| `-- totalBorrowed`            | The amount of money that an individual has borrowed across all loans, credit lines, or financial obligations listed within their credit report or financial records. | Number |
+| `-- totalOutstanding`         | The overall amount of money that remains unpaid or outstanding across all active loans, credit accounts, or financial obligations listed within the credit report or financial records. | Number |
+| `-- totalOverdue`             | The amount that is past due or overdue across all active loans or credit accounts listed within the credit report or financial records. | Number |
+| `-- maxNoOfDays`              | The longest duration an account or payment has been overdue.                                                          | Number |
+| `-- totalNoOfClosedLoans`     | The overall count of loan accounts that have been successfully paid off or closed by the individual and are no longer active in their credit report or financial records. | Number |
+| `-- crcReportOrderNumber`     | The report order number of the credit bureau.                                                                        | String |
+| `- searchedDate`                  | The date the credit report was searched.                                                                             | String |

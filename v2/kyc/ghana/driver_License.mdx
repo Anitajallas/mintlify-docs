@@ -1,0 +1,23 @@
+## Verify your Customer's Identity Using Driver's License
+Adhere's driver's license verification endpoint allows you to access accurate, verified national-level information for reliable identity confirmation.
+
+
+### Request Endpoint
+
+`POST:` `{{BASE_URL}}/api/onboarding/ghana_kyc/driver_license/`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **201 Created:** The request was successful, and the customer's driver license information is returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
+
+
+### Payload Fields
+
+``` json
+{
+    "license_number": 12345678909,
+    "date_of_birth": "1999-11-13"
+}
+```

@@ -1,0 +1,49 @@
+## Verify Your Customer's Identity Using Their Passport
+
+Adhere's Passport Verification endpoint allows businesses to verify a customer using their passport information, providing access to details associated with a verified passport for a streamlined and reliable identity verification process.
+
+### Request Endpoint
+
+`POST:` `{{BASE_URL}}/api/onboarding/rwanda_kyc/passport/`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **201 Created:** The request was successful, and the customer's information is returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
+
+
+#### Payload
+
+```json
+{
+    "passport_number": "PD000000"
+}
+```
+
+200 OK Response
+
+```json
+
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Passport details retrieved",
+  "response_code": "00",
+  "data": {
+    "PassportNo": "G0000575",
+    "FirstName": "SAMUEL",
+    "LastName": "DENU",
+    "MiddleName": "KWABLA",
+    "Nationality": "GHANAIAN",
+    "DateOfBirth": "23/05/1952",
+    "Gender": "MALE",
+    "PlaceOfBirth": "ADAKLU ABUADI",
+    "PlaceOfIssue": "ACCRA",
+    "IssueDate": "30/03/2010",
+    "ExpiryDate": "30/03/2015",
+    "Picture": "/9j/4AAQSkZJRgABAQEAYABgAAD/4QDKRXhpZgAATU0AKgAAAAgACQEAAAMAAAABALYAAAPPzD6f1opDP//Z", # base 64
+    "Signature": "/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAoHBwgHBgoICAgLCgoLDhgQDg0NDh0VFhEYIx8lJCIf9clAH/2Q==" # base 64
+  }
+}
+```

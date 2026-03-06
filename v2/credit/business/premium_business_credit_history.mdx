@@ -1,0 +1,435 @@
+## Monitor and Manage Your Business's Premium Credit History
+
+Adhere's Premium Business Credit History endpoint provides an enhanced and comprehensive view of a business's credit activities, tailored for premium users. This service includes detailed insights into credit accounts, payment behaviors, credit utilization trends, and advanced analytics on credit performance. By utilizing this feature, premium businesses can gain a deeper understanding of their credit standing, identify opportunities for improvement, and make informed financial decisions to maintain a strong credit profile.
+
+### Request Endpoint
+
+`POST:` `{{BASE_URL}}/api/onboarding/business/premium/`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **200 OK:** The request was successful, and the business' credit information is returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
+
+
+
+### Payload Fields
+
+```json
+{
+  "registration_number": "RC123456"
+}
+```
+
+### 200 OK Response
+
+```json
+
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Business Credit History",
+  "response_code": "00",
+  "data": {
+    "_id": "636e768d8215a2e2fb06cfde",
+    "business_reg_no": "RC123456",
+    "businessId": "64db7ab8a26e603218838892",
+    "name": "CAPITALFIELD ASSET MGT LTD",
+    "phone": "23408036732620",
+    "dateOfRegistration": "2003-08-20",
+    "address": "ELEGANZA HOUSE,15B JOSEPH WESLEY STR.BROAD STREET   025 NG   LAGOS NIGERIA ",
+    "website": "",
+    "taxIdentificationNumber": "",
+    "noOfDirectors": 0,
+    "industry": "",
+    "businessType": "SMALLANDMEDIUMSCALEENTERPRISE",
+    "email": "capitalasset@gmail.com",
+    "score": {
+      "directors": [
+        {
+          "source": "CRC",
+          "value": []
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": [
+            {
+              "name": "GLORIA DUBIITIVEH ",
+              "identificationNo": null,
+              "dateAppointed": "",
+              "dateofBirth": "Feb 13 1986 12:00AM",
+              "directorid": "130195"
+            },
+            {
+              "name": "RAPHAEL LEWU ",
+              "identificationNo": null,
+              "dateAppointed": "",
+              "dateofBirth": "Feb  3 1963 12:00AM",
+              "directorid": "131868"
+            }
+          ]
+        }
+      ],
+      "totalNoOfLoans": [
+        {
+          "source": "CRC",
+          "value": 24
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": 9
+        }
+      ],
+      "totalNoOfInstitutions": [
+        {
+          "source": "CRC",
+          "value": 12
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": 8
+        }
+      ],
+      "totalNoOfActiveLoans": [
+        {
+          "source": "CRC",
+          "value": 7
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": 6
+        }
+      ],
+      "totalNoOfClosedLoans": [
+        {
+          "source": "CRC",
+          "value": 17
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": 3
+        }
+      ],
+      "highestLoanAmount": [
+        {
+          "source": "CRC",
+          "value": 22980000
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": 500000000
+        }
+      ],
+      "totalBorrowed": [
+        {
+          "source": "CRC",
+          "value": 567401372
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": 1004525869.55
+        }
+      ],
+      "totalOutstanding": [
+        {
+          "source": "CRC",
+          "value": 19732
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": 0
+        }
+      ],
+      "totalOverdue": [
+        {
+          "source": "CRC",
+          "value": 19754
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": 0
+        }
+      ],
+      "totalNoOfPerformingLoans": [
+        {
+          "source": "CRC",
+          "value": 23
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": 12
+        }
+      ],
+      "totalNoOfDelinquentFacilities": [
+        {
+          "source": "CRC",
+          "value": 1
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": 0
+        }
+      ],
+      "creditProfileOverview": [
+        {
+          "source": "CRC",
+          "value": [
+            {
+              "indicator": "Number of Guaranteed Loans",
+              "indicatorType": "GUARANTEED_LOANS",
+              "value": "0"
+            },
+            {
+              "indicator": "First Credit Reported Date",
+              "indicatorType": "FIRST_REPORTED",
+              "value": "31-May-2011"
+            }
+          ]
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": []
+        }
+      ],
+      "totalMonthlyInstallment": [
+        {
+          "source": "CRC",
+          "value": 0
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": 30124518
+        }
+      ],
+      "totalNoOfOverdueAccounts": [
+        {
+          "source": "CRC",
+          "value": 0
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": 0
+        }
+      ],
+      "loanHistory": [
+        {
+          "source": "CRC",
+          "value": [
+            {
+              "accountNumber": "020301564080010001000",
+              "loanProvider": "GT BANK",
+              "type": "Advance/ Overdraft Facility",
+              "loanAmount": "0",
+              "overdueAmount": "19754",
+              "amountWrittenOff": "",
+              "currency": "NGN",
+              "lastPaymentDate": "",
+              "loanDuration": null,
+              "dateReported": "30-Sep-2022",
+              "performanceStatus": "Sub Standard",
+              "rankings": "3-133",
+              "reason": "Open",
+              "outstandingBalance": "19732",
+              "paymentHistory": [],
+              "loanStatus": "A",
+              "maturityDate": "04-Aug-2020",
+              "numberOfInstallments": "",
+              "numberOfOverdueDays": "133",
+              "collateral": "Unsecured"
+            },
+            {
+              "accountNumber": "231LEFI141070001",
+              "loanProvider": "POLARIS BANK LIMITED",
+              "type": "Lease",
+              "loanAmount": "22980000",
+              "overdueAmount": "0",
+              "amountWrittenOff": "",
+              "currency": "NGN",
+              "lastPaymentDate": "09-Jan-2016",
+              "loanDuration": null,
+              "dateReported": "31-Oct-2018",
+              "performanceStatus": "Performing",
+              "rankings": "1-0",
+              "reason": "Closed",
+              "outstandingBalance": "0",
+              "paymentHistory": [],
+              "loanStatus": "A",
+              "maturityDate": "09-Apr-2016",
+              "numberOfInstallments": "48",
+              "numberOfOverdueDays": "0",
+              "collateral": "Fully Secured"
+            }
+          ]
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": [
+            {
+              "loanProvider": "Fidelity Bank Plc Lagos",
+              "accountNumber": "4010121426",
+              "type": "",
+              "loanAmount": null,
+              "installmentAmount": "0.00",
+              "overdueAmount": "0.00",
+              "lastPaymentDate": "",
+              "loanDuration": "0 Day(s)",
+              "dateReported": "23/04/2008",
+              "performanceStatus": "Performing",
+              "status": "Paid up",
+              "outstandingBalance": "0.00",
+              "paymentHistory": []
+            }
+          ]
+        }
+      ],
+      "creditEnquiries": [
+        {
+          "source": "CRC",
+          "value": [
+            {
+              "loanType": "Overdraft",
+              "date": "10-Nov-2022",
+              "institutionType": "Micro Lenders"
+            },
+            {
+              "loanType": "Term Loan",
+              "date": "14-Oct-2022",
+              "institutionType": "Micro Lenders"
+            }
+          ]
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": [
+            {
+              "loanProvider": "POLARIS BANK LIMITED",
+              "date": "15/01/2022"
+            }
+          ]
+        }
+      ],
+      "loanPerformance": [
+        {
+          "source": "CRC",
+          "value": [
+            {
+              "loanProvider": "KEYSTONE BANK LIMITED",
+              "loanAmount": "NGN   0",
+              "accountNumber": "",
+              "outstandingBalance": "0",
+              "status": "Closed",
+              "performanceStatus": "Performing",
+              "lastUpdatedAt": "",
+              "overdueAmount": "0",
+              "type": "",
+              "loanCount": 1
+            },
+            {
+              "loanProvider": "OCEANIC BANK INTERNATIONAL PLC",
+              "loanAmount": "NGN   0",
+              "accountNumber": "",
+              "outstandingBalance": "0",
+              "status": "Closed",
+              "performanceStatus": "Performing",
+              "lastUpdatedAt": "",
+              "overdueAmount": "0",
+              "type": "",
+              "loanCount": 1
+            }
+          ]
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": [
+            {
+              "accountNumber": "9200402741",
+              "loanProvider": "ECOBANK Nigeria PLC Lagos",
+              "loanAmount": 35483.21,
+              "outstandingBalance": 0,
+              "overdueAmount": 0,
+              "noOfPerforming": 1,
+              "noOfNonPerforming": 0,
+              "loanCount": 1,
+              "performanceStatus": "Performing",
+              "status": "Closed"
+            },
+            {
+              "accountNumber": "9200402741",
+              "loanProvider": "Stanbic IBTC Bank PLC",
+              "loanAmount": 0,
+              "outstandingBalance": 0,
+              "overdueAmount": 0,
+              "noOfPerforming": 2,
+              "noOfNonPerforming": 0,
+              "loanCount": 2,
+              "performanceStatus": "Performing",
+              "status": "Closed"
+            }
+          ]
+        }
+      ],
+      "bureauStatus": {
+        "crc": "success",
+        "firstCentral": "success"
+      },
+      "lastReportedDate": [
+        {
+          "source": "CRC",
+          "value": "10/Nov/2022"
+        },
+        {
+          "source": "FIRST_CENTRAL",
+          "value": null
+        }
+      ]
+    },
+    "searchedDate": "2023-11-23T16:17:36.391Z"
+  }
+}
+```
+
+
+### Field Descriptions
+
+| Field                            | Description                                                                                                         | Type   |
+|----------------------------------|---------------------------------------------------------------------------------------------------------------------|--------|
+| `success`                        | Indicates whether the request was successful or not.                                                                | Boolean|
+| `statusCode`                     | The HTTP status code of the response.                                                                               | Number |
+| `message`                        | A message describing the result of the request.                                                                     | String |
+| `response_code`                  | The operational response code.                                                                                      | String |
+| `data`                           | An object containing detailed information about the business's credit history.                                      | Object |
+| `- _id`                          | The unique identifier for the business credit history record.                                                       | String |
+| `- business_reg_no`              | The registration number of the business.                                                                            | String |
+| `- businessId`                   | The unique identifier assigned to the business.                                                                     | String |
+| `- name`                         | The name of the business.                                                                                           | String |
+| `- phone`                        | The phone number associated with the business.                                                                      | String |
+| `- dateOfRegistration`           | The date the business was registered.                                                                               | String |
+| `- address`                      | The address of the business.                                                                                        | String |
+| `- website`                      | The website of the business, if available.                                                                          | String |
+| `- taxIdentificationNumber`      | The tax identification number of the business, if available.                                                        | String |
+| `- noOfDirectors`                | The number of directors in the business.                                                                            | Number |
+| `- industry`                     | The industry in which the business operates.                                                                         | String |
+| `- businessType`                 | The type of business (e.g., SME, Corporation).                                                                      | String |
+| `- email`                        | The email address associated with the business.                                                                      | String |
+| `- score`                        | An object containing detailed credit score information.                                                             | Object |
+| `-- directors`                   | A list of directors and their details.                                                                              | Array  |
+| `-- totalNoOfLoans`              | The total number of loans associated with the business.                                                              | Array  |
+| `-- totalNoOfInstitutions`       | The total number of financial institutions the business has interacted with.                                         | Array  |
+| `-- totalNoOfActiveLoans`        | The total number of active loans the business currently has.                                                         | Array  |
+| `-- totalNoOfClosedLoans`        | The total number of loans that have been closed.                                                                     | Array  |
+| `-- highestLoanAmount`           | The highest loan amount the business has taken.                                                                      | Array  |
+| `-- totalBorrowed`               | The total amount borrowed by the business.                                                                           | Array  |
+| `-- totalOutstanding`            | The total outstanding amount the business owes.                                                                      | Array  |
+| `-- totalOverdue`                | The total overdue amount the business owes.                                                                          | Array  |
+| `-- totalNoOfPerformingLoans`    | The total number of loans that are performing well.                                                                  | Array  |
+| `-- totalNoOfDelinquentFacilities`| The total number of delinquent facilities.                                                                           | Array  |
+| `-- creditProfileOverview`       | An overview of the business's credit profile.                                                                        | Array  |
+| `-- totalMonthlyInstallment`     | The total monthly installment amount for the business's loans.                                                       | Array  |
+| `-- totalNoOfOverdueAccounts`    | The total number of overdue accounts.                                                                                | Array  |
+| `-- loanHistory`                 | A detailed history of the business's loans.                                                                          | Array  |
+| `-- creditEnquiries`             | A list of credit enquiries made about the business.                                                                  | Array  |
+| `-- loanPerformance`             | A summary of the business's loan performance.                                                                        | Array  |
+| `-- bureauStatus`                | The status of the credit bureau reports.                                                                             | Object |
+| `-- lastReportedDate`            | The most recent date information was reported to the credit bureau.                                                  | Array  |
+| `searchedDate`                   | The date the credit report was searched.                                                                             | String |

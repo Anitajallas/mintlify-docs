@@ -1,0 +1,143 @@
+When a business decides to request for a loan, the following are the information our API requires you to provide so as to ascertain the risk of granting a loan to such business.
+
+
+#### Request Endpoint
+
+`POST` `{{BASE_URL}}/api/v1/loan/fraud_check/`
+
+- **Media-Type:** `application/form-data`
+
+#### Sample Payload
+
+```json
+{
+  "business_name": "Heineken",
+  "business_address": "23 Main Street, Marina",
+  "rc_number": "RC-123456",
+  "city": "Lagos",
+  "country": "Nigeria",
+  "phone_number": "2349012345678",
+  "email_address": "testbusiness@gmail.com",
+  "identification_type": "Passport",
+  "identification_number": "A123456789",
+  "annual_revenue": 12345678.00,
+  "bank_name": "Access Bank",
+  "account_number": "1234567890",
+  "loan_amount_requested": 1000000.00,
+  "purpose_of_loan": null,
+  "loan_repayment_duration_type": "weeks",
+  "loan_repayment_duration_value": 21,
+  "collateral_required": false,
+  "is_business": true,
+  "run_aml_check": true,
+}
+```
+
+200 OK Response
+```json
+{
+  "status": "Success",
+  "data": {
+    "id": 567,
+    "first_name": null,
+    "last_name": null,
+    "other_name": null,
+    "business_name": "Heineken",
+    "date_of_birth": null,
+    "gender": null,
+    "country": "Nigeria",
+    "city": "Lagos",
+    "current_address": null,
+    "duration_of_stay": null,
+    "business_address": "23 Main Street, Apapa",
+    "identification_type": "RC Number",
+    "identification_number": "RC-123456",
+    "bvn": null,
+    "rc_number": ""RC-123456,
+    "phone_number": "2349012345678",
+    "email_address": "testbusiness@gmail.com",
+    "employment_type": null,
+    "job_role": null,
+    "employer_name": null,
+    "employer_address": null,
+    "annual_income": null,
+    "annual_revenue": "12345678.00",
+    "employment_duration": null,
+    "bank_name": "Zenith Bank",
+    "account_number": "1234567890",
+    "account_name": "Heineken",
+    "loan_amount_requested": 1000000.00,
+    "purpose_of_loan": "Business Expansion",
+    "loan_repayment_duration_type": "months",
+    "loan_repayment_duration_value": 5,
+    "collateral_required": false,
+    "collateral": null,
+    "collateral_value": null,
+    "proof_of_identity": null,
+    "proof_of_address": null,
+    "proof_of_income": null,
+    "business_plan": null,
+    "financial_statement": null,
+    "fraud_risk_score": 62,
+    "recommendation": "The applicant is requesting a loan of ₦1,000,000.00.   The applicant's total fraud risk score is 62, which needs to be evaluated against the lender's risk threshold to determine loan eligibility.",
+    "key_financial_analysis": {
+      "income_stability": {
+        "risk_score": 100,
+        "data_source": "submitted data (estimated)",
+        "observation": "Disposable Ratio is 10%, indicating that for every ₦100 of income, ₦10 is available after covering monthly expenses.   With a Disposable Income of ₦102,880.65, there is a limited buffer for unexpected expenses or debt repayment, potentially indicating vulnerability to financial shocks.   The estimated nature of the data introduces uncertainty, making it difficult to precisely assess income stability.",
+        "monthly_income": "1028806.50",
+        "monthly_expenses": "925925.85",
+        "disposable_income": "102880.65"
+      },
+      "repayment_duration": {
+        "risk_score": 70,
+        "observation": "The loan repayment duration is set for 5 months, aligning with the total number of months specified.",
+        "repayment_duration": "Within 5 months"
+      },
+      "collateral_coverage": {
+        "risk_score": 80,
+        "loan_amount": "1000000.00",
+        "observation": "The collateral value is ₦0, while the loan amount is ₦1,000,000.00, indicating the loan is entirely unsecured.",
+        "collateral_value": "0.00",
+        "loan_to_collateral_ratio": "0.00%"
+      },
+      "debt_serviceability": {
+        "risk_score": 30,
+        "loan_amount": "1000000.00",
+        "observation": "The monthly repayment obligation of ₦208,000.00 constitutes approximately 20.22% of the applicant's monthly income.   This indicates a relatively manageable debt service burden, suggesting good debt serviceability.",
+        "total_repayment": "1040000.0000"
+      },
+      "debt_to_income_ratio": {
+        "risk_score": 30,
+        "observation": "The Debt Service Ratio of 20.22% is significantly below the threshold of 40%, indicating a low debt burden relative to income. This suggests the applicant has substantial capacity to manage current debt obligations and potentially take on additional debt.",
+        "debt_service_ratio": "20.22%"
+      }
+    },
+    "history": {
+      "totalOverdue": 54931635,
+      "totalBorrowed": 135582,
+      "totalNoOfLoans": 9,
+      "totalOutstanding": 54931635,
+      "highestLoanAmount": 45194,
+      "totalNoOfActiveLoans": 3,
+      "totalNoOfClosedLoans": 6,
+      "totalNoOfInstitutions": 2,
+      "totalMonthlyInstallment": 0,
+      "totalNoOfPerformingLoans": 6,
+      "totalNoOfDelinquentFacilities": 3
+    },
+    "is_api": false,
+    "is_individual": false,
+    "is_business": true,
+    "status": "reviewed",
+    "run_aml_check": false,
+    "date_created": "2025-03-28T02:42:23.815369Z",
+    "date_updated": "2025-03-28T02:43:06.185290Z",
+    "branch": 5,
+    "aml_data": null,
+    "credit_report_data": 4
+  },
+  "message": "Loan fraud check processed successfully"
+}
+```
+

@@ -1,0 +1,37 @@
+## Fetch more advanced information about your customers' connected account
+
+Adhere's TCC Checker endpoint fetches more advanced information about an account. It gets the list of financial account that has been onboarded in association to a specific app's public key.
+
+### Request Endpoint
+
+`POST:` `{{BASE_URL}}/onboarding/kenya_kyc/tcc_checker/`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **201 Created:** The request was successful, and the account's information is returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
+
+#### Payload
+```json
+{
+    "tcc_number": "KRAMT123456789B"
+}
+```
+200 OK Response
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "TCC details retrieved",
+  "response_code": "00",
+  "data": {
+    "pin_number": "A123456789B",
+    "tcc_number": "KRAMT123456789B",
+    "name": "ABB Pay Limited",
+    "tcc_status": "Expired",
+    "expiry_date": "13/04/2023"
+  }
+}
+```
