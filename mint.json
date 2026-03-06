@@ -50,10 +50,6 @@
       "pages": ["libraries/smartcomply_sdk"]
     },
     {
-      "group": "Biometrics",
-      "pages": ["biometrics/face_comparism", "biometrics/face_liveliness"]
-    },
-    {
       "group": "Onboarding Suite",
       "pages": [
         {
@@ -136,20 +132,6 @@
     {
       "group": "Fraud & Transaction Monitoring",
       "pages": [
-        {
-          "group": "Threshold",
-          "pages": [
-            "transaction/threshold/Get_Threshold",
-            "transaction/threshold/Post_Set_Threshold"
-          ]
-        },
-        {
-          "group": "Limit",
-          "pages": [
-            "transaction/limit/Get_Limit",
-            "transaction/limit/Post_Set_Limit"
-          ]
-        },
         {
           "group": "Card Transaction",
           "pages": [

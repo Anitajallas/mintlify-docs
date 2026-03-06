@@ -35,30 +35,31 @@ The Transaction Monitoring API endpoint processes transactions in real-time, cal
 ### Payload Example Request
 ```json
 {
-  "transaction_id": "18772",
-  "amount": 1500.00,
-  "currency": "USD",
-  "transaction_type": "transfer",
-  "account_type": "corporate", //individual or corporate
-  "status": "completed",
-  "origin_account": {
-    "account_number": "9876543210",
-    "bank_code": "001"
-  },
-  "destination_account": {
-    "account_number": "0123456789",
-    "bank_code": "002"
-  },
-  "customer_details": {
-    "customer_name": "Jane Doe",
-    "customer_email": "jane.doe@example.com"
-  },
-  "additional_info": {
-    "ip_address": "192.168.1.1",
-    "location": "San Francisco, CA", //"lat=-30.6556,lon=-65.7655"
-    "transaction_description": "Payment for order #789"
-  },
-  "run_kyc": false
+  "transaction_id": "12345678",
+  "amount": 14000000,
+  "currency": "NGN",
+  "transaction_type": "card",
+  "account_type": "subscription ", //individual or corporate
+  "status": "completed",
+  "origin_account": {
+    "account_number": "9876543219",
+    "bank_code": "001"
+  },
+  "destination_account": {
+    "account_number": "123456789",
+    "bank_code": "002"
+  },
+  "customer_details": {
+    "customer_name": "Muhammad Ibrahim Isah",
+    "customer_email": "Tila.doe@example.com",
+    "bvn": "22430372151"
+  },
+  "additional_info": {
+    "ip_address": "192.168.1.1",
+    "location": "San Francisco, CA", //"lat=-30.6556,lon=-65.7655"
+    "transaction_description": "Payment for order #789",
+    "run_kyc": "true"
+  }
 }
 ```
 
