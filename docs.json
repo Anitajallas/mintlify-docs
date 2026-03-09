@@ -183,9 +183,12 @@
                 "group": "Common Use Cases",
                 "pages": ["pages/account_verification", "pages/lending"]
               },
-               {
+              {
                 "group": "Biometrics",
-                "pages": ["v1/biometrics/face_comparism", "v1/biometrics/face_liveliness"]
+                "pages": [
+                  "v1/biometrics/face_comparism",
+                  "v1/biometrics/face_liveliness"
+                ]
               },
               {
                 "group": "Onboarding Suite",
@@ -293,7 +296,8 @@
                     "group": "Transaction Monitoring",
                     "pages": [
                       "v1/transaction/transaction_monitoring/transaction_monitoring_overview",
-                      "v1/transaction/transaction_monitoring/post_transaction_request"                    ]
+                      "v1/transaction/transaction_monitoring/post_transaction_request"
+                    ]
                   },
                   {
                     "group": "KYC",
@@ -326,18 +330,21 @@
       }
     ]
   },
-  "topbarLinks": [
-    {
-      "name": "Support",
-      "url": "mailto: anita@smartcomply.com"
-    },
-    {
-      "name": "View in Postman ",
-      "url": "https://documenter.getpostman.com/view/24557562/2sA3Qv8r7p"
+  "navbar": {
+    "links": [
+      {
+        "label": "Support",
+        "href": "mailto: anita@smartcomply.com"
+      },
+      {
+        "label": "View in Postman ",
+        "href": "https://documenter.getpostman.com/view/24557562/2sA3Qv8r7p"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Dashboard",
+      "href": "https://adhere-app.smartcomply.com"
     }
-  ],
-  "topbarCtaButton": {
-    "name": "Dashboard",
-    "url": "https://adhere-app.smartcomply.com"
   }
 }
