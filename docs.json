@@ -36,7 +36,7 @@
               },
               {
                 "group": "Libraries",
-                "pages": ["libraries/smartcomply_sdk"]
+                "pages": ["libraries/smartcomply_sdk", "libraries/flutter_sdk"]
               },
               {
                 "group": "Onboarding Suite",
@@ -182,6 +182,10 @@
               {
                 "group": "Common Use Cases",
                 "pages": ["pages/account_verification", "pages/lending"]
+              },
+              {
+                "group": "Libraries",
+                "pages": ["libraries/smartcomply_sdk", "libraries/flutter_sdk"]
               },
               {
                 "group": "Biometrics",
