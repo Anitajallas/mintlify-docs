@@ -33,23 +33,32 @@ flutter pub get
 
 ## How It Works
 
-```
-Your Flutter App
-     │
-     ├─ 1. createSession()        ──► POST /v1/session/create     ──► Session token
-     │       (uses apiKey + clientId)
-     │
-     ├─ 2. onboarding.verify()    ──► POST /v1/onboarding/verify  ──► Identity confirmed
-     │       (uses session token)
-     │
-     └─ 3. liveness.startCheck()
-               │
-               ├─ Camera opens, ML Kit detects face actions (on-device, no network)
-               │
-               ├─ Autoshot captured ──► POST /v1/liveness/create  ──► Entry ID
-               │
-               └─ Video uploaded    ──► POST /v1/liveness/submit  ──► Result
-```
+<Steps>
+  <Step title="Create Session">
+    Your app calls `createSession()` using your `apiKey` and `clientId`. This returns a session token.
+    ```http
+    POST /v1/session/create
+    ```
+  </Step>
+  <Step title="Verify Identity">
+    Your app calls `onboarding.verify()` using the session token to confirm the user's identity.
+    ```http
+    POST /v1/onboarding/verify
+    ```
+  </Step>
+  <Step title="Liveness Check">
+    Your app calls `liveness.startCheck()`:
+    1. **On-device AI**: Camera opens and ML Kit detects face actions locally (no network).
+    2. **Autoshot capture**: An autoshot is captured and sent to receive an Entry ID.
+       ```http
+       POST /v1/liveness/create
+       ```
+    3. **Video upload**: The video is uploaded for final analysis.
+       ```http
+       POST /v1/liveness/submit
+       ```
+  </Step>
+</Steps>
 
 Face detection runs **entirely on-device** — no video is streamed live to the server.
 
@@ -109,7 +118,7 @@ final sdk = SmartComply(
 |---|---|---|
 | `apiKey` | ✅ | API key issued by SmartComply. Used to authenticate session creation. |
 | `clientId` | ✅ | UUID of your SDK config record. Ties the session to your account settings. |
-| `environment` | Optional | `Environment.production` or `Environment.sandbox`. Defaults to sandbox. |
+| `environment` | Optional | Controls which SmartComply backend the SDK connects to:<br/>• `Environment.production` - Live system. Verifications use real databases and charge your account.<br/>• `Environment.sandbox` - Testing system. Uses mock data and does not charge your account.<br/>*Defaults to sandbox.* |
 | `timeout` | Optional | HTTP timeout. Defaults to 15 seconds. |
 
 ---
