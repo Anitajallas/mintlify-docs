@@ -9,14 +9,11 @@ description: "Integrate SmartComply identity verification and liveness detection
   You will receive an **API key** and a **Client ID** from SmartComply. Keep these secure and do not commit them to source control.
 </Info>
 
-Add the SDK to your app's `pubspec.yaml`, replacing `YOUR_TOKEN` with the token provided to you:
+Add the SDK to your app's `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  smartcomply_sdk:
-    git:
-      url: https://YOUR_TOKEN@github.com/Anitajallas/smartcomply-web-sdk.git
-      path: flutter
+  smartcomply_sdk: ^0.1.0
 ```
 
 Then run:
@@ -25,40 +22,27 @@ Then run:
 flutter pub get
 ```
 
-<Note>
-  Store the git token in an environment variable or a secrets manager — never hard-code it in `pubspec.yaml`.
-</Note>
-
 ---
 
 ## How It Works
 
-<Steps>
-  <Step title="Create Session">
-    Your app calls `createSession()` using your `apiKey` and `clientId`. This returns a session token.
-    ```http
-    POST /v1/session/create
-    ```
-  </Step>
-  <Step title="Verify Identity">
-    Your app calls `onboarding.verify()` using the session token to confirm the user's identity.
-    ```http
-    POST /v1/onboarding/verify
-    ```
-  </Step>
-  <Step title="Liveness Check">
-    Your app calls `liveness.startCheck()`:
-    1. **On-device AI**: Camera opens and ML Kit detects face actions locally (no network).
-    2. **Autoshot capture**: An autoshot is captured and sent to receive an Entry ID.
-       ```http
-       POST /v1/liveness/create
-       ```
-    3. **Video upload**: The video is uploaded for final analysis.
-       ```http
-       POST /v1/liveness/submit
-       ```
-  </Step>
-</Steps>
+```
+Your Flutter App
+     │
+     ├─ 1. createSession()        ──► POST /v1/session/create     ──► Session token
+     │       (uses apiKey + clientId)
+     │
+     ├─ 2. onboarding.verify()    ──► POST /v1/onboarding/verify  ──► Identity confirmed
+     │       (uses session token)
+     │
+     └─ 3. liveness.startCheck()
+               │
+               ├─ Camera opens, ML Kit detects face actions (on-device, no network)
+               │
+               ├─ Autoshot captured ──► POST /v1/liveness/create  ──► Entry ID
+               │
+               └─ Video uploaded    ──► POST /v1/liveness/submit  ──► Result
+```
 
 Face detection runs **entirely on-device** — no video is streamed live to the server.
 
@@ -114,12 +98,12 @@ final sdk = SmartComply(
 );
 ```
 
-| Parameter | Required | Description |
-|---|---|---|
-| `apiKey` | ✅ | API key issued by SmartComply. Used to authenticate session creation. |
-| `clientId` | ✅ | UUID of your SDK config record. Ties the session to your account settings. |
-| `environment` | Optional | Controls which SmartComply backend the SDK connects to:<br/>• `Environment.production` - Live system. Verifications use real databases and charge your account.<br/>• `Environment.sandbox` - Testing system. Uses mock data and does not charge your account.<br/>*Defaults to sandbox.* |
-| `timeout` | Optional | HTTP timeout. Defaults to 15 seconds. |
+| Parameter     | Required | Description                                                                   |
+| ------------- | -------- | ----------------------------------------------------------------------------- |
+| `apiKey`      | ✅        | API key issued by SmartComply. Used to authenticate session creation.         |
+| `clientId`    | ✅        | UUID of your SDK config record. Ties the session to your account settings.    |
+| `environment` | Optional | `Environment.production` or `Environment.sandbox`. Defaults to sandbox.       |
+| `timeout`     | Optional | HTTP timeout. Defaults to 15 seconds.                                         |
 
 ---
 
@@ -156,10 +140,10 @@ if (result.isVerified) {
 }
 ```
 
-| `OnboardingType` | ID |
-|---|---|
-| `OnboardingType.bvn` | Bank Verification Number |
-| `OnboardingType.nin` | National Identification Number |
+| `OnboardingType`      | ID                          |
+| --------------------- | --------------------------- |
+| `OnboardingType.bvn`  | Bank Verification Number    |
+| `OnboardingType.nin`  | National Identification Number |
 
 ---
 
@@ -185,13 +169,13 @@ print('Liveness: ${result.livenessStatus}'); // "processing" → "passed" | "fai
 
 ### Supported Challenge Actions
 
-| `ChallengeAction` | API value sent | Detection method |
-|---|---|---|
-| `ChallengeAction.blink` | `BLINK` | ML Kit eye open probability |
-| `ChallengeAction.turnLeft` | `TURN_LEFT` | ML Kit head euler Y angle |
-| `ChallengeAction.turnRight` | `TURN_RIGHT` | ML Kit head euler Y angle |
-| `ChallengeAction.turnHead` | `TURN_HEAD` | ML Kit head euler Y angle (either direction) |
-| `ChallengeAction.openMouth` | `OPEN_MOUTH` | Heuristic (confirmed by backend video AI) |
+| `ChallengeAction`            | API value sent | Detection method                                         |
+| ---------------------------- | -------------- | -------------------------------------------------------- |
+| `ChallengeAction.blink`      | `BLINK`        | ML Kit eye open probability                              |
+| `ChallengeAction.turnLeft`   | `TURN_LEFT`    | ML Kit head euler Y angle                                |
+| `ChallengeAction.turnRight`  | `TURN_RIGHT`   | ML Kit head euler Y angle                                |
+| `ChallengeAction.turnHead`   | `TURN_HEAD`    | ML Kit head euler Y angle (either direction)             |
+| `ChallengeAction.openMouth`  | `OPEN_MOUTH`   | Heuristic (confirmed by backend video AI)                |
 
 <Note>
   After `liveness/submit`, the status will be `"processing"` while the backend AI analyses the video. The final `passed` or `failed` status is delivered via webhook to your `webhook_url`.
