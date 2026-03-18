@@ -26,25 +26,25 @@ flutter pub get
 
 ## How It Works
 
-```
-Your Flutter App
-     │
-     ├─ 1. createSession()        ──► POST /v1/session/create     ──► Session token
-     │       (uses apiKey + clientId)
-     │
-     ├─ 2. onboarding.verify()    ──► POST /v1/onboarding/verify  ──► Identity confirmed
-     │       (uses session token)
-     │
-     └─ 3. liveness.startCheck()
-               │
-               ├─ Camera opens, ML Kit detects face actions (on-device, no network)
-               │
-               ├─ Autoshot captured ──► POST /v1/liveness/create  ──► Entry ID
-               │
-               └─ Video uploaded    ──► POST /v1/liveness/submit  ──► Result
-```
+<Steps>
+  <Step title="createSession()">
+    Authenticates your app using `apiKey` + `clientId`.
 
-Face detection runs **entirely on-device** — no video is streamed live to the server.
+    **Endpoint:** `POST /v1/session/create` → returns a **session token** used by all subsequent calls.
+  </Step>
+  <Step title="onboarding.verify()">
+    Verifies the user's identity against a government ID (BVN or NIN).
+
+    **Endpoint:** `POST /v1/onboarding/verify` → returns **Identity confirmed**.
+  </Step>
+  <Step title="liveness.startCheck()">
+    Opens the camera full-screen and runs the liveness challenge:
+
+    - **Face detection** runs entirely on-device via ML Kit — no live streaming to the server.
+    - **Autoshot captured** → `POST /v1/liveness/create` → returns an Entry ID.
+    - **Video uploaded** → `POST /v1/liveness/submit` → returns the result.
+  </Step>
+</Steps>
 
 ---
 
