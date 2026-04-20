@@ -1,190 +1,110 @@
-## Available Library/SDK for Quick Integration
+---
+title: "Web SDK"
+description: "Integrate SmartComply identity verification and liveness detection into your web applications."
+---
 
-The Adhere Web SDK provides a seamless, secure way to verify user presence (Liveness) and match their identity against official documents. Our SDK handles the heavy lifting of frame capture, face extraction, secure transmission, and verification asynchronously.
+# SmartComply Web SDK
 
-#### Getting started
+The SmartComply Web SDK enables you to rapidly and securely verify user identities and perform facial liveness checks directly in your web applications.
 
-To initialize the SDK, you will need:
+This SDK is incredibly lightweight and mounts a beautifully animated drop-in widget right cleanly over your application layout, intercepting user webcam video and securely negotiating verifications with the SmartComply backend.
 
-- **Public API Key - `apiKey`:** Found in your Adhere Dashboard settings.
-- **Configuration ID - `clientID`:** The unique ID for your specific liveness workflow.
+## Features
 
-#### Installation
+- **Drop-in UI Modal** — Clean, animated, and responsive design seamlessly overlaying via `SmartComplyFlow.open()`.
+- **Dynamic Routing** — Adapts requirements dynamically, securely streaming permitted document types from your dashboard backend.
+- **One-Time Use Policy** — Built to strictly prevent duplicate verifications ensuring maximum anti-fraud integrity.
+- **Nigeria & Global Identity** — Fully handles Nigeria BVN/NIN validations, alongside passport mapping for International Users.
+- **Hardware Agnostic Liveness** — Operates using raw DOM webcams and MediaRecord capturing for cross-platform device capability.
 
-For web applications, install our library via NPM.
-- **Web**: [@smartcomply/web-sdk](https://www.npmjs.com/package/@smartcomply/web-sdk)
-- **React-Native**: (Upcoming)
+## Installation
 
-```html
-npm i @smartcomply/web-sdk@latest
+You can install the SDK via npm or yarn:
+
+```bash
+npm install @smartcomply/sdk
+# or
+yarn add @smartcomply/sdk
 ```
 
-#### Implementation
-**Create a Session**
+*(Advanced setup allows using the bundled payload located in `./dist/smartcomply.browser.js` via a CDN).*
 
-Before initializing the SDK, your server must request a short-lived `sessionToken`.
-- **Base URL:** `https://adhere-api.smartcomply.com`
+---
 
-- **Endpoint:** `POST {BASE_URL}/v1/sdk/sessions/create/`
+## Quick Start (Recommended)
 
-- **Header**: `Authorization: Api-Key <YOUR_API_KEY>`
-
-- **Body**: `{"client_id": "<YOUR_SDK_CONFIG_ID>"}`
-
-- **Content-Type:** `application/json`
-
-
-*Response:*
-
-```JSON
-{ "token": "4505e4b3-f92b-46e5-9008-a98eeaabb6e5" }
-```
-
-**Initialize the SDK**
-
-Pass the `token` received into the SDK constructor. Initialize the verification engine by calling the `sdk.launch()` method. This launches a secure overlay that guides the user through the liveness challenges (e.g., blinking, head rotation) and document upload.
+To mount the SmartComply drop-in SDK properly, provide your authenticated **API Key**. The widget will automatically spawn a gorgeous welcome screen to guide the end-user into copy-pasting their unique Single-Use **Client ID**.
 
 ```javascript
-import AdhereSDK from "@smartcomply/web-sdk";
+import { SmartComplyFlow } from '@smartcomply/sdk';
 
-const sdk = new AdhereSDK({
-  session: "4505e4b3-f92b-46e5-9008-a98eeaabb6e5",
-  timeout: 15000, // can be undefined
-
-  // callback Props
-  onSuccess: (data) => {
-    console.log("Verification submitted:", data);
-  },
-
-  onError: (error) => {
-    console.error("Something went wrong: " + error.message);
-  }
-
-  onExpire: () => {
-    console.error("Verification session expired");
-  }
-});
-
-// launch SDK
-document.getElementById("test-launch-btn").onclick = () => sdk.launch();
+const launchVerification = () => {
+  const sdkModal = SmartComplyFlow.open({
+    apiKey: "your_live_api_key_here",
+    environment: "production", // Optional, defaults to "sandbox"
+    
+    // Callback Executions
+    onComplete: (result) => {
+      console.log("Success! Verification Payload:", result);
+      /* 
+        Returns an object mapping your session flags:
+        {
+           entryId: 9942,
+           status: "success",
+           verificationResult: { ... }
+        }
+      */
+    },
+    onError: (error) => {
+      console.error("SDK Authorization Refused:", error);
+    },
+    onClose: () => {
+      console.log("User aborted verification.");
+    }
+  });
+};
 ```
 
-#### Callback Specifications
+That's it! When executed, the SDK handles the complete end-to-end user lifecycle:
+1. Validating their provided `client_id` dynamically.
+2. Collecting and OCR processing their NIN/BVN slips or International Passports.
+3. Engaging their hardware camera and testing Liveness checks automatically.
+4. Tearing down the DOM container cleanly and gracefully returning the Promise payload.
 
-**onSuccess(payload)**
+---
 
-Triggered when the session is successfully completed.
-| Property | Type | Description |
-| :--- | :--- | :--- |
-| data | `SuccessDataType` | The created liveness entry session. |
-| status | `Integer` | 200 |
-| message | `String` | Human-readable message |
+## Headless API Architecture (Advanced usage)
+
+If you don't want to use our modal window, you can instantiate the underlying `SmartComply` Engine and orchestrate your custom Web UI natively using our methods.
 
 ```typescript
-type SuccessDataType = {
-  entryId: number;
-  identifier: string;
-  identifier_type: string;
-  video_url: string;
-  autoshot_url: string;
-  document_url: string;
-}
-```
+import { SmartComply } from '@smartcomply/sdk/core';
 
-**onError(error)**
-
-Triggered during network failures, permission denials, or session expiration.
-| Property | Type | Description |
-| :--- | :--- | :--- |
-| error | `Error` | The error object |
-| code | `String` | **Unique error code**: e.g. AUTH_ERROR, TIMEOUT_ERROR, ENTRY_CREATION_ERROR, SUBMISSION_ERROR, or UNKNOWN_ERROR. |
-| message | `String` | Human-readable explanation of the error. |
-
-## Webhook Integration
-
-Since face matching involves complex asynchronous processing, the final result is sent to your server via a Webhook.
-
-#### Payload Schema
-
-When the verification is complete, Adhere will send a POST request to your configured Webhook URL.
-
-**Sample JSON Payload**
-
-```JSON
-{
-  "event": "liveness.completed",
-  "data": {
-    "entry_id": 43,
-    "status": "passed",
-    "is_verified": true,
-    "match_score": 0.31375,
-    "metadata": {
-      "user-agent": "",
-      "ip_address": "192.168.0.1",
-    }
-  },
-  "timestamp": "2026-02-17T02:13:58Z"
-}
-```
-
-#### Field definitions
-
-| Field         | Description                                                               | Type      |
-| ------------- | ------------------------------------------------------------------------- | --------- |
-| `status`      | The status of the session (passed, failed, expired).                      | `string`  |
-| `is_verified` | Whether we successfully matched the selfie to the ID.                     | `boolean` |
-| `match_score` | The "Distance" between faces. Lower is better. Facenet threshold is 0.40. | `float`   |
-| `entry_id`    | Unique identifier for this verification record.                           | `String`  |
-
-#### Explaining the Match Score (Distance)
-
-**Match score** is a measure of "how different" two faces are. It is represents the mathematical distance between the selfie and the ID. A lower score indicates a higher probability of a match. While our system flags is_verified: true for any score below `0.40`, we recommend a manual audit for any scores falling in the `Borderline` range (`0.40 - 0.50`) to account for extreme lighting or age differences in documents.
-
-| Score Range     | Interpretation   | Action Recommended |
-| --------------- | ---------------- | ------------------ |
-| **0.0 - 0.25**  | Identical match  | Auto-Approve       |
-| **0.25 - 0.40** | Strong match     | Auto-Approve       |
-| **0.40 - 0.50** | Borderline match | **Manual Review**  |
-| **0.50+**       | Different people | Reject             |
-
-## Security & Best Practices
-
-#### Verify the Source - Webhook Signatures
-
-To ensure that webhook requests are coming from Adhere, we include an `X-Adhere-Signature` in the header of every request. You should verify this signature before processing the data.
-
-**Verification Steps**
-
-- Retrieve your `webhook_secret` from the Adhere Dashboard.
-
-- Get the raw body of the POST request.
-
-- Compute the HMAC hex digest using the SHA256 hash function and your secret key.
-
-- Compare your computed signature with the one in the `X-Adhere-Signature` header.
-
-**Example (Node.js/Express)**
-
-```javascript
-app.post("/webhook", (req, res) => {
-  const signature = req.headers["x-adhere-signature"];
-  const secret = process.env.ADHERE_WEBHOOK_SECRET;
-
-  const computedSignature = crypto
-    .createHmac("sha256", secret)
-    .update(JSON.stringify(req.body))
-    .digest("hex");
-
-  if (signature === computedSignature) {
-    // Legit request
-    res.status(200).send("Verified");
-  } else {
-    // Possible spoofing attempt
-    res.status(401).send("Invalid Signature");
-  }
+// 1. Initialise the Engine using your Secret API Token
+const sdk = new SmartComply({
+  apiKey: "your_live_api_key_here",
+  environment: "production"
 });
+
+// 2. Safely capture the Client ID from your custom UI input
+const handleBegin = async (userProvidedClientId) => {
+    
+    // Attempt session login
+    const sessionToken = await sdk.createSession(userProvidedClientId);
+
+    // Call data verification
+    const idVerified = await sdk.onboarding.verify({ 
+      onboardingType: 'bvn',
+      idNumber: '12345678912',
+      country: 'NG'
+    });
+
+    // Directly bind the camera to a custom HTML Video container
+    const livenessResult = await sdk.liveness.startCheck({
+      videoContainer: document.getElementById('my-camera-div')
+    });
+}
 ```
 
-#### Handle Retries
-
-Our systems expect a 200 OK response. If your server is down, we will retry the notification 3 times with exponential backoff (10 minute cap) + jitter.
+### Security & Architecture Limits
+**Client ID Redundancy Protection:** Because the architecture handles zero-trust KYC policies, the active `Client ID` immediately vaporizes from the backend the second the final video liveness check computes. Attempting to restart that same `Client ID` again via `createSession` will throw a `CLIENT_ID_ALREADY_USED` status securely blocking entry. Ensure your backend dynamically handles spinning up fresh Client IDs per-user.
