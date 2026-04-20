@@ -3,237 +3,131 @@ title: "Flutter SDK"
 description: "Integrate SmartComply identity verification and liveness detection into your Flutter app."
 ---
 
+# SmartComply Flutter SDK
+
+A powerful Flutter package for SmartComply identity verification and facial liveness detection. Our SDK delivers a drop-in UI that seamlessly orchestrates BVN/NIN verification (Nigeria), Document parsing (International), and video-based ML Kit facial liveness challenges.
+
+## Features
+
+- **Drop-in UI Integration** — `sdk.open(context)` launches our polished UI module natively on top of your app.
+- **Dynamic Client Configuration** — Fetches available document types securely from your SmartComply Dashboard rules.
+- **One-Time Use Policy System** — Verifications are securely bound utilizing a single-use parameter.
+- **Identity Onboarding** — Verifies BVN & NIN directly via national APIs, or scans Passports & National ID Cards.
+- **Liveness Detection** — Animated face action challenges (Blinking, Turning Head) backed by Google ML Kit.
+
 ## Installation
 
-<Info>
-  You will receive an **API key** and a **Client ID** from SmartComply. Keep these secure and do not commit them to source control.
-</Info>
-
-Add the SDK to your app's `pubspec.yaml`:
+In your app's `pubspec.yaml`:
 
 ```yaml
 dependencies:
   smartcomply_sdk: ^0.1.0
 ```
 
-Then run:
-
-```bash
-flutter pub get
-```
-
----
-
-## How It Works
-
-<Steps>
-  <Step title="createSession()">
-    Authenticates your app using `apiKey` + `clientId`.
-
-    **Endpoint:** `POST /v1/session/create` → returns a **session token** used by all subsequent calls.
-  </Step>
-  <Step title="onboarding.verify()">
-    Verifies the user's identity against a government ID (BVN or NIN).
-
-    **Endpoint:** `POST /v1/onboarding/verify` → returns **Identity confirmed**.
-  </Step>
-  <Step title="liveness.startCheck()">
-    Opens the camera full-screen and runs the liveness challenge:
-
-    - **Face detection** runs entirely on-device via ML Kit — no live streaming to the server.
-    - **Autoshot captured** → `POST /v1/liveness/create` → returns an Entry ID.
-    - **Video uploaded** → `POST /v1/liveness/submit` → returns the result.
-  </Step>
-</Steps>
-
----
+Then run `flutter pub get`.
 
 ## Platform Setup
 
-<Tabs>
-  <Tab title="Android">
-    In `android/app/src/main/AndroidManifest.xml`, add inside `<manifest>`:
-
-    ```xml
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    ```
-
-    In `android/app/build.gradle` (or `build.gradle.kts`):
-
-    ```groovy
-    android {
-        defaultConfig {
-            minSdk 21
-        }
+### Android
+In `android/app/src/main/AndroidManifest.xml`, ensure your app has permission to access the camera:
+```xml
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.INTERNET" />
+```
+Set the minimum SDK version in `android/app/build.gradle`:
+```groovy
+android {
+    defaultConfig {
+        minSdk 21
     }
-    ```
-  </Tab>
-  <Tab title="iOS">
-    In `ios/Runner/Info.plist`:
+}
+```
 
-    ```xml
-    <key>NSCameraUsageDescription</key>
-    <string>Camera is required for identity verification.</string>
-    <key>NSMicrophoneUsageDescription</key>
-    <string>Microphone is required for liveness recording.</string>
-    ```
-  </Tab>
-</Tabs>
+### iOS
+In `ios/Runner/Info.plist`, declare the camera usage description:
+```xml
+<key>NSCameraUsageDescription</key>
+<string>Camera is needed for liveness verification.</string>
+```
 
 ---
 
-## Initialisation
+## Quick Start (Recommended)
+
+The simplest way to integrate our SDK is to use the full wrapper widget. Upon launching, the SDK will automatically prompt the user for their **Client ID**.
 
 ```dart
 import 'package:smartcomply_sdk/smartcomply_sdk.dart';
 
+// 1. Create the SDK instance using your secret API Key
 final sdk = SmartComply(
-  SDKConfig(
-    apiKey: 'YOUR_API_KEY',        // Bearer token from SmartComply
-    clientId: 'YOUR_CLIENT_UUID',  // UUID from your SmartComply dashboard
-    environment: Environment.production,
-  ),
-);
-```
-
-| Parameter     | Required | Description                                                                   |
-| ------------- | -------- | ----------------------------------------------------------------------------- |
-| `apiKey`      | ✅        | API key issued by SmartComply. Used to authenticate session creation.         |
-| `clientId`    | ✅        | UUID of your SDK config record. Ties the session to your account settings.    |
-| `environment` | Optional | `Environment.production` or `Environment.sandbox`. Defaults to sandbox.       |
-| `timeout`     | Optional | HTTP timeout. Defaults to 15 seconds.                                         |
-
----
-
-## Step 1 — Create a Session
-
-```dart
-final session = await sdk.createSession();
-print(session.token); // UUID session token
-```
-
-<Note>
-  Must be called before any other SDK method. All subsequent calls automatically use the session token.
-</Note>
-
----
-
-## Step 2 — Verify Identity
-
-```dart
-// Verify BVN
-final result = await sdk.onboarding.verify(
-  onboardingType: OnboardingType.bvn,
-  idNumber: '22476562817',
+  const SDKConfig(
+    apiKey: 'your_live_api_key',
+    environment: Environment.production, // Use Environment.sandbox for testing
+  )
 );
 
-// Verify NIN
-final result = await sdk.onboarding.verify(
-  onboardingType: OnboardingType.nin,
-  idNumber: '91014204738',
-);
-
-if (result.isVerified) {
-  print('Verified at: ${result.verifiedAt}');
-}
-```
-
-| `OnboardingType`      | ID                          |
-| --------------------- | --------------------------- |
-| `OnboardingType.bvn`  | Bank Verification Number    |
-| `OnboardingType.nin`  | National Identification Number |
-
----
-
-## Step 3 — Liveness Check
-
-Opens the camera full-screen, guides the user through actions, captures a photo and video, and submits both to the backend:
-
-```dart
-final result = await sdk.liveness.startCheck(
-  context,
-  identifier: '22476562817',     // user's ID number
-  identifierType: 'bvn',         // 'bvn' or 'nin'
-  country: 'nigeria',
-  challengeActions: [
-    ChallengeAction.blink,
-    ChallengeAction.turnLeft,
-  ],
-);
-
-print('Status: ${result.status}');           // "success"
-print('Liveness: ${result.livenessStatus}'); // "processing" → "passed" | "failed"
-```
-
-### Supported Challenge Actions
-
-| `ChallengeAction`            | API value sent | Detection method                                         |
-| ---------------------------- | -------------- | -------------------------------------------------------- |
-| `ChallengeAction.blink`      | `BLINK`        | ML Kit eye open probability                              |
-| `ChallengeAction.turnLeft`   | `TURN_LEFT`    | ML Kit head euler Y angle                                |
-| `ChallengeAction.turnRight`  | `TURN_RIGHT`   | ML Kit head euler Y angle                                |
-| `ChallengeAction.turnHead`   | `TURN_HEAD`    | ML Kit head euler Y angle (either direction)             |
-| `ChallengeAction.openMouth`  | `OPEN_MOUTH`   | Heuristic (confirmed by backend video AI)                |
-
-<Note>
-  After `liveness/submit`, the status will be `"processing"` while the backend AI analyses the video. The final `passed` or `failed` status is delivered via webhook to your `webhook_url`.
-</Note>
-
----
-
-## Error Handling
-
-```dart
-try {
-  await sdk.createSession();
-} on SDKError catch (e) {
-  print('Error ${e.statusCode}: ${e.message}');
-}
-```
-
----
-
-## Full Example
-
-```dart
-import 'package:flutter/material.dart';
-import 'package:smartcomply_sdk/smartcomply_sdk.dart';
-
-final sdk = SmartComply(
-  SDKConfig(
-    apiKey: 'YOUR_API_KEY',
-    clientId: 'YOUR_CLIENT_UUID',
-    environment: Environment.production,
-  ),
-);
-
-Future<void> runVerification(BuildContext context) async {
+// 2. Wrap the execution in an asynchronous callback
+void startVerification(BuildContext context) async {
   try {
-    // 1. Session
-    await sdk.createSession();
+    // Open the SmartComply UI
+    final result = await sdk.open(context);
 
-    // 2. Identity
-    final identity = await sdk.onboarding.verify(
-      onboardingType: OnboardingType.bvn,
-      idNumber: '22476562817',
-    );
-    if (!identity.isVerified) return;
-
-    // 3. Liveness
-    final liveness = await sdk.liveness.startCheck(
-      context,
-      identifier: '22476562817',
-      identifierType: 'bvn',
-      country: 'nigeria',
-      challengeActions: [ChallengeAction.blink, ChallengeAction.turnLeft],
-    );
-
-    print('Liveness submitted: ${liveness.status}');
-    // Final result delivered via webhook
-  } on SDKError catch (e) {
-    debugPrint('SmartComply error: $e');
+    if (result.success) {
+      print('Verification passed! Live Session Token: ${result.sessionToken}');
+    } else {
+      print('Failed or Canceled: ${result.errorMessage}');
+    }
+  } catch (e) {
+    print("Fatal App Error processing SDK: $e");
   }
 }
 ```
+
+The SDK handles everything automatically:
+1. Shows an initial Client ID input screen.
+2. Identifies the user's origin and prompts for ID types (BVN, NIN, Passport, etc).
+3. Requests camera permissions.
+4. Guides the user through liveness face capturing.
+5. Securely revokes the session to enforce single-use policy.
+
+---
+
+## Advanced Usage (Headless Architecture)
+
+If you are building your own UI from scratch instead of using our wrapper, you must capture the `Client ID` manually and trigger the endpoints yourself:
+
+```dart
+// 1. Manually initialize the session using a dynamic input UUID
+final session = await sdk.createSession("user_provided_client_id");
+
+// 2. Verify identity directly via backend API
+final identity = await sdk.onboarding.verify(
+  onboardingType: OnboardingType.bvn,
+  idNumber: '22012345678',
+);
+
+// 3. Mount the Camera UI Liveness Checker Widget directly in your app tree
+if (identity.isVerified) {
+  final liveness = await sdk.liveness.startCheck(
+    context,
+    identifier: '22012345678',
+    identifierType: 'bvn',
+    country: 'nigeria',
+    challengeActions: [ChallengeAction.blink, ChallengeAction.turnLeft],
+  );
+  print('Liveness: ${liveness.status}');
+}
+```
+
+## Supported Liveness Actions
+
+Our engine can dynamically challenge users based on your Dashboard rules:
+
+| Action | Enum Value | Detection Method |
+|---|---|---|
+| Blink | `ChallengeAction.blink` | ML Kit eye open probability tracking |
+| Turn left | `ChallengeAction.turnLeft` | ML Kit `headEulerAngleY` analysis |
+| Turn right | `ChallengeAction.turnRight` | ML Kit `headEulerAngleY` analysis |
+| Turn head | `ChallengeAction.turnHead` | ML Kit `headEulerAngleY` analysis |
+| Open mouth | `ChallengeAction.openMouth` | ML Kit classification |
