@@ -67,17 +67,9 @@
                       {
                         "group": "Kenya",
                         "pages": [
-                          "v2/kyc/kenya/Drivers_License",
-                          "v2/kyc/kenya/Passport_Verification",
                           "v2/kyc/kenya/national_id_advance",
                           "v2/kyc/kenya/national_id_basic",
-                          "v2/kyc/kenya/serial_number",
-                          "v2/kyc/kenya/alien_ID",
-                          "v2/kyc/kenya/pin_checker",
-                          "v2/kyc/kenya/TCC_checker",
-                          "v2/kyc/kenya/WHT_checker",
-                          "v2/kyc/kenya/BRS_search",
-                          "v2/kyc/kenya/BRS_advance"
+                          "v2/kyc/kenya/Passport_Verification"
                         ]
                       },
                       {
@@ -223,17 +215,9 @@
                       {
                         "group": "Kenya",
                         "pages": [
-                          "v1/kyc/kenya/Drivers_License",
-                          "v1/kyc/kenya/Passport_Verification",
                           "v1/kyc/kenya/national_id_advance",
                           "v1/kyc/kenya/national_id_basic",
-                          "v1/kyc/kenya/serial_number",
-                          "v1/kyc/kenya/alien_ID",
-                          "v1/kyc/kenya/pin_checker",
-                          "v1/kyc/kenya/TCC_checker",
-                          "v1/kyc/kenya/WHT_checker",
-                          "v1/kyc/kenya/BRS_search",
-                          "v1/kyc/kenya/BRS_advance"
+                          "v1/kyc/kenya/Passport_Verification"
                         ]
                       },
                       {
