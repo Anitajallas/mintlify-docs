@@ -39,8 +39,7 @@ The Transaction Monitoring API endpoint processes transactions in real-time, cal
   "amount": 14000000,
   "currency": "NGN",
   "transaction_type": "card",
-  "account_type": "subscription ", //individual or corporate
-  "status": "completed",
+  "account_type": "individual", //individual or corporate
   "origin_account": {
     "account_number": "9876543219",
     "bank_code": "001"
@@ -58,8 +57,8 @@ The Transaction Monitoring API endpoint processes transactions in real-time, cal
     "ip_address": "192.168.1.1",
     "location": "San Francisco, CA", //"lat=-30.6556,lon=-65.7655"
     "transaction_description": "Payment for order #789",
-    "run_kyc": "false" //set to true when needed
-  }
+  },
+  "run_kyc": false //set to true when needed
 }
 ```
 
@@ -96,6 +95,7 @@ The Transaction Monitoring API endpoint processes transactions in real-time, cal
 | `customer_details`   | Information about the verified customer initiating the transaction.     | `Object` |
 | `- customer_name`     | Customer's full name                                                    | `String` |
 | `- customer_email`    | Customer's email address                                                | `String` |
+| `- bvn`              |  Customer's BVN (used in building a profile for the customer. Optional)            | `String` |
 | `additional_info`    | Additional details regarding the transaction                            | `Object` |
 | `- ip_address`        | IP address of the customer during the transaction                       | `String` |
 | `- location`           | Customer's location (can be formatted as "lat=-30.6556,lon=-65.7655")  | `String` |
