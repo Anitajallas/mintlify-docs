@@ -1,3 +1,6 @@
+---
+sidebarTitle: "Virtual National Identity Number (VNIN)"
+---
 ## Verify your customers' identities using their Virtual National Identity Number (VNIN)
 
 Leverage Adhere's VNIN verification endpoint to securely retrieve and validate customer details using their Virtual National Identification Number (VNIN).
@@ -6,6 +9,9 @@ Leverage Adhere's VNIN verification endpoint to securely retrieve and validate c
 
 `POST` `{{BASE_URL}}/api/onboarding/nigeria_kyc/vnin/`
 
+### Status Codes
+- **200 OK:** The request was successful, and the VNIN details are returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
 
 #### Sample Payload
 
@@ -19,6 +25,7 @@ Leverage Adhere's VNIN verification endpoint to securely retrieve and validate c
 
 ```json
 {
+  "status": "success",
   "data": {
     "vnin": "AB012345678910YZ",
     "firstname": "John",
@@ -26,10 +33,19 @@ Leverage Adhere's VNIN verification endpoint to securely retrieve and validate c
     "lastname": "Alamutu",
     "gender": "M",
     "mobile": "08012345678",
-    "photo": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQICAQECAQEBAgICAgICAgICAQICA9GXNN69zjdrF0+7aps5Xn0TqWf=",  # base-64
+    "photo": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQICAQECAQEBAgICAgICAgICAQICA9GXNN69zjdrF0+7aps5Xn0TqWf=",
     "customer": "6bb82c41-e15e-4308-b99d-e9640818eca9"
   },
-  "message": "Virtual National Identification Number details retrieved successfully",
+  "message": "Virtual National Identification Number details retrieved successfully"
+}
+```
+
+400 Bad Request Response
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "VNIN is required"
 }
 ```
 

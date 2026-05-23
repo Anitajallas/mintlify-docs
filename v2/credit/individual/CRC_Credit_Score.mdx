@@ -24,11 +24,8 @@ Adhere's Credit Score endpoint provides users with essential insights into their
 
 ```json
 {
-  "success": true,
-  "statusCode": 200,
-  "message": "CRC Credit Score",
-  "response_code": "00",
-  "data": {
+    "status": "success",
+    "data": {
     "_id": "64f600608aaf9386c646de32",
     "bvn": "22244545518",
     "customerId": "505327",
@@ -51,7 +48,8 @@ Adhere's Credit Score endpoint provides users with essential insights into their
       "crcReportOrderNumber": "W-0097887747/2023"
     },
     "searchedDate": "2023-11-23T14:25:54.210Z"
-  }
+  },
+    "message": "Credit Scores individual CRC report details retrieved successfully"
 }
 ```
 
@@ -59,8 +57,8 @@ Adhere's Credit Score endpoint provides users with essential insights into their
 
 | Field                            | Description                                                                                                         | Type     |
 |----------------------------------|---------------------------------------------------------------------------------------------------------------------|----------|
-| `status`                           | This is the returned status of the request either success or failed.                                                 | String   |
-| `code`                             | This is the operational code                                                                                        | Number   |
+| `status`                           | The status of the request, either "success" or "failed".                                                          | String   |
+| `message`                          | A message describing the result of the request.                                                                     | String   |
 | `data`                             | This is an array of objects which contains every transaction data                                                   | Object   |
 | `- _id`                         | The unique identifier or specific code assigned to a particular user within the database                            | String   |
 | `- bvn`                         | The bvn of the user                                                                                                 | String   |

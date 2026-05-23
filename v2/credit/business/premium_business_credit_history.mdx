@@ -27,11 +27,8 @@ Adhere's Premium Business Credit History endpoint provides an enhanced and compr
 ```json
 
 {
-  "success": true,
-  "statusCode": 200,
-  "message": "Business Credit History",
-  "response_code": "00",
-  "data": {
+    "status": "success",
+    "data": {
     "_id": "636e768d8215a2e2fb06cfde",
     "business_reg_no": "RC123456",
     "businessId": "64db7ab8a26e603218838892",
@@ -385,7 +382,8 @@ Adhere's Premium Business Credit History endpoint provides an enhanced and compr
       ]
     },
     "searchedDate": "2023-11-23T16:17:36.391Z"
-  }
+  },
+    "message": "Premium check successful"
 }
 ```
 
@@ -394,11 +392,9 @@ Adhere's Premium Business Credit History endpoint provides an enhanced and compr
 
 | Field                            | Description                                                                                                         | Type   |
 |----------------------------------|---------------------------------------------------------------------------------------------------------------------|--------|
-| `success`                        | Indicates whether the request was successful or not.                                                                | Boolean|
-| `statusCode`                     | The HTTP status code of the response.                                                                               | Number |
-| `message`                        | A message describing the result of the request.                                                                     | String |
-| `response_code`                  | The operational response code.                                                                                      | String |
+| `status`                         | The status of the request, either "success" or "failed".                                                          | String |
 | `data`                           | An object containing detailed information about the business's credit history.                                      | Object |
+| `message`                        | A message describing the result of the request.                                                                     | String |
 | `- _id`                          | The unique identifier for the business credit history record.                                                       | String |
 | `- business_reg_no`              | The registration number of the business.                                                                            | String |
 | `- businessId`                   | The unique identifier assigned to the business.                                                                     | String |

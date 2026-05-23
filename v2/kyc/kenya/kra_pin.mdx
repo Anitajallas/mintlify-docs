@@ -1,0 +1,49 @@
+---
+title: "KRA PIN"
+sidebarTitle: "KRA PIN"
+---
+## Verify your customers' identity using their KRA PIN
+
+Adhere's KRA PIN endpoint allows you to verify a customer's Kenya Revenue Authority (KRA) Personal Identification Number (PIN), returning their taxpayer details including name, PIN status, iTax status, and obligation details.
+
+### Request Endpoint
+
+`POST` `{{BASE_URL}}/api/onboarding/kenya_kyc/kra_pin/`
+
+- **Media-Type:** `application/json`
+
+### Status Codes
+- **200 OK:** The request was successful, and the KRA PIN details are returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
+
+#### Payload
+```json
+{
+    "pin": "A123456789B"
+}
+```
+
+200 OK Response
+
+```json
+{
+    "status": "success",
+    "data": {
+        "pin": "A123456789B",
+        "taxpayer_name": "ABB APP Limited",
+        "pin_status": "Active",
+        "itax_status": "iPage Updated",
+        "obligation_details": "Income Tax - Company Registered 29/01/2013"
+    },
+    "message": "Pin details retrieved successfully"
+}
+```
+
+400 Bad Request Response
+```json
+{
+    "status": "failed",
+    "data": [],
+    "message": "PIN is required"
+}
+```

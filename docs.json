@@ -47,34 +47,41 @@
                       {
                         "group": "Nigeria",
                         "pages": [
-                          "v2/kyc/nigeria/Drivers_License",
-                          "v2/kyc/nigeria/passport_verification",
-                          "v2/kyc/nigeria/nuban",
-                          "v2/kyc/nigeria/phone_number_basic",
-                          "v2/kyc/nigeria/Phone_Number_Advanced",
-                          "v2/kyc/nigeria/CAC",
-                          "v2/kyc/nigeria/CAC_Advanced",
-                          "v2/kyc/nigeria/nin",
-                          "v2/kyc/nigeria/nin_with_face",
-                          "v2/kyc/nigeria/VNIN",
                           "v2/kyc/nigeria/BVN",
                           "v2/kyc/nigeria/BVN_Advanced",
+                          "v2/kyc/nigeria/BVN_with_face",
+                          "v2/kyc/nigeria/CAC",
+                          "v2/kyc/nigeria/CAC_Advanced",
+                          "v2/kyc/nigeria/Drivers_License",
+                          "v2/kyc/nigeria/nin",
+                          "v2/kyc/nigeria/nin_with_face",
+                          "v2/kyc/nigeria/nuban",
+                          "v2/kyc/nigeria/nuban_advanced",
+                          "v2/kyc/nigeria/passport_verification",
+                          "v2/kyc/nigeria/Phone_Number_Advanced",
+                          "v2/kyc/nigeria/phone_number_basic",
                           "v2/kyc/nigeria/tin",
-                          "v2/kyc/nigeria/Voters_ID",
-                          "v2/kyc/nigeria/BVN_with_face"
+                          "v2/kyc/nigeria/VNIN",
+                          "v2/kyc/nigeria/Voters_ID"
                         ]
                       },
                       {
                         "group": "Kenya",
                         "pages": [
-                          "v2/kyc/kenya/national_id_advance",
                           "v2/kyc/kenya/national_id_basic",
+                          "v2/kyc/kenya/national_id_advance",
+                          "v2/kyc/kenya/business_registration",
+                          "v2/kyc/kenya/alien_ID",
+                          "v2/kyc/kenya/kra_pin",
                           "v2/kyc/kenya/Passport_Verification"
                         ]
                       },
                       {
                         "group": "Ghana",
-                        "pages": ["v2/kyc/ghana/ID_Card"]
+                        "pages": [
+                          "v2/kyc/ghana/ID_Card",
+                          "v2/kyc/ghana/ID_Card_with_face"
+                        ]
                       }
                     ]
                   },
@@ -82,26 +89,48 @@
                     "group": "Credit Report",
                     "pages": [
                       {
-                        "group": "Business",
+                        "group": "Nigeria",
                         "pages": [
-                          "v2/credit/business/crc-business_credit_history",
-                          "v2/credit/business/first-central_business_credit_history",
-                          "v2/credit/business/premium_business_credit_history"
+                          {
+                            "group": "Business",
+                            "pages": [
+                              "v2/credit/business/crc-business_credit_history",
+                              "v2/credit/business/first-central_business_credit_history",
+                              "v2/credit/business/premium_business_credit_history"
+                            ]
+                          },
+                          {
+                            "group": "Individual",
+                            "pages": [
+                              "v2/credit/individual/First_Central_Credit_Summary",
+                              "v2/credit/individual/First_Central_Full_Credit_Report",
+                              "v2/credit/individual/Credit_Registry_Credit_Summary",
+                              "v2/credit/individual/Credit_Registry_Full_Credit_Report",
+                              "v2/credit/individual/Credit_Report_Premium",
+                              "v2/credit/individual/First_Central_Credit_Score",
+                              "v2/credit/individual/CRC_Credit_Score",
+                              "v2/credit/individual/CRC_Credit_History",
+                              "v2/credit/individual/CRC_Full_Credit_Report",
+                              "v2/credit/individual/Credt_Registry_History_Advanced"
+                            ]
+                          }
                         ]
                       },
                       {
-                        "group": "Individual",
+                        "group": "Kenya",
                         "pages": [
-                          "v2/credit/individual/First_Central_Credit_Summary",
-                          "v2/credit/individual/First_Central_Full_Credit_Report",
-                          "v2/credit/individual/Credit_Registry_Credit_Summary",
-                          "v2/credit/individual/Credit_Registry_Full_Credit_Report",
-                          "v2/credit/individual/Credit_Report_Premium",
-                          "v2/credit/individual/First_Central_Credit_Score",
-                          "v2/credit/individual/CRC_Credit_Score",
-                          "v2/credit/individual/CRC_Credit_History",
-                          "v2/credit/individual/CRC_Full_Credit_Report",
-                          "v2/credit/individual/Credt_Registry_History_Advanced"
+                          {
+                            "group": "Individual",
+                            "pages": [
+                              "v2/credit/individual/Kenya_Individual_Credit"
+                            ]
+                          },
+                          {
+                            "group": "Business",
+                            "pages": [
+                              "v2/credit/business/Kenya_Business_Credit"
+                            ]
+                          }
                         ]
                       }
                     ]

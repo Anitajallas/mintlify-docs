@@ -1,0 +1,43 @@
+## Generate individual credit report data for Kenya
+
+Adhere's Kenya Individual Credit Report endpoint provides a comprehensive record of an individual's credit-related activities in Kenya, including credit accounts, payment timelines, credit utilization, and instances of delinquency.
+
+
+### Request Endpoint
+
+`POST` `{{BASE_URL}}/api/onboarding/kenya/individual_credit/`
+
+- **Media-Type:** `application/json`
+
+
+### Status Codes
+- **200 OK:** The request was successful, and the individual's credit information is returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
+
+
+#### Sample Payload
+```json
+{
+    "national_id": "12345678"
+}
+```
+
+
+200 OK Response
+```json
+{
+    "status": "success",
+    "data": {},
+    "message": "Kenya Individual Credit Report retrieved successfully"
+}
+```
+
+
+400 Bad Request Response
+```json
+{
+    "status": "failed",
+    "data": [],
+    "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```

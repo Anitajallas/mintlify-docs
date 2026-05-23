@@ -10,7 +10,7 @@ Adhere's CRC Credit Registry Report endpoint provides users with a detailed and 
 - **Media-Type:** `application/json`
 
 ### Status Codes
-- **201 Created:** The request was successful, and the business' credit information is returned successfully.
+- **200 OK:** The request was successful, and the business' credit information is returned successfully.
 - **400 Bad Request:** The request could not be completed due to invalid or missing information.
 
 
@@ -24,11 +24,8 @@ Adhere's CRC Credit Registry Report endpoint provides users with a detailed and 
 ### 200 OK Response
 ```json
 {
-  "success": true,
-  "statusCode": 200,
-  "message": "Credit Registry Full Credit Report",
-  "response_code": "00",
-  "data": {
+    "status": "success",
+    "data": {
     "_id": "64f600608aaf9386c646de32",
     "bvn": "22244545518",
     "customerId": "505327",
@@ -171,7 +168,8 @@ Adhere's CRC Credit Registry Report endpoint provides users with a detailed and 
       ]
     },
     "searchedDate": "2023-11-23T14:47:42.824Z"
-  }
+  },
+    "message": "Credit Registry check successful"
 }
 ```
 
@@ -179,11 +177,9 @@ Adhere's CRC Credit Registry Report endpoint provides users with a detailed and 
 
 | Field                            | Description                                                                                                         | Type    |
 |----------------------------------|---------------------------------------------------------------------------------------------------------------------|---------|
-| `success`                        | Indicates whether the request was successful or not.                                                                | Boolean |
-| `statusCode`                     | The HTTP status code of the response.                                                                               | Number  |
-| `message`                        | A message describing the result of the request.                                                                     | String  |
-| `response_code`                  | The operational response code.                                                                                      | String  |
+| `status`                         | The status of the request, either "success" or "failed".                                                          | String  |
 | `data`                           | An object containing detailed information about the individual's credit history.                                    | Object  |
+| `message`                        | A message describing the result of the request.                                                                     | String  |
 | `- _id`                          | The unique identifier for the credit history record.                                                                | String  |
 | `- bvn`                          | The Bank Verification Number of the individual.                                                                     | String  |
 | `- customerId`                   | The unique identifier assigned to the customer.                                                                     | String  |

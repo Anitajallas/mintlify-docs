@@ -28,11 +28,8 @@ Adhere's Credit History endpoint provides businesses with a detailed record of t
 ```json
 
 {
-  "success": true,
-  "statusCode": 200,
-  "message": "Business Credit History",
-  "response_code": "00",
-  "data": {
+    "status": "success",
+    "data": {
     "_id": "636e768d8215a2e2fb06cfde",
     "business_reg_no": "RC123456",
     "businessId": "64db7ab8a26e603218838892",
@@ -59,7 +56,8 @@ Adhere's Credit History endpoint provides businesses with a detailed record of t
       "loanHistory": false
     },
     "searchedDate": "2023-11-23T16:16:47.279Z"
-  }
+  },
+    "message": "CRC check successful"
 }
 ```
 
@@ -67,8 +65,8 @@ Adhere's Credit History endpoint provides businesses with a detailed record of t
 
 | Field                            | Description                                                                                                         | Type   |
 |----------------------------------|---------------------------------------------------------------------------------------------------------------------|--------|
-| `status`                         | This is the returned status of the request either success or failed.                                                | String |
-| `code`                           | This is the operational code.                                                                                         | Number |
+| `status`                         | The status of the request, either "success" or "failed".                                                          | String |
+| `message`                        | A message describing the result of the request.                                                                     | String |
 | `data`                           | This is an array of objects which contains every transaction data.                                                   | Object |
 | `- _id`                       | The unique identifier or specific code assigned to a particular user within the database.                           | String |
 | `- bvn`                       | The BVN of the user.                                                                                                  | String |
