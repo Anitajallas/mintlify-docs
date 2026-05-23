@@ -1,0 +1,43 @@
+## Generate company credit report data for Kenya
+
+Adhere's Kenya Company Credit Report endpoint provides a comprehensive record of a company's credit-related activities in Kenya, including credit accounts, payment timelines, credit utilization, and instances of delinquency.
+
+
+### Request Endpoint
+
+`POST` `{{BASE_URL}}/api/onboarding/kenya/company_credit/`
+
+- **Media-Type:** `application/json`
+
+
+### Status Codes
+- **200 OK:** The request was successful, and the company's credit information is returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
+
+
+#### Sample Payload
+```json
+{
+    "registration_number": "PVT-ABC123"
+}
+```
+
+
+200 OK Response
+```json
+{
+    "status": "success",
+    "data": {},
+    "message": "Kenya Company Credit Report retrieved successfully"
+}
+```
+
+
+400 Bad Request Response
+```json
+{
+    "status": "failed",
+    "data": [],
+    "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```

@@ -26,11 +26,8 @@ Adhere's Business Credit History endpoint, powered by First Central, provides bu
 
 ```json
 {
-  "success": true,
-  "statusCode": 200,
-  "message": "Business Credit History",
-  "response_code": "00",
-  "data": {
+    "status": "success",
+    "data": {
     "_id": "636e768d8215a2e2fb06cfde",
     "business_reg_no": "RC123456",
     "businessId": "64db7ab8a26e603218838892",
@@ -65,7 +62,8 @@ Adhere's Business Credit History endpoint, powered by First Central, provides bu
       "loanHistory": false
     },
     "searchedDate": "2023-11-23T16:17:16.672Z"
-  }
+  },
+    "message": "First Central check successful"
 }
 ```
 
@@ -73,8 +71,8 @@ Adhere's Business Credit History endpoint, powered by First Central, provides bu
 
 | Field                                  | Description                                                                                                         | Type   |
 |----------------------------------------|---------------------------------------------------------------------------------------------------------------------|--------|
-| `status`                               | This is the returned status of the request either success or failed.                                                | String |
-| `code`                                 | This is the operational code.                                                                                         | Number |
+| `status`                               | The status of the request, either "success" or "failed".                                                          | String |
+| `message`                              | A message describing the result of the request.                                                                     | String |
 | `data`                                 | This is an array of objects which contains every transaction data.                                                   | Object |
 | `- _id`                             | The unique identifier or specific code assigned to a particular user within the database.                           | String |
 | `- bvn`                             | The BVN of the user.                                                                                                  | String |
@@ -100,10 +98,3 @@ Adhere's Business Credit History endpoint, powered by First Central, provides bu
 | `-- crcReportOrderNumber`           | The report order number of the credit bureau.                                                                        | String |
 | `- searchedDate`                        | The date the credit report was searched.                                                                             | String |
 
-
-
-
-
-
-
-What are API limits?

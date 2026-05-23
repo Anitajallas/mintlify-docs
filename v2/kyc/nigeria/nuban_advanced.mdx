@@ -1,0 +1,73 @@
+---
+sidebarTitle: "Nuban Advanced"
+---
+# Verify your customers' identity using their Nuban Number Advanced
+
+Adhere's NUBAN Advanced check provides an enhanced and comprehensive view of verified customer account information at a national level, including additional identity data beyond the basic NUBAN check.
+
+#### Request Endpoint
+
+`POST` `{{BASE_URL}}/api/onboarding/nigeria_kyc/nuban_advanced/`
+
+- **Media-Type:** `application/json`
+
+#### Sample Payload
+
+```json
+{
+  "account_number": "0768540312",
+  "bank_code": "035"
+}
+```
+
+#### Bank Codes
+
+```json
+bank_codes = {
+  "Access Bank": "044",
+  "Ecobank Nigeria": "050",
+  "Fidelity Bank": "070",
+  "First Bank of Nigeria": "011",
+  "First City Monument Bank": "214",
+  "Guaranty Trust Bank": "058",
+  "Heritage Bank": "030",
+  "Jaiz Bank": "301",
+  "Kuda Microfinance Bank": "50211",
+  "Moniepoint Microfinance Bank": "50563",
+  "Opay": "999992",
+  "Palmpay": "999111",
+  "Polaris Bank": "076",
+  "Stanbic IBTC Bank": "221",
+  "Sterling Bank": "232",
+  "Union Bank of Nigeria": "032",
+  "United Bank for Africa": "033",
+  "Unity Bank": "215",
+  "Wema Bank": "035",
+  "Zenith Bank": "057"
+}
+```
+
+
+200 OK Response
+
+```json
+{
+    "status": "success",
+    "data": {
+        "bank_id": 11,
+        "account_name": "STEPHEN BADMUS",
+        "account_number": "0768540312"
+    },
+    "message": "Nuban details retrieved successfully"
+}
+```
+
+
+400 Bad Request Response
+```json
+{
+    "status": "failed",
+    "data": [],
+    "message": "Account Number and Bank Code are required"
+}
+```

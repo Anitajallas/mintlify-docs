@@ -1,0 +1,63 @@
+---
+title: "Ghana ID Card Advanced"
+sidebarTitle: "Ghana ID Card Advanced"
+---
+## Verify your customer's identity using their ID Card number and selfie
+
+Adhere's Ghana ID Card Advanced endpoint verifies a customer's identity using their Ghana Card number alongside a selfie image. In addition to returning verified identity details, it retrieves the registrant's photo on record for visual confirmation.
+
+
+### Request Endpoint
+
+`POST` `{{BASE_URL}}/api/onboarding/ghana_kyc/id_card_with_face/`
+
+- **Media-Type:** `application/json`
+
+
+### Status Codes
+- **200 OK:** The request was successful, and the customer's information is returned successfully.
+- **400 Bad Request:** The request could not be completed due to invalid or missing information.
+
+
+#### Sample Payload
+```json
+{
+    "identification_number": "GHA-000000000-0",
+    "selfie_image": "/9j/4AAQSkZJRgABAQAAAQABAAD..."
+}
+```
+
+
+200 OK Response
+```json
+{
+    "status": "success",
+    "data": {
+        "DOB": "2000-09-20",
+        "Photo": "/9j/2wBDAAsICAoIBwsKCQoNDAsNERwSEQ8PESIZGhQcKSQrKigkJyctMkA3LTA9MCcnOEw5PUNFSElIKzZPVU5GVEBHSEX/2wBDAQwNDREPESESEiFFLicuRUVFRUVFRUVFRUVFRUX...",
+        "Gender": "Male",
+        "Address": "OPHELIA JUNCTION, Barimah Close, ESSERESO, BOSOMTWE, ASHANTI, Ghana",
+        "Country": "Ghana",
+        "FullName": "Joe Leo Doe",
+        "IDNumber": "GHA-000000000-0",
+        "LastName": "Doe",
+        "FirstName": "Joe",
+        "OtherNames": "Leo",
+        "PhoneNumber": "0000000",
+        "IssuanceDate": "2020-08-07",
+        "ExpirationDate": "2030-08-07",
+        "Secondary_ID_Number": "AQ0000000"
+    },
+    "message": "Ghana ID Card Advanced details retrieved successfully"
+}
+```
+
+
+400 Bad Request Response
+```json
+{
+    "status": "failed",
+    "data": [],
+    "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```

@@ -1,22 +1,57 @@
+---
+title: "Alien ID"
+sidebarTitle: "Alien ID"
+---
 ## Verify your customers' identity using their Alien Identification
 
 Adhere's Alien Identification endpoint allows you to access accurate, verified national-level information for reliable identity confirmation.
 
 
-Request Endpoint
+### Request Endpoint
 
-`POST:` `{{BASE_URL}}/api/onboarding/kenya_kyc/aliend_id/`
+`POST` `{{BASE_URL}}/api/onboarding/kenya_kyc/alien_id/`
 
 - **Media-Type:** `application/json`
 
+
 ### Status Codes
-- **201 Created:** The request was successful, and the customer's information is returned successfully.
+- **200 OK:** The request was successful, and the customer's information is returned successfully.
 - **400 Bad Request:** The request could not be completed due to invalid or missing information.
 
-#### Payload Fields
 
-``` json
+#### Sample Payload
+
+```json
 {
-    "alien_id": 100000
+    "alien_id": "1000000"
+}
+```
+
+
+200 OK Response
+```json
+{
+    "status": "success",
+    "data": {
+        "valid": true,
+        "id_number": "1000000",
+        "first_name": "JAMES",
+        "last_name": "KARIUKI",
+        "middle_name": "MWANGI",
+        "date_of_birth": "1990-04-15",
+        "gender": "Male",
+        "nationality": "Ugandan"
+    },
+    "message": "Alien ID details retrieved successfully"
+}
+```
+
+
+400 Bad Request Response
+```json
+{
+    "status": "failed",
+    "data": [],
+    "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
 }
 ```
