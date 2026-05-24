@@ -1,0 +1,133 @@
+---
+title: "Get All KYC Search Results"
+sidebarTitle: "Get All KYC Results"
+description: "Retrieve all KYC search results associated with your account, including risk levels and sanction findings."
+openapi: "GET /api/v1/monitoring/kyc_search/"
+---
+
+The Get All KYC Search Results endpoint returns a list of every KYC check performed under your account. Each result includes the entity's risk level, PEP status, sanctions matches, and adverse media findings.
+
+## Endpoint
+
+```
+GET /api/v1/monitoring/kyc_search/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X GET "https://adhere-api.smartcomply.com/api/v1/monitoring/kyc_search/" \
+  -H "x-access-token: YOUR_SECRET_KEY"
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data[].id` | number | Unique identifier for the KYC search result |
+| `data[].entity_name` | string | Name of the entity that was searched |
+| `data[].branch_id` | number | Branch associated with this KYC search |
+| `data[].status` | string | Search status (e.g., `"completed"`) |
+| `data[].result.risk_level` | string | Risk level assessed: `"low"`, `"medium"`, or `"high"` |
+| `data[].result.total_hits` | number | Total flagged hits across all categories |
+| `data[].result.pep_results` | array | Politically Exposed Person matches |
+| `data[].result.sanction_results` | array | Sanctions list matches |
+| `data[].result.social_media` | array | Social media profiles found |
+| `data[].result.adverse_media_results` | array | Adverse media articles |
+| `data[].result.total_blacklist_hits` | number | Total blacklist flags |
+
+```json
+{
+  "status": "success",
+  "data": [
+    {
+      "id": 17,
+      "entity_name": "ABDUL MANAN MOHAMMAD ISHAK",
+      "branch_id": 3,
+      "status": "completed",
+      "result": {
+        "risk_level": "low",
+        "total_hits": 1,
+        "pep_results": [],
+        "search_term": "ABDUL MANAN MOHAMMAD ISHAK",
+        "social_media": [],
+        "sanction_results": [
+          {
+            "name": "Abdul Manan Mohammad Ishak",
+            "types": ["sanction", "warnings", "fitness-probity"],
+            "source": "Smartcomply",
+            "country": "Afghanistan",
+            "recorded_date": "15 Aug. 2012"
+          }
+        ],
+        "total_blacklist_hits": 0,
+        "adverse_media_results": []
+      }
+    },
+    {
+      "id": 41,
+      "entity_name": "Heritage Bank",
+      "branch_id": 3,
+      "status": "completed",
+      "result": {
+        "risk_level": "high",
+        "total_hits": 5,
+        "pep_results": [
+          {
+            "name": "Managing Director/CEO, Heritage Bank Plc",
+            "gender": null,
+            "source": "Smartcomply",
+            "country": "Nigeria",
+            "pep_types": ["pep"]
+          }
+        ],
+        "search_term": "Heritage Bank",
+        "social_media": [],
+        "sanction_results": [],
+        "total_blacklist_hits": 0,
+        "adverse_media_results": [
+          {
+            "url": "https://thewillnews.com/breaking-cbn-revokes-operational-license-of-heritage-bank-plc/",
+            "date": "June 5, 2024",
+            "title": "CBN revokes operational license of Heritage Bank Plc",
+            "types": ["adverse-media-v2-other-financial"],
+            "snippet": "The Central Bank of Nigeria (CBN) has revoked the banking license of Heritage Bank Plc..."
+          }
+        ]
+      }
+    }
+  ],
+  "message": "Success"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

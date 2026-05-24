@@ -1,0 +1,75 @@
+---
+title: "Set Fraud Alert Threshold"
+sidebarTitle: "Set Threshold"
+description: "Configure the fraud score threshold at which a transaction triggers a fraud alert."
+openapi: "POST /api/v1/monitoring/threshold"
+---
+
+The Set Fraud Alert Threshold endpoint allows you to define the score value that triggers a fraud alert. Transactions whose computed fraud score exceeds this threshold are flagged for further investigation.
+
+## Endpoint
+
+```
+POST /api/v1/monitoring/threshold
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `threshhold` | number | Yes | Fraud score threshold that triggers an alert |
+
+<Note>
+The parameter name `threshhold` (double h) must be used exactly as shown.
+</Note>
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/v1/monitoring/threshold" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"threshhold": 70}'
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+```json
+{
+  "status": "Success",
+  "data": [],
+  "message": "Threshold updated successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

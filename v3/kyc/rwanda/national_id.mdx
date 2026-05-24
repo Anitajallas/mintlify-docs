@@ -1,0 +1,87 @@
+---
+title: "Rwanda National ID"
+sidebarTitle: "National ID"
+description: "Verify a customer's identity using their Rwandan National Identification Number."
+openapi: "POST /api/onboarding/rwanda_kyc/national_id/"
+---
+
+The Rwanda National ID endpoint validates a customer's National Identification Number against Rwanda's national registry and returns the associated personal details.
+
+## Endpoint
+
+```
+POST /api/onboarding/rwanda_kyc/national_id/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `national_id` | string | Yes | The customer's Rwandan National Identification Number |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/rwanda_kyc/national_id/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"national_id": "1122334455667788"}'
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.first_name` | string | Customer's first name |
+| `data.last_name` | string | Customer's last name |
+| `data.date_of_birth` | string | Date of birth |
+| `data.national_id` | string | National ID number |
+| `data.gender` | string | Gender |
+| `data.nationality` | string | Nationality |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "first_name": "John",
+    "last_name": "Doe",
+    "date_of_birth": "1990-01-01",
+    "national_id": "1122334455667788",
+    "gender": "Male",
+    "nationality": "Rwandan"
+  },
+  "message": "National ID details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Missing required fields"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

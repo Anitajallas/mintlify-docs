@@ -1,0 +1,47 @@
+---
+title: "Card Transaction Monitoring"
+sidebarTitle: "Overview"
+description: "Real-time fraud assessment for card transactions using algorithmic analysis and spending pattern detection."
+---
+
+The Card Transaction Monitoring system performs real-time fraud assessments on card transactions. Each transaction receives a fraud score — a calculated risk indicator — which you can use to flag, review, or auto-reject suspicious activity.
+
+## How It Works
+
+<Steps>
+  <Step title="Submit the transaction">
+    Send transaction details to the [Post Fraud Request](/v3/transaction/card_transaction/post_fraud_request) endpoint.
+  </Step>
+  <Step title="Algorithmic analysis">
+    The system evaluates transaction characteristics including location, transaction history, and spending patterns.
+  </Step>
+  <Step title="Real-time scoring">
+    A fraud score is computed immediately, reflecting the probability of fraudulent behavior.
+  </Step>
+  <Step title="Take action">
+    Use the returned score to approve, flag for manual review, or auto-reject the transaction.
+  </Step>
+</Steps>
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Real-Time Scoring" icon="bolt">
+    Fraud scores are computed instantly, enabling immediate action on suspicious transactions.
+  </Card>
+  <Card title="Spending Pattern Analysis" icon="chart-bar">
+    Detects anomalies by comparing each transaction against historical spending behaviour.
+  </Card>
+  <Card title="Location Intelligence" icon="location-dot">
+    Flags transactions from unusual or high-risk locations.
+  </Card>
+  <Card title="Flexible Action Thresholds" icon="sliders">
+    Configure score thresholds to match your risk tolerance and approval workflow.
+  </Card>
+</CardGroup>
+
+## Endpoints
+
+| Endpoint | Description |
+|----------|-------------|
+| [Post Fraud Request](/v3/transaction/card_transaction/post_fraud_request) | Submit a card transaction for real-time fraud assessment |

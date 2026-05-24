@@ -1,53 +1,76 @@
 ---
-title: Introduction
-description: 'Welcome to the Smartcomply developer documentation'
+title: "Introduction"
+description: "Adhere by Smartcomply — identity verification, fraud detection, transaction monitoring, and credit data across Africa."
 ---
+
+<img
+  src="/images/mintify-image.png"
+  alt="Adhere by Smartcomply"
+  style={{ width: '100%', maxWidth: '860px', borderRadius: '12px' }}
+/>
+
+## What is Adhere?
+
+**Adhere** is Smartcomply's developer API — a single integration that gives you access to identity verification, fraud detection, transaction monitoring, and credit reporting across Africa.
+
+Whether you're onboarding customers, assessing loan applications, or screening transactions in real time, Adhere provides the compliance infrastructure you need to build with confidence.
+
+**Currently supported countries:** Nigeria, Ghana, Kenya, Rwanda, and Uganda.
+
+## What You Can Build
+
+<CardGroup cols={2}>
+  <Card title="KYC & Identity Verification" icon="id-card" href="/v3/kyc/nigeria/BVN">
+    Verify customer identities using BVN, NIN, national IDs, passports, driver's licenses, and more — across Nigeria, Kenya, Ghana, Rwanda, and Uganda.
+  </Card>
+  <Card title="Fraud & Transaction Monitoring" icon="shield-halved" href="/v3/transaction/transaction_monitoring/transaction_monitoring_overview">
+    Score transactions in real time, screen against global sanctions lists, detect card fraud, and monitor user behaviour with AML checks and configurable alert thresholds.
+  </Card>
+  <Card title="Credit Reports" icon="chart-line" href="/v3/credit/individual/First_Central_Credit_Summary">
+    Pull individual and business credit histories from CRC, First Central, and Credit Registry — including full reports, scores, and history summaries.
+  </Card>
+  <Card title="Loan Fraud Check" icon="money-bill-wave" href="/v3/loan/introduction">
+    Assess individual and business loan applications using AI-driven fraud scoring, real-time credit bureau data, and financial analysis.
+  </Card>
+</CardGroup>
+
+## Onboarding Suite
+
+The Adhere Onboarding Suite lets you verify customer identities at every step — from document checks and biometric matching to address verification and credit screening — all from a single API.
 
 <img
   className="block dark:hidden"
   src="/images/kyc.png"
-  alt="Hero Light"
+  alt="Adhere Onboarding Suite"
 />
 <img
   className="hidden dark:block"
   src="/images/kyc-image.png"
-  alt="Hero Dark"
+  alt="Adhere Onboarding Suite"
 />
 
-Smartcomply's developer documentation is concise and tailored to get you up and running in less than 15 minutes. We guide you through the essential tools needed to make your Smartcomply integration seamless.
-<p>Smartcomply offers modern financial infrastructure for internet companies and developers across Africa, enabling access to financial data, issuing virtual bank accounts and payment debit cards, and collecting payments directly from bank accounts.
-Our API offers robust capabilities to calculate and generate fraud probabilities for transactions and also monitor and report transactions, empowering you to detect and mitigate fraudulent activities effectively.</p>
-<p>The Smartcomply API provides an interactive and easy-to-use structure that helps developers get started conveniently.
-Smartcomply is currently available in Nigeria, Ghana, and Kenya. However, the team is working to expand its services to other countries.</p>
+## Quick Links
 
-<h3>Smartcomply Products:</h3>
+<CardGroup cols={3}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Make your first API call in under 5 minutes.
+  </Card>
+  <Card title="Authentication" icon="key" href="/authentication">
+    How to authenticate your requests.
+  </Card>
+  <Card title="Error Codes" icon="triangle-exclamation" href="/error_codes">
+    Understand API error responses.
+  </Card>
+</CardGroup>
 
-<h4>KYC</h4>
+## Base URL
 
-<p>Smartcomply KYC enables you to know your customers and reduce fraud by validating their BVN, NIN, phone numbers, CAC, emails, IDs, OCR for facial recognition,
- and more. It utilizes various data points and verification techniques to easily identify and verify customers,
- supported by a highly responsive AI system that captures customer biodata.</p>
-<h4>Connect</h4>
-<p>Connect to your customers and gain deeper insights by accessing their financial data, including full bank statements, income, real-time transactions, balances, and more. Connect provides secure access to high-quality, well-organized, and detailed user financial data.</p>
+All API requests use the following base URL:
 
-<h4>Direct Debit</h4>
-Gain direct access to your customers' individual banks to receive and send payments with ease, without any rigorous processes. The Smartcomply Direct Debit API allows third parties to connect with other banks or financial institutions to facilitate easy payments. Direct Debit also provides a universal card that consolidates all your accounts into one card, simplifying transactions anywhere, anytime.
+```
+https://adhere-api.smartcomply.com
+```
 
-## KYC/AML
+## Support
 
-The AML/KYC (Anti-Money Laundering / Know Your Customer) API is designed to help organizations comply with regulatory requirements by automating the processes of identity verification, risk assessment,
-and ongoing monitoring of customers. The API integrates with various databases and services to perform checks against global watchlists, verify identities, assess risk levels, and ensure that transactions are compliant with financial regulations.
-
-## Fraud and Transaction monitoring
-The Fraud Transaction Monitoring API harnesses the power of advanced technologies such as machine learning and data analytics to provide accurate fraud detection solutions.
-By analyzing transaction patterns and user behaviors, our API calculates a fraud percentage, enabling you to make informed decisions and take proactive measures to safeguard your users and business.
-
-## Loan Fraud Check
-The Loan Fraud Check API leverages advanced analytics and real-time credit data to assess the fraud risk associated with loan applications. By integrating external credit reports with comprehensive applicant profiles, the API calculates a detailed fraud risk score to guide your lending decisions. This powerful tool helps financial institutions proactively identify suspicious applications, mitigate risk and make informed, data-driven approval decisions.
-<h4> Why Smartcomply? </h4>
-Smartcomply offers premium open banking services that enhance customer journeys while simplifying your processes as a service provider. We achieve this through:
-High-performance, developer-friendly API systems that make app integration easy.
-<p>An improved identity management system, with unique codes for every customer, ensuring easy identification.
-Highly encrypted financial data on Smartcomply that is inaccessible to unauthorized third parties. Smartcomply adheres strictly to the Open Banking Regulatory Framework in Nigeria and other parts of Africa, keeping your organization legally compliant.</p>
-
-
+Reach us at [adhere@smartcomply.com](mailto:adhere@smartcomply.com) or explore the [Postman collection](https://documenter.getpostman.com/view/55164637/2sBXwjxET7).

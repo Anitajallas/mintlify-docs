@@ -1,0 +1,38 @@
+---
+title: "Transaction Screening"
+sidebarTitle: "Overview"
+description: "Screen transactions in real time against sanctions lists, high-risk countries, and suspicious keywords."
+---
+
+Transaction Screening evaluates each transaction against a set of predefined criteria to identify potentially suspicious or prohibited activity. It cross-checks transactions for sanctions exposure, high-risk geography, and suspicious keyword patterns to help you maintain regulatory compliance and prevent financial crime.
+
+## Screening Criteria
+
+| Criteria | Description |
+|----------|-------------|
+| **Sanctioned Entities** | Transactions involving individuals or organisations on international sanction lists |
+| **High-Risk Countries** | Transactions associated with jurisdictions flagged as high-risk |
+| **Suspicious Keywords** | Transaction descriptions containing keywords that may indicate fraudulent or illicit behaviour |
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Real-Time Screening" icon="bolt">
+    Transactions are analyzed immediately upon initiation, enabling prompt detection of flagged activity.
+  </Card>
+  <Card title="Customizable Criteria" icon="sliders">
+    Tailor screening rules to your business requirements, risk tolerance, and regulatory obligations.
+  </Card>
+  <Card title="Alerts & Notifications" icon="bell">
+    Receive alerts when transactions trigger one or more screening criteria for swift review.
+  </Card>
+  <Card title="Audit Trail" icon="file-lines">
+    Every screening decision is logged, providing a full audit trail for compliance reporting.
+  </Card>
+</CardGroup>
+
+## Endpoints
+
+| Endpoint | Description |
+|----------|-------------|
+| [Post Transaction Screening](/v3/transaction/transaction_screening/post_transaction_screening) | Submit a transaction for screening |

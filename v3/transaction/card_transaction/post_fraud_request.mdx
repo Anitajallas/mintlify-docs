@@ -1,0 +1,125 @@
+---
+title: "Card Fraud Detection"
+sidebarTitle: "Card Fraud Check"
+description: "Submit a card transaction for real-time fraud scoring based on your configured thresholds and limits."
+openapi: "POST /api/v1/monitoring/transaction_monitoring/"
+---
+
+The Card Fraud Detection endpoint evaluates a card transaction in real-time, computing a fraud score using your configured thresholds and limits. All fields are required. Use a unique `transaction_id` for each request to ensure accurate tracking.
+
+## Endpoint
+
+```
+POST /api/v1/monitoring/transaction_monitoring/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `transaction_id` | string | Yes | Unique identifier for the transaction |
+| `amount` | number | Yes | Transaction amount |
+| `currency` | string | Yes | Currency code (e.g., `NGN`, `USD`) |
+| `transaction_type` | string | Yes | Transaction type (e.g., `card`) |
+| `timestamp` | string | Yes | ISO-8601 datetime of the transaction |
+| `card_details` | object | Yes | Details of the card used |
+| `card_details.bin` | string | Yes | First six digits of the card number (BIN) |
+| `card_details.last4` | string | Yes | Last four digits of the card number |
+| `merchant_details` | object | Yes | Merchant details |
+| `merchant_details.merchant_name` | string | Yes | Name of the merchant |
+| `merchant_details.merchant_location` | string | Yes | Location of the merchant |
+| `customer_details` | object | Yes | Customer details |
+| `customer_details.customer_name` | string | Yes | Customer's full name |
+| `customer_details.customer_email` | string | Yes | Customer's email address |
+| `customer_details.customer_phone` | string | Yes | Customer's phone number with country code |
+| `customer_details.bvn` | string | Yes | Customer's Bank Verification Number |
+| `additional_info` | object | Yes | Additional context for fraud evaluation |
+| `additional_info.ip_address` | string | Yes | IP address during the transaction |
+| `additional_info.country_code` | string | Yes | Country code (e.g., `234`) |
+| `additional_info.location` | string | Yes | Customer location (e.g., `Lagos, Nigeria`) |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/v1/monitoring/transaction_monitoring/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "transaction_id": "12345678",
+    "amount": 300000,
+    "currency": "NGN",
+    "transaction_type": "card",
+    "timestamp": "2025-08-23T14:30:00Z",
+    "card_details": {
+      "bin": "345676",
+      "last4": "9809"
+    },
+    "merchant_details": {
+      "merchant_name": "ABC Stores",
+      "merchant_location": "Lagos, Nigeria"
+    },
+    "customer_details": {
+      "customer_name": "John Doe",
+      "customer_email": "john.doe@example.com",
+      "customer_phone": "+2347012345678",
+      "bvn": "1234567890"
+    },
+    "additional_info": {
+      "ip_address": "102.89.1.1",
+      "country_code": "234",
+      "location": "Lagos, Nigeria"
+    }
+  }'
+```
+</CodeGroup>
+
+## Response
+
+### 201 Created
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.activity_code` | string | Fraud activity code (see [activity codes](/v3/transaction/card_transaction/card_transaction_overview)) |
+| `data.status` | string | Transaction status: `"clean"` or `"suspicious"` |
+| `data.comment` | array | List of triggered fraud rules, if any |
+
+```json
+{
+  "status": "Success",
+  "data": {
+    "activity_code": "200",
+    "status": "clean",
+    "comment": []
+  },
+  "message": "Transaction was successfully processed"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

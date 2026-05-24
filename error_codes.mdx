@@ -1,18 +1,88 @@
+---
+title: "Error Codes"
+description: "HTTP status codes and error responses returned by the Smartcomply API."
+---
 
-Smartcomply uses conventional HTTP response codes to indicate the success or failure of an API request. In general:
+The Adhere API uses standard HTTP status codes. Codes in the `2xx` range indicate success; `4xx` codes indicate a client error; `5xx` codes indicate a server-side issue.
 
-- Codes in the `2xx` range indicate success.
-- Codes in the `4xx` range indicate an error that failed.
+## HTTP Status Codes
 
-| **HTTP Code** | **Error**       | **Description**                                                                 |
-|---------------|-----------------|---------------------------------------------------------------------------------|
-| **400**       | Bad Request     | The request was unacceptable, often due to:                                      |
-|               |                 | 1. Missing a required parameter.                                                 |
-|               |                 | 2. Not having the required key.                                                  |
-| **401**       | Unauthenticated | The user has not been authenticated.                                             |
-| **403**       | Unauthorized    | The user does not have privileges to perform the request.                        |
-| **404**       | Not Found       | The requested resource does not exist.                                           |
-| **Custom**    | Custom Error    | 1. Public key not provided.                                                      |
-|               |                 | 2. Conflicts of information.                                                     |
-| **500, 502, 503, 504** | Server Errors | Something went wrong on Smartcomply's end. (These are rare.)                    |
-| **200**       | OK              | Everything worked as expected.
+| Code | Name | Description |
+|------|------|-------------|
+| `200` | OK | The request succeeded and data is returned in the response body. |
+| `400` | Bad Request | The request was malformed — a required parameter is missing, the value is invalid, or the request body is not valid JSON. |
+| `401` | Unauthenticated | The `x-access-token` header is missing or the key is invalid. |
+| `403` | Forbidden | The API key is valid but does not have permission to access this endpoint. |
+| `404` | Not Found | The requested resource does not exist. |
+| `422` | Unprocessable Entity | The request was well-formed but the data failed validation (e.g., an ID number that doesn't match the expected format). |
+| `500` | Internal Server Error | An unexpected error occurred on Smartcomply's end. |
+| `502` | Bad Gateway | A dependent upstream service is temporarily unavailable. |
+| `503` | Service Unavailable | The API is temporarily offline for maintenance. |
+| `504` | Gateway Timeout | The upstream service did not respond in time. |
+
+## Error Response Format
+
+All error responses follow this structure:
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "A human-readable description of the error"
+}
+```
+
+## Common Error Scenarios
+
+<AccordionGroup>
+  <Accordion title="401 — Missing or invalid API key">
+    Ensure the `x-access-token` header is present and contains a valid, active secret key. Keys can be regenerated from the Adhere dashboard under **Settings → API Keys**.
+
+    ```json
+    {
+      "status": "failed",
+      "message": "Authentication credentials were not provided."
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="400 — Missing required parameter">
+    Check the request body against the endpoint's parameter table. All required fields must be present and non-empty.
+
+    ```json
+    {
+      "status": "failed",
+      "data": [],
+      "message": "This field is required."
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="400 — Record not found">
+    The provided ID (BVN, NIN, etc.) could not be matched in the source database. Verify the number is correct and belongs to a real record.
+
+    ```json
+    {
+      "status": "failed",
+      "data": [],
+      "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="5xx — Server errors">
+    These are rare and typically transient. Implement exponential back-off retry logic in your integration. If a `5xx` error persists for more than a few minutes, contact [support](mailto:adhere@smartcomply.com).
+  </Accordion>
+</AccordionGroup>
+
+## Retrying Requests
+
+For `5xx` errors and network timeouts, retry with exponential back-off:
+
+| Attempt | Wait before retry |
+|---------|------------------|
+| 1st retry | 1 second |
+| 2nd retry | 2 seconds |
+| 3rd retry | 4 seconds |
+
+Do **not** retry `4xx` errors — they indicate a problem with the request itself that must be fixed before retrying.

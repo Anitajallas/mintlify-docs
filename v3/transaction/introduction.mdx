@@ -1,0 +1,36 @@
+---
+title: "Fraud & Transaction Monitoring — Overview"
+sidebarTitle: "Overview"
+description: "Detect and mitigate fraud in real time using transaction monitoring, screening, and KYC checks."
+---
+
+The Fraud and Transaction Monitoring API provides tools to compute fraud probabilities, screen transactions against compliance lists, and monitor user behaviour across your platform. It combines machine learning, data analytics, and sanctions intelligence to help you detect and act on suspicious activity before it causes harm.
+
+<CardGroup cols={2}>
+  <Card title="Transaction Monitoring" icon="chart-line">
+    Submit transactions for real-time fraud scoring against your configured limits and thresholds.
+  </Card>
+  <Card title="Transaction Screening" icon="shield-check">
+    Screen sender and receiver names against global sanctions lists and high-risk country databases.
+  </Card>
+  <Card title="Card Fraud Detection" icon="credit-card">
+    Evaluate card transactions using BIN data, merchant context, and customer profiles.
+  </Card>
+  <Card title="KYC Checks" icon="user-check">
+    Screen entities against PEP lists, sanctions databases, and adverse media sources.
+  </Card>
+</CardGroup>
+
+## How It Works
+
+<Steps>
+  <Step title="Configure Limits and Thresholds">
+    Set the maximum transaction amount and the fraud score threshold that triggers alerts using the [Set Limit](/v3/transaction/limit/Post_Set_Limit) and [Set Threshold](/v3/transaction/threshold/Post_Set_Threshold) endpoints.
+  </Step>
+  <Step title="Submit Transactions">
+    Send each transaction to the monitoring or screening endpoint. The API evaluates the transaction in real time and returns an activity code and status.
+  </Step>
+  <Step title="Review Results">
+    Transactions that trigger rules receive a suspicious activity code (450–457). Clean transactions receive a safe code (200–221). Review flagged transactions in your dashboard or via the KYC search endpoints.
+  </Step>
+</Steps>

@@ -1,0 +1,185 @@
+---
+title: "Run KYC Check"
+sidebarTitle: "Run KYC Check"
+description: "Initiate a KYC check for an entity against sanctions lists, PEP databases, and adverse media sources."
+openapi: "POST /api/v1/monitoring/kyc_search/"
+---
+
+The Run KYC Check endpoint screens an entity against multiple risk databases including sanctions lists, PEP (Politically Exposed Persons) records, and adverse media sources. Results are returned immediately for completed checks, or asynchronously if adverse media screening is still processing.
+
+## Endpoint
+
+```
+POST /api/v1/monitoring/kyc_search/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `entity_name` | string | Yes | Name of the entity to screen |
+| `entity_type` | string | No | Entity type: `"person"`, `"company"`, `"business"`, or `"organization"` |
+| `sources` | string | No | Comma-separated data sources to query (e.g., `"Sanctions, PEPs"`) |
+| `continuous_monitoring` | boolean | No | Enable ongoing monitoring for this entity. Defaults to `false` |
+| `branch` | integer | No | Branch ID to associate with this check |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/v1/monitoring/kyc_search/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "entity_name": "John Doe",
+    "entity_type": "person",
+    "sources": "Sanctions, PEPs",
+    "continuous_monitoring": false,
+    "branch": 2
+  }'
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK — Completed
+
+When results are immediately available, the response includes the full KYC result with risk level, PEP findings, sanctions matches, adverse media, and social media profiles.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.id` | number | Unique identifier for this KYC request |
+| `data.entity_name` | string | Name of the entity screened |
+| `data.branch_id` | number | Associated branch ID |
+| `data.status` | string | Check status: `"completed"` or `"running"` |
+| `data.result.risk_level` | string | Assessed risk: `"low"`, `"medium"`, or `"high"` |
+| `data.result.total_hits` | number | Total flagged matches across all sources |
+| `data.result.total_blacklist_hits` | number | Number of blacklist matches |
+| `data.result.pep_results` | array | PEP matches with entity name, country, and classification |
+| `data.result.sanction_results` | array | Sanction matches with body, types, and other information |
+| `data.result.adverse_media_results` | array | Adverse media articles with URL, date, title, and category |
+| `data.result.social_media` | array | Social media profiles associated with the entity |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "id": 6036,
+    "entity_name": "Qudratullah Jamal",
+    "branch_id": 2,
+    "status": "completed",
+    "result": {
+      "risk_level": "high",
+      "total_hits": 76,
+      "total_blacklist_hits": 6,
+      "pep_results": [
+        {
+          "entity_name": "qudratullah jamal",
+          "gender": "Not Available",
+          "country": "Unknown",
+          "pep_types": ["pep-class-1"],
+          "other_names": ["qudratullah jamal"],
+          "other_information": {
+            "recorded_date": "2022-04-27T18:12:14",
+            "political_post": ["sanction"]
+          }
+        }
+      ],
+      "sanction_results": [
+        {
+          "entity_name": "QUDRATULLAH JAMAL",
+          "recorded_date": "29 Nov. 2011",
+          "country": "Afghanistan",
+          "sanction_body": null,
+          "sanction_types": ["sanction", "warnings"],
+          "other_names": [],
+          "other_information": {
+            "dob": "Approximately 1963",
+            "pob": "Gardez, Paktia Province, Afghanistan",
+            "title": "Maulavi",
+            "designations": "Minister of Information under the Taliban regime"
+          }
+        }
+      ],
+      "adverse_media_results": [
+        {
+          "url": "https://www.opensanctions.org/entities/NK-a8GaVuetYPU5ZaoT48kMch/",
+          "date": "2026-03-06T12:58:26Z",
+          "title": "Maulavi Qudratullah Jamal - OpenSanctions",
+          "types": ["adverse-media-v2-terrorism"],
+          "relevance_score": 4
+        }
+      ],
+      "social_media": [
+        {
+          "bio": "TOLOnews - X",
+          "url": "https://x.com/TOLOnews/status/1510158383004930052",
+          "platform": "X",
+          "description": "Addressing a gathering in Kabul, the deputy minister of commerce and industry, Qudratullah Jamal..."
+        }
+      ],
+      "search_term": "Qudratullah Jamal",
+      "date_updated": "2026-03-06 12:58:30"
+    }
+  },
+  "message": "KYC search queued"
+}
+```
+
+### 200 OK — In Progress
+
+When adverse media screening is still processing, a partial result is returned immediately.
+
+```json
+{
+  "status": "Success",
+  "data": {
+    "id": 289,
+    "pep_result": [
+      {
+        "entity_name": "ibrahim babangida adamu",
+        "gender": "Not Available",
+        "country": "Nigeria",
+        "pep_types": ["pep-class-1"],
+        "other_names": ["ibrahim babangida adamu"],
+        "other_information": {
+          "recorded_date": "2023-11-23T15:52:24",
+          "political_post": ["role.pep"]
+        }
+      }
+    ],
+    "sanction_result": null,
+    "search_term": "Babangida Adamu",
+    "adverse_media_result": "Your Adverse media check for Babangida Adamu has commenced. You will be notified as soon as the results are available."
+  },
+  "message": "Success"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

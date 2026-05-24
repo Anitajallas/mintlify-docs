@@ -1,0 +1,108 @@
+---
+title: "Phone Number Advanced"
+sidebarTitle: "Phone Number Advanced"
+description: "Retrieve full NIN profile data linked to any phone number registered against an identity."
+openapi: "POST /api/onboarding/nigeria_kyc/phone_no_advanced/"
+---
+
+The Phone Number Advanced endpoint returns a full NIN identity profile associated with a given phone number, including numbers beyond the primary registration. Use this when you need to verify additional phone numbers linked to a customer's NIN.
+
+<Note>
+  For the primary phone number registered to an NIN, use [Phone Number Basic](/v3/kyc/nigeria/phone_number_basic) — it is faster and returns core identity fields.
+</Note>
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/phone_no_advanced/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `phone_number` | string | Yes | The customer's phone number (Nigerian format, e.g., `09011001100`) |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/phone_no_advanced/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"phone_number": "09011001100"}'
+```
+
+```python Python
+import requests
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/phone_no_advanced/",
+    headers={"x-access-token": "YOUR_SECRET_KEY", "Content-Type": "application/json"},
+    json={"phone_number": "09011001100"},
+)
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.nin` | string | NIN linked to the phone number |
+| `data.surname` | string | Last name |
+| `data.firstname` | string | First name |
+| `data.middlename` | string | Middle name |
+| `data.gender` | string | Gender (`"M"` or `"F"`) |
+| `data.birthdate` | string | Date of birth |
+| `data.telephoneno` | string | Phone number |
+| `data.residence_address` | string | Residential address |
+| `data.residence_state` | string | State of residence |
+| `data.residence_lga` | string | LGA of residence |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "nin": "384748493020",
+    "surname": "JOHN",
+    "firstname": "DOE",
+    "middlename": "MID",
+    "gender": "F",
+    "birthdate": "1 JAN 2000",
+    "telephoneno": "09011001100",
+    "residence_address": "",
+    "residence_state": "",
+    "residence_lga": ""
+  },
+  "message": "Phone Number details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

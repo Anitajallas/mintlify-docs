@@ -1,0 +1,91 @@
+---
+title: "NUBAN Advanced"
+sidebarTitle: "NUBAN Advanced"
+description: "Retrieve enhanced account verification data including account name, bank, and identity details."
+openapi: "POST /api/onboarding/nigeria_kyc/nuban_advanced/"
+---
+
+The NUBAN Advanced endpoint provides a more comprehensive view of a bank account compared to the standard NUBAN check, returning additional identity data linked to the account.
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/nuban_advanced/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `account_number` | string | Yes | The 10-digit NUBAN account number |
+| `bank_code` | string | Yes | The bank code (see [NUBAN bank codes](/v3/kyc/nigeria/nuban#bank-codes-reference)) |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/nuban_advanced/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"account_number": "0768540312", "bank_code": "035"}'
+```
+
+```python Python
+import requests
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/nuban_advanced/",
+    headers={"x-access-token": "YOUR_SECRET_KEY", "Content-Type": "application/json"},
+    json={"account_number": "0768540312", "bank_code": "035"},
+)
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.bank_id` | integer | Internal bank identifier |
+| `data.account_name` | string | Registered account holder name |
+| `data.account_number` | string | Account number that was queried |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "bank_id": 11,
+    "account_name": "STEPHEN BADMUS",
+    "account_number": "0768540312"
+  },
+  "message": "Nuban details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Account Number and Bank Code are required"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

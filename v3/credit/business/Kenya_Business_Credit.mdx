@@ -1,0 +1,71 @@
+---
+title: "Kenya Business Credit Report"
+sidebarTitle: "Kenya Credit Report"
+description: "Retrieve a company's credit report in Kenya using their business registration number."
+openapi: "POST /api/onboarding/kenya/company_credit/"
+---
+
+The Kenya Business Credit Report endpoint provides a comprehensive record of a company's credit-related activities in Kenya, including loan accounts, payment timelines, credit utilization, and delinquency status.
+
+## Endpoint
+
+```
+POST /api/onboarding/kenya/company_credit/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `registration_number` | string | Yes | The Kenya business registration number (e.g. `PVT-ABC123`) |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/kenya/company_credit/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"registration_number": "PVT-ABC123"}'
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+```json
+{
+  "status": "success",
+  "data": {},
+  "message": "Kenya Company Credit Report retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

@@ -1,0 +1,64 @@
+---
+title: "Get Transaction Limit"
+sidebarTitle: "Get Limit"
+description: "Retrieve the current maximum transaction amount allowed before a fraud alert is triggered."
+openapi: "GET /api/v1/monitoring/limit"
+---
+
+The Get Transaction Limit endpoint returns the configured upper bound for transaction amounts. Transactions exceeding this limit may be flagged or declined automatically.
+
+## Endpoint
+
+```
+GET /api/v1/monitoring/limit
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X GET "https://adhere-api.smartcomply.com/api/v1/monitoring/limit" \
+  -H "x-access-token: YOUR_SECRET_KEY"
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `limit` | number | The current maximum allowable transaction amount |
+
+```json
+{
+  "limit": 200000
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "The limit information cannot be retrieved"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

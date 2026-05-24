@@ -1,0 +1,126 @@
+---
+title: "Face Comparison"
+sidebarTitle: "Face Comparison"
+description: "Compare two face images to determine whether they belong to the same person."
+openapi: "POST /api/onboarding/biometrics/face/comparison"
+---
+
+The Face Comparison endpoint uses biometric analysis to compare two face images and returns a confidence score indicating whether they depict the same individual. Use this for identity verification during onboarding or transaction approval.
+
+## Endpoint
+
+```
+POST /api/onboarding/biometrics/face/comparison
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `image_one` | string | Yes | URL or base64-encoded string of the first face image |
+| `image_two` | string | Yes | URL or base64-encoded string of the second face image |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/biometrics/face/comparison" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "image_one": "https://example.com/photo1.jpg",
+    "image_two": "https://example.com/photo2.jpg"
+  }'
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://adhere-api.smartcomply.com/api/onboarding/biometrics/face/comparison",
+  {
+    method: "POST",
+    headers: {
+      "x-access-token": "YOUR_SECRET_KEY",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      image_one: "https://example.com/photo1.jpg",
+      image_two: "https://example.com/photo2.jpg",
+    }),
+  }
+);
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/biometrics/face/comparison",
+    headers={
+        "x-access-token": "YOUR_SECRET_KEY",
+        "Content-Type": "application/json",
+    },
+    json={
+        "image_one": "https://example.com/photo1.jpg",
+        "image_two": "https://example.com/photo2.jpg",
+    },
+)
+data = response.json()
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.status` | boolean | `true` if the faces match, `false` if they do not |
+| `data.response_code` | string | `"00"` indicates a successful comparison |
+| `data.message` | string | Human-readable match result |
+| `data.confidence` | integer | Match confidence percentage (0–100) |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "status": true,
+    "response_code": "00",
+    "message": "Face Match",
+    "confidence": 100
+  },
+  "message": "Face comparison completed successfully"
+}
+```
+
+A `data.status` of `false` indicates the faces do not match. Use `data.confidence` to apply your own threshold for acceptance (e.g., require `>= 80` for a positive match).
+
+### 400 Bad Request
+
+Returned when one or both image URLs are missing, inaccessible, or do not contain a detectable face.
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Could not process one or both images"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

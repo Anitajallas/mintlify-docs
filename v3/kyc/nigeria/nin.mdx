@@ -1,0 +1,164 @@
+---
+title: "National Identity Number (NIN)"
+sidebarTitle: "NIN"
+description: "Verify a customer's identity using their 11-digit National Identification Number."
+openapi: "POST /api/onboarding/nigeria_kyc/nin/"
+---
+
+The NIN endpoint retrieves a customer's verified identity data from the National Identity Management Commission (NIMC) database. It returns comprehensive personal details including biographic data, next-of-kin information, and a customer photo.
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/nin/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `identification_number` | string | Yes | The customer's 11-digit National Identification Number |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/nin/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"identification_number": "70123456789"}'
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/nin/",
+  {
+    method: "POST",
+    headers: {
+      "x-access-token": "YOUR_SECRET_KEY",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ identification_number: "70123456789" }),
+  }
+);
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/nin/",
+    headers={
+        "x-access-token": "YOUR_SECRET_KEY",
+        "Content-Type": "application/json",
+    },
+    json={"identification_number": "70123456789"},
+)
+data = response.json()
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.nin` | string | The NIN that was queried |
+| `data.firstName` | string | First name |
+| `data.middleName` | string | Middle name |
+| `data.lastName` | string | Surname |
+| `data.gender` | string | `"male"` or `"female"` |
+| `data.dateOfBirth` | string | Date of birth in `YYYY-MM-DD` format |
+| `data.birthState` | string | State of birth |
+| `data.birthLga` | string | LGA of birth |
+| `data.telephoneNo` | string | Registered phone number |
+| `data.email` | string \| null | Email address (if available) |
+| `data.residenceAddress` | string | Current residential address |
+| `data.residenceState` | string | State of residence |
+| `data.residenceLga` | string | LGA of residence |
+| `data.residenceTown` | string | Town of residence |
+| `data.maritalStatus` | string | e.g., `"single"`, `"married"`, `"separated"` |
+| `data.educationalLevel` | string | Highest education level |
+| `data.employmentStatus` | string | e.g., `"employed"`, `"unemployed"` |
+| `data.religion` | string | Religion |
+| `data.spokenLanguage` | string | Primary spoken language |
+| `data.height` | string | Height in centimetres |
+| `data.profession` | string | Stated profession |
+| `data.nokFirstname` | string | Next-of-kin first name |
+| `data.nokSurname` | string | Next-of-kin surname |
+| `data.nokAddress1` | string | Next-of-kin address |
+| `data.nokState` | string | Next-of-kin state |
+| `data.nokLga` | string | Next-of-kin LGA |
+| `data.image` | string | Base64-encoded JPEG of the customer's photo |
+| `data.trackingId` | string | NIMC tracking reference |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "title": "mr",
+    "lastName": "DOE",
+    "firstName": "JOHN",
+    "middleName": "JOSEPH",
+    "gender": "male",
+    "dateOfBirth": "2000-10-21",
+    "birthLga": "Olamaboro",
+    "birthState": "Kogi",
+    "centralID": "",
+    "educationalLevel": "secondary",
+    "email": null,
+    "nin": "12345678901",
+    "employmentStatus": "unemployed",
+    "height": "180",
+    "maritalStatus": "separated",
+    "religion": "christianity",
+    "telephoneNo": "08050003000",
+    "residenceAddress": "MR SNUFUSS'S HOUSE SNUFUSS STREET PHASE 3",
+    "residenceLga": "Gwagwalada",
+    "residenceState": "FCT Abuja",
+    "residenceTown": "GWAGWALADA",
+    "nokFirstname": "JOHN",
+    "nokSurname": "DOE",
+    "nokAddress1": "NO 6 ADUM ROAD OGUGU CENTRE",
+    "nokState": "Kogi",
+    "nokLga": "Olamaboro",
+    "profession": "STUDENT",
+    "spokenLanguage": "IGALA",
+    "trackingId": "S2R0NYFO01113TR",
+    "image": "<base64-encoded-jpeg>"
+  },
+  "message": "National Identification Number details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+Returned when the NIN is missing, malformed, or not found.
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

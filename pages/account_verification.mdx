@@ -1,17 +1,68 @@
-# Top-Notch Authentication Procedures
+---
+title: "Account & Identity Verification"
+sidebarTitle: "Account Verification"
+description: "How to use Adhere to verify customer identities and bank accounts at onboarding."
+---
 
-## Faster Onboarding & KYC Process
+Verifying that a customer is who they claim to be — and that the bank account they provide is theirs — is the foundation of safe onboarding. Adhere gives you the tools to do this digitally, in seconds, without asking for paper documents.
 
-Make onboarding fast and effortless. Never ask for paper documents again. Auth retrieves account information instantly when users connect their account using login credentials.
+## Confirm Identity Before Onboarding
 
-## Reduce Fraudulent Sign-Ups
+Use Nigeria's BVN or NIN to instantly confirm a customer's name, date of birth, and phone number against the central identity database. For Kenya, Ghana, Rwanda, and Uganda, verify against national ID and passport records.
 
-Automatically confirm users' identities with what's on file at the bank: their name, phone number, BVN, address, and email.
+<CardGroup cols={2}>
+  <Card title="BVN Verification" icon="id-card" href="/v3/kyc/nigeria/BVN">
+    Verify an 11-digit Bank Verification Number and return the holder's full name, phone, and date of birth.
+  </Card>
+  <Card title="NIN Verification" icon="fingerprint" href="/v3/kyc/nigeria/nin">
+    Confirm identity against Nigeria's National Identity Number database.
+  </Card>
+  <Card title="Kenya National ID" icon="id-badge" href="/v3/kyc/kenya/national_id_basic">
+    Verify Kenyan customers using their national ID number.
+  </Card>
+  <Card title="Ghana ID Card" icon="id-badge" href="/v3/kyc/ghana/ID_Card">
+    Verify Ghana Card, Passport, Voter ID, SSNIT, or Driver's License numbers.
+  </Card>
+</CardGroup>
 
-## Reduce Drop-Off
+## Verify the Bank Account Belongs to Them
 
-By making it easier—and quicker—for customers to sign up and start using your service, you increase the chances of them successfully completing the process.
+Before disbursing funds or setting up a direct debit, confirm that the account number the customer provided is linked to their identity.
 
-## Seamless User Experience
+<Card title="NUBAN Verification" icon="building-columns" href="/v3/kyc/nigeria/nuban">
+  Look up any Nigerian bank account number and return the account holder's name — so you can confirm it matches your customer's identity before processing any payment.
+</Card>
 
-Instantly check whether users have the funds to make a successful payment and increase your account funding rate with a seamless account and balance check.
+## Add a Biometric Layer
+
+For higher-risk onboarding flows, add a liveness check or face match to confirm the person presenting the ID is physically present.
+
+<CardGroup cols={2}>
+  <Card title="Face Comparison" icon="camera" href="/v3/biometrics/face_comparism">
+    Compare a selfie against a reference image to confirm the same person.
+  </Card>
+  <Card title="Face Liveness" icon="eye" href="/v3/biometrics/face_liveliness">
+    Detect whether the face in a submitted image is live, not a photo or video replay.
+  </Card>
+</CardGroup>
+
+## Reduce Drop-Off Without Sacrificing Compliance
+
+Because every check returns a result in real time, your onboarding flow stays fast. Customers verify in the same session — no manual review queues, no document uploads, no back-and-forth.
+
+A typical verified onboarding flow looks like this:
+
+<Steps>
+  <Step title="Collect identity details">
+    Ask the customer for their BVN, NIN, or national ID number — no document scan needed.
+  </Step>
+  <Step title="Run the KYC check">
+    Call the relevant Adhere endpoint. The response returns verified name, date of birth, and phone number within seconds.
+  </Step>
+  <Step title="Verify their bank account">
+    Call NUBAN verification to confirm the account number matches the verified name.
+  </Step>
+  <Step title="Optional: add biometrics">
+    For regulated or high-value flows, add a face liveness or comparison check before approval.
+  </Step>
+</Steps>

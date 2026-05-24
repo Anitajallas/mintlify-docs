@@ -1,0 +1,84 @@
+---
+title: "Physical Address Confirmation"
+sidebarTitle: "Physical Addr. Confirm"
+description: "Retrieve the result of a previously submitted physical address verification using its identity check ID."
+openapi: "POST /api/onboarding/nigeria_kyc/physical_address_verification_confirmation/"
+---
+
+The Physical Address Confirmation endpoint retrieves the final status of a physical address verification. Pass the `identity_check_id` returned from either the [Physical Address (Lagos)](/v3/kyc/nigeria/Physical_Address_Verification_Lagos) or [Physical Address (Other States)](/v3/kyc/nigeria/Physical_Address_Verification_Other) endpoint.
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/physical_address_verification_confirmation/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `identity_check_id` | integer | Yes | The ID returned from the physical address verification endpoint |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/physical_address_verification_confirmation/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"identity_check_id": 2}'
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.status` | string | Final verification status (`"completed"`, `"pending"`, `"failed"`) |
+| `data.street` | string | Verified street address |
+| `data.city` | string | Verified city |
+| `data.lga` | string | Verified LGA |
+| `data.state` | string | Verified state |
+| `data.first_name` | string | Customer's first name |
+| `data.last_name` | string | Customer's last name |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "status": "completed",
+    "city": "oshodi",
+    "lga": "lagos mainland",
+    "landmark": "lagos",
+    "street": "270 Murtala Muhammed Way, Alagomeji. Yaba",
+    "first_name": "John",
+    "last_name": "Doe",
+    "birth_date": "17/01/1988",
+    "phone_number": "08000000000",
+    "nin": "10000000001",
+    "state": "Lagos"
+  },
+  "message": "Physical Address Confirmed successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Invalid or expired identity_check_id"
+}
+```

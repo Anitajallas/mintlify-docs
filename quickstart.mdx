@@ -1,17 +1,90 @@
-# Getting Started with Smartcomply
+---
+title: "Quickstart"
+description: "Make your first Smartcomply API call in under 5 minutes."
+---
 
-To begin using Smartcomply, follow these steps:
+## Prerequisites
 
-## Create your Adhere account
+Before you start, make sure you have:
 
-You can create your Adhere account at https://adhere-app.smartcomply.com/signup.
+- A Smartcomply account — [sign up here](https://adhere-app.smartcomply.com/signup)
+- Completed your business KYC on the Adhere dashboard
+- Generated a secret key under **Settings → API Keys**
 
-## Complete Your Business KYC for Onboarding Suite access
+## Make Your First Request
 
-Visit Smartcomply's KYC Portal to complete your business Know Your Customer (KYC) process. This step is essential to verify your business and ensure compliance with regulatory standards.
+The example below verifies a Nigerian BVN. Replace `YOUR_SECRET_KEY` with your actual key.
 
-## Create Your Secret Key
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/bvn/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"bvn": "22000000001"}'
+```
 
-After successfully completing your KYC, you can generate your secret key. This key will be used for authentication and secure access to Smartcomply's API services.
+```javascript Node.js
+const response = await fetch(
+  "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/bvn/",
+  {
+    method: "POST",
+    headers: {
+      "x-access-token": "YOUR_SECRET_KEY",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ bvn: "22000000001" }),
+  }
+);
+const data = await response.json();
+console.log(data);
+```
 
-You're now ready to start integrating Smartcomply's financial infrastructure into your application!
+```python Python
+import requests
+
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/bvn/",
+    headers={
+        "x-access-token": "YOUR_SECRET_KEY",
+        "Content-Type": "application/json",
+    },
+    json={"bvn": "22000000001"},
+)
+print(response.json())
+```
+</CodeGroup>
+
+## Successful Response
+
+```json
+{
+  "status": "success",
+  "data": {
+    "lastName": "OMOLE",
+    "firstName": "ABRAHAM",
+    "middleName": "ISAAC",
+    "dateOfBirth": "1909-09-19",
+    "phoneNumber1": "09011001100"
+  },
+  "message": "Bank Verification Number details retrieved successfully"
+}
+```
+
+If you receive a `401`, check that your `x-access-token` header is set correctly. For a full list of error responses, see [Error Codes](/error_codes).
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="key" href="/authentication">
+    Learn how to secure and manage your API keys.
+  </Card>
+  <Card title="KYC Endpoints" icon="id-card" href="/v3/kyc/nigeria/BVN">
+    Explore all identity verification endpoints.
+  </Card>
+  <Card title="Error Codes" icon="triangle-exclamation" href="/error_codes">
+    Understand all possible error responses.
+  </Card>
+  <Card title="Webhooks" icon="bell" href="/webhooks">
+    Set up real-time event notifications.
+  </Card>
+</CardGroup>

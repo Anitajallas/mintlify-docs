@@ -1,0 +1,100 @@
+---
+title: "Tax Identification Number (TIN)"
+sidebarTitle: "TIN"
+description: "Verify a customer's identity using their Nigerian Tax Identification Number."
+openapi: "POST /api/onboarding/nigeria_kyc/tin/"
+---
+
+The TIN endpoint validates a Tax Identification Number against the FIRS (Federal Inland Revenue Service) database and returns the associated taxpayer name, CAC registration number, tax office, and contact details.
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/tin/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `tax_identification_number` | string | Yes | The customer's TIN (format: `N-XXXXXXXX`) |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/tin/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"tax_identification_number": "N-01234567"}'
+```
+
+```python Python
+import requests
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/tin/",
+    headers={"x-access-token": "YOUR_SECRET_KEY", "Content-Type": "application/json"},
+    json={"tax_identification_number": "N-01234567"},
+)
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.taxpayer_name` | string | Registered taxpayer name |
+| `data.cac_reg_number` | string | CAC registration number (if applicable) |
+| `data.firstin` | string | First TIN issued |
+| `data.jittin` | string | Joint income TIN (if applicable) |
+| `data.tax_office` | string | Assigned tax office |
+| `data.phone_number` | string | Registered phone number |
+| `data.email` | string | Registered email (if available) |
+| `data.search` | string | The search term used |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "search": "07012345678",
+    "taxpayer_name": "FISAYOMI KAYODE NIG LTD",
+    "cac_reg_number": "RC012345",
+    "firstin": "12345678-0001",
+    "jittin": "N/A",
+    "tax_office": "MSTO ALIMOSHO",
+    "phone_number": "08109110099",
+    "email": ""
+  },
+  "message": "Tax Identification Number details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

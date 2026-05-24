@@ -1,17 +1,69 @@
-# Lend Confidently
+---
+title: "Lending & Loan Decisioning"
+sidebarTitle: "Lending"
+description: "How to use Adhere to verify borrowers, pull credit history, and detect fraudulent loan applications."
+---
 
-## Verify Borrowers’ Assets Digitally
+Lending decisions depend on two things: knowing the borrower is real, and knowing they can repay. Adhere gives you both — identity verification, credit bureau data, and AI-driven fraud scoring — through a single API.
 
-Provides a consolidated report with account balances, uncategorized and categorized transactions, and account identity information.
+## Verify the Borrower's Identity First
 
-## Check Balances in Real-Time
+Before pulling any credit data, confirm the applicant is who they say they are. Use BVN, NIN, or national ID verification to match the submitted details against authoritative government records.
 
-Instantly checks whether users have the funds to make a payment or transfer.
+<CardGroup cols={2}>
+  <Card title="BVN Verification" icon="id-card" href="/v3/kyc/nigeria/BVN">
+    Confirm name, phone, and date of birth against the Bank Verification Number registry.
+  </Card>
+  <Card title="NIN Verification" icon="fingerprint" href="/v3/kyc/nigeria/nin">
+    Verify the applicant's National Identity Number before processing their application.
+  </Card>
+</CardGroup>
 
-## Instantly Authenticate Accounts
+## Pull Their Credit History
 
-Pulls users' account and routing information, which can be used to enable seamless payments and debit withdrawals.
+Adhere connects to CRC, First Central, and Credit Registry — Nigeria's major credit bureaus — so you can retrieve a full picture of the applicant's borrowing history before making a decision.
 
-## Verify Borrowers' Identities
+<CardGroup cols={2}>
+  <Card title="CRC Credit History" icon="chart-bar" href="/v3/credit/individual/CRC_Credit_History">
+    Number of loans, active facilities, delinquencies, and total outstanding balance from CRC.
+  </Card>
+  <Card title="First Central Credit Summary" icon="chart-bar" href="/v3/credit/individual/First_Central_Credit_Summary">
+    Summary-level credit data from First Central Credit Bureau.
+  </Card>
+  <Card title="Credit Registry Full Report" icon="file-lines" href="/v3/credit/individual/Credit_Registry_Full_Credit_Report">
+    Detailed credit report including payment history and institution breakdown.
+  </Card>
+  <Card title="Credit Score" icon="gauge-high" href="/v3/credit/individual/First_Central_Credit_Score">
+    Numeric credit score from First Central or CRC to feed directly into your decisioning model.
+  </Card>
+</CardGroup>
 
-Confirms users' identities with what's on file at the bank—namely, their name, phone number, address, and email—to reduce fraud.
+## Run a Loan Fraud Check
+
+The Loan Fraud Check endpoint combines the submitted application data with credit bureau information to produce a fraud risk score (0–100), a repayment assessment, and a recommendation — for both individual and business applicants.
+
+<CardGroup cols={2}>
+  <Card title="Individual Fraud Check" icon="user" href="/v3/loan/individual_fraud_check">
+    Score an individual application using income, employment, collateral, and credit history data.
+  </Card>
+  <Card title="Business Fraud Check" icon="building" href="/v3/loan/business_fraud_check">
+    Assess a business loan application using company registration, revenue, and credit data.
+  </Card>
+</CardGroup>
+
+## A Complete Lending Due-Diligence Flow
+
+<Steps>
+  <Step title="Verify identity">
+    Call BVN or NIN verification to confirm the applicant's name and date of birth match what they submitted.
+  </Step>
+  <Step title="Pull credit history">
+    Retrieve a credit summary or full report from the bureau of your choice. Check for delinquencies, active loans, and total exposure.
+  </Step>
+  <Step title="Run the fraud check">
+    Submit the full application to the Loan Fraud Check endpoint. Receive a fraud risk score, key financial ratios, and a plain-language recommendation.
+  </Step>
+  <Step title="Make your decision">
+    Use the score against your risk threshold to approve, review, or decline — with a full audit trail from each API call.
+  </Step>
+</Steps>

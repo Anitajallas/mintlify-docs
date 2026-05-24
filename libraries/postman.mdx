@@ -1,0 +1,68 @@
+---
+title: "Postman Collection"
+sidebarTitle: "Postman Collection"
+description: "Import the Adhere API Postman collection to test endpoints without writing code."
+---
+
+The Adhere Postman collection contains every API endpoint pre-configured with the correct URL, headers, and example request bodies. It's the fastest way to explore the API and test calls before integrating.
+
+## Import the Collection
+
+<Steps>
+  <Step title="Open Postman">
+    Download and open [Postman](https://www.postman.com/downloads/) if you haven't already.
+  </Step>
+  <Step title="Import the collection">
+    Click the link below to open the collection in Postman directly:
+
+    **[Open Adhere API in Postman →](https://documenter.getpostman.com/view/55164637/2sBXwjxET7)**
+
+    Or copy the collection URL and use **File → Import → Link** inside Postman.
+  </Step>
+  <Step title="Set your API key">
+    In Postman, go to the collection's **Variables** tab and set `x-access-token` to your Adhere API key.
+
+    Your API key is available in the [Adhere dashboard](https://adhere-app.smartcomply.com).
+  </Step>
+  <Step title="Send a request">
+    Pick any endpoint from the collection, check the pre-filled body, and click **Send**.
+  </Step>
+</Steps>
+
+## Collection Structure
+
+The collection mirrors the API reference and is organised by product area:
+
+| Folder | What's inside |
+|--------|--------------|
+| **Nigeria KYC** | BVN, NIN, VNIN, CAC, Driver's License, Passport, NUBAN, TIN, Voter's ID, Phone, Address |
+| **Kenya KYC** | National ID (basic & advanced), Business Registration, Alien ID, KRA PIN, Passport |
+| **Ghana KYC** | ID Card, ID Card with Face |
+| **Rwanda KYC** | National ID, Passport |
+| **Uganda KYC** | National ID |
+| **Biometrics** | Face Comparison, Face Liveness |
+| **Credit Reports** | CRC, First Central, Credit Registry (individual & business), Kenya credit |
+| **Fraud & Transaction Monitoring** | Transaction monitoring, card fraud, transaction screening, KYC search, limits & thresholds |
+| **Loan Fraud Check** | Individual and business fraud checks |
+| **User Journey** | Session events, session state, analytics, health check |
+
+## Authentication
+
+All requests require the `x-access-token` header. Set it once at the collection level so it applies to every request automatically:
+
+1. Click the collection name → **Edit**
+2. Go to the **Variables** tab
+3. Add a variable named `x-access-token` with your API key as the value
+4. In each request's **Headers** tab, the header is already set to `{{x-access-token}}`
+
+<Note>
+  Never share your API key publicly or commit it to source control. Use Postman environment variables to keep it out of shared workspaces.
+</Note>
+
+## Base URL
+
+All endpoints in the collection use:
+
+```
+https://adhere-api.smartcomply.com
+```

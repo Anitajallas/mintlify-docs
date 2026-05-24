@@ -1,0 +1,101 @@
+---
+title: "Rwanda Passport"
+sidebarTitle: "Passport"
+description: "Verify a customer's identity using their Rwandan passport number."
+openapi: "POST /api/onboarding/rwanda_kyc/passport/"
+---
+
+The Rwanda Passport endpoint validates a passport number against Rwanda's passport registry and returns the associated personal details.
+
+## Endpoint
+
+```
+POST /api/onboarding/rwanda_kyc/passport/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `passport_number` | string | Yes | The customer's passport number |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/rwanda_kyc/passport/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"passport_number": "PD000000"}'
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.PassportNo` | string | Passport number |
+| `data.FirstName` | string | First name |
+| `data.LastName` | string | Last name |
+| `data.MiddleName` | string | Middle name |
+| `data.Nationality` | string | Nationality |
+| `data.DateOfBirth` | string | Date of birth (`DD/MM/YYYY`) |
+| `data.Gender` | string | Gender |
+| `data.PlaceOfBirth` | string | Place of birth |
+| `data.PlaceOfIssue` | string | Place of issue |
+| `data.IssueDate` | string | Issue date (`DD/MM/YYYY`) |
+| `data.ExpiryDate` | string | Expiry date (`DD/MM/YYYY`) |
+| `data.Picture` | string | Base64-encoded passport photo |
+| `data.Signature` | string | Base64-encoded signature |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "PassportNo": "G0000575",
+    "FirstName": "SAMUEL",
+    "LastName": "DENU",
+    "MiddleName": "KWABLA",
+    "Nationality": "RWANDAN",
+    "DateOfBirth": "23/05/1952",
+    "Gender": "MALE",
+    "PlaceOfBirth": "KIGALI",
+    "PlaceOfIssue": "KIGALI",
+    "IssueDate": "30/03/2010",
+    "ExpiryDate": "30/03/2015",
+    "Picture": "<base64-encoded-jpeg>",
+    "Signature": "<base64-encoded-jpeg>"
+  },
+  "message": "Passport details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Missing required fields"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

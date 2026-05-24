@@ -1,0 +1,71 @@
+---
+title: "Set Transaction Limit"
+sidebarTitle: "Set Limit"
+description: "Configure the maximum transaction amount that triggers a fraud review or automatic decline."
+openapi: "POST /api/v1/monitoring/limit"
+---
+
+The Set Transaction Limit endpoint allows you to define the upper bound for transaction amounts. When a transaction exceeds this limit, it is flagged for review or automatically declined.
+
+## Endpoint
+
+```
+POST /api/v1/monitoring/limit
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `limit` | number | Yes | Maximum allowable transaction amount |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/v1/monitoring/limit" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"limit": 100000}'
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+```json
+{
+  "status": "Success",
+  "data": [],
+  "message": "Limit updated successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

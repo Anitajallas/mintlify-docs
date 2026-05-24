@@ -1,0 +1,103 @@
+---
+title: "Premium Individual Credit Report"
+sidebarTitle: "Premium Credit Report"
+description: "Retrieve an individual's consolidated credit report from both the Credit Registry and First Central bureaus."
+openapi: "POST /api/onboarding/individual/premium/"
+---
+
+The Premium Individual Credit Report endpoint aggregates credit data from both the Credit Registry and First Central bureaus, providing a unified view of an individual's credit standing including loan history, creditors, performance, and enquiries.
+
+## Endpoint
+
+```
+POST /api/onboarding/individual/premium/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `bvn` | string | Yes | The individual's 11-digit Bank Verification Number |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/individual/premium/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"bvn": "22244545518"}'
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.name` | string | Full name |
+| `data.score.totalNoOfLoans` | number | Total loans on record |
+| `data.score.totalBorrowed` | number | Total amount borrowed |
+| `data.score.creditors` | array | List of creditors |
+| `data.score.creditEnquiries` | array | List of credit enquiries |
+| `data.score.creditEnquiriesSummary` | object | Enquiry counts by time period |
+| `data.score.loanPerformance` | array | Per-account performance details |
+| `data.score.loanHistory` | array | Detailed loan history |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "_id": "64f600608aaf9386c646de32",
+    "bvn": "22244545518",
+    "name": "ADELEKE EMMANUEL AYORINDE",
+    "gender": "Male",
+    "dateOfBirth": "29/12/1994",
+    "score": {
+      "totalNoOfLoans": 16,
+      "totalNoOfDelinquentFacilities": 0,
+      "totalBorrowed": 3761267,
+      "totalOutstanding": 0,
+      "creditors": [
+        {"Subscriber_ID": "737248693595559931", "Name": "NewEdge Finance Limited"}
+      ],
+      "creditEnquiriesSummary": {
+        "Last3MonthCount": "3",
+        "Last12MonthCount": "4",
+        "Last36MonthCount": "6"
+      }
+    },
+    "searchedDate": "2023-11-23T14:59:16.554Z"
+  },
+  "message": "Premium check successful"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Missing required fields"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

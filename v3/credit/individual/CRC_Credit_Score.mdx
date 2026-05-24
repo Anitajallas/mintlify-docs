@@ -1,0 +1,100 @@
+---
+title: "CRC Credit Score"
+sidebarTitle: "CRC Credit Score"
+description: "Retrieve an individual's FICO credit score from the CRC bureau using their BVN."
+openapi: "POST /api/onboarding/individual/credit_scores_crc/"
+---
+
+The CRC Credit Score endpoint returns an individual's FICO credit score from the CRC bureau, along with a rating, contributing factors, and loan summary.
+
+## Endpoint
+
+```
+POST /api/onboarding/individual/credit_scores_crc/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `bvn` | string | Yes | The individual's 11-digit Bank Verification Number |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/individual/credit_scores_crc/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"bvn": "22244545518"}'
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.name` | string | Full name |
+| `data.score.totalNoOfDelinquentFacilities` | number | Number of delinquent facilities |
+| `data.score.hasLoans` | string | Whether the individual has active loans (`"YES"` or `"NO"`) |
+| `data.score.ficoScore.score` | number | Numeric FICO credit score |
+| `data.score.ficoScore.rating` | string | Credit rating (e.g. `"GOOD"`, `"FAIR"`, `"POOR"`) |
+| `data.score.ficoScore.reasons` | string | Factors influencing the score |
+| `data.score.lastReportedDate` | string | Most recent bureau report date |
+| `data.score.crcReportOrderNumber` | string | CRC report order number |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "_id": "64f600608aaf9386c646de32",
+    "bvn": "22244545518",
+    "name": "ADELEKE EMMANUEL AYORINDE",
+    "gender": "Male",
+    "dateOfBirth": "29/12/1994",
+    "score": {
+      "totalNoOfDelinquentFacilities": 0,
+      "hasLoans": "YES",
+      "ficoScore": {
+        "score": 717,
+        "rating": "GOOD",
+        "reasons": "Applicant is young relative to other applicants scored. The length of time accounts have been established is short."
+      },
+      "lastReportedDate": "30-SEP-2023",
+      "crcReportOrderNumber": "W-0097887747/2023"
+    },
+    "searchedDate": "2023-11-23T14:25:54.210Z"
+  },
+  "message": "Credit Scores individual CRC report details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Missing required fields"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

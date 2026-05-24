@@ -1,0 +1,48 @@
+---
+title: "Loan Fraud Check — Overview"
+sidebarTitle: "Overview"
+description: "Evaluate fraud risk for loan applications using credit report data and applicant financial details."
+---
+
+The Loan Fraud Check API assesses the fraud risk of a loan application by combining external credit report data with the applicant's financial profile. It computes a fraud risk score and returns an actionable recommendation — **Approve**, **Review**, or **Reject** — for each application.
+
+## How It Works
+
+<Steps>
+  <Step title="Submit the application">
+    Send the applicant's BVN (individual) or RC number (business) along with their financial details to the fraud check endpoint.
+  </Step>
+  <Step title="Credit report retrieval">
+    The system fetches the applicant's current credit history from integrated credit bureaus.
+  </Step>
+  <Step title="Risk score calculation">
+    A rule-based engine evaluates credit history, loan-to-income ratio, applicant age, and other financial factors to compute a fraud risk score.
+  </Step>
+  <Step title="Receive recommendation">
+    The API returns the computed score alongside a clear recommendation for your loan approval workflow.
+  </Step>
+</Steps>
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Real-Time Credit Data" icon="chart-line">
+    Fetches up-to-date credit histories for a dynamic risk evaluation basis.
+  </Card>
+  <Card title="Actionable Recommendations" icon="circle-check">
+    Returns clear Approve, Review, or Reject guidance for each application.
+  </Card>
+  <Card title="Individual & Business" icon="users">
+    Supports both individual applicants (BVN) and business applicants (RC number).
+  </Card>
+  <Card title="Data Validation" icon="shield-check">
+    Strict validation at the model and serializer levels ensures data integrity.
+  </Card>
+</CardGroup>
+
+## Endpoints
+
+| Endpoint | Description |
+|----------|-------------|
+| [Individual Fraud Check](/v3/loan/individual_fraud_check) | Assess fraud risk for individual loan applicants |
+| [Business Fraud Check](/v3/loan/business_fraud_check) | Assess fraud risk for business loan applicants |

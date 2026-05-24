@@ -1,0 +1,94 @@
+---
+title: "Phone Number Basic"
+sidebarTitle: "Phone Number Basic"
+description: "Retrieve core identity data for the primary phone number registered to a customer's NIN."
+openapi: "POST /api/onboarding/nigeria_kyc/phone_no_basic/"
+---
+
+The Phone Number Basic endpoint returns the name and date of birth associated with the primary phone number registered against a customer's NIN. For other numbers linked to the same NIN, use [Phone Number Advanced](/v3/kyc/nigeria/Phone_Number_Advanced).
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/phone_no_basic/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `phone_number` | string | Yes | The customer's phone number (Nigerian format, e.g., `09011001100`) |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/phone_no_basic/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"phone_number": "09011001100"}'
+```
+
+```python Python
+import requests
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/phone_no_basic/",
+    headers={"x-access-token": "YOUR_SECRET_KEY", "Content-Type": "application/json"},
+    json={"phone_number": "09011001100"},
+)
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.surname` | string | Last name |
+| `data.firstName` | string | First name |
+| `data.middleName` | string | Middle name |
+| `data.dateOfBirth` | string | Date of birth in `YYYY-MM-DD` format |
+| `data.phoneNumber` | string | Phone number that was queried |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "surname": "AKINSANYA",
+    "firstName": "TISEOLUWA",
+    "middleName": "JOHN",
+    "dateOfBirth": "1909-09-19",
+    "phoneNumber": "09011001100"
+  },
+  "message": "Phone Number details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

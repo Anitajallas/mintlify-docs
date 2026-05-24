@@ -1,0 +1,192 @@
+---
+title: "Individual Loan Fraud Check"
+sidebarTitle: "Individual Fraud Check"
+description: "Assess the fraud risk of an individual loan application using applicant data and real-time credit report information."
+openapi: "POST /api/v1/loan/fraud_check/"
+---
+
+The Individual Loan Fraud Check endpoint evaluates a loan application by combining submitted applicant data with real-time credit bureau information. The response includes a fraud risk score, a recommendation, and a breakdown of key financial metrics used in the assessment.
+
+## Endpoint
+
+```
+POST /api/v1/loan/fraud_check/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `multipart/form-data` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `first_name` | string | Yes | Applicant's first name |
+| `last_name` | string | Yes | Applicant's last name |
+| `date_of_birth` | string | Yes | Date of birth in `YYYY-MM-DD` format |
+| `gender` | string | Yes | Gender (e.g., `male`, `female`) |
+| `country` | string | Yes | Country of residence |
+| `current_address` | string | Yes | Current residential address |
+| `duration_of_stay` | string | Yes | Duration at current address (e.g., `5 years`) |
+| `identification_type` | string | Yes | ID type (e.g., `Passport`, `NIN`) |
+| `identification_number` | string | Yes | ID number |
+| `bvn` | string | Yes | 11-digit Bank Verification Number |
+| `phone_number` | string | Yes | Phone number with country code |
+| `email_address` | string | Yes | Applicant's email address |
+| `employment_type` | string | Yes | Employment type (e.g., `Full-time`, `Self-employed`) |
+| `job_role` | string | Yes | Job title or role |
+| `employer_name` | string | Yes | Name of employer |
+| `employer_address` | string | Yes | Employer's address |
+| `annual_income` | number | Yes | Annual income in local currency |
+| `employment_duration` | string | Yes | Length of current employment |
+| `loan_amount_requested` | number | Yes | Requested loan amount |
+| `purpose_of_loan` | string | Yes | Purpose of the loan |
+| `loan_repayment_duration_type` | string | Yes | Repayment period unit: `weeks`, `months`, or `years` |
+| `loan_repayment_duration_value` | integer | Yes | Number of repayment periods |
+| `collateral_required` | boolean | Yes | Whether collateral is being offered |
+| `collateral` | string | No | Description of collateral if applicable |
+| `is_individual` | boolean | Yes | Must be `true` for individual checks |
+| `run_aml_check` | boolean | No | Run an AML check on the applicant. Defaults to `false` |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/v1/loan/fraud_check/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -F "first_name=John" \
+  -F "last_name=Doe" \
+  -F "date_of_birth=1980-01-01" \
+  -F "gender=male" \
+  -F "country=Nigeria" \
+  -F "current_address=12 Ojuelegba St" \
+  -F "duration_of_stay=5 years" \
+  -F "identification_type=Passport" \
+  -F "identification_number=A123456789" \
+  -F "bvn=12345678901" \
+  -F "phone_number=+2349105678901" \
+  -F "email_address=john.doe@example.com" \
+  -F "employment_type=Full-time" \
+  -F "job_role=Engineer" \
+  -F "employer_name=Smartcomply" \
+  -F "employer_address=47 Karimu Ikotun Cl, Yaba, Lagos" \
+  -F "annual_income=350000" \
+  -F "employment_duration=2 years" \
+  -F "loan_amount_requested=100000" \
+  -F "purpose_of_loan=Personal Development" \
+  -F "loan_repayment_duration_type=weeks" \
+  -F "loan_repayment_duration_value=7" \
+  -F "collateral_required=false" \
+  -F "is_individual=true" \
+  -F "run_aml_check=false"
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.id` | number | Internal record ID |
+| `data.fraud_risk_score` | number | Overall fraud risk score (0–100; higher = greater risk) |
+| `data.recommendation` | string | Narrative assessment and guidance for loan decision |
+| `data.key_financial_analysis.income_stability` | object | Income stability assessment with risk score and observation |
+| `data.key_financial_analysis.repayment_duration` | object | Repayment timeline assessment |
+| `data.key_financial_analysis.collateral_coverage` | object | Loan-to-collateral ratio and observation |
+| `data.key_financial_analysis.debt_serviceability` | object | Assessment of whether income can cover repayments |
+| `data.key_financial_analysis.debt_to_income_ratio` | object | Debt service ratio vs the 40% threshold |
+| `data.history` | object | Credit bureau history: total loans, delinquencies, outstanding amounts |
+| `data.status` | string | Processing status (e.g., `reviewed`) |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "id": 101,
+    "first_name": "John",
+    "last_name": "Doe",
+    "date_of_birth": "1980-01-01",
+    "country": "Nigeria",
+    "current_address": "12 Ojuelegba St",
+    "identification_type": "Passport",
+    "bvn": "12345678901",
+    "loan_amount_requested": "15000.00",
+    "fraud_risk_score": 80,
+    "recommendation": "The applicant, John Doe, has applied for a loan of ₦100,000.00. The applicant's total fraud risk score is 80, which is relatively high and warrants further investigation before loan approval.",
+    "key_financial_analysis": {
+      "income_stability": {
+        "risk_score": 100,
+        "data_source": "submitted data (estimated)",
+        "monthly_income": "29166.67",
+        "monthly_expenses": "23333.33",
+        "disposable_income": "5833.33",
+        "observation": "Disposable ratio of 20% indicates a small buffer between income and expenses."
+      },
+      "repayment_duration": {
+        "risk_score": 70,
+        "repayment_duration": "Within 1.75 months"
+      },
+      "collateral_coverage": {
+        "risk_score": 80,
+        "loan_amount": "100000.00",
+        "collateral_value": "0.00",
+        "loan_to_collateral_ratio": "0.00%",
+        "observation": "The loan is entirely unsecured."
+      },
+      "debt_serviceability": {
+        "risk_score": 60,
+        "loan_amount": "100000.00",
+        "total_repayment": "104000.0000",
+        "observation": "Monthly repayment significantly exceeds monthly income."
+      },
+      "debt_to_income_ratio": {
+        "risk_score": 90,
+        "debt_service_ratio": "203.76%",
+        "observation": "Debt Service Ratio exceeds the 40% threshold significantly."
+      }
+    },
+    "history": {
+      "totalNoOfLoans": 16,
+      "totalNoOfInstitutions": 5,
+      "totalNoOfActiveLoans": 1,
+      "totalNoOfClosedLoans": 15,
+      "totalNoOfPerformingLoans": 16,
+      "totalNoOfDelinquentFacilities": 0,
+      "highestLoanAmount": 1134330,
+      "totalBorrowed": 3761267,
+      "totalOutstanding": 0,
+      "totalOverdue": 0
+    },
+    "is_individual": true,
+    "is_business": false,
+    "status": "reviewed",
+    "date_created": "2025-03-28T03:08:47.170109Z"
+  },
+  "message": "Loan fraud check processed successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

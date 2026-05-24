@@ -1,0 +1,1577 @@
+openapi: 3.0.3
+info:
+  title: Adhere API
+  description: Identity verification, credit checks, transaction monitoring, and loan fraud detection across Africa.
+  version: "3.0.0"
+
+servers:
+  - url: https://adhere-api.smartcomply.com
+    description: Production
+
+security:
+  - ApiKeyAuth: []
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-access-token
+      description: Your Adhere API secret key
+
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: failed
+              data:
+                type: array
+                items: {}
+              message:
+                type: string
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: failed
+              message:
+                type: string
+                example: Authentication credentials were not provided.
+
+tags:
+  - name: Nigeria KYC
+  - name: Kenya KYC
+  - name: Ghana KYC
+  - name: Rwanda KYC
+  - name: Uganda KYC
+  - name: Biometrics
+  - name: Individual Credit
+  - name: Business Credit
+  - name: Transaction Monitoring
+  - name: Transaction Screening
+  - name: Transaction KYC
+  - name: Loan Fraud
+  - name: User Journey
+
+paths:
+
+  # ── BIOMETRICS ──────────────────────────────────────────────
+
+  /api/onboarding/biometrics/face/comparison:
+    post:
+      tags: [Biometrics]
+      summary: Face Comparison
+      operationId: faceComparison
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [image_url, selfie_url]
+              properties:
+                image_url:
+                  type: string
+                  description: URL of the reference ID photo
+                selfie_url:
+                  type: string
+                  description: URL of the selfie image
+      responses:
+        "200": { description: Comparison successful }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/biometrics/face/liveliness_check/:
+    post:
+      tags: [Biometrics]
+      summary: Face Liveness Check
+      operationId: faceLiveness
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [image]
+              properties:
+                image:
+                  type: string
+                  description: URL of the image to check for liveness
+      responses:
+        "200": { description: Liveness check successful }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  # ── NIGERIA KYC ─────────────────────────────────────────────
+
+  /api/onboarding/nigeria_kyc/bvn/:
+    post:
+      tags: [Nigeria KYC]
+      summary: BVN Verification
+      operationId: bvn
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bvn]
+              properties:
+                bvn:
+                  type: string
+                  minLength: 11
+                  maxLength: 11
+                  description: 11-digit Bank Verification Number
+                  example: "22244545518"
+      responses:
+        "200": { description: BVN verified successfully }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/nigeria_kyc/bvn_advanced/:
+    post:
+      tags: [Nigeria KYC]
+      summary: BVN Advanced
+      operationId: bvnAdvanced
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bvn]
+              properties:
+                bvn:
+                  type: string
+                  description: 11-digit Bank Verification Number
+                  example: "22244545518"
+      responses:
+        "200": { description: BVN advanced data retrieved }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/nigeria_kyc/bvn_with_face/:
+    post:
+      tags: [Nigeria KYC]
+      summary: BVN with Face
+      operationId: bvnWithFace
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bvn, image_url]
+              properties:
+                bvn:
+                  type: string
+                  description: 11-digit Bank Verification Number
+                  example: "22244545518"
+                image_url:
+                  type: string
+                  description: URL of the selfie image
+      responses:
+        "200": { description: BVN with face verified }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/nigeria_kyc/nin/:
+    post:
+      tags: [Nigeria KYC]
+      summary: NIN Verification
+      operationId: nin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [nin]
+              properties:
+                nin:
+                  type: string
+                  description: 11-digit National Identification Number
+                  example: "12345678901"
+      responses:
+        "200": { description: NIN verified successfully }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/nigeria_kyc/nin_with_face/:
+    post:
+      tags: [Nigeria KYC]
+      summary: NIN with Face
+      operationId: ninWithFace
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [nin, image_url]
+              properties:
+                nin:
+                  type: string
+                  description: 11-digit NIN
+                  example: "12345678901"
+                image_url:
+                  type: string
+                  description: URL of the selfie image
+      responses:
+        "200": { description: NIN with face verified }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/nigeria_kyc/vnin/:
+    post:
+      tags: [Nigeria KYC]
+      summary: Virtual NIN (VNIN)
+      operationId: vnin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [vnin]
+              properties:
+                vnin:
+                  type: string
+                  description: 16-character Virtual NIN
+                  example: "WB9D9SE8HA41Z2M0"
+      responses:
+        "200": { description: VNIN verified }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/nigeria_kyc/voters_id/:
+    post:
+      tags: [Nigeria KYC]
+      summary: Voter's ID
+      operationId: votersId
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [vin]
+              properties:
+                vin:
+                  type: string
+                  description: Voter Identification Number
+                  example: "95C67890123400001"
+      responses:
+        "200": { description: Voter's ID verified }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/nigeria_kyc/driver_license/:
+    post:
+      tags: [Nigeria KYC]
+      summary: Driver's License
+      operationId: driverLicense
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [license_number]
+              properties:
+                license_number:
+                  type: string
+                  description: Driver's license number
+                  example: "AAA00000AA00"
+      responses:
+        "200": { description: Driver's license verified }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/nigeria_kyc/passport/:
+    post:
+      tags: [Nigeria KYC]
+      summary: Passport Verification
+      operationId: nigeriaPassport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [passport_number]
+              properties:
+                passport_number:
+                  type: string
+                  example: "A00000000"
+      responses:
+        "200": { description: Passport verified }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/nigeria_kyc/tin/:
+    post:
+      tags: [Nigeria KYC]
+      summary: Tax Identification Number (TIN)
+      operationId: tin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tin]
+              properties:
+                tin:
+                  type: string
+                  example: "12345678-0001"
+      responses:
+        "200": { description: TIN verified }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/nigeria_kyc/nuban/:
+    post:
+      tags: [Nigeria KYC]
+      summary: NUBAN Verification
+      operationId: nuban
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [account_number, bank_code]
+              properties:
+                account_number:
+                  type: string
+                  description: 10-digit account number
+                  example: "0123456789"
+                bank_code:
+                  type: string
+                  example: "044"
+      responses:
+        "200": { description: NUBAN verified }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/nigeria_kyc/nuban_advanced/:
+    post:
+      tags: [Nigeria KYC]
+      summary: NUBAN Advanced
+      operationId: nubanAdvanced
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [account_number, bank_code]
+              properties:
+                account_number:
+                  type: string
+                  example: "0123456789"
+                bank_code:
+                  type: string
+                  example: "044"
+      responses:
+        "200": { description: NUBAN advanced data retrieved }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/nigeria_kyc/phone_no_basic/:
+    post:
+      tags: [Nigeria KYC]
+      summary: Phone Number Basic
+      operationId: phoneBasic
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone_number]
+              properties:
+                phone_number:
+                  type: string
+                  example: "08012345678"
+      responses:
+        "200": { description: Phone basic data retrieved }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/nigeria_kyc/phone_no_advanced/:
+    post:
+      tags: [Nigeria KYC]
+      summary: Phone Number Advanced
+      operationId: phoneAdvanced
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone_number]
+              properties:
+                phone_number:
+                  type: string
+                  example: "08012345678"
+      responses:
+        "200": { description: Phone advanced data retrieved }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/nigeria_kyc/cac/:
+    post:
+      tags: [Nigeria KYC]
+      summary: CAC Verification
+      operationId: cac
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [registration_number]
+              properties:
+                registration_number:
+                  type: string
+                  example: "RC-123456"
+      responses:
+        "200": { description: CAC verified }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/nigeria_kyc/cac_advanced/:
+    post:
+      tags: [Nigeria KYC]
+      summary: CAC Advanced
+      operationId: cacAdvanced
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [registration_number]
+              properties:
+                registration_number:
+                  type: string
+                  example: "RC-123456"
+      responses:
+        "200": { description: CAC advanced data retrieved }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/nigeria_kyc/address_verification/:
+    post:
+      tags: [Nigeria KYC]
+      summary: Address Verification
+      operationId: addressVerification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [first_name, last_name, phone_number, address, lga, state]
+              properties:
+                first_name: { type: string }
+                last_name: { type: string }
+                phone_number: { type: string }
+                address: { type: string }
+                lga: { type: string, description: Local Government Area }
+                state: { type: string }
+      responses:
+        "200": { description: Address verification submitted }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/nigeria_kyc/digital_address_verification/:
+    post:
+      tags: [Nigeria KYC]
+      summary: Digital Address Verification
+      operationId: digitalAddressVerification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [first_name, last_name, phone_number, address, lga, state]
+              properties:
+                first_name: { type: string }
+                last_name: { type: string }
+                phone_number: { type: string }
+                address: { type: string }
+                lga: { type: string }
+                state: { type: string }
+      responses:
+        "200": { description: Digital address verification submitted }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/nigeria_kyc/digital_address_verification_confirmation/:
+    post:
+      tags: [Nigeria KYC]
+      summary: Digital Address Confirmation
+      operationId: digitalAddressConfirmation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [identity_check_id]
+              properties:
+                identity_check_id:
+                  type: string
+                  description: Reference ID from the digital address verification response
+      responses:
+        "200": { description: Digital address result retrieved }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/nigeria_kyc/physical_address_verification_lagos/:
+    post:
+      tags: [Nigeria KYC]
+      summary: Physical Address (Lagos)
+      operationId: physicalAddressLagos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [first_name, last_name, phone_number, address, lga]
+              properties:
+                first_name: { type: string }
+                last_name: { type: string }
+                phone_number: { type: string }
+                address: { type: string }
+                lga: { type: string, description: LGA within Lagos }
+      responses:
+        "200": { description: Physical address submitted (Lagos) }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/nigeria_kyc/physical_address_verification/:
+    post:
+      tags: [Nigeria KYC]
+      summary: Physical Address (Other States)
+      operationId: physicalAddressOther
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [first_name, last_name, phone_number, address, lga, state]
+              properties:
+                first_name: { type: string }
+                last_name: { type: string }
+                phone_number: { type: string }
+                address: { type: string }
+                lga: { type: string }
+                state: { type: string }
+      responses:
+        "200": { description: Physical address submitted }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/nigeria_kyc/physical_address_verification_confirmation/:
+    post:
+      tags: [Nigeria KYC]
+      summary: Physical Address Confirmation
+      operationId: physicalAddressConfirmation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [identity_check_id]
+              properties:
+                identity_check_id:
+                  type: integer
+                  description: Integer ID from the physical address verification response
+      responses:
+        "200": { description: Physical address result retrieved }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/nigeria_kyc/identity_address/:
+    post:
+      tags: [Nigeria KYC]
+      summary: Address Lookup by NIN
+      operationId: identityAddress
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [first_name, last_name, nin, phone_number, state, time_range]
+              properties:
+                first_name: { type: string }
+                last_name: { type: string }
+                nin: { type: string, description: 11-digit NIN }
+                phone_number: { type: string }
+                state: { type: string }
+                time_range:
+                  type: integer
+                  description: Minimum months address must have been verified
+      responses:
+        "200": { description: Address data retrieved }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  # ── KENYA KYC ───────────────────────────────────────────────
+
+  /api/onboarding/kenya_kyc/national_id_basic/:
+    post:
+      tags: [Kenya KYC]
+      summary: Kenya National ID Basic
+      operationId: kenyaNationalIdBasic
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id_number]
+              properties:
+                id_number:
+                  type: string
+                  description: Kenyan national ID number
+                  example: "12345678"
+      responses:
+        "200": { description: National ID verified }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/kenya_kyc/national_id_advance/:
+    post:
+      tags: [Kenya KYC]
+      summary: Kenya National ID Advanced
+      operationId: kenyaNationalIdAdvanced
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id_number]
+              properties:
+                id_number:
+                  type: string
+                  example: "12345678"
+      responses:
+        "200": { description: National ID advanced data retrieved }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/kenya_kyc/business_registration/:
+    post:
+      tags: [Kenya KYC]
+      summary: Kenya Business Registration
+      operationId: kenyaBusinessRegistration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [registration_number]
+              properties:
+                registration_number:
+                  type: string
+                  example: "BUS/2020/123456"
+                postal_code: { type: string }
+                postal_address: { type: string }
+      responses:
+        "200": { description: Business registration verified }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/kenya_kyc/alien_id/:
+    post:
+      tags: [Kenya KYC]
+      summary: Kenya Alien ID
+      operationId: kenyaAlienId
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [alien_id]
+              properties:
+                alien_id:
+                  type: string
+                  description: Alien ID number for non-citizen residents
+      responses:
+        "200": { description: Alien ID verified }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/kenya_kyc/kra_pin/:
+    post:
+      tags: [Kenya KYC]
+      summary: KRA PIN Verification
+      operationId: kraPin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [pin]
+              properties:
+                pin:
+                  type: string
+                  description: Kenya Revenue Authority PIN
+                  example: "A000000000Z"
+      responses:
+        "200": { description: KRA PIN verified }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/kenya_kyc/passport/:
+    post:
+      tags: [Kenya KYC]
+      summary: Kenya Passport Verification
+      operationId: kenyaPassport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [passport_number]
+              properties:
+                passport_number: { type: string }
+      responses:
+        "200": { description: Passport verified }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  # ── GHANA KYC ───────────────────────────────────────────────
+
+  /api/onboarding/ghana_kyc/id_card/:
+    post:
+      tags: [Ghana KYC]
+      summary: Ghana ID Card
+      operationId: ghanaIdCard
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [identification_number, id_type]
+              properties:
+                identification_number:
+                  type: string
+                  description: Ghana Card, Passport, Voter ID, SSNIT, or Driver's License number
+                id_type:
+                  type: string
+                  description: "GhanaCard, Passport, VoterID, SSNIT, or DriversLicense"
+      responses:
+        "200": { description: ID card verified }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/ghana_kyc/id_card_with_face/:
+    post:
+      tags: [Ghana KYC]
+      summary: Ghana ID Card with Face
+      operationId: ghanaIdCardWithFace
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [identification_number, selfie_image]
+              properties:
+                identification_number:
+                  type: string
+                  description: Ghana Card number
+                selfie_image:
+                  type: string
+                  description: Base64-encoded selfie image
+      responses:
+        "200": { description: ID card with face verified }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  # ── RWANDA KYC ──────────────────────────────────────────────
+
+  /api/onboarding/rwanda_kyc/national_id/:
+    post:
+      tags: [Rwanda KYC]
+      summary: Rwanda National ID
+      operationId: rwandaNationalId
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [national_id]
+              properties:
+                national_id:
+                  type: string
+                  example: "1199780123456789"
+      responses:
+        "200": { description: National ID verified }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/rwanda_kyc/passport/:
+    post:
+      tags: [Rwanda KYC]
+      summary: Rwanda Passport
+      operationId: rwandaPassport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [passport_number]
+              properties:
+                passport_number: { type: string }
+      responses:
+        "200": { description: Passport verified }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  # ── UGANDA KYC ──────────────────────────────────────────────
+
+  /api/onboarding/uganda_kyc/national_id/:
+    post:
+      tags: [Uganda KYC]
+      summary: Uganda National ID
+      operationId: ugandaNationalId
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [national_id, surname, given_name, date_of_birth, document_id]
+              properties:
+                national_id: { type: string }
+                surname: { type: string }
+                given_name: { type: string }
+                date_of_birth:
+                  type: string
+                  format: date
+                  example: "1990-01-15"
+                document_id:
+                  type: string
+                  description: Document serial number from the physical card
+      responses:
+        "200": { description: National ID verified }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  # ── INDIVIDUAL CREDIT ────────────────────────────────────────
+
+  /api/onboarding/individual/crc_summary/:
+    post:
+      tags: [Individual Credit]
+      summary: CRC Credit History
+      operationId: crcSummary
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bvn]
+              properties:
+                bvn: { type: string, example: "22244545518" }
+      responses:
+        "200": { description: CRC credit history retrieved }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/individual/credit_scores_crc/:
+    post:
+      tags: [Individual Credit]
+      summary: CRC Credit Score
+      operationId: creditScoresCRC
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bvn]
+              properties:
+                bvn: { type: string, example: "22244545518" }
+      responses:
+        "200": { description: CRC credit score retrieved }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/individual/crc_full/:
+    post:
+      tags: [Individual Credit]
+      summary: CRC Full Credit Report
+      operationId: crcFull
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bvn]
+              properties:
+                bvn: { type: string, example: "22244545518" }
+      responses:
+        "200": { description: CRC full report retrieved }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/individual/credit_registry_summary/:
+    post:
+      tags: [Individual Credit]
+      summary: Credit Registry Summary
+      operationId: creditRegistrySummary
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bvn]
+              properties:
+                bvn: { type: string, example: "22244545518" }
+      responses:
+        "200": { description: Credit Registry summary retrieved }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/individual/credit_registry_full/:
+    post:
+      tags: [Individual Credit]
+      summary: Credit Registry Full Report
+      operationId: creditRegistryFull
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bvn]
+              properties:
+                bvn: { type: string, example: "22244545518" }
+      responses:
+        "200": { description: Credit Registry full report retrieved }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/individual/premium/:
+    post:
+      tags: [Individual Credit]
+      summary: Premium Credit Report
+      operationId: individualPremium
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bvn]
+              properties:
+                bvn: { type: string, example: "22244545518" }
+      responses:
+        "200": { description: Premium credit report retrieved }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/individual/credit_registry_history_advanced/:
+    post:
+      tags: [Individual Credit]
+      summary: Credit Registry History Advanced
+      operationId: creditRegistryHistoryAdvanced
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bvn]
+              properties:
+                bvn: { type: string, example: "22244545518" }
+      responses:
+        "200": { description: Advanced credit history retrieved }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/individual/credit_scores_first_central/:
+    post:
+      tags: [Individual Credit]
+      summary: First Central Credit Score
+      operationId: creditScoresFirstCentral
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bvn]
+              properties:
+                bvn: { type: string, example: "22244545518" }
+      responses:
+        "200": { description: First Central credit score retrieved }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/individual/first_central_summary/:
+    post:
+      tags: [Individual Credit]
+      summary: First Central Credit Summary
+      operationId: firstCentralSummary
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bvn]
+              properties:
+                bvn: { type: string, example: "22244545518" }
+      responses:
+        "200": { description: First Central summary retrieved }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/individual/first_central_full/:
+    post:
+      tags: [Individual Credit]
+      summary: First Central Full Report
+      operationId: firstCentralFull
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bvn]
+              properties:
+                bvn: { type: string, example: "22244545518" }
+      responses:
+        "200": { description: First Central full report retrieved }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/kenya/individual_credit/:
+    post:
+      tags: [Individual Credit]
+      summary: Kenya Individual Credit Report
+      operationId: kenyaIndividualCredit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [national_id]
+              properties:
+                national_id:
+                  type: string
+                  example: "12345678"
+      responses:
+        "200": { description: Kenya credit report retrieved }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  # ── BUSINESS CREDIT ─────────────────────────────────────────
+
+  /api/onboarding/business/crc/:
+    post:
+      tags: [Business Credit]
+      summary: CRC Business Credit History
+      operationId: crcBusiness
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [registration_number]
+              properties:
+                registration_number: { type: string, example: "RC-123456" }
+      responses:
+        "200": { description: CRC business credit history retrieved }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/business/first_central/:
+    post:
+      tags: [Business Credit]
+      summary: First Central Business Credit History
+      operationId: firstCentralBusiness
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [registration_number]
+              properties:
+                registration_number: { type: string, example: "RC-123456" }
+      responses:
+        "200": { description: First Central business history retrieved }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/business/premium/:
+    post:
+      tags: [Business Credit]
+      summary: Premium Business Credit History
+      operationId: premiumBusiness
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [registration_number]
+              properties:
+                registration_number: { type: string, example: "RC-123456" }
+      responses:
+        "200": { description: Premium business credit report retrieved }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/kenya/company_credit/:
+    post:
+      tags: [Business Credit]
+      summary: Kenya Business Credit Report
+      operationId: kenyaCompanyCredit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [registration_number]
+              properties:
+                registration_number: { type: string }
+      responses:
+        "200": { description: Kenya business credit report retrieved }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  # ── TRANSACTION MONITORING ──────────────────────────────────
+
+  /api/v1/monitoring/limit:
+    get:
+      tags: [Transaction Monitoring]
+      summary: Get Transaction Limit
+      operationId: getLimit
+      responses:
+        "200":
+          description: Limit retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  limit: { type: number, example: 200000 }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+    post:
+      tags: [Transaction Monitoring]
+      summary: Set Transaction Limit
+      operationId: setLimit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [limit]
+              properties:
+                limit: { type: number, example: 100000 }
+      responses:
+        "200": { description: Limit updated }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/v1/monitoring/threshold:
+    get:
+      tags: [Transaction Monitoring]
+      summary: Get Fraud Alert Threshold
+      operationId: getThreshold
+      responses:
+        "200":
+          description: Threshold retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  threshhold: { type: number, example: 7 }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+    post:
+      tags: [Transaction Monitoring]
+      summary: Set Fraud Alert Threshold
+      operationId: setThreshold
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [threshhold]
+              properties:
+                threshhold:
+                  type: number
+                  description: "Note: double-h spelling is required by the API"
+                  example: 70
+      responses:
+        "200": { description: Threshold updated }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/v1/monitoring/transaction_monitoring/:
+    post:
+      tags: [Transaction Monitoring]
+      summary: Submit Transaction for Monitoring
+      operationId: submitTransaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [transaction_id, amount, currency, transaction_type, account_type, origin_account, destination_account, customer_details, additional_info]
+              properties:
+                transaction_id:
+                  type: string
+                  example: "TXN-12345678"
+                amount:
+                  type: number
+                  example: 50000
+                currency:
+                  type: string
+                  example: "NGN"
+                transaction_type:
+                  type: string
+                  enum: [transfer, card, ussd, web]
+                account_type:
+                  type: string
+                  enum: [individual, corporate]
+                origin_account:
+                  type: object
+                  required: [account_number, bank_code]
+                  properties:
+                    account_number: { type: string, example: "9876543219" }
+                    bank_code: { type: string, example: "001" }
+                destination_account:
+                  type: object
+                  required: [account_number, bank_code]
+                  properties:
+                    account_number: { type: string, example: "123456789" }
+                    bank_code: { type: string, example: "002" }
+                customer_details:
+                  type: object
+                  required: [customer_name, customer_email]
+                  properties:
+                    customer_name: { type: string }
+                    customer_email: { type: string, format: email }
+                    bvn: { type: string }
+                additional_info:
+                  type: object
+                  required: [ip_address, location]
+                  properties:
+                    ip_address: { type: string, example: "192.168.1.1" }
+                    location: { type: string, example: "Lagos, Nigeria" }
+                    transaction_description: { type: string }
+                run_kyc:
+                  type: boolean
+                  default: false
+      responses:
+        "201": { description: Transaction processed }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  # ── TRANSACTION SCREENING ────────────────────────────────────
+
+  /api/v1/monitoring/transaction_screening:
+    post:
+      tags: [Transaction Screening]
+      summary: Screen a Transaction
+      operationId: screenTransaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [amount, transactionDate, sender, receiver]
+              properties:
+                transactionId: { type: string }
+                transactionType: { type: string, example: "Transfer" }
+                amount: { type: number, example: 10000.00 }
+                currency: { type: string, example: "NGN" }
+                transactionDate:
+                  type: string
+                  format: date-time
+                  example: "2024-07-06T12:34:56Z"
+                sender:
+                  type: object
+                  required: [name]
+                  properties:
+                    name: { type: string }
+                    accountNumber: { type: string }
+                    address:
+                      type: object
+                      properties:
+                        street: { type: string }
+                        city: { type: string }
+                        state: { type: string }
+                        postalCode: { type: string }
+                        country: { type: string }
+                    identification:
+                      type: object
+                      properties:
+                        type: { type: string }
+                        number: { type: string }
+                        country: { type: string }
+                receiver:
+                  type: object
+                  required: [name]
+                  properties:
+                    name: { type: string }
+                    accountNumber: { type: string }
+                    address:
+                      type: object
+                      properties:
+                        street: { type: string }
+                        city: { type: string }
+                        state: { type: string }
+                        postalCode: { type: string }
+                        country: { type: string }
+                details:
+                  type: object
+                  properties:
+                    purpose: { type: string }
+                    reference: { type: string }
+      responses:
+        "201": { description: Transaction screened }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  # ── TRANSACTION KYC ─────────────────────────────────────────
+
+  /api/v1/monitoring/kyc_search/:
+    get:
+      tags: [Transaction KYC]
+      summary: Get All KYC Search Results
+      operationId: getAllKycResults
+      responses:
+        "200": { description: All KYC results retrieved }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+    post:
+      tags: [Transaction KYC]
+      summary: Run KYC Check
+      operationId: runKycCheck
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [entity_name]
+              properties:
+                entity_name:
+                  type: string
+                  example: "John Doe"
+                entity_type:
+                  type: string
+                  enum: [person, company, business, organization]
+                sources:
+                  type: string
+                  description: "Comma-separated sources, e.g. \"Sanctions, PEPs\""
+                continuous_monitoring:
+                  type: boolean
+                  default: false
+                branch:
+                  type: integer
+      responses:
+        "200": { description: KYC check initiated or completed }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/v1/monitoring/kyc_search/{id}/:
+    get:
+      tags: [Transaction KYC]
+      summary: Get KYC Result by ID
+      operationId: getKycById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: KYC search result ID
+      responses:
+        "200": { description: KYC result retrieved }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { description: Not Found }
+
+  # ── LOAN FRAUD ──────────────────────────────────────────────
+
+  /api/v1/loan/fraud_check/:
+    post:
+      tags: [Loan Fraud]
+      summary: Loan Fraud Check
+      operationId: loanFraudCheck
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [loan_amount_requested, loan_repayment_duration_type, loan_repayment_duration_value, collateral_required]
+              properties:
+                first_name: { type: string, description: Individual applicant first name }
+                last_name: { type: string }
+                business_name: { type: string, description: Business name (business applications only) }
+                rc_number: { type: string, description: CAC registration number (business only) }
+                date_of_birth: { type: string, format: date }
+                gender: { type: string, enum: [male, female] }
+                country: { type: string, example: "Nigeria" }
+                current_address: { type: string }
+                business_address: { type: string }
+                identification_type: { type: string, example: "Passport" }
+                identification_number: { type: string }
+                bvn: { type: string }
+                phone_number: { type: string }
+                email_address: { type: string, format: email }
+                employment_type: { type: string }
+                job_role: { type: string }
+                employer_name: { type: string }
+                annual_income: { type: number }
+                annual_revenue: { type: number, description: Annual revenue (business only) }
+                employment_duration: { type: string }
+                bank_name: { type: string }
+                account_number: { type: string }
+                loan_amount_requested: { type: number, example: 100000 }
+                purpose_of_loan: { type: string }
+                loan_repayment_duration_type: { type: string, enum: [weeks, months, years] }
+                loan_repayment_duration_value: { type: integer, example: 6 }
+                collateral_required: { type: boolean, default: false }
+                collateral: { type: string }
+                is_individual: { type: boolean, description: Set true for individual applications }
+                is_business: { type: boolean, description: Set true for business applications }
+                run_aml_check: { type: boolean, default: false }
+      responses:
+        "200": { description: Loan fraud check processed }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  # ── USER JOURNEY ────────────────────────────────────────────
+
+  /api/v1/journey/event/:
+    post:
+      tags: [User Journey]
+      summary: Submit Journey Event
+      operationId: submitJourneyEvent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [user_id, session_id, event, timestamp]
+              properties:
+                user_id: { type: string }
+                session_id: { type: string }
+                event:
+                  type: string
+                  enum: [LOGIN, OTP_VERIFY, PAYMENT_INIT, PAYMENT_COMPLETE, LOGOUT]
+                timestamp: { type: string, format: date-time }
+                device_id: { type: string }
+                ip_address: { type: string }
+                metadata:
+                  type: object
+                  properties:
+                    amount: { type: number }
+                    currency: { type: string }
+      responses:
+        "201": { description: Event processed }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/v1/journey/session/{session_id}/:
+    get:
+      tags: [User Journey]
+      summary: Get Session State
+      operationId: getSessionState
+      parameters:
+        - name: session_id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: Session state retrieved }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { description: Session not found }
+    delete:
+      tags: [User Journey]
+      summary: Clear Session
+      operationId: clearSession
+      parameters:
+        - name: session_id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204": { description: Session cleared }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/v1/journey/analytics/user/{user_id}/:
+    get:
+      tags: [User Journey]
+      summary: User Analytics
+      operationId: getUserAnalytics
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: User analytics retrieved }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/v1/journey/health/:
+    get:
+      tags: [User Journey]
+      summary: Health Check
+      operationId: journeyHealth
+      security: []
+      responses:
+        "200": { description: Service health status }

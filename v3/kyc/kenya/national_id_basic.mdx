@@ -1,0 +1,128 @@
+---
+title: "National ID Basic"
+sidebarTitle: "National ID Basic"
+description: "Verify a Kenyan customer's identity using their national ID number."
+openapi: "POST /api/onboarding/kenya_kyc/national_id_basic/"
+---
+
+The Kenya National ID Basic endpoint retrieves verified identity data from the Kenyan government's IPRS database, returning the ID holder's full name, gender, citizenship, and photo.
+
+## Endpoint
+
+```
+POST /api/onboarding/kenya_kyc/national_id_basic/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `national_id` | string | Yes | The customer's Kenyan national ID number |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/kenya_kyc/national_id_basic/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"national_id": "00000000"}'
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://adhere-api.smartcomply.com/api/onboarding/kenya_kyc/national_id_basic/",
+  {
+    method: "POST",
+    headers: {
+      "x-access-token": "YOUR_SECRET_KEY",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ national_id: "00000000" }),
+  }
+);
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/kenya_kyc/national_id_basic/",
+    headers={
+        "x-access-token": "YOUR_SECRET_KEY",
+        "Content-Type": "application/json",
+    },
+    json={"national_id": "00000000"},
+)
+data = response.json()
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.First_Name` | string | Customer's first name |
+| `data.Surname` | string | Customer's surname |
+| `data.Other_Name` | string | Other names |
+| `data.Gender` | string | `"M"` or `"F"` |
+| `data.Citizenship` | string | e.g., `"Kenyan"` |
+| `data.Date_of_Birth` | string | Date of birth |
+| `data.Date_of_Issue` | string | ID issue date |
+| `data.Place_of_Birth` | string | Place of birth including district |
+| `data.Place_of_Live` | string | Registered address |
+| `data.Photo` | string | Base64-encoded customer photo |
+| `data.ErrorOcurred` | boolean | `false` on success |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "Gender": "M",
+    "Surname": "Leo",
+    "First_Name": "Joe",
+    "Other_Name": "Doe",
+    "Citizenship": "Kenyan",
+    "ErrorOcurred": false,
+    "Date_of_Birth": "2000-09-20 12:00:00 AM",
+    "Date_of_Issue": "1/27/2000 12:00:00 AM",
+    "Place_of_Live": "BOX 12345-00800 NAIROBI\nKAREN\nLOCATION - LANGATA",
+    "Place_of_Birth": "NAIROBI\nDISTRICT - STAREHE",
+    "Photo": "<base64-encoded-jpeg>"
+  },
+  "message": "National ID Basic details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+Returned when the ID number is missing, malformed, or not found.
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

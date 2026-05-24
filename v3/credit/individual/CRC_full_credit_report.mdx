@@ -1,0 +1,118 @@
+---
+title: "CRC Full Credit Report"
+sidebarTitle: "CRC Full Report"
+description: "Retrieve an individual's full credit report from the CRC bureau, including loan history, performance, and enquiries."
+openapi: "POST /api/onboarding/individual/crc_full/"
+---
+
+The CRC Full Credit Report endpoint returns a comprehensive credit report from the CRC bureau, including detailed loan history, repayment performance, credit enquiries, and employment history.
+
+## Endpoint
+
+```
+POST /api/onboarding/individual/crc_full/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `bvn` | string | Yes | The individual's 11-digit Bank Verification Number |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/individual/crc_full/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"bvn": "22244545518"}'
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.name` | string | Full name |
+| `data.score.totalNoOfLoans` | number | Total loans on record |
+| `data.score.totalNoOfActiveLoans` | number | Currently active loans |
+| `data.score.totalNoOfClosedLoans` | number | Closed loans |
+| `data.score.totalBorrowed` | number | Total amount borrowed |
+| `data.score.totalOutstanding` | number | Total outstanding balance |
+| `data.score.highestLoanAmount` | number | Highest single loan amount |
+| `data.score.creditEnquiries` | array | List of credit enquiries |
+| `data.score.loanPerformance` | array | Per-lender performance summaries |
+| `data.score.loanHistory` | array | Detailed loan-by-loan history |
+| `data.score.employmentHistory` | array | Employment records on file |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "_id": "64f600608aaf9386c646de32",
+    "bvn": "22244545518",
+    "name": "ADELEKE EMMANUEL AYORINDE",
+    "gender": "Male",
+    "dateOfBirth": "29/12/1994",
+    "score": {
+      "totalNoOfDelinquentFacilities": 0,
+      "lastReportedDate": "23/Nov/2023",
+      "totalNoOfLoans": 29,
+      "totalNoOfInstitutions": 6,
+      "totalBorrowed": 4145267,
+      "totalOutstanding": 1,
+      "totalOverdue": 0,
+      "totalNoOfPerformingLoans": 29,
+      "totalNoOfClosedLoans": 27,
+      "totalNoOfActiveLoans": 2,
+      "highestLoanAmount": 1134330,
+      "crcReportOrderNumber": "W-0097887830/2023",
+      "creditEnquiries": [
+        {"loanType": "Overdraft", "date": "12-Oct-2023", "institutionType": "Micro Lenders"}
+      ],
+      "loanPerformance": [
+        {"loanProvider": "UNITED BANK FOR AFRICA", "loanAmount": "NGN 1,134,330", "status": "Open", "performanceStatus": "Performing"}
+      ],
+      "loanHistory": [
+        {"loanProvider": "UNITED BANK FOR AFRICA", "accountNumber": "SF099911020938", "type": "Term Loan", "loanAmount": "1134330", "performanceStatus": "Performing"}
+      ],
+      "employmentHistory": [
+        {"employerName": "ARM INVESTMENT MANAGERS", "address": "1 MEKUNWEN ROAD OYINKAN ABAYOMI ETI OSA", "dateReported": "31-jul-2023"}
+      ]
+    },
+    "searchedDate": "2023-11-23T14:26:42.196Z"
+  },
+  "message": "CRC Full credit report details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Missing required fields"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

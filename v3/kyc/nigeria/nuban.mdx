@@ -1,0 +1,125 @@
+---
+title: "NUBAN Verification"
+sidebarTitle: "NUBAN"
+description: "Resolve a Nigerian bank account number to its registered account name and bank."
+openapi: "POST /api/onboarding/nigeria_kyc/nuban/"
+---
+
+The NUBAN endpoint verifies a Nigerian Uniform Bank Account Number (NUBAN) and returns the account name and bank associated with it. Use this for bank account ownership verification during onboarding or payment flows.
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/nuban/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `account_number` | string | Yes | The 10-digit NUBAN account number |
+| `bank_code` | string | Yes | The 3–6 digit bank code (see list below) |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/nuban/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"account_number": "0768540312", "bank_code": "035"}'
+```
+
+```python Python
+import requests
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/nuban/",
+    headers={"x-access-token": "YOUR_SECRET_KEY", "Content-Type": "application/json"},
+    json={"account_number": "0768540312", "bank_code": "035"},
+)
+```
+</CodeGroup>
+
+### Bank Codes Reference
+
+<Accordion title="View all supported bank codes">
+
+| Bank | Code |
+|------|------|
+| Access Bank | `044` |
+| Citibank Nigeria | `023` |
+| ECOBANK | `050` |
+| FCMB | `214` |
+| Fidelity Bank | `070` |
+| First Bank of Nigeria | `011` |
+| GTBank | `058` |
+| Heritage Bank | `030` |
+| JAIZ Bank | `301` |
+| Kuda Microfinance Bank | `50211` |
+| Lotus Bank | `303` |
+| Moniepoint Microfinance Bank | `50563` |
+| Opay | `999992` |
+| Palmpay | `999111` |
+| Polaris Bank | `076` |
+| Providus Bank | `101` |
+| Stanbic IBTC Bank | `221` |
+| Standard Chartered Bank | `068` |
+| Sterling Bank | `232` |
+| TAJBank | `302` |
+| Union Bank of Nigeria | `032` |
+| United Bank For Africa | `033` |
+| Unity Bank | `215` |
+| Wema Bank | `035` |
+| Zenith Bank | `057` |
+
+</Accordion>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.bank_id` | integer | Internal bank identifier |
+| `data.account_name` | string | Registered account holder name |
+| `data.account_number` | string | Account number that was queried |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "bank_id": 11,
+    "account_name": "STEPHEN BADMUS",
+    "account_number": "0768540312"
+  },
+  "message": "Nuban details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

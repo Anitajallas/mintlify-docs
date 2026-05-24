@@ -1,16 +1,16 @@
 ---
 title: "Flutter SDK"
-description: "Integrate SmartComply identity verification and liveness detection into your Flutter app."
+description: "Integrate Adhere identity verification and liveness detection into your Flutter app."
 ---
 
-# SmartComply Flutter SDK
+# Adhere Flutter SDK
 
-A powerful Flutter package for SmartComply identity verification and facial liveness detection. Our SDK delivers a drop-in UI that seamlessly orchestrates BVN/NIN verification (Nigeria), Document parsing (International), and video-based ML Kit facial liveness challenges.
+A powerful Flutter package for Adhere identity verification and facial liveness detection. Our SDK delivers a drop-in UI that seamlessly orchestrates BVN/NIN verification (Nigeria), Document parsing (International), and video-based ML Kit facial liveness challenges.
 
 ## Features
 
 - **Drop-in UI Integration** — `sdk.open(context)` launches our polished UI module natively on top of your app.
-- **Dynamic Client Configuration** — Fetches available document types securely from your SmartComply Dashboard rules.
+- **Dynamic Client Configuration** — Fetches available document types securely from your Adhere Dashboard rules.
 - **One-Time Use Policy System** — Verifications are securely bound utilizing a single-use parameter.
 - **Identity Onboarding** — Verifies BVN & NIN directly via national APIs, or scans Passports & National ID Cards.
 - **Liveness Detection** — Animated face action challenges (Blinking, Turning Head) backed by Google ML Kit.
@@ -70,7 +70,7 @@ final sdk = SmartComply(
 // 2. Wrap the execution in an asynchronous callback
 void startVerification(BuildContext context) async {
   try {
-    // Open the SmartComply UI
+    // Open the Adhere UI
     final result = await sdk.open(context);
 
     if (result.success) {

@@ -1,0 +1,85 @@
+---
+title: "KRA PIN"
+sidebarTitle: "KRA PIN"
+description: "Verify a customer's Kenya Revenue Authority PIN and retrieve their taxpayer details."
+openapi: "POST /api/onboarding/kenya_kyc/kra_pin/"
+---
+
+The KRA PIN endpoint validates a Kenya Revenue Authority (KRA) Personal Identification Number and returns the associated taxpayer details including name, PIN status, iTax status, and tax obligation information.
+
+## Endpoint
+
+```
+POST /api/onboarding/kenya_kyc/kra_pin/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `pin` | string | Yes | The customer's KRA PIN (e.g. `A123456789B`) |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/kenya_kyc/kra_pin/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"pin": "A123456789B"}'
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.pin` | string | KRA PIN |
+| `data.taxpayer_name` | string | Registered taxpayer name |
+| `data.pin_status` | string | PIN status (e.g. `"Active"`) |
+| `data.itax_status` | string | iTax system status |
+| `data.obligation_details` | string | Tax obligation description and registration date |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "pin": "A123456789B",
+    "taxpayer_name": "ABB APP Limited",
+    "pin_status": "Active",
+    "itax_status": "iPage Updated",
+    "obligation_details": "Income Tax - Company Registered 29/01/2013"
+  },
+  "message": "Pin details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "PIN is required"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

@@ -1,0 +1,71 @@
+---
+title: "Transaction Monitoring"
+sidebarTitle: "Overview"
+description: "Real-time transaction analysis and automated alerting to detect suspicious activity."
+---
+
+## Overview
+
+Transaction Monitoring provides real-time analysis of every transaction processed through your Adhere account. It evaluates transactions against a set of configurable rules and automatically triggers alerts when suspicious patterns are detected — helping you comply with AML regulations and prevent fraud proactively.
+
+## How It Works
+
+<Steps>
+  <Step title="Submit a transaction">
+    Send transaction data to the [Transaction Monitoring endpoint](/v3/transaction/transaction_monitoring/post_transaction_request) via your backend.
+  </Step>
+  <Step title="Rules are evaluated">
+    The system checks the transaction against your configured rules (amount limits, frequency, geography, merchant category, and more).
+  </Step>
+  <Step title="Alert is generated (if triggered)">
+    If one or more rules fire, the transaction is flagged as suspicious and an alert is sent via webhook, email, or SMS.
+  </Step>
+  <Step title="Review and action">
+    Investigate the alert in the Adhere dashboard — approve, reject, or escalate the transaction.
+  </Step>
+</Steps>
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Customizable Rules" icon="sliders">
+    Configure rules based on transaction amount, frequency, geographic location, merchant category, time of day, and more.
+  </Card>
+  <Card title="Automated Alerts" icon="bell">
+    Get notified instantly via webhook, email, or SMS when a transaction breaches a rule.
+  </Card>
+  <Card title="Case Management" icon="folder-open">
+    Review flagged transactions, approve or reject them, and escalate to support from the Adhere dashboard.
+  </Card>
+  <Card title="AML Screening" icon="shield-check">
+    Optionally screen transactions and counterparties against global watchlists and sanction databases.
+  </Card>
+</CardGroup>
+
+## Rule Criteria
+
+Rules can be based on any combination of the following:
+
+| Criterion | Example |
+|-----------|---------|
+| Transaction amount | Flag any transaction over ₦500,000 |
+| Transaction frequency | Flag more than 10 transactions in 1 hour |
+| Geographic location | Flag transactions from high-risk countries |
+| Merchant category | Flag gambling or crypto merchant codes |
+| Time of day | Flag transactions between 1am–4am |
+| Account type | Apply different rules to individual vs. business accounts |
+
+## Webhook Notifications
+
+When a transaction is flagged, Adhere sends a `suspicious_transaction` event to your configured webhook URL. See [Webhooks](/webhooks) for the full payload structure and signature verification guide.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Submit a Transaction" icon="paper-plane" href="/v3/transaction/transaction_monitoring/post_transaction_request">
+    Send your first transaction for monitoring.
+  </Card>
+  <Card title="User Journey" icon="route" href="/v3/transaction/transaction_monitoring/user_journey">
+    Understand the end-to-end flow from submission to resolution.
+  </Card>
+</CardGroup>

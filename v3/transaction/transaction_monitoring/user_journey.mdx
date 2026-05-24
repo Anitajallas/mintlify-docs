@@ -1,0 +1,188 @@
+---
+title: "User Journey Tracking"
+sidebarTitle: "User Journey"
+description: "Track and validate user transaction events in sequence to detect out-of-order or suspicious behaviour."
+openapi: "POST /api/v1/journey/event/"
+---
+
+The User Journey API tracks critical steps in a user's transaction flow through defined checkpoints. It validates that expected events occur in the correct sequence and flags suspicious or out-of-order behaviour in real time.
+
+## Submit Event
+
+Submit a user journey event for fraud assessment.
+
+### Endpoint
+
+```
+POST /api/v1/journey/event/
+```
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `user_id` | string | Yes | Unique identifier for the user |
+| `session_id` | string | Yes | Identifier for the current session |
+| `event` | string | Yes | Event type: `LOGIN`, `OTP_VERIFY`, `PAYMENT_INIT`, `PAYMENT_COMPLETE`, or `LOGOUT` |
+| `timestamp` | string | Yes | ISO-8601 datetime of the event |
+| `device_id` | string | No | Device identifier |
+| `ip_address` | string | No | IP address during the event |
+| `metadata.amount` | number | No | Transaction amount if applicable |
+| `metadata.currency` | string | No | Currency code |
+
+### 201 Created
+
+```json
+{
+  "status": "Success",
+  "data": {
+    "status": "allow",
+    "risk_score": 0.12,
+    "reason": "Normal login pattern",
+    "session_state": "OTP_VERIFY",
+    "alert_triggered": false
+  },
+  "message": "success"
+}
+```
+
+---
+
+## Get Session State
+
+Retrieve the current state and event history for a session.
+
+### Endpoint
+
+```
+GET /api/v1/journey/session/{session_id}/
+```
+
+### Path Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `session_id` | string | Yes | Identifier for the session to retrieve |
+
+### 200 OK
+
+```json
+{
+  "status": "success",
+  "data": {
+    "session_id": "abc-123",
+    "user_id": "user-456",
+    "current_state": "PAYMENT_INIT",
+    "events": [],
+    "start_time": "2025-08-01T10:00:00Z"
+  },
+  "message": "success"
+}
+```
+
+---
+
+## Clear Session
+
+Delete all stored data for a session.
+
+### Endpoint
+
+```
+DELETE /api/v1/journey/session/{session_id}/
+```
+
+### Path Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `session_id` | string | Yes | Identifier for the session to clear |
+
+### 204 No Content
+
+```json
+{
+  "message": "Session cleared"
+}
+```
+
+---
+
+## User Analytics
+
+Retrieve fraud and risk statistics for a user across all sessions.
+
+### Endpoint
+
+```
+GET /api/v1/journey/analytics/user/{user_id}/
+```
+
+### Path Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `user_id` | string | Yes | Identifier for the user |
+
+### 200 OK
+
+```json
+{
+  "status": "success",
+  "data": {
+    "user_id": "user-456",
+    "total_events": 42,
+    "average_risk_score": 0.08,
+    "blocked_events": 1,
+    "reviewed_events": 3,
+    "total_sessions": 10,
+    "average_session_risk": 0.07
+  },
+  "message": "Success"
+}
+```
+
+---
+
+## Health Check
+
+Check the service health and dependency status.
+
+### Endpoint
+
+```
+GET /api/v1/journey/health/
+```
+
+### 200 OK
+
+```json
+{
+  "status": "healthy",
+  "broker": "connected",
+  "database": "connected",
+  "timestamp": "2025-08-01T10:00:00Z"
+}
+```
+
+---
+
+## Error Codes
+
+| Code | Description |
+|------|-------------|
+| `200` | Success |
+| `201` | Event processed successfully |
+| `400` | Missing, malformed, or invalid fields |
+| `401` | Authentication failed or API key missing |
+| `403` | Insufficient permissions for this resource |
+| `404` | Resource or endpoint not found |
+| `429` | Rate limit exceeded — retry after cooldown |
+| `500` | Unexpected server error |

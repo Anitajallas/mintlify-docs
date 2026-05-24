@@ -1,0 +1,112 @@
+---
+title: "Passport Verification"
+sidebarTitle: "Passport"
+description: "Verify a customer's identity using their Nigerian international passport number."
+openapi: "POST /api/onboarding/nigeria_kyc/passport/"
+---
+
+The Passport Verification endpoint validates a Nigerian passport number against the government database and returns the holder's personal details, passport validity dates, and a photo.
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/passport/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `passport_number` | string | Yes | The customer's passport number |
+| `surname` | string | Yes | Surname as on the passport |
+| `date_of_birth` | string | Yes | Date of birth in `YYYY-MM-DD` format |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/passport/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"passport_number": "Z18679232", "surname": "John", "date_of_birth": "1994-08-11"}'
+```
+
+```python Python
+import requests
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/passport/",
+    headers={"x-access-token": "YOUR_SECRET_KEY", "Content-Type": "application/json"},
+    json={"passport_number": "Z18679232", "surname": "John", "date_of_birth": "1994-08-11"},
+)
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.passportNumber` | string | Passport number |
+| `data.lastName` | string | Last name |
+| `data.firstName` | string | First name |
+| `data.middleName` | string | Middle name |
+| `data.dateOfBirth` | string | Date of birth |
+| `data.gender` | string | Gender |
+| `data.dateOfIssue` | string | Passport issue date |
+| `data.expiryDate` | string | Passport expiry date |
+| `data.issuePlace` | string | State/location where passport was issued |
+| `data.documentType` | string | Passport type (e.g., `"Standard Passport"`) |
+| `data.phoneNumber` | string | Registered phone number |
+| `data.image` | string | Base64-encoded passport photo |
+| `data.referenceID` | string | Internal reference ID |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "passportNumber": "Z18679232",
+    "dateOfIssue": "20/09/2023",
+    "expiryDate": "19/09/2028",
+    "documentType": "Standard Passport",
+    "issuePlace": "OGUN STATE",
+    "lastName": "JOHN",
+    "firstName": "EMMANUEL",
+    "middleName": "IFEANYI",
+    "dateOfBirth": "10/04/2000",
+    "gender": "Male",
+    "image": "<base64-encoded-jpeg>",
+    "referenceID": "23445",
+    "phoneNumber": "09011002200"
+  },
+  "message": "International Passport details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

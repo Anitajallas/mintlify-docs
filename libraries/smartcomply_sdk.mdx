@@ -1,13 +1,13 @@
 ---
 title: "Web SDK"
-description: "Integrate SmartComply identity verification and liveness detection into your web applications."
+description: "Integrate Adhere identity verification and liveness detection into your web applications."
 ---
 
-# SmartComply Web SDK
+# Adhere Web SDK
 
-The SmartComply Web SDK enables you to rapidly and securely verify user identities and perform facial liveness checks directly in your web applications.
+The Adhere Web SDK enables you to rapidly and securely verify user identities and perform facial liveness checks directly in your web applications.
 
-This SDK is incredibly lightweight and mounts a beautifully animated drop-in widget right cleanly over your application layout, intercepting user webcam video and securely negotiating verifications with the SmartComply backend.
+This SDK is incredibly lightweight and mounts a beautifully animated drop-in widget right cleanly over your application layout, intercepting user webcam video and securely negotiating verifications with the Adhere backend.
 
 ## Features
 
@@ -33,7 +33,7 @@ yarn add @smartcomply/sdk
 
 ## Quick Start (Recommended)
 
-To mount the SmartComply drop-in SDK properly, provide your authenticated **API Key**. The widget will automatically spawn a gorgeous welcome screen to guide the end-user into copy-pasting their unique Single-Use **Client ID**.
+To mount the Adhere drop-in SDK properly, provide your authenticated **API Key**. The widget will automatically spawn a gorgeous welcome screen to guide the end-user into copy-pasting their unique Single-Use **Client ID**.
 
 ```javascript
 import { SmartComplyFlow } from '@smartcomply/sdk';
@@ -78,7 +78,7 @@ That's it! When executed, the SDK handles the complete end-to-end user lifecycle
 If you don't want to use our modal window, you can instantiate the underlying `SmartComply` Engine and orchestrate your custom Web UI natively using our methods.
 
 ```typescript
-import { SmartComply } from '@smartcomply/sdk/core';
+import { Adhere } from '@smartcomply/sdk/core';
 
 // 1. Initialise the Engine using your Secret API Token
 const sdk = new SmartComply({

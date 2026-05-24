@@ -1,0 +1,147 @@
+---
+title: "Bank Verification Number Advanced (BVN)"
+sidebarTitle: "BVN Advanced"
+description: "Retrieve a full verified BVN profile including enrollment data, marital status, and customer photo."
+openapi: "POST /api/onboarding/nigeria_kyc/bvn_advanced/"
+---
+
+The BVN Advanced endpoint provides a comprehensive view of a customer's identity. In addition to standard BVN fields, it returns enrollment details, watchlist status, residential address, and a base64-encoded customer photo.
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/bvn_advanced/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `bvn` | string | Yes | The customer's 11-digit Bank Verification Number |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/bvn_advanced/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"bvn": "22000000001"}'
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/bvn_advanced/",
+  {
+    method: "POST",
+    headers: {
+      "x-access-token": "YOUR_SECRET_KEY",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ bvn: "22000000001" }),
+  }
+);
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/bvn_advanced/",
+    headers={
+        "x-access-token": "YOUR_SECRET_KEY",
+        "Content-Type": "application/json",
+    },
+    json={"bvn": "22000000001"},
+)
+data = response.json()
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.bvn` | string | The BVN that was queried |
+| `data.image` | string | Base64-encoded JPEG of the customer's registered photo |
+| `data.title` | string | Honorific (e.g., `"Mr"`, `"Mrs"`) |
+| `data.gender` | string | `"male"` or `"female"` |
+| `data.lastName` | string | Customer's last name |
+| `data.firstName` | string | Customer's first name |
+| `data.middleName` | string | Customer's middle name |
+| `data.dateOfBirth` | string | Date of birth in `YYYY-MM-DD` format |
+| `data.phoneNumber1` | string | Primary registered phone number |
+| `data.phoneNumber2` | string | Secondary phone number (if available) |
+| `data.maritalStatus` | string | e.g., `"Single"`, `"Married"` |
+| `data.lgaOfOrigin` | string | Local government area of origin |
+| `data.stateOfOrigin` | string | State of origin |
+| `data.stateOfResidence` | string | State of current residence |
+| `data.lgaOfResidence` | string | LGA of residence (if available) |
+| `data.residentialAddress` | string | Residential address (if available) |
+| `data.enrollmentBank` | string | Bank code where BVN was enrolled |
+| `data.enrollmentBranch` | string | Branch where BVN was enrolled |
+| `data.registrationDate` | string | Date of BVN registration |
+| `data.levelOfAccount` | string | CBN account tier level |
+| `data.watchListed` | string | `"YES"` if on a watchlist, otherwise `"NO"` |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "bvn": "22000000001",
+    "image": "<base64-encoded-jpeg>",
+    "title": "Mr",
+    "gender": "male",
+    "lastName": "OMOLE",
+    "firstName": "ABRAHAM",
+    "middleName": "ISAAC",
+    "nameOnCard": "",
+    "dateOfBirth": "1909-09-19",
+    "lgaOfOrigin": "Ado-Odo/Ota",
+    "watchListed": "NO",
+    "phoneNumber1": "09011001100",
+    "phoneNumber2": "",
+    "maritalStatus": "Single",
+    "stateOfOrigin": "Ogun State",
+    "enrollmentBank": "033",
+    "levelOfAccount": "Level 1 - Low Level Accounts",
+    "lgaOfResidence": "",
+    "enrollmentBranch": "0517-OTA 2",
+    "registrationDate": "2017-09-05",
+    "stateOfResidence": "Ogun State",
+    "residentialAddress": ""
+  },
+  "message": "Bank Verification Number details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

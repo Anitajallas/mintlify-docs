@@ -1,0 +1,108 @@
+---
+title: "Credit Registry History Advanced"
+sidebarTitle: "CRC History Advanced"
+description: "Retrieve an individual's advanced credit history from the Credit Registry bureau with full loan and enquiry details."
+openapi: "POST /api/onboarding/individual/credit_registry_history_advanced/"
+---
+
+The Credit Registry History Advanced endpoint returns a detailed credit history report from the Credit Registry bureau, including loan performance per account, creditor contact details, and credit enquiry summaries.
+
+## Endpoint
+
+```
+POST /api/onboarding/individual/credit_registry_history_advanced/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `bvn` | string | Yes | The individual's 11-digit Bank Verification Number |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/individual/credit_registry_history_advanced/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"bvn": "22244545518"}'
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.name` | string | Full name |
+| `data.score.totalNoOfLoans` | number | Total loans on record |
+| `data.score.totalBorrowed` | number | Total amount borrowed |
+| `data.score.creditors` | array | Creditors with subscriber IDs and contact details |
+| `data.score.creditEnquiries` | array | Credit enquiries with reason and date |
+| `data.score.creditEnquiriesSummary` | object | Enquiry counts for last 3, 12, and 36 months |
+| `data.score.loanPerformance` | array | Per-account performance with payment profiles |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "_id": "64f600608aaf9386c646de32",
+    "bvn": "22244545518",
+    "name": "ADELEKE EMMANUEL AYORINDE",
+    "gender": "Male",
+    "dateOfBirth": "29/12/1994",
+    "score": {
+      "totalNoOfLoans": 16,
+      "totalNoOfDelinquentFacilities": 0,
+      "totalBorrowed": 3761267,
+      "totalOutstanding": 0,
+      "creditors": [
+        {"Subscriber_ID": "737248693595559931", "Name": "NewEdge Finance Limited", "Phone": "008618824674241"}
+      ],
+      "creditEnquiries": [
+        {"loanProvider": "Lifegate Microfinance Bank Limited", "reason": "KYCCheck", "date": "2023-11-23T00:00:00"}
+      ],
+      "creditEnquiriesSummary": {
+        "Last3MonthCount": "3",
+        "Last12MonthCount": "4",
+        "Last36MonthCount": "6"
+      },
+      "loanPerformance": [
+        {"loanProvider": "Sterling Bank Plc", "accountNumber": "0086575839", "status": "Open", "paymentProfile": "NNNNNNNNNNNNNNNNNN0N0N00"}
+      ]
+    },
+    "searchedDate": "2023-11-23T14:47:42.824Z"
+  },
+  "message": "Credit Registry check successful"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Missing required fields"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

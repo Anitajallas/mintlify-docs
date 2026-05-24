@@ -1,0 +1,106 @@
+---
+title: "Business Registration"
+sidebarTitle: "Business Registration"
+description: "Verify a Kenyan business using its registration number and retrieve directors, shareholders, and beneficial owners."
+openapi: "POST /api/onboarding/kenya_kyc/business_registration/"
+---
+
+The Business Registration endpoint retrieves verified company information — including directors, beneficial owners, and shareholding structure — using a valid Kenya business registration number.
+
+## Endpoint
+
+```
+POST /api/onboarding/kenya_kyc/business_registration/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `registration_number` | string | Yes | The business registration number (e.g. `PVT-ABC123`) |
+| `postal_code` | string | No | Postal code of the registered business address |
+| `postal_address` | string | No | Postal address number |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/kenya_kyc/business_registration/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"registration_number": "PVT-ABC123", "postal_code": "00100", "postal_address": "1234"}'
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.valid` | boolean | Whether the registration is valid |
+| `data.directors` | array | List of directors with identity and shareholding details |
+| `data.beneficial_owners` | array | List of beneficial owners with shareholding details |
+| `data.fiduciaries` | array | Fiduciary details if applicable |
+| `data.proprietors` | array | Proprietor details if applicable |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "valid": true,
+    "success": true,
+    "directors": [
+      {
+        "name": "JAMES KARIUKI MWANGI",
+        "gender": "Male",
+        "address": "P.O BOX 1234 NAIROBI",
+        "id_type": "National ID",
+        "id_number": "A12345678",
+        "occupation": "Director",
+        "nationality": "Citizen",
+        "phone_number": "N/A",
+        "date_of_birth": "N/A",
+        "shareholdings": 10,
+        "shareholding_breakdown": [{"type": "ORDINARY", "number_of_shares": 10}]
+      }
+    ],
+    "documents": {},
+    "fiduciaries": [],
+    "proprietors": [],
+    "beneficial_owners": [
+      {
+        "name": "JAMES KARIUKI MWANGI",
+        "gender": "Male",
+        "address": "P.O BOX 1234 NAIROBI",
+        "nationality": "Citizen",
+        "phone_number": "N/A",
+        "shareholdings": 10,
+        "shareholder_type": "Individual",
+        "registration_number": "N/A",
+        "shareholding_breakdown": [{"type": "ORDINARY", "number_of_shares": 10}]
+      }
+    ]
+  },
+  "message": "Business Registration details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```

@@ -1,0 +1,147 @@
+---
+title: "Submit Transaction for Monitoring"
+sidebarTitle: "Submit Transaction"
+description: "Submit a transaction for real-time fraud scoring against your configured thresholds and limits."
+openapi: "POST /api/v1/monitoring/transaction_monitoring/"
+---
+
+The Submit Transaction endpoint processes a transaction in real-time, computing a fraud score based on your configured thresholds and limits. The response includes an activity code indicating whether the transaction is clean, suspicious, or high-risk.
+
+## Endpoint
+
+```
+POST /api/v1/monitoring/transaction_monitoring/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `transaction_id` | string | Yes | Unique identifier for the transaction |
+| `amount` | number | Yes | Transaction amount |
+| `currency` | string | Yes | Currency code (e.g., `NGN`, `USD`) |
+| `transaction_type` | string | Yes | Type of transaction: `transfer`, `card`, `ussd`, or `web` |
+| `account_type` | string | Yes | Account type: `individual` or `corporate` |
+| `origin_account` | object | Yes | Originating account details |
+| `origin_account.account_number` | string | Yes | Account number of the sender |
+| `origin_account.bank_code` | string | Yes | Bank code of the sender |
+| `destination_account` | object | Yes | Destination account details |
+| `destination_account.account_number` | string | Yes | Account number of the recipient |
+| `destination_account.bank_code` | string | Yes | Bank code of the recipient |
+| `customer_details` | object | Yes | Details of the customer initiating the transaction |
+| `customer_details.customer_name` | string | Yes | Customer's full name |
+| `customer_details.customer_email` | string | Yes | Customer's email address |
+| `customer_details.bvn` | string | No | Customer's BVN (used to build a risk profile) |
+| `additional_info` | object | Yes | Additional context for fraud evaluation |
+| `additional_info.ip_address` | string | Yes | IP address during the transaction |
+| `additional_info.location` | string | Yes | Location string or lat/lon (e.g., `"lat=-30.66,lon=-65.77"`) |
+| `additional_info.transaction_description` | string | No | Transaction description |
+| `run_kyc` | boolean | No | Run a KYC check on the customer. Defaults to `false` |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/v1/monitoring/transaction_monitoring/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "transaction_id": "12345678",
+    "amount": 14000000,
+    "currency": "NGN",
+    "transaction_type": "card",
+    "account_type": "individual",
+    "origin_account": {
+      "account_number": "9876543219",
+      "bank_code": "001"
+    },
+    "destination_account": {
+      "account_number": "123456789",
+      "bank_code": "002"
+    },
+    "customer_details": {
+      "customer_name": "Muhammad Ibrahim Isah",
+      "customer_email": "user@example.com",
+      "bvn": "22430372151"
+    },
+    "additional_info": {
+      "ip_address": "192.168.1.1",
+      "location": "Lagos, Nigeria",
+      "transaction_description": "Payment for order #789"
+    },
+    "run_kyc": false
+  }'
+```
+</CodeGroup>
+
+## Response
+
+### Activity Codes
+
+**Suspicious (flag for review):**
+
+| Code | Description |
+|------|-------------|
+| `450` | Suspicious Transaction Detected — Requires Manual Review |
+| `451` | High-Risk Transaction — Potential Fraud |
+| `452` | Unusual Transaction Behavior — Pattern Anomaly |
+| `453` | Velocity Check Failed — Too Many Transactions in Short Time |
+| `454` | Geographic Inconsistency — Unusual Location |
+| `455` | Transaction Amount Too High — Above Threshold |
+| `456` | Blacklisted Account or Entity |
+| `457` | Repeated Failed Transactions — Possible Fraud Attempt |
+
+**Safe:**
+
+| Code | Description |
+|------|-------------|
+| `200` | Transaction Approved — No Issues |
+| `201` | Transaction Successfully Processed |
+| `202` | Transaction Pending Review — Routine Check |
+| `210` | Trusted Transaction — Verified and Safe |
+| `211` | Low-Risk Transaction — No Anomalies Detected |
+| `212` | Recurring Transaction Approved — Previously Authorized Pattern |
+| `220` | Whitelisted Entity — Pre-approved Account or Business |
+| `221` | Known Customer — Transaction Aligns with User History |
+
+### 201 Created
+
+```json
+{
+  "status": "Success",
+  "data": {
+    "activity_code": "450",
+    "status": "suspicious",
+    "comment": ["4 rule(s) triggered"]
+  },
+  "message": "Transaction was successfully processed"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

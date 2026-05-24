@@ -1,0 +1,111 @@
+---
+title: "Premium Business Credit History"
+sidebarTitle: "Premium Credit History"
+description: "Retrieve a consolidated business credit report from both CRC and First Central bureaus."
+openapi: "POST /api/onboarding/business/premium/"
+---
+
+The Premium Business Credit History endpoint aggregates credit data from both the CRC and First Central bureaus, providing a unified view of a business's credit standing including loan history, performance summaries, director details, and credit enquiries.
+
+## Endpoint
+
+```
+POST /api/onboarding/business/premium/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `registration_number` | string | Yes | The business RC or registration number |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/business/premium/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"registration_number": "RC123456"}'
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+Each field in `data.score` is an array of objects with `source` (`"CRC"` or `"FIRST_CENTRAL"`) and `value` keys, providing per-bureau breakdowns.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.name` | string | Business name |
+| `data.businessType` | string | Business type |
+| `data.score.directors` | array | Directors per bureau |
+| `data.score.totalNoOfLoans` | array | Total loans per bureau |
+| `data.score.totalBorrowed` | array | Total borrowed per bureau |
+| `data.score.totalOutstanding` | array | Outstanding balance per bureau |
+| `data.score.totalOverdue` | array | Overdue amount per bureau |
+| `data.score.loanHistory` | array | Loan history per bureau |
+| `data.score.creditEnquiries` | array | Credit enquiries per bureau |
+| `data.score.loanPerformance` | array | Loan performance per bureau |
+| `data.score.bureauStatus` | object | Success/failure status for each bureau |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "_id": "636e768d8215a2e2fb06cfde",
+    "business_reg_no": "RC123456",
+    "name": "CAPITALFIELD ASSET MGT LTD",
+    "businessType": "SMALLANDMEDIUMSCALEENTERPRISE",
+    "score": {
+      "totalNoOfLoans": [
+        {"source": "CRC", "value": 24},
+        {"source": "FIRST_CENTRAL", "value": 9}
+      ],
+      "totalBorrowed": [
+        {"source": "CRC", "value": 567401372},
+        {"source": "FIRST_CENTRAL", "value": 1004525869.55}
+      ],
+      "totalNoOfDelinquentFacilities": [
+        {"source": "CRC", "value": 1},
+        {"source": "FIRST_CENTRAL", "value": 0}
+      ],
+      "bureauStatus": {
+        "crc": "success",
+        "firstCentral": "success"
+      }
+    },
+    "searchedDate": "2023-11-23T16:17:36.391Z"
+  },
+  "message": "Premium check successful"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Missing required fields"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

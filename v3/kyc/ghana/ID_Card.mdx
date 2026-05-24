@@ -1,0 +1,103 @@
+---
+title: "Ghana ID Card"
+sidebarTitle: "ID Card"
+description: "Verify a customer's identity using their Ghana Card number."
+openapi: "POST /api/onboarding/ghana_kyc/id_card/"
+---
+
+The Ghana ID Card endpoint validates a Ghana Card number and returns the associated personal details including name, date of birth, address, and photo.
+
+## Endpoint
+
+```
+POST /api/onboarding/ghana_kyc/id_card/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `identification_number` | string | Yes | The customer's Ghana Card number (format: `GHA-000000000-0`) |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/ghana_kyc/id_card/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"identification_number": "GHA-000000000-0"}'
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.FullName` | string | Full name |
+| `data.FirstName` | string | First name |
+| `data.LastName` | string | Last name |
+| `data.OtherNames` | string | Other names |
+| `data.DOB` | string | Date of birth (`YYYY-MM-DD`) |
+| `data.Gender` | string | Gender |
+| `data.PhoneNumber` | string | Registered phone number |
+| `data.Address` | string | Registered address |
+| `data.Country` | string | Country |
+| `data.IDNumber` | string | Ghana Card number |
+| `data.IssuanceDate` | string | Card issue date |
+| `data.ExpirationDate` | string | Card expiry date |
+| `data.Secondary_ID_Number` | string | Secondary identification number |
+| `data.Photo` | string | Base64-encoded ID photo |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "DOB": "2000-09-20",
+    "Photo": "<base64-encoded-jpeg>",
+    "Gender": "Male",
+    "Address": "OPHELIA JUNCTION, Barimah Close, ESSERESO, BOSOMTWE, ASHANTI, Ghana",
+    "Country": "Ghana",
+    "FullName": "Joe Leo Doe",
+    "IDNumber": "GHA-000000000-0",
+    "LastName": "Leo",
+    "FirstName": "Joe",
+    "OtherNames": "Leo",
+    "PhoneNumber": "0000000",
+    "IssuanceDate": "2020-08-07",
+    "ExpirationDate": "2030-08-07",
+    "Secondary_ID_Number": "AQ0000000"
+  },
+  "message": "Ghana ID Card details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

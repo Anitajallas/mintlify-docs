@@ -1,0 +1,110 @@
+---
+title: "CRC Business Credit History"
+sidebarTitle: "CRC Credit History"
+description: "Retrieve a business's credit history from the CRC bureau using their registration number."
+openapi: "POST /api/onboarding/business/crc/"
+---
+
+The CRC Business Credit History endpoint provides a detailed record of a business's credit-related activities via the CRC bureau, including loan accounts, payment timelines, credit utilization, and delinquency status.
+
+## Endpoint
+
+```
+POST /api/onboarding/business/crc/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `registration_number` | string | Yes | The business RC or registration number |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/business/crc/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"registration_number": "RC123456"}'
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data._id` | string | Unique record ID |
+| `data.business_reg_no` | string | Business registration number |
+| `data.name` | string | Business name |
+| `data.address` | string | Registered address |
+| `data.score.totalNoOfLoans` | number | Total loans on record |
+| `data.score.totalNoOfActiveLoans` | number | Currently active loans |
+| `data.score.totalNoOfClosedLoans` | number | Closed loans |
+| `data.score.totalBorrowed` | number | Total amount borrowed |
+| `data.score.totalOutstanding` | number | Total outstanding balance |
+| `data.score.totalOverdue` | number | Total overdue amount |
+| `data.score.totalNoOfDelinquentFacilities` | number | Number of delinquent facilities |
+| `data.score.lastReportedDate` | string | Most recent bureau report date |
+| `data.searchedDate` | string | Date this report was retrieved |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "_id": "636e768d8215a2e2fb06cfde",
+    "business_reg_no": "RC123456",
+    "businessId": "64db7ab8a26e603218838892",
+    "name": "CAPITALFIELD ASSET MGT LTD",
+    "phone": "23408036732620",
+    "dateOfRegistration": "2003-08-20",
+    "address": "ELEGANZA HOUSE, 15B JOSEPH WESLEY STR, BROAD STREET, LAGOS NIGERIA",
+    "score": {
+      "totalNoOfDelinquentFacilities": 1,
+      "lastReportedDate": "10/Nov/2022",
+      "totalNoOfLoans": 24,
+      "totalNoOfInstitutions": 12,
+      "totalBorrowed": 567401372,
+      "totalOutstanding": 19732,
+      "totalOverdue": 19754,
+      "totalNoOfPerformingLoans": 23,
+      "totalNoOfClosedLoans": 17,
+      "totalNoOfActiveLoans": 7,
+      "crcReportOrderNumber": "W-0063381978/2022",
+      "highestLoanAmount": 22980000
+    },
+    "searchedDate": "2023-11-23T16:16:47.279Z"
+  },
+  "message": "CRC check successful"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Missing required fields"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

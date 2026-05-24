@@ -1,0 +1,41 @@
+---
+title: "Changelog"
+sidebarTitle: "What's New"
+description: "Release notes and updates for the Adhere API."
+---
+
+## May 2025 — v3 Launch
+
+**Adhere v3** is now the primary API version. v3 brings a cleaner endpoint structure, richer response data, and expanded country coverage.
+
+### New in v3
+
+- **User Journey Tracking** — New session-based API to track and validate transaction event sequences and flag out-of-order or suspicious behaviour in real time.
+- **OpenAPI Playground** — Every endpoint page now has a built-in interactive playground. Authenticate once with your API key and test requests directly from the docs.
+
+### Improvements
+
+- Unified `x-access-token` header authentication across all endpoints.
+- Consistent JSON response structure: `{ status, data, message }` on all endpoints.
+- Activity codes for transaction monitoring consolidated and documented (200–221 safe, 450–457 suspicious).
+- Loan Fraud Check now supports an optional `run_aml_check` flag for both individual and business applications.
+
+---
+
+## March 2025 — v2 Updates
+
+- Added Ghana ID Card with Face verification.
+- Kenya credit reports (individual and business) added to the Credit Report suite.
+- Premium credit report added for Nigerian individuals.
+- Transaction screening expanded with full OFAC, UN, and EU sanctions list matching.
+
+---
+
+## 2024 — v1 Release
+
+- Initial release covering Nigerian KYC (BVN, NIN, VNIN, CAC, Driver's License, Passport, Voter's ID, NUBAN, Phone, TIN).
+- Kenya National ID (basic and advanced) and Passport verification.
+- Ghana ID Card verification.
+- Individual and business credit reports from CRC, First Central, and Credit Registry.
+- Transaction monitoring, card fraud detection, and KYC screening.
+- Loan fraud check for individuals and businesses.

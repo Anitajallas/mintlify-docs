@@ -1,0 +1,88 @@
+---
+title: "Digital Address Confirmation"
+sidebarTitle: "Digital Addr. Confirm"
+description: "Retrieve the result of a previously submitted digital address verification using its reference."
+openapi: "POST /api/onboarding/nigeria_kyc/digital_address_verification_confirmation/"
+---
+
+The Digital Address Confirmation endpoint retrieves the final status of a digital address verification. Pass the `reference` returned from the [Digital Address Verification](/v3/kyc/nigeria/digital_address_verification) endpoint.
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/digital_address_verification_confirmation/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `reference` | string | Yes | The reference ID returned from the Digital Address Verification endpoint |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/digital_address_verification_confirmation/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"reference": "1732800207805106"}'
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.status` | string | Final verification status (`"completed"`, `"failed"`, etc.) |
+| `data.verification_status` | string | Human-readable result (e.g., `"verification successful"`) |
+| `data.lattitude` | string | Geocoded latitude |
+| `data.longitude` | string | Geocoded longitude |
+| `data.street` | string | Verified street address |
+| `data.city` | string | Verified city |
+| `data.state` | string | Verified state |
+| `data.lga` | string | Verified LGA |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "status": "completed",
+    "city": "oshodi",
+    "lga": "lagos mainland",
+    "landmark": "lagos",
+    "street": "270 Murtala Muhammed Way, Alagomeji. Yaba",
+    "lattitude": "9.081999",
+    "longitude": "8.675277",
+    "verification_status": "verification successful",
+    "first_name": "John",
+    "last_name": "Doe",
+    "birth_date": "17/01/1988",
+    "phone_number": "08000000000",
+    "nin": "10000000001",
+    "state": "Lagos"
+  },
+  "message": "Physical Address Confirmed successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Invalid or expired reference"
+}
+```

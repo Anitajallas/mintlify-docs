@@ -1,0 +1,110 @@
+---
+title: "Voter's ID"
+sidebarTitle: "Voter's ID"
+description: "Verify a customer's identity using their Nigerian Permanent Voter's Card number."
+openapi: "POST /api/onboarding/nigeria_kyc/voters_id/"
+---
+
+The Voter's ID endpoint validates a Permanent Voter's Card (PVC) number against the INEC database and returns the voter's registered personal details, registration area, and polling unit.
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/voters_id/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `voters_id` | string | Yes | The Permanent Voter's Card number |
+| `first_name` | string | Yes | First name as on the voter's card |
+| `last_name` | string | Yes | Last name as on the voter's card |
+| `date_of_birth` | string | Yes | Date of birth in `YYYY-MM-DD` format |
+| `lga` | string | Yes | Local government area of registration |
+| `state` | string | Yes | State of registration |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/voters_id/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"voters_id": "91F6B1F5BE295355586", "first_name": "John", "last_name": "Doe", "date_of_birth": "1994-08-11", "lga": "Lagos", "state": "Lagos"}'
+```
+
+```python Python
+import requests
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/voters_id/",
+    headers={"x-access-token": "YOUR_SECRET_KEY", "Content-Type": "application/json"},
+    json={"voters_id": "91F6B1F5BE295355586", "first_name": "John", "last_name": "Doe",
+          "date_of_birth": "1994-08-11", "lga": "Lagos", "state": "Lagos"},
+)
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.full_name` | string | Full name as registered |
+| `data.voter_identification_number` | string | PVC identification number |
+| `data.gender` | string | Gender |
+| `data.occupation` | string | Registered occupation |
+| `data.time_of_registration` | string | Date and time of voter registration |
+| `data.state` | string | State of registration |
+| `data.local_government` | string | LGA of registration |
+| `data.registration_area_ward` | string | Ward name |
+| `data.polling_unit` | string | Polling unit description |
+| `data.polling_unit_code` | string | Polling unit code |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "full_name": "JOHN DOE S",
+    "voter_identification_number": "90F5B1C5B1234567890",
+    "gender": "Male",
+    "occupation": "STUDENT",
+    "time_of_registration": "2011-01-18 13:59:46",
+    "state": "ONDO",
+    "local_government": "IDANRE",
+    "registration_area_ward": "ISALU JIGBOKIN",
+    "polling_unit": "OJAJIGBOKIN, O/S IN FRONT OF ABANA I & II",
+    "polling_unit_code": "28/08/08/005"
+  },
+  "message": "Voters Identification details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

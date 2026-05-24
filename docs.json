@@ -1,19 +1,253 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "Smartcomply Docs",
-  "logo": {
-    "dark": "/logo/smartdark.svg",
-    "light": "/logo/smartwhite.svg"
+  "name": "Adhere by Smartcomply",
+  "metadata": {
+    "og:title": "Adhere API — KYC, Fraud Detection & Credit Reports for Africa",
+    "og:description": "One API for identity verification, real-time fraud detection, transaction monitoring, and credit reports across Nigeria, Ghana, Kenya, Rwanda, and Uganda. Built for developers by Smartcomply.",
+    "og:site_name": "Adhere by Smartcomply",
+    "twitter:title": "Adhere API — KYC, Fraud Detection & Credit Reports for Africa",
+    "twitter:description": "Verify identities, screen transactions, and access credit data across Africa with the Adhere API. One integration. Five countries.",
+    "description": "Developer documentation for the Adhere API by Smartcomply. Covers KYC identity verification, fraud detection, transaction monitoring, credit reports, and loan fraud checks across Nigeria, Ghana, Kenya, Rwanda, and Uganda."
   },
-  "favicon": "/logo/smartdark.svg",
+  "logo": {
+    "dark": "/logo/adhere-logo-dark.png",
+    "light": "/logo/adhere-logo.png"
+  },
+  "favicon": "/logo/adhere-logo.png",
   "colors": {
     "primary": "#0D9373",
     "light": "#07C983",
     "dark": "#0D9373"
   },
-  "theme": "mint",
+  "theme": "luma",
+  "openapi": "openapi.yaml",
+  "banner": {
+    "content": "Adhere v3 is live — faster identity verification across Nigeria, Ghana, Kenya, Rwanda & Uganda. [Explore what's new →](/introduction)",
+    "dismissible": true
+  },
+  "anchors": [
+    {
+      "name": "KYC & Identity",
+      "icon": "id-card",
+      "url": "v3/kyc/nigeria/BVN",
+      "color": "#0D9373"
+    },
+    {
+      "name": "Fraud Monitoring",
+      "icon": "shield-halved",
+      "url": "v3/transaction/transaction_monitoring/transaction_monitoring_overview",
+      "color": "#E5484D"
+    },
+    {
+      "name": "Credit Reports",
+      "icon": "chart-line",
+      "url": "v3/credit/individual/First_Central_Credit_Summary",
+      "color": "#6E56CF"
+    },
+    {
+      "name": "Loan Fraud Check",
+      "icon": "money-bill-wave",
+      "url": "v3/loan/introduction",
+      "color": "#F76B15"
+    }
+  ],
   "navigation": {
     "versions": [
+      {
+        "version": "v3",
+        "groups": [
+          {
+            "group": "API Reference",
+            "pages": [
+              {
+                "group": "Get Started",
+                "pages": [
+                  "introduction",
+                  "quickstart",
+                  "authentication",
+                  "error_codes",
+                  "webhooks",
+                  "changelog"
+                ]
+              },
+              {
+                "group": "Common Use Cases",
+                "pages": ["pages/account_verification", "pages/lending"]
+              },
+              {
+                "group": "Libraries & Tools",
+                "pages": [
+                  "libraries/smartcomply_sdk",
+                  "libraries/flutter_sdk",
+                  "libraries/postman"
+                ]
+              },
+              {
+                "group": "Biometrics",
+                "pages": [
+                  "v3/biometrics/face_comparism",
+                  "v3/biometrics/face_liveliness"
+                ]
+              },
+              {
+                "group": "Onboarding Suite",
+                "pages": [
+                  {
+                    "group": "KYC",
+                    "pages": [
+                      {
+                        "group": "Nigeria",
+                        "pages": [
+                          "v3/kyc/nigeria/BVN",
+                          "v3/kyc/nigeria/BVN_Advanced",
+                          "v3/kyc/nigeria/BVN_with_face",
+                          "v3/kyc/nigeria/CAC",
+                          "v3/kyc/nigeria/CAC_Advanced",
+                          "v3/kyc/nigeria/Drivers_License",
+                          "v3/kyc/nigeria/nin",
+                          "v3/kyc/nigeria/nin_with_face",
+                          "v3/kyc/nigeria/nuban",
+                          "v3/kyc/nigeria/nuban_advanced",
+                          "v3/kyc/nigeria/passport_verification",
+                          "v3/kyc/nigeria/Phone_Number_Advanced",
+                          "v3/kyc/nigeria/phone_number_basic",
+                          "v3/kyc/nigeria/tin",
+                          "v3/kyc/nigeria/VNIN",
+                          "v3/kyc/nigeria/Voters_ID",
+                          "v3/kyc/nigeria/Address_Verification",
+                          "v3/kyc/nigeria/digital_address_verification",
+                          "v3/kyc/nigeria/Digital_Address_Verification_Confirmation",
+                          "v3/kyc/nigeria/Physical_Address_Verification_Lagos",
+                          "v3/kyc/nigeria/Physical_Address_Verification_Other",
+                          "v3/kyc/nigeria/Physical_Address_Verification_Confirmation",
+                          "v3/kyc/nigeria/Get_Identity_Address"
+                        ]
+                      },
+                      {
+                        "group": "Kenya",
+                        "pages": [
+                          "v3/kyc/kenya/national_id_basic",
+                          "v3/kyc/kenya/national_id_advance",
+                          "v3/kyc/kenya/business_registration",
+                          "v3/kyc/kenya/alien_ID",
+                          "v3/kyc/kenya/kra_pin",
+                          "v3/kyc/kenya/Passport_Verification"
+                        ]
+                      },
+                      {
+                        "group": "Ghana",
+                        "pages": [
+                          "v3/kyc/ghana/ID_Card",
+                          "v3/kyc/ghana/ID_Card_with_face"
+                        ]
+                      },
+                      {
+                        "group": "Rwanda",
+                        "pages": [
+                          "v3/kyc/rwanda/national_id",
+                          "v3/kyc/rwanda/passport"
+                        ]
+                      },
+                      {
+                        "group": "Uganda",
+                        "pages": [
+                          "v3/kyc/uganda/national_id"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "group": "Credit Report",
+                    "pages": [
+                      {
+                        "group": "Nigeria",
+                        "pages": [
+                          {
+                            "group": "Business",
+                            "pages": [
+                              "v3/credit/business/crc-business_credit_history",
+                              "v3/credit/business/first-central_business_credit_history",
+                              "v3/credit/business/premium_business_credit_history"
+                            ]
+                          },
+                          {
+                            "group": "Individual",
+                            "pages": [
+                              "v3/credit/individual/First_Central_Credit_Summary",
+                              "v3/credit/individual/First_Central_Full_Credit_Report",
+                              "v3/credit/individual/Credit_Registry_Credit_Summary",
+                              "v3/credit/individual/Credit_Registry_Full_Credit_Report",
+                              "v3/credit/individual/Credit_Report_Premium",
+                              "v3/credit/individual/First_Central_Credit_Score",
+                              "v3/credit/individual/CRC_Credit_Score",
+                              "v3/credit/individual/CRC_Credit_History",
+                              "v3/credit/individual/CRC_full_credit_report",
+                              "v3/credit/individual/Credt_Registry_History_Advanced"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "group": "Kenya",
+                        "pages": [
+                          {
+                            "group": "Individual",
+                            "pages": [
+                              "v3/credit/individual/Kenya_Individual_Credit"
+                            ]
+                          },
+                          {
+                            "group": "Business",
+                            "pages": [
+                              "v3/credit/business/Kenya_Business_Credit"
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Fraud & Transaction Monitoring",
+                "pages": [
+                  {
+                    "group": "Transaction Monitoring",
+                    "pages": [
+                      "v3/transaction/transaction_monitoring/transaction_monitoring_overview",
+                      "v3/transaction/transaction_monitoring/post_transaction_request",
+                      "v3/transaction/transaction_monitoring/user_journey"
+                    ]
+                  },
+                  {
+                    "group": "Transaction Screening",
+                    "pages": [
+                      "v3/transaction/transaction_screening/overview",
+                      "v3/transaction/transaction_screening/post_transaction_screening"
+                    ]
+                  },
+                  {
+                    "group": "KYC",
+                    "pages": [
+                      "v3/transaction/kyc/get_all_search_results",
+                      "v3/transaction/kyc/get_entity_kyc_by_id",
+                      "v3/transaction/kyc/post_kyc_check"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Loan Fraud Check",
+                "pages": [
+                  "v3/loan/introduction",
+                  "v3/loan/individual_fraud_check",
+                  "v3/loan/business_fraud_check"
+                ]
+              }
+            ]
+          }
+        ]
+      },
       {
         "version": "v2",
         "groups": [
@@ -350,12 +584,16 @@
   "navbar": {
     "links": [
       {
-        "label": "Support",
-        "href": "mailto: anita@smartcomply.com"
+        "label": "What's New",
+        "href": "/changelog"
       },
       {
-        "label": "View in Postman ",
-        "href": "https://documenter.getpostman.com/view/24557562/2sA3Qv8r7p"
+        "label": "Postman Collection",
+        "href": "https://documenter.getpostman.com/view/55164637/2sBXwjxET7"
+      },
+      {
+        "label": "Get Help",
+        "href": "/pages/support"
       }
     ],
     "primary": {

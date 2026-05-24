@@ -1,0 +1,199 @@
+---
+title: "Screen a Transaction"
+sidebarTitle: "Screen Transaction"
+description: "Screen a transaction against sanctions lists, high-risk countries, and suspicious keyword patterns."
+openapi: "POST /api/v1/monitoring/transaction_screening"
+---
+
+The Screen a Transaction endpoint evaluates a transaction against predefined compliance criteria including sanctions lists, high-risk country flags, and suspicious keywords. Transactions matching any criteria are flagged for review.
+
+## Endpoint
+
+```
+POST /api/v1/monitoring/transaction_screening
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `transactionId` | string | Recommended | Links repeat calls to the same transaction |
+| `transactionType` | string | Optional | e.g., `Transfer`, `Payment` |
+| `amount` | number | **Required** | Transaction amount (e.g., `10000.00`) |
+| `currency` | string | Optional | Currency code, e.g., `NGN`, `USD` |
+| `transactionDate` | string | **Required** | ISO-8601 datetime, e.g., `2024-07-06T12:34:56Z` |
+| `sender.name` | string | **Required** | Sender's full name — screened against risk lists |
+| `sender.accountNumber` | string | Optional | Sender's account number |
+| `sender.address` | object | Optional | Sender's address for location-based checks |
+| `sender.address.country` | string | Recommended | Helps flag high-risk countries |
+| `sender.identification` | object | Optional | Sender's ID details |
+| `receiver.name` | string | **Required** | Receiver's full name — screened against risk lists |
+| `receiver.accountNumber` | string | Optional | Receiver's account number |
+| `receiver.address` | object | Optional | Receiver's address for location-based checks |
+| `receiver.address.country` | string | Recommended | Helps flag high-risk countries |
+| `receiver.identification` | object | Optional | Receiver's ID details |
+| `details.purpose` | string | Recommended | Transaction purpose — used for keyword screening |
+| `details.reference` | string | Optional | Your internal reference or invoice number |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/v1/monitoring/transaction_screening" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "transactionId": "1234567892",
+    "transactionType": "Transfer",
+    "amount": 10000.00,
+    "currency": "NGN",
+    "transactionDate": "2024-07-06T12:34:56Z",
+    "sender": {
+      "name": "John Doe",
+      "accountNumber": "123456789012",
+      "address": {
+        "street": "123 Main St",
+        "city": "Lagos",
+        "state": "Lagos",
+        "postalCode": "10001",
+        "country": "NIGERIA"
+      },
+      "identification": {
+        "type": "Passport",
+        "number": "A12345678",
+        "country": "NG"
+      }
+    },
+    "receiver": {
+      "name": "Jane Smith",
+      "accountNumber": "987654321098",
+      "address": {
+        "street": "456 Elm St",
+        "city": "Abuja",
+        "state": "FCT",
+        "postalCode": "90001",
+        "country": "NIGERIA"
+      }
+    },
+    "details": {
+      "purpose": "Payment for services",
+      "reference": "INV-2024-001"
+    }
+  }'
+```
+</CodeGroup>
+
+## Response
+
+### 201 Created — Flagged
+
+When the transaction matches a screening criterion, the response includes the full sanction match details for both sender and receiver.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.transactionId` | string | Transaction identifier |
+| `data.amount` | number | Transaction amount |
+| `data.currency` | string | Currency code |
+| `data.sender` | object | Sender details echoed back |
+| `data.receiver` | object | Receiver details echoed back |
+| `data.sanction.sender_name` | string | Sender name screened |
+| `data.sanction.sender_record` | array | Sanction matches for the sender |
+| `data.sanction.receiver_name` | string | Receiver name screened |
+| `data.sanction.receiver_record` | array | Sanction matches for the receiver |
+| `data.sanction[].entity_name` | string | Name of the matching sanctioned entity |
+| `data.sanction[].entity_type` | string | Entity type (e.g., `Person`) |
+| `data.sanction[].topics` | array | Sanction categories (e.g., `sanction`, `crime.terror`) |
+| `data.sanction[].match_score` | number | Match confidence score (0 to 1) |
+| `data.screeningStatus` | string | Outcome: `"flagged"` or `"approved"` |
+| `data.comments` | string | Reason for the screening outcome |
+| `data.additionalActions` | array | Recommended follow-up actions |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "transactionId": "1234567892",
+    "transactionType": "Transfer",
+    "amount": 10000.0,
+    "currency": "NGN",
+    "transactionDate": "2024-07-06T12:34:56Z",
+    "sender": {
+      "name": "QUDRATULLAH JAMAL",
+      "accountNumber": "123456789012",
+      "address": {
+        "street": "123 Main St",
+        "city": "Lagos",
+        "state": "Lagos",
+        "country": "NIGERIA"
+      }
+    },
+    "receiver": {
+      "name": "Jane Smith",
+      "accountNumber": "987654321098"
+    },
+    "sanction": {
+      "sender_name": "QUDRATULLAH JAMAL",
+      "sender_record": [
+        {
+          "entity_name": "Maulavi Qudratullah Jamal",
+          "entity_type": "Person",
+          "topics": ["crime.terror", "export.control", "sanction"],
+          "sanction_types": ["crime.terror", "export.control", "sanction"],
+          "match_score": 1.0,
+          "risk_score": "80%",
+          "matched": "False match"
+        }
+      ],
+      "receiver_name": "Jane Smith",
+      "receiver_record": [
+        {
+          "entity_name": "JANE A SMITH",
+          "entity_type": "Person",
+          "topics": ["debarment"],
+          "sanction_types": ["debarment"],
+          "match_score": 0.96,
+          "risk_score": "83%",
+          "matched": "True match"
+        }
+      ]
+    },
+    "screeningStatus": "flagged",
+    "comments": "Transaction denied due to high-risk blacklist match, high risk level, or sanctions match.",
+    "additionalActions": [
+      {
+        "actionType": "Notify Customer",
+        "assignedTo": "Customer Service",
+        "notes": "Inform the customer about the transaction denial."
+      }
+    ]
+  }
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

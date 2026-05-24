@@ -1,0 +1,111 @@
+---
+title: "NIN with Face"
+sidebarTitle: "NIN with Face"
+description: "Verify a customer's NIN combined with a facial image for enhanced identity confirmation."
+openapi: "POST /api/onboarding/nigeria_kyc/nin_with_face/"
+---
+
+The NIN with Face endpoint verifies a customer's National Identification Number and performs a facial comparison against a provided photo URL. It returns full NIN profile data plus face match results.
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/nin_with_face/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `identification_number` | string | Yes | The customer's 11-digit National Identification Number |
+| `image_url` | string | Yes | URL of the customer's photo for facial comparison |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/nin_with_face/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"identification_number": "70123456789", "image_url": "https://example.com/photo.jpg"}'
+```
+
+```python Python
+import requests
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/nin_with_face/",
+    headers={"x-access-token": "YOUR_SECRET_KEY", "Content-Type": "application/json"},
+    json={"identification_number": "70123456789", "image_url": "https://example.com/photo.jpg"},
+)
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.nin_data` | object | Full NIN profile (same fields as the [NIN endpoint](/v3/kyc/nigeria/nin)) |
+| `data.face_data.message` | string | Face match result message |
+| `data.face_data.confidence` | number | Match confidence percentage (0–100) |
+| `data.verification.status` | string | `"VERIFIED"` if identity confirmed |
+| `data.verification.reference` | string | Unique verification reference ID |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "nin_data": {
+      "lastName": "UCHE",
+      "firstName": "KARIM",
+      "middleName": "IKENNA",
+      "gender": "male",
+      "dateOfBirth": "2002-11-09",
+      "nin": "90187493033",
+      "telephoneNo": "09088118811",
+      "residenceAddress": "5, ODEYEMI STREET, ANIMASHAUN",
+      "residenceLga": "Ifo",
+      "residenceState": "Ogun",
+      "image": "<base64-encoded-jpeg>"
+    },
+    "face_data": {
+      "message": "Face Match",
+      "confidence": 99.99
+    },
+    "verification": {
+      "status": "VERIFIED",
+      "reference": "8314a5fc-bdb5-40c8-98bd-72aef9f1a868"
+    }
+  },
+  "message": "National Identification Number details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

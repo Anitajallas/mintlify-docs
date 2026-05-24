@@ -1,0 +1,108 @@
+---
+title: "CRC Credit History"
+sidebarTitle: "CRC Credit History"
+description: "Retrieve an individual's credit history summary from the CRC bureau using their BVN."
+openapi: "POST /api/onboarding/individual/crc_summary/"
+---
+
+The CRC Credit History endpoint returns a summary of an individual's credit-related activities from the CRC bureau, including loan totals, repayment status, and outstanding balances.
+
+## Endpoint
+
+```
+POST /api/onboarding/individual/crc_summary/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `bvn` | string | Yes | The individual's 11-digit Bank Verification Number |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/individual/crc_summary/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"bvn": "22244545518"}'
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.name` | string | Full name |
+| `data.gender` | string | Gender |
+| `data.dateOfBirth` | string | Date of birth |
+| `data.score.totalNoOfLoans` | string | Total loans on record |
+| `data.score.totalNoOfActiveLoans` | string | Currently active loans |
+| `data.score.totalNoOfClosedLoans` | number | Closed loans |
+| `data.score.totalBorrowed` | string | Total amount borrowed |
+| `data.score.totalOutstanding` | string | Total outstanding balance |
+| `data.score.totalOverdue` | string | Total overdue amount |
+| `data.score.totalNoOfDelinquentFacilities` | string | Number of delinquent facilities |
+| `data.score.lastReportedDate` | string | Most recent bureau report date |
+| `data.score.crcReportOrderNumber` | string | CRC report order number |
+| `data.searchedDate` | string | Date this report was retrieved |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "_id": "64f600608aaf9386c646de32",
+    "bvn": "22244545518",
+    "customerId": "505327",
+    "name": "ADELEKE EMMANUEL AYORINDE",
+    "gender": "Male",
+    "dateOfBirth": "29/12/1994",
+    "score": {
+      "totalNoOfDelinquentFacilities": "0",
+      "lastReportedDate": "30-SEP-2023",
+      "totalNoOfLoans": "7",
+      "totalNoOfInstitutions": "4",
+      "totalNoOfActiveLoans": "6",
+      "totalBorrowed": "3,541,267",
+      "totalOutstanding": "1",
+      "totalOverdue": "0",
+      "maxNoOfDays": "0",
+      "totalNoOfClosedLoans": 1,
+      "crcReportOrderNumber": "W-0097884391/2023"
+    },
+    "searchedDate": "2023-11-23T14:04:03.722Z"
+  },
+  "message": "CRC Individual credit summary report details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Missing required fields"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

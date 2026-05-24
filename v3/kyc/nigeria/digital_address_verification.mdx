@@ -1,0 +1,105 @@
+---
+title: "Digital Address Verification"
+sidebarTitle: "Digital Address"
+description: "Submit a customer's address for digital verification and receive a tracking reference."
+openapi: "POST /api/onboarding/nigeria_kyc/digital_address_verification/"
+---
+
+The Digital Address Verification endpoint initiates a digital address check using cross-referenced data sources. Returns a `reference` ID to track completion via the [Digital Address Confirmation](/v3/kyc/nigeria/Digital_Address_Verification_Confirmation) endpoint.
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/digital_address_verification/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `first_name` | string | Yes | Customer's first name |
+| `last_name` | string | Yes | Customer's last name |
+| `nin` | string | Yes | Customer's 11-digit NIN |
+| `phone_number` | string | Yes | Customer's phone number |
+| `birth_date` | string | Yes | Date of birth (format: `DD/MM/YYYY`) |
+| `street` | string | Yes | Full street address |
+| `city` | string | Yes | City |
+| `lga` | string | Yes | Local government area |
+| `state` | string | Yes | State |
+| `landmark` | string | No | Nearby landmark to aid verification |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/digital_address_verification/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "first_name": "John", "last_name": "Doe",
+    "nin": "10000000001", "phone_number": "08000000000",
+    "birth_date": "17/01/1988",
+    "street": "270 Murtala Muhammed Way, Alagomeji. Yaba",
+    "city": "oshodi", "lga": "lagos mainland",
+    "state": "Lagos", "landmark": "lagos"
+  }'
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.id` | integer | Verification record ID |
+| `data.reference` | string | Reference ID — pass this to the confirmation endpoint |
+| `data.status.verification` | string | Initial verification status |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "id": 1,
+    "applicant": {
+      "firstname": "John",
+      "lastname": "Doe",
+      "phone": "08000000000",
+      "idType": "nin",
+      "idNumber": "10000000001",
+      "gender": "Male",
+      "birthdate": "17/01/1988"
+    },
+    "createdAt": "",
+    "completedAt": "",
+    "status": {
+      "verification": "In progress"
+    },
+    "city": "oshodi",
+    "street": "270 Murtala Muhammed Way, Alagomeji. Yaba",
+    "lga": "lagos mainland",
+    "state": "Lagos",
+    "country": "Nigeria",
+    "reference": "1732800207805106"
+  }
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Missing required fields"
+}
+```

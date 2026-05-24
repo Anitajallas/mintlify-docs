@@ -1,0 +1,102 @@
+---
+title: "Credit Registry Credit Summary"
+sidebarTitle: "CRC Credit Summary"
+description: "Retrieve an individual's credit summary from the Credit Registry bureau using their BVN."
+openapi: "POST /api/onboarding/individual/credit_registry_summary/"
+---
+
+The Credit Registry Credit Summary endpoint returns a summary of an individual's credit-related activities from the Credit Registry bureau, including loan totals, repayment status, and outstanding balances.
+
+## Endpoint
+
+```
+POST /api/onboarding/individual/credit_registry_summary/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `bvn` | string | Yes | The individual's 11-digit Bank Verification Number |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/individual/credit_registry_summary/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"bvn": "22244545518"}'
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.name` | string | Full name |
+| `data.score.totalNoOfLoans` | number | Total loans on record |
+| `data.score.totalNoOfActiveLoans` | number | Currently active loans |
+| `data.score.totalNoOfClosedLoans` | number | Closed loans |
+| `data.score.totalBorrowed` | number | Total amount borrowed |
+| `data.score.totalOutstanding` | number | Total outstanding balance |
+| `data.score.totalNoOfDelinquentFacilities` | number | Number of delinquent facilities |
+| `data.score.highestLoanAmount` | number | Highest single loan amount |
+| `data.searchedDate` | string | Date this report was retrieved |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "_id": "64f600608aaf9386c646de32",
+    "bvn": "22244545518",
+    "name": "ADELEKE EMMANUEL AYORINDE",
+    "gender": "Male",
+    "dateOfBirth": "29/12/1994",
+    "score": {
+      "totalNoOfLoans": 16,
+      "totalNoOfInstitutions": 5,
+      "totalNoOfActiveLoans": 1,
+      "totalNoOfClosedLoans": 15,
+      "totalNoOfPerformingLoans": 16,
+      "totalNoOfDelinquentFacilities": 0,
+      "highestLoanAmount": 1134330,
+      "totalBorrowed": 3761267,
+      "totalOutstanding": 0,
+      "totalOverdue": 0
+    },
+    "searchedDate": "2023-11-23T14:46:37.552Z"
+  },
+  "message": "Credit Registry check successful"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Missing required fields"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

@@ -1,0 +1,103 @@
+---
+title: "First Central Credit Score"
+sidebarTitle: "First Central Score"
+description: "Retrieve an individual's credit score from the First Central bureau using their BVN."
+openapi: "POST /api/onboarding/individual/credit_scores_first_central/"
+---
+
+The First Central Credit Score endpoint returns an individual's consumer credit score from the First Central bureau, along with account condition summaries, outstanding debt totals, and score breakdown metrics.
+
+## Endpoint
+
+```
+POST /api/onboarding/individual/credit_scores_first_central/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `bvn` | string | Yes | The individual's 11-digit Bank Verification Number |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/individual/credit_scores_first_central/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"bvn": "22244545518"}'
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.score.totalConsumerScore` | string | Overall consumer credit score |
+| `data.score.description` | string | Risk rating (e.g. `"LOW RISK"`, `"HIGH RISK"`) |
+| `data.score.totalAccounts` | string | Total accounts on record |
+| `data.score.totalaccountinGoodcondition` | string | Accounts in good standing |
+| `data.score.totalaccountinBadcondition` | string | Accounts in bad standing |
+| `data.score.totalOutstandingDebt` | string | Total outstanding debt |
+| `data.score.totalAmountOverdue` | string | Total amount overdue |
+| `data.score.repaymentHistoryScore` | string | Repayment history score component |
+| `data.score.firstCentralEnquiryResultID` | string | First Central enquiry result ID |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "_id": "64f600608aaf9386c646de32",
+    "bvn": "22244545518",
+    "name": "ADELEKE EMMANUEL AYORINDE",
+    "score": {
+      "totalConsumerScore": "835",
+      "description": "LOW RISK",
+      "totalAccounts": "23",
+      "scoreDate": "11/23/2023",
+      "noOfAcctScore": "55/55",
+      "totalaccountinGoodcondition": "23",
+      "totalaccountinBadcondition": "0",
+      "totalOutstandingDebt": "30,719.00",
+      "totalAccountarrear": "0",
+      "totalAmountOverdue": "0.00",
+      "repaymentHistoryScore": "192/192",
+      "totalAmountOwedScore": "165/165",
+      "firstCentralEnquiryResultID": "37181617"
+    },
+    "searchedDate": "2023-11-23T14:37:04.152Z"
+  },
+  "message": "Credit Scores individual first central report details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

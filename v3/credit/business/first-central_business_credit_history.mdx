@@ -1,0 +1,111 @@
+---
+title: "First Central Business Credit History"
+sidebarTitle: "First Central History"
+description: "Retrieve a business's credit history from the First Central bureau using their registration number."
+openapi: "POST /api/onboarding/business/first_central/"
+---
+
+The First Central Business Credit History endpoint provides a comprehensive record of a business's credit-related activities via the First Central bureau, including loan accounts, payment timelines, credit utilization, and delinquency status.
+
+## Endpoint
+
+```
+POST /api/onboarding/business/first_central/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `registration_number` | string | Yes | The business RC or registration number |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/business/first_central/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"registration_number": "RC123456"}'
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data._id` | string | Unique record ID |
+| `data.business_reg_no` | string | Business registration number |
+| `data.name` | string | Business name |
+| `data.businessType` | string | Business type classification |
+| `data.score.totalNoOfLoans` | number | Total loans on record |
+| `data.score.totalNoOfActiveLoans` | number | Currently active loans |
+| `data.score.totalNoOfClosedLoans` | number | Closed loans |
+| `data.score.totalBorrowed` | number | Total amount borrowed |
+| `data.score.totalOutstanding` | number | Total outstanding balance |
+| `data.score.totalOverdue` | number | Total overdue amount |
+| `data.score.totalNoOfDelinquentFacilities` | number | Number of delinquent facilities |
+| `data.searchedDate` | string | Date this report was retrieved |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "_id": "636e768d8215a2e2fb06cfde",
+    "business_reg_no": "RC123456",
+    "businessId": "64db7ab8a26e603218838892",
+    "name": "CAPITALFIELD ASSET MGT LTD",
+    "phone": "23408036732620",
+    "dateOfRegistration": "2003-08-20",
+    "address": "ELEGANZA HOUSE, 15B JOSEPH WESLEY STR, BROAD STREET, LAGOS NIGERIA",
+    "businessType": "SMALLANDMEDIUMSCALEENTERPRISE",
+    "email": "capitalasset@gmail.com",
+    "score": {
+      "totalNoOfLoans": 9,
+      "totalNoOfActiveLoans": 3,
+      "totalNoOfClosedLoans": 6,
+      "totalNoOfInstitutions": 2,
+      "totalOverdue": 54931635,
+      "totalBorrowed": 135582,
+      "highestLoanAmount": 45194,
+      "totalOutstanding": 54931635,
+      "totalNoOfOverdueAccounts": 3,
+      "totalNoOfPerformingLoans": 6,
+      "totalNoOfDelinquentFacilities": 3,
+      "firstCentralEnquiryResultID": "24327937"
+    },
+    "searchedDate": "2023-11-23T16:17:16.672Z"
+  },
+  "message": "First Central check successful"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Missing required fields"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

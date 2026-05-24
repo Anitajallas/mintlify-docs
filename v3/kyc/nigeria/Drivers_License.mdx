@@ -1,0 +1,107 @@
+---
+title: "Driver's License"
+sidebarTitle: "Driver's License"
+description: "Verify a customer's identity using their Nigerian driver's license number."
+openapi: "POST /api/onboarding/nigeria_kyc/driver_license/"
+---
+
+The Driver's License endpoint retrieves verified identity information from the FRSC database, including name, date of birth, license validity dates, state of issue, and a photo.
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/driver_license/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `license_number` | string | Yes | The customer's driver's license number |
+| `first_name` | string | Yes | First name as on the license |
+| `last_name` | string | Yes | Last name as on the license |
+| `date_of_birth` | string | Yes | Date of birth in `YYYY-MM-DD` format |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/driver_license/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"license_number": "ARR10892UU00", "first_name": "EDIKAN", "last_name": "EFE", "date_of_birth": "1994-08-11"}'
+```
+
+```python Python
+import requests
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/driver_license/",
+    headers={"x-access-token": "YOUR_SECRET_KEY", "Content-Type": "application/json"},
+    json={"license_number": "ARR10892UU00", "first_name": "EDIKAN", "last_name": "EFE", "date_of_birth": "1994-08-11"},
+)
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.licenseNo` | string | License number |
+| `data.lastName` | string | Last name |
+| `data.firstName` | string | First name |
+| `data.middleName` | string | Middle name |
+| `data.gender` | string | Gender |
+| `data.dateOfBirth` | string | Date of birth |
+| `data.issuedDate` | string | License issue date |
+| `data.expiryDate` | string | License expiry date |
+| `data.stateOfIssue` | string | State where license was issued |
+| `data.image` | string | Base64-encoded license photo |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "licenseNo": "ARR10892UU00",
+    "lastName": "EDIKAN",
+    "firstName": "EFE",
+    "middleName": "MUNACHI",
+    "gender": "male",
+    "issuedDate": "2013-10-28",
+    "expiryDate": "2018-11-28",
+    "stateOfIssue": "OYO",
+    "dateOfBirth": "1994-08-11",
+    "image": "<base64-encoded-jpeg>"
+  },
+  "message": "Driver License details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

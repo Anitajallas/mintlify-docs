@@ -1,0 +1,181 @@
+---
+title: "Business Loan Fraud Check"
+sidebarTitle: "Business Fraud Check"
+description: "Assess the fraud risk of a business loan application using company data and credit history."
+openapi: "POST /api/v1/loan/fraud_check/"
+---
+
+The Business Loan Fraud Check endpoint evaluates a loan application from a business entity, combining submitted company information with credit bureau data to produce a fraud risk score and financial analysis.
+
+## Endpoint
+
+```
+POST /api/v1/loan/fraud_check/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `multipart/form-data` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `business_name` | string | Yes | Registered name of the business |
+| `business_address` | string | Yes | Business address |
+| `rc_number` | string | Yes | CAC registration number (e.g., `RC-123456`) |
+| `city` | string | Yes | City of the business |
+| `country` | string | Yes | Country of the business |
+| `phone_number` | string | Yes | Business phone number |
+| `email_address` | string | Yes | Business email address |
+| `identification_type` | string | Yes | ID type used (e.g., `Passport`, `RC Number`) |
+| `identification_number` | string | Yes | ID number |
+| `annual_revenue` | number | Yes | Annual revenue in local currency |
+| `bank_name` | string | Yes | Business bank name |
+| `account_number` | string | Yes | Business account number |
+| `loan_amount_requested` | number | Yes | Requested loan amount |
+| `purpose_of_loan` | string | No | Purpose of the loan |
+| `loan_repayment_duration_type` | string | Yes | Repayment period unit: `weeks`, `months`, or `years` |
+| `loan_repayment_duration_value` | integer | Yes | Number of repayment periods |
+| `collateral_required` | boolean | Yes | Whether collateral is being offered |
+| `is_business` | boolean | Yes | Must be `true` for business checks |
+| `run_aml_check` | boolean | No | Run an AML check. Defaults to `false` |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/v1/loan/fraud_check/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -F "business_name=Heineken" \
+  -F "business_address=23 Main Street, Marina" \
+  -F "rc_number=RC-123456" \
+  -F "city=Lagos" \
+  -F "country=Nigeria" \
+  -F "phone_number=2349012345678" \
+  -F "email_address=business@example.com" \
+  -F "identification_type=RC Number" \
+  -F "identification_number=RC-123456" \
+  -F "annual_revenue=12345678" \
+  -F "bank_name=Access Bank" \
+  -F "account_number=1234567890" \
+  -F "loan_amount_requested=1000000" \
+  -F "loan_repayment_duration_type=months" \
+  -F "loan_repayment_duration_value=5" \
+  -F "collateral_required=false" \
+  -F "is_business=true" \
+  -F "run_aml_check=false"
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.id` | number | Internal record ID |
+| `data.business_name` | string | Business name from the application |
+| `data.fraud_risk_score` | number | Overall fraud risk score (0–100; higher = greater risk) |
+| `data.recommendation` | string | Narrative assessment and guidance for loan decision |
+| `data.key_financial_analysis.income_stability` | object | Revenue stability with disposable income ratio |
+| `data.key_financial_analysis.repayment_duration` | object | Repayment timeline assessment |
+| `data.key_financial_analysis.collateral_coverage` | object | Loan-to-collateral ratio |
+| `data.key_financial_analysis.debt_serviceability` | object | Ability to service debt from revenue |
+| `data.key_financial_analysis.debt_to_income_ratio` | object | Debt service ratio vs the 40% threshold |
+| `data.history` | object | Credit history: total loans, delinquencies, outstanding amounts |
+| `data.status` | string | Processing status (e.g., `reviewed`) |
+
+```json
+{
+  "status": "Success",
+  "data": {
+    "id": 567,
+    "business_name": "Heineken",
+    "country": "Nigeria",
+    "city": "Lagos",
+    "business_address": "23 Main Street, Apapa",
+    "identification_type": "RC Number",
+    "rc_number": "RC-123456",
+    "phone_number": "2349012345678",
+    "annual_revenue": "12345678.00",
+    "loan_amount_requested": 1000000.00,
+    "purpose_of_loan": "Business Expansion",
+    "fraud_risk_score": 62,
+    "recommendation": "The applicant is requesting a loan of ₦1,000,000.00. The applicant's total fraud risk score is 62, which needs to be evaluated against the lender's risk threshold.",
+    "key_financial_analysis": {
+      "income_stability": {
+        "risk_score": 100,
+        "data_source": "submitted data (estimated)",
+        "monthly_income": "1028806.50",
+        "monthly_expenses": "925925.85",
+        "disposable_income": "102880.65",
+        "observation": "Disposable ratio of 10% indicates limited buffer for unexpected expenses."
+      },
+      "repayment_duration": {
+        "risk_score": 70,
+        "repayment_duration": "Within 5 months"
+      },
+      "collateral_coverage": {
+        "risk_score": 80,
+        "loan_amount": "1000000.00",
+        "collateral_value": "0.00",
+        "loan_to_collateral_ratio": "0.00%",
+        "observation": "The loan is entirely unsecured."
+      },
+      "debt_serviceability": {
+        "risk_score": 30,
+        "loan_amount": "1000000.00",
+        "total_repayment": "1040000.0000",
+        "observation": "Monthly repayment constitutes ~20% of monthly income, indicating manageable serviceability."
+      },
+      "debt_to_income_ratio": {
+        "risk_score": 30,
+        "debt_service_ratio": "20.22%",
+        "observation": "Debt Service Ratio is below the 40% threshold, indicating low debt burden."
+      }
+    },
+    "history": {
+      "totalOverdue": 54931635,
+      "totalBorrowed": 135582,
+      "totalNoOfLoans": 9,
+      "totalOutstanding": 54931635,
+      "highestLoanAmount": 45194,
+      "totalNoOfActiveLoans": 3,
+      "totalNoOfClosedLoans": 6,
+      "totalNoOfInstitutions": 2,
+      "totalNoOfPerformingLoans": 6,
+      "totalNoOfDelinquentFacilities": 3
+    },
+    "is_individual": false,
+    "is_business": true,
+    "status": "reviewed",
+    "date_created": "2025-03-28T02:42:23.815369Z"
+  },
+  "message": "Loan fraud check processed successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

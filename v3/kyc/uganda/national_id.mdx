@@ -1,0 +1,97 @@
+---
+title: "Uganda National ID"
+sidebarTitle: "National ID"
+description: "Verify a customer's identity using their Ugandan National Identification Number."
+openapi: "POST /api/onboarding/uganda_kyc/national_id/"
+---
+
+The Uganda National ID endpoint validates a customer's National Identification Number against Uganda's national registry and returns the associated personal details.
+
+## Endpoint
+
+```
+POST /api/onboarding/uganda_kyc/national_id/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `national_id` | string | Yes | The customer's Ugandan National Identification Number (e.g. `NO0987654321BE`) |
+| `surname` | string | Yes | Customer's surname |
+| `given_name` | string | Yes | Customer's given name |
+| `date_of_birth` | string | Yes | Date of birth in `YYYY-MM-DD` format |
+| `document_id` | string | Yes | Document ID number |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/uganda_kyc/national_id/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "national_id": "NO0987654321BE",
+    "surname": "Doe",
+    "given_name": "John",
+    "date_of_birth": "1990-01-01",
+    "document_id": "1234567890"
+  }'
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.national_id` | string | National ID number |
+| `data.surname` | string | Customer's surname |
+| `data.given_name` | string | Customer's given name |
+| `data.date_of_birth` | string | Date of birth |
+| `data.gender` | string | Gender |
+| `data.nationality` | string | Nationality |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "national_id": "NO0987654321BE",
+    "surname": "Doe",
+    "given_name": "John",
+    "date_of_birth": "1990-01-01",
+    "gender": "Male",
+    "nationality": "Ugandan"
+  },
+  "message": "National ID details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Missing required fields"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

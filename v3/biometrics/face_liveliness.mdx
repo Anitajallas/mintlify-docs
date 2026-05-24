@@ -1,0 +1,93 @@
+---
+title: "Face Liveness Check"
+sidebarTitle: "Face Liveness"
+description: "Verify that a submitted facial image belongs to a live person, not a photograph or pre-recorded video."
+openapi: "POST /api/onboarding/biometrics/face/liveliness_check/"
+---
+
+The Face Liveness Check endpoint analyzes a facial image to confirm physical presence. It returns a confidence score and a verification status to help you distinguish real users from spoofing attempts.
+
+## Endpoint
+
+```
+POST /api/onboarding/biometrics/face/liveliness_check/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `image` | string | Yes | URL of the facial image to check for liveness |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/biometrics/face/liveliness_check/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"image": "https://example.com/photo.jpg"}'
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.status` | boolean | `true` if liveness detected, `false` otherwise |
+| `data.detail` | string | Human-readable liveness result |
+| `data.response_code` | string | `"00"` indicates success |
+| `data.confidence` | number | Raw confidence score (0–1) |
+| `data.confidence_in_percentage` | number | Confidence as a percentage |
+| `data.verification.status` | string | `"VERIFIED"` or `"FAILED"` |
+| `data.verification.reference` | string | Unique reference for this check |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "status": true,
+    "detail": "Liveliness Detected",
+    "response_code": "00",
+    "confidence": 0.9999987030029297,
+    "confidence_in_percentage": 99.99987030029297,
+    "verification": {
+      "status": "VERIFIED",
+      "reference": "067cbed9-acda-4d30-97c2-7f8e0c2ad687"
+    },
+    "widget_info": {},
+    "session": {}
+  },
+  "message": "Face Liveliness successful"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Missing required fields"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

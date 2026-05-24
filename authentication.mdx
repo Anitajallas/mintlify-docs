@@ -1,34 +1,47 @@
-# Smartcomply API Authentication Guide
+---
+title: "Authentication"
+description: "How to authenticate requests to the Smartcomply API."
+---
 
-Smartcomply provides secure and seamless authentication mechanisms to ensure that your interactions with our APIs are protected. Follow the steps below to authenticate your application and start making API requests.
+All requests to the Adhere API must include your secret key in the request headers. Requests without a valid key will return a `401 Unauthorized` error.
 
-## Obtain Your Secret Key
+## Base URL
 
-After completing your business KYC, you will be issued a secret key. This key is crucial for authenticating your API requests. Treat it with care and do not share it publicly.
-
-## Authentication Method
-
-Smartcomply uses an API key to secure API requests. You will need to include your secret key in the `Authorization` header of every API request.
-
-
-- **Base URL (production):** `https://adhere-api.smartcomply.com`
-- **media-type:** `application/json`
-
-### HEADERS
-
-### Sample Request:
-
-```bash
-curl -X GET "https://adhere-api.smartcomply.com/api/v1/endpoint" \
--H "x-access-token: YOUR_SECRET_KEY" \
--H "Content-Type: application/json"
+```
+https://adhere-api.smartcomply.com
 ```
 
-## Best Practices
+## Getting Your API Key
 
-* **Keep your secret key secure**: Store it in environment variables and avoid hard-coding it in your application.
+After completing your business KYC on the [Adhere dashboard](https://adhere-app.smartcomply.com):
 
-* **Rotate keys periodically**: To enhance security, consider rotating your API keys periodically.
+1. Navigate to **Settings → API Keys**
+2. Click **Generate Key**
+3. Copy and store the key securely — it will not be shown again
 
-* **Use different keys for different environments**: This helps in isolating issues and managing access control.
+## Request Headers
 
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your secret API key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+## Example Request
+
+```bash
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/bvn/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"bvn": "22000000001"}'
+```
+
+## Security Best Practices
+
+<Warning>
+  Never expose your secret key in client-side code, public repositories, or logs.
+</Warning>
+
+- **Use environment variables** — store your key in `.env` files and load it at runtime, never hard-code it
+- **Use separate keys per environment** — maintain distinct keys for development, staging, and production
+- **Rotate keys periodically** — regenerate your key from the dashboard if you suspect it has been compromised
+- **Restrict key usage** — only share keys with services that strictly need them

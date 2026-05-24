@@ -1,0 +1,68 @@
+---
+title: "Get Fraud Alert Threshold"
+sidebarTitle: "Get Threshold"
+description: "Retrieve the current fraud score threshold that triggers a fraud alert."
+openapi: "GET /api/v1/monitoring/threshold"
+---
+
+The Get Fraud Alert Threshold endpoint returns the configured score threshold. When a transaction's computed fraud score exceeds this value, the system raises a fraud alert for investigation.
+
+## Endpoint
+
+```
+GET /api/v1/monitoring/threshold
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X GET "https://adhere-api.smartcomply.com/api/v1/monitoring/threshold" \
+  -H "x-access-token: YOUR_SECRET_KEY"
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `threshhold` | number | The fraud score threshold currently configured to trigger an alert |
+
+```json
+{
+  "threshhold": 7
+}
+```
+
+<Note>
+The field name `threshhold` (double h) reflects the current API response format.
+</Note>
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "The threshold information cannot be retrieved"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

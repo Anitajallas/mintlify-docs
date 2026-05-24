@@ -1,0 +1,126 @@
+---
+title: "BVN with Face"
+sidebarTitle: "BVN with Face"
+description: "Verify a customer's BVN combined with a selfie for enhanced identity confirmation."
+openapi: "POST /api/onboarding/nigeria_kyc/bvn_with_face/"
+---
+
+The BVN with Face endpoint verifies a customer's Bank Verification Number and performs a facial comparison against a provided photo URL. It returns the full BVN profile plus a match confidence score.
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/bvn_with_face/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `bvn` | string | Yes | The customer's 11-digit Bank Verification Number |
+| `image_upload` | string | Yes | URL of the customer's photo for facial comparison |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/bvn_with_face/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"bvn": "22000000001", "image_upload": "https://example.com/photo.jpg"}'
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/bvn_with_face/",
+  {
+    method: "POST",
+    headers: { "x-access-token": "YOUR_SECRET_KEY", "Content-Type": "application/json" },
+    body: JSON.stringify({ bvn: "22000000001", image_upload: "https://example.com/photo.jpg" }),
+  }
+);
+```
+
+```python Python
+import requests
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/bvn_with_face/",
+    headers={"x-access-token": "YOUR_SECRET_KEY", "Content-Type": "application/json"},
+    json={"bvn": "22000000001", "image_upload": "https://example.com/photo.jpg"},
+)
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.firstName` | string | First name |
+| `data.lastName` | string | Last name |
+| `data.dateOfBirth` | string | Date of birth |
+| `data.gender` | string | Gender |
+| `data.bvn` | string | BVN number |
+| `data.watchListed` | boolean | `true` if flagged on a watchlist |
+| `data.base64Image` | string | Base64-encoded registered photo |
+| `data.face_data.status` | boolean | `true` if the faces match |
+| `data.face_data.confidence` | number | Match confidence percentage (0–100) |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "firstName": "ABRAHAM",
+    "lastName": "OMOLE",
+    "middleName": "ISAAC",
+    "dateOfBirth": "19-Sept-1909",
+    "phoneNumber1": "09011001100",
+    "email": null,
+    "gender": "Male",
+    "stateOfOrigin": "Ogun State",
+    "bvn": "22200000000",
+    "nin": null,
+    "registrationDate": "2017-09-05",
+    "lgaOfOrigin": "Ado-Odo/Ota",
+    "maritalStatus": "Single",
+    "watchListed": false,
+    "base64Image": "<base64-encoded-jpeg>",
+    "face_data": {
+      "status": true,
+      "response_code": "00",
+      "message": "Face Match",
+      "confidence": 99.99
+    }
+  },
+  "message": "Bank Verification Number details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

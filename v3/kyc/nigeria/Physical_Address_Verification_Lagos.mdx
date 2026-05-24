@@ -1,0 +1,103 @@
+---
+title: "Physical Address Verification (Lagos)"
+sidebarTitle: "Physical Addr. (Lagos)"
+description: "Submit a physical address verification request for customers located in Lagos."
+openapi: "POST /api/onboarding/nigeria_kyc/physical_address_verification_lagos/"
+---
+
+The Physical Address Verification (Lagos) endpoint dispatches a field agent to physically verify a customer's address within Lagos State. Returns a `identity_check_id` to track the request via the [Physical Address Confirmation](/v3/kyc/nigeria/Physical_Address_Verification_Confirmation) endpoint.
+
+<Info>
+  Physical address verification is asynchronous. A field agent will visit the address; you will be notified by email and webhook when verification is complete. Use the confirmation endpoint to poll the result.
+</Info>
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/physical_address_verification_lagos/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `first_name` | string | Yes | Customer's first name |
+| `last_name` | string | Yes | Customer's last name |
+| `nin` | string | Yes | Customer's 11-digit NIN |
+| `phone_number` | string | Yes | Customer's phone number |
+| `birth_date` | string | Yes | Date of birth (format: `DD/MM/YYYY`) |
+| `street` | string | Yes | Full street address in Lagos |
+| `city` | string | Yes | City (must be within Lagos) |
+| `lga` | string | Yes | Lagos local government area |
+| `state` | string | Yes | Must be `"Lagos"` |
+| `landmark` | string | No | Nearby landmark to help the field agent |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/physical_address_verification_lagos/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "first_name": "John", "last_name": "Doe",
+    "nin": "10000000001", "phone_number": "08000000000",
+    "birth_date": "17/01/1988",
+    "street": "270 Murtala Muhammed Way, Alagomeji. Yaba",
+    "city": "oshodi", "lga": "lagos mainland",
+    "state": "Lagos", "landmark": "lagos"
+  }'
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.identity_check_id` | integer | Use this ID with the confirmation endpoint |
+| `data.status` | string | Initial status: `"pending"` |
+| `data.street` | string | Address submitted for verification |
+| `data.city` | string | City submitted |
+| `data.state` | string | State submitted |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "identity_check_id": 2,
+    "status": "pending",
+    "city": "oshodi",
+    "lga": "lagos mainland",
+    "landmark": "lagos",
+    "street": "270 Murtala Muhammed Way, Alagomeji. Yaba",
+    "first_name": "John",
+    "last_name": "Doe",
+    "birth_date": "17/01/1988",
+    "phone_number": "08000000000",
+    "nin": "10000000001",
+    "state": "Lagos"
+  },
+  "message": "Physical Address Verification request received successfully, You will be notified via email when the verification is completed"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Missing required fields"
+}
+```

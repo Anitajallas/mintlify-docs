@@ -1,0 +1,121 @@
+---
+title: "CAC Advanced"
+sidebarTitle: "CAC Advanced"
+description: "Retrieve a comprehensive CAC business profile including directors and shareholding structure."
+openapi: "POST /api/onboarding/nigeria_kyc/cac_advanced/"
+---
+
+The CAC Advanced endpoint returns a full business profile from the Corporate Affairs Commission, including the complete list of directors, their personal details, shareholding information, and affiliated PSC data.
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/cac_advanced/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `registration_number` | string | Yes | The CAC registration number |
+| `company_name` | string | Yes | Registered company name |
+| `company_type` | string | Yes | Entity type: `"RC"` (registered company), `"BN"` (business name), or `"IT"` (incorporated trustee) |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/cac_advanced/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"registration_number": "10056", "company_name": "JOYCE VENTURES", "company_type": "IT"}'
+```
+
+```python Python
+import requests
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/cac_advanced/",
+    headers={"x-access-token": "YOUR_SECRET_KEY", "Content-Type": "application/json"},
+    json={"registration_number": "10056", "company_name": "JOYCE VENTURES", "company_type": "IT"},
+)
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.rc_number` | string | Registration number |
+| `data.company_name` | string | Company name |
+| `data.company_id` | integer | Internal company ID |
+| `data.entity_type` | string | Entity type (e.g., `"IT"`, `"RC"`, `"BN"`) |
+| `data.company_status` | string | e.g., `"ACTIVE"` |
+| `data.registrationDate` | string | Date of registration |
+| `data.directors` | array | List of directors with full personal and shareholding details |
+| `data.directors[].firstname` | string | Director's first name |
+| `data.directors[].surname` | string | Director's surname |
+| `data.directors[].gender` | string | Director's gender |
+| `data.directors[].status` | string | Director status (e.g., `"ACTIVE"`) |
+| `data.directors[].isChairman` | boolean | `true` if the director is the chairman |
+| `data.directors[].dateOfAppointment` | string | Date of appointment |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "rc_number": "10056",
+    "company_name": "JOYCE VENTURES",
+    "company_id": 906200,
+    "entity_type": "IT",
+    "company_status": "ACTIVE",
+    "registrationDate": "2007-03-30",
+    "directors": [
+      {
+        "id": 11234246,
+        "firstname": "SAMSON",
+        "surname": "ADELOLU",
+        "otherName": "DANIEL",
+        "gender": "MALE",
+        "status": "ACTIVE",
+        "occupation": "CLERGY",
+        "isChairman": true,
+        "dateOfAppointment": "2007-03-13T00:00:00.000+00:00",
+        "city": "IBADAN",
+        "state": "OYO",
+        "address": "NO. 4, AGBA ROAD, SANYO"
+      }
+    ]
+  },
+  "message": "Business Registration details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

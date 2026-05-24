@@ -1,0 +1,149 @@
+---
+title: "Address Verification"
+sidebarTitle: "Address Verification"
+description: "Submit a customer's address for verification against government and financial records."
+openapi: "POST /api/onboarding/nigeria_kyc/address_verification/"
+---
+
+The Address Verification endpoint initiates a verification of a customer's residential address. It cross-references the provided details against identity records and returns an initial verification status with a reference ID for tracking.
+
+<Note>
+  Address verification is asynchronous. You will receive a `reference` in the response — use the webhook or the [Digital Address Confirmation](/v3/kyc/nigeria/Digital_Address_Verification_Confirmation) endpoint to get the final result.
+</Note>
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/address_verification/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `first_name` | string | Yes | Customer's first name |
+| `last_name` | string | Yes | Customer's last name |
+| `nin` | string | Yes | Customer's 11-digit NIN |
+| `phone_number` | string | Yes | Customer's phone number |
+| `birth_date` | string | Yes | Date of birth (format: `DD/MM/YYYY`) |
+| `street` | string | Yes | Full street address |
+| `city` | string | Yes | City |
+| `lga` | string | Yes | Local government area |
+| `state` | string | Yes | State |
+| `landmark` | string | No | Nearby landmark to aid verification |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/address_verification/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "first_name": "John", "last_name": "Doe",
+    "nin": "10000000001", "phone_number": "08000000000",
+    "birth_date": "17/01/1988",
+    "street": "270 Murtala Muhammed Way, Alagomeji. Yaba",
+    "city": "oshodi", "lga": "lagos mainland",
+    "state": "Lagos", "landmark": "lagos"
+  }'
+```
+
+```python Python
+import requests
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/address_verification/",
+    headers={"x-access-token": "YOUR_SECRET_KEY", "Content-Type": "application/json"},
+    json={
+        "first_name": "John", "last_name": "Doe",
+        "nin": "10000000001", "phone_number": "08000000000",
+        "birth_date": "17/01/1988",
+        "street": "270 Murtala Muhammed Way, Alagomeji. Yaba",
+        "city": "oshodi", "lga": "lagos mainland",
+        "state": "Lagos", "landmark": "lagos",
+    },
+)
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.id` | integer | Verification record ID |
+| `data.reference` | string | Unique reference for tracking the verification |
+| `data.status.status` | string | Current verification status (e.g., `"In Progress"`) |
+| `data.applicant` | object | Submitted applicant details |
+| `data.lattitude` | string | Geocoded latitude of the address |
+| `data.longitude` | string | Geocoded longitude of the address |
+| `data.photos` | array | Photos captured during field verification |
+| `data.neighbor` | object | Neighbor confirmation details (if completed) |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "id": 1,
+    "applicant": {
+      "firstname": "John",
+      "lastname": "Doe",
+      "phone": "08000000000",
+      "idType": "nin",
+      "idNumber": "10000000001",
+      "gender": "Male",
+      "birthdate": "17/01/1988"
+    },
+    "createdAt": "",
+    "completedAt": "",
+    "lattitude": "9.081999",
+    "longitude": "8.675277",
+    "photos": [],
+    "neighbor": {
+      "name": "Tunde Adetunji",
+      "comment": "Very friendly",
+      "phone": "080900000000"
+    },
+    "status": {
+      "status": "In Progress",
+      "subStatus": "In Progress",
+      "state": "In Progress"
+    },
+    "city": "oshodi",
+    "street": "270 Murtala Muhammed Way, Alagomeji. Yaba",
+    "lga": "lagos mainland",
+    "state": "Lagos",
+    "country": "Nigeria",
+    "reference": "1732800207805106"
+  }
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Missing required fields"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```
