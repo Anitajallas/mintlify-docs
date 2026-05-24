@@ -1,0 +1,250 @@
+---
+title: "Verify Customer"
+sidebarTitle: "Verify Customer"
+description: "Run identity verification and AML screening for a customer in a single call."
+openapi: "POST /onboarding/verify_customer"
+---
+
+## Endpoint
+
+```
+POST /onboarding/verify_customer
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `country` | string | Yes | Country of the customer. Supported: `nigeria`, `kenya`, `ghana`, `uganda`, `rwanda` |
+| `identifier` | string | Yes | The customer's ID number (e.g. BVN, NIN, National ID) |
+| `identifier_type` | string | No | Overrides the country default. See [supported values](/v3/onboarding/introduction#supported-countries) |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST https://adhere-api.smartcomply.com/onboarding/verify_customer \
+  -H "x-access-token: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "country": "nigeria",
+    "identifier": "12345678901"
+  }'
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://adhere-api.smartcomply.com/onboarding/verify_customer",
+    headers={"x-access-token": "YOUR_API_KEY"},
+    json={
+        "country": "nigeria",
+        "identifier": "12345678901",
+    },
+)
+print(response.json())
+```
+
+```javascript Node.js
+const response = await fetch("https://adhere-api.smartcomply.com/onboarding/verify_customer", {
+  method: "POST",
+  headers: {
+    "x-access-token": "YOUR_API_KEY",
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    country: "nigeria",
+    identifier: "12345678901",
+  }),
+});
+const data = await response.json();
+```
+</CodeGroup>
+
+## Response
+
+All responses return HTTP `200`. Use the `decision` field — not the HTTP status — to determine the onboarding outcome. See the [Decision Guide](/v3/onboarding/introduction#decision-guide) for how to act on each value.
+
+<ResponseField name="status" type="string">
+  Always `"success"` on a `200` response.
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Always `"Customer onboarding completed"` on success.
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="data fields" defaultOpen>
+    <ResponseField name="onboarding_id" type="number">
+      Unique ID for this onboarding record.
+    </ResponseField>
+    <ResponseField name="identity" type="object">
+      Result of the identity verification step.
+      <Expandable title="identity fields">
+        <ResponseField name="verified" type="boolean">
+          `true` if the identifier was successfully verified against the issuing authority.
+        </ResponseField>
+        <ResponseField name="identifier_type" type="string">
+          The document type used, e.g. `"BVN"`, `"NIN"`, `"National ID"`.
+        </ResponseField>
+        <ResponseField name="first_name" type="string">
+          Present when `verified: true`.
+        </ResponseField>
+        <ResponseField name="last_name" type="string">
+          Present when `verified: true`.
+        </ResponseField>
+        <ResponseField name="middle_name" type="string">
+          Present when `verified: true` and the provider returns a middle name.
+        </ResponseField>
+        <ResponseField name="date_of_birth" type="string">
+          ISO-8601 date string. Present when `verified: true`.
+        </ResponseField>
+        <ResponseField name="gender" type="string">
+          Present when `verified: true`.
+        </ResponseField>
+        <ResponseField name="phone" type="string">
+          Present when `verified: true` and available from the provider.
+        </ResponseField>
+        <ResponseField name="error" type="string">
+          Error message from the verification provider. Only present when `verified: false`.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="screening" type="object">
+      AML screening results. Always returned in a consistent shape, even when screening was skipped.
+      <Expandable title="screening fields">
+        <ResponseField name="sanctions" type="array">
+          Sanctions matches. Each entry contains `entity_name`, `recorded_date`, `country`, `sanction_body`, `sanction_types`, and `other_information`.
+        </ResponseField>
+        <ResponseField name="peps" type="array">
+          PEP matches. Each entry contains `name`, `pep_types`, `gender`, `country`, `source`, and `political_post`.
+        </ResponseField>
+        <ResponseField name="adverse_media" type="array">
+          Currently always `[]` — will be enabled as a configurable step in a future release.
+        </ResponseField>
+        <ResponseField name="risk_level" type="string">
+          `"low"`, `"medium"`, or `"high"`.
+        </ResponseField>
+        <ResponseField name="note" type="string">
+          Present only when screening was skipped. Explains why.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="decision" type="string">
+      `"pass"`, `"review"`, or `"fail"`. See the [Decision Guide](/v3/onboarding/introduction#decision-guide).
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Pass — identity verified, no matches
+
+```json
+{
+  "status": "success",
+  "message": "Customer onboarding completed",
+  "data": {
+    "onboarding_id": 1024,
+    "identity": {
+      "verified": true,
+      "identifier_type": "BVN",
+      "first_name": "Amaka",
+      "middle_name": "Chisom",
+      "last_name": "Okafor",
+      "date_of_birth": "1992-04-17",
+      "gender": "Female",
+      "phone": "08031234567"
+    },
+    "screening": {
+      "sanctions": [],
+      "peps": [],
+      "adverse_media": [],
+      "risk_level": "low"
+    },
+    "decision": "pass"
+  }
+}
+```
+
+### Review — identity verified, PEP match found
+
+```json
+{
+  "status": "success",
+  "message": "Customer onboarding completed",
+  "data": {
+    "onboarding_id": 1025,
+    "identity": {
+      "verified": true,
+      "identifier_type": "NIN",
+      "first_name": "Emeka",
+      "last_name": "Nwosu",
+      "date_of_birth": "1985-11-02",
+      "gender": "Male"
+    },
+    "screening": {
+      "sanctions": [],
+      "peps": [
+        {
+          "name": "Emeka Nwosu",
+          "pep_types": ["role.pep", "pep-class-2"],
+          "gender": "male",
+          "source": "OpenSanctions",
+          "country": "Nigeria",
+          "political_post": ["Former State Commissioner"]
+        }
+      ],
+      "adverse_media": [],
+      "risk_level": "medium"
+    },
+    "decision": "review"
+  }
+}
+```
+
+### Fail — identity verification unsuccessful
+
+```json
+{
+  "status": "success",
+  "message": "Customer onboarding completed",
+  "data": {
+    "onboarding_id": 1026,
+    "identity": {
+      "verified": false,
+      "identifier_type": "BVN",
+      "error": "Bank Verification Number (BVN) check failed: Invalid BVN provided"
+    },
+    "screening": {
+      "sanctions": [],
+      "peps": [],
+      "adverse_media": [],
+      "risk_level": "low",
+      "note": "AML screening skipped: identity verification did not return a name"
+    },
+    "decision": "fail"
+  }
+}
+```
+
+### Error Responses
+
+| HTTP Status | Message | Cause |
+|-------------|---------|-------|
+| `401` | `"Authorization token is missing"` | No `x-access-token` header |
+| `401` | `"Authorization failed"` | Token not recognised or expired |
+| `403` | `"Identity Verification suite isn't enabled for this branch"` | Feature not activated — contact support |
+| `403` | `"Your account hasn't been verified for Identity Verification Suite"` | Admin account pending verification |
+| `400` | `"country is required"` | Missing `country` field |
+| `400` | `"identifier is required"` | Missing `identifier` field |
+| `400` | `"Unsupported country '…'. Supported: …"` | Invalid `country` value |
+| `400` | `"Unsupported identifier_type '…' for …. Supported: …"` | Invalid `identifier_type` for the given country |

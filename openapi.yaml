@@ -1575,3 +1575,70 @@ paths:
       security: []
       responses:
         "200": { description: Service health status }
+
+  # ── CUSTOMER ONBOARDING ─────────────────────────────────────
+
+  /onboarding/verify_customer:
+    post:
+      tags: [Customer Onboarding]
+      summary: Verify Customer
+      operationId: verifyCustomer
+      description: Combines identity verification and AML screening into a single call. Returns a consolidated risk decision alongside raw IVS and screening results.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [country, identifier]
+              properties:
+                country:
+                  type: string
+                  enum: [nigeria, kenya, ghana, uganda, rwanda]
+                  example: "nigeria"
+                  description: Country of the customer
+                identifier:
+                  type: string
+                  example: "12345678901"
+                  description: The ID number to verify (BVN, NIN, National ID, etc.)
+                identifier_type:
+                  type: string
+                  example: "bvn"
+                  description: "Overrides the country default. Nigeria: bvn, nin, vnin. Others: national_id or ghana_id."
+      responses:
+        "200": { description: Onboarding completed — check decision field for pass/review/fail }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403":
+          description: Feature not enabled for this branch or account not verified
+
+  /onboarding/settings:
+    get:
+      tags: [Customer Onboarding]
+      summary: Get Onboarding Settings
+      operationId: getOnboardingSettings
+      description: Retrieve the current IVS and AML toggle settings for your branch.
+      responses:
+        "200": { description: Settings retrieved }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+    post:
+      tags: [Customer Onboarding]
+      summary: Update Onboarding Settings
+      operationId: updateOnboardingSettings
+      description: Enable or disable identity verification (IVS) and AML screening for your branch.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ivs:
+                  type: boolean
+                  description: Enable or disable identity verification
+                aml:
+                  type: boolean
+                  description: Enable or disable AML screening
+      responses:
+        "200": { description: Settings saved }
+        "401": { $ref: "#/components/responses/Unauthorized" }

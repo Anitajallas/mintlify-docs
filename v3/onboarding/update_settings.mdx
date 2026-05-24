@@ -1,0 +1,114 @@
+---
+title: "Update Onboarding Settings"
+sidebarTitle: "Update Settings"
+description: "Enable or disable identity verification and AML screening for your branch."
+openapi: "POST /onboarding/settings"
+---
+
+Use this endpoint to control which steps run during the [Verify Customer](/v3/onboarding/verify_customer) call. Changes apply to all subsequent onboarding requests for your branch.
+
+<Note>
+  Both `ivs` and `aml` are enabled by default. Disabling `ivs` will also cause AML screening to be skipped, since screening depends on a verified name being returned from the identity check.
+</Note>
+
+## Endpoint
+
+```
+POST /onboarding/settings
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `ivs` | boolean | No | Enable or disable identity verification |
+| `aml` | boolean | No | Enable or disable AML screening |
+
+You can update one or both settings in a single call. Omitted fields retain their current value.
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST https://adhere-api.smartcomply.com/onboarding/settings \
+  -H "x-access-token: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ "aml": false }'
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://adhere-api.smartcomply.com/onboarding/settings",
+    headers={"x-access-token": "YOUR_API_KEY"},
+    json={"aml": False},
+)
+print(response.json())
+```
+
+```javascript Node.js
+const response = await fetch("https://adhere-api.smartcomply.com/onboarding/settings", {
+  method: "POST",
+  headers: {
+    "x-access-token": "YOUR_API_KEY",
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({ aml: false }),
+});
+const data = await response.json();
+```
+</CodeGroup>
+
+## Response
+
+<ResponseField name="status" type="string">
+  `"success"` on a successful update.
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  `"Settings saved"`
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  The full settings state after the update.
+  <Expandable title="data fields" defaultOpen>
+    <ResponseField name="ivs" type="boolean">
+      Current state of identity verification.
+    </ResponseField>
+    <ResponseField name="aml" type="boolean">
+      Current state of AML screening.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### 200 OK
+
+```json
+{
+  "status": "success",
+  "message": "Settings saved",
+  "data": {
+    "ivs": true,
+    "aml": false
+  }
+}
+```
+
+### Error Responses
+
+| HTTP Status | Message | Cause |
+|-------------|---------|-------|
+| `401` | `"Authorization token is missing"` | No `x-access-token` header |
+| `401` | `"Authorization failed"` | Token not recognised or expired |
+| `400` | `"Invalid value for ivs"` | Value must be a boolean |
+| `400` | `"Invalid value for aml"` | Value must be a boolean |

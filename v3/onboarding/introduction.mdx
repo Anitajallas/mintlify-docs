@@ -1,0 +1,57 @@
+---
+title: "Customer Onboarding"
+sidebarTitle: "Overview"
+description: "Verify a customer's identity and screen them for sanctions, PEPs, and adverse media in a single API call."
+---
+
+Onboarding a new customer typically requires two separate steps: verify who they are, then check whether they appear on any watchlists. The Customer Onboarding API does both in a single call — you send a country and an ID number, and the API returns a verified identity, AML screening results, and a consolidated decision of `pass`, `review`, or `fail`.
+
+<CardGroup cols={2}>
+  <Card title="Verify Customer" icon="user-check" href="/v3/onboarding/verify_customer">
+    Submit a country and identifier to receive a verified identity and AML screening result in one response.
+  </Card>
+  <Card title="Settings" icon="sliders" href="/v3/onboarding/get_settings">
+    Configure which steps — identity verification and AML screening — run for your branch.
+  </Card>
+</CardGroup>
+
+## How It Works
+
+<Steps>
+  <Step title="Submit a country and identifier">
+    Send the customer's country and ID number. The API automatically selects the correct document type for that country — no need to specify it unless you want to override the default.
+  </Step>
+  <Step title="Identity is verified">
+    The API verifies the identifier against the relevant government or bureau database and extracts the customer's verified name.
+  </Step>
+  <Step title="Name is screened for AML">
+    The verified name is run against global sanctions lists and PEP databases. If identity verification failed and no name was returned, screening is skipped and a `note` is included in the response.
+  </Step>
+  <Step title="A decision is returned">
+    Based on the combined IVS and AML result, the API returns a `decision` of `pass`, `review`, or `fail`. The raw identity and screening data are always included so you can build your own logic on top.
+  </Step>
+</Steps>
+
+## Decision Guide
+
+The `decision` field is the primary signal your system should act on:
+
+| Decision | Risk level | What it means | Recommended action |
+|----------|-----------|---------------|-------------------|
+| `pass` | Low | Identity verified. No sanctions or PEP matches found. | Proceed with onboarding. |
+| `review` | Medium | Identity verified, but a PEP or elevated-risk match was found. | Hold onboarding. Route to a compliance officer for manual review before proceeding. |
+| `fail` | High / unverifiable | Identity could not be verified **or** a high-risk match was found. | Do not onboard. Decline or escalate per your compliance policy. |
+
+<Warning>
+  A `review` decision does **not** mean block the customer. It means onboarding should pause for human review before a final call is made. Automatically declining all `review` cases may exclude legitimate customers who are PEPs but present no actual risk.
+</Warning>
+
+## Supported Countries
+
+| Country | Default identifier | Supported overrides |
+|---------|-------------------|---------------------|
+| `nigeria` | `bvn` | `bvn`, `nin`, `vnin` |
+| `kenya` | `national_id` | `national_id` |
+| `ghana` | `ghana_id` | `ghana_id` |
+| `uganda` | `national_id` | `national_id` |
+| `rwanda` | `national_id` | `national_id` |

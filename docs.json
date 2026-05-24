@@ -93,6 +93,15 @@
                 "group": "Onboarding Suite",
                 "pages": [
                   {
+                    "group": "Customer Onboarding",
+                    "pages": [
+                      "v3/onboarding/introduction",
+                      "v3/onboarding/verify_customer",
+                      "v3/onboarding/get_settings",
+                      "v3/onboarding/update_settings"
+                    ]
+                  },
+                  {
                     "group": "KYC",
                     "pages": [
                       {
