@@ -2,13 +2,13 @@
 title: "Get Onboarding Settings"
 sidebarTitle: "Get Settings"
 description: "Retrieve the current identity verification and AML screening settings for your branch."
-openapi: "GET /onboarding/settings"
+openapi: "GET /api/onboarding/settings"
 ---
 
 ## Endpoint
 
 ```
-GET /onboarding/settings
+GET /api/onboarding/settings
 ```
 
 ## Request
@@ -23,7 +23,7 @@ GET /onboarding/settings
 
 <CodeGroup>
 ```bash cURL
-curl https://adhere-api.smartcomply.com/onboarding/settings \
+curl https://adhere-api.smartcomply.com/api/onboarding/settings \
   -H "x-access-token: YOUR_API_KEY"
 ```
 
@@ -31,14 +31,14 @@ curl https://adhere-api.smartcomply.com/onboarding/settings \
 import requests
 
 response = requests.get(
-    "https://adhere-api.smartcomply.com/onboarding/settings",
+    "https://adhere-api.smartcomply.com/api/onboarding/settings",
     headers={"x-access-token": "YOUR_API_KEY"},
 )
 print(response.json())
 ```
 
 ```javascript Node.js
-const response = await fetch("https://adhere-api.smartcomply.com/onboarding/settings", {
+const response = await fetch("https://adhere-api.smartcomply.com/api/onboarding/settings", {
   headers: { "x-access-token": "YOUR_API_KEY" },
 });
 const data = await response.json();

@@ -1578,7 +1578,7 @@ paths:
 
   # ── CUSTOMER ONBOARDING ─────────────────────────────────────
 
-  /onboarding/verify_customer:
+  /api/onboarding/verify_customer:
     post:
       tags: [Customer Onboarding]
       summary: Verify Customer
@@ -1612,7 +1612,7 @@ paths:
         "403":
           description: Feature not enabled for this branch or account not verified
 
-  /onboarding/settings:
+  /api/onboarding/settings:
     get:
       tags: [Customer Onboarding]
       summary: Get Onboarding Settings

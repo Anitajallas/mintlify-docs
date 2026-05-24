@@ -2,13 +2,13 @@
 title: "Verify Customer"
 sidebarTitle: "Verify Customer"
 description: "Run identity verification and AML screening for a customer in a single call."
-openapi: "POST /onboarding/verify_customer"
+openapi: "POST /api/onboarding/verify_customer"
 ---
 
 ## Endpoint
 
 ```
-POST /onboarding/verify_customer
+POST /api/onboarding/verify_customer
 ```
 
 ## Request
@@ -32,7 +32,7 @@ POST /onboarding/verify_customer
 
 <CodeGroup>
 ```bash cURL
-curl -X POST https://adhere-api.smartcomply.com/onboarding/verify_customer \
+curl -X POST https://adhere-api.smartcomply.com/api/onboarding/verify_customer \
   -H "x-access-token: YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -45,7 +45,7 @@ curl -X POST https://adhere-api.smartcomply.com/onboarding/verify_customer \
 import requests
 
 response = requests.post(
-    "https://adhere-api.smartcomply.com/onboarding/verify_customer",
+    "https://adhere-api.smartcomply.com/api/onboarding/verify_customer",
     headers={"x-access-token": "YOUR_API_KEY"},
     json={
         "country": "nigeria",
@@ -56,7 +56,7 @@ print(response.json())
 ```
 
 ```javascript Node.js
-const response = await fetch("https://adhere-api.smartcomply.com/onboarding/verify_customer", {
+const response = await fetch("https://adhere-api.smartcomply.com/api/onboarding/verify_customer", {
   method: "POST",
   headers: {
     "x-access-token": "YOUR_API_KEY",
