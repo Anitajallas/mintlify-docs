@@ -1,0 +1,306 @@
+---
+title: "Android SDK"
+description: "Integrate Adhere identity verification and liveness detection into your Android app using our Kotlin Multiplatform SDK."
+---
+
+# Adhere Android SDK
+
+The Adhere Android SDK is a Kotlin Multiplatform library that delivers a drop-in identity verification and liveness detection flow for Android apps. It provides a fully self-contained Jetpack Compose screen that orchestrates ID collection, onboarding verification, and camera-based liveness challenges — no UI code required on your side.
+
+## Features
+
+- **Drop-in Compose UI** — `SmartComplyFlowScreen` handles the entire verification flow
+- **Automatic session management** — creates and manages sessions internally
+- **Dynamic ID types** — fetches available document types from your Dashboard configuration
+- **Identity onboarding** — BVN, NIN, Passport, National IDs, and more
+- **Camera liveness detection** — MediaPipe-powered face challenge system (blink, turn head, open mouth)
+- **Face-to-ID matching** — optionally compares the liveness selfie against the submitted document
+- **One-time verification policy** — sessions are single-use and expire after 30 minutes
+
+---
+
+## Installation
+
+### Step 1 — Add Maven Central (usually already present)
+
+In your project-level `settings.gradle.kts`:
+
+```kotlin
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+```
+
+### Step 2 — Add the dependency
+
+In your app-level `build.gradle.kts`:
+
+```kotlin
+dependencies {
+    implementation("io.github.386konsult:sdk:1.0.0")
+}
+```
+
+### Step 3 — Enable Compose in your module
+
+```kotlin
+android {
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.14"
+    }
+}
+```
+
+---
+
+## Platform Setup
+
+### Permissions
+
+In `AndroidManifest.xml`:
+
+```xml
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
+```
+
+### Minimum SDK
+
+```kotlin
+android {
+    defaultConfig {
+        minSdk = 24
+    }
+}
+```
+
+---
+
+## Quick Start (Drop-in UI)
+
+The simplest integration is `SmartComplyFlowScreen` — a self-contained Compose screen that handles everything automatically.
+
+```kotlin
+import com.smartcomply.sdk.SmartComply
+import com.smartcomply.sdk.client.Environment
+import com.smartcomply.sdk.client.SDKConfig
+import com.smartcomply.sdk.ui.SmartComplyFlowScreen
+import com.smartcomply.sdk.ui.FlowResult
+
+// 1. Create the SDK instance
+val sdk = SmartComply(
+    SDKConfig(
+        apiKey   = "your_live_api_key",
+        clientId = "unique-client-id-per-user",       // one-time use UUID per verification
+        environment = Environment.PRODUCTION           // use Environment.SANDBOX for testing
+    )
+)
+
+// 2. Mount the flow screen in your Compose hierarchy
+@Composable
+fun VerificationScreen() {
+    SmartComplyFlowScreen(
+        sdk = sdk,
+        onComplete = { result: FlowResult ->
+            // Verification submitted successfully
+            println("Entry ID: ${result.entryId}")
+            println("Status: ${result.status}")
+            println("Submitted at: ${result.submittedAt}")
+        },
+        onError = { message: String ->
+            println("Verification failed: $message")
+        }
+    )
+}
+```
+
+The SDK handles the entire flow automatically:
+
+1. Creates a secure session with your API key
+2. Fetches available ID types from your Dashboard configuration
+3. Displays a welcome screen with your brand name
+4. Guides the user through country selection (if multi-country is configured)
+5. Collects the required ID fields or captures a document photo
+6. Verifies the identity against the national database
+7. Opens the camera and runs liveness face challenges
+8. Uploads the video and submits the result
+9. Returns a `FlowResult` to your `onComplete` callback
+
+---
+
+## SDK Configuration
+
+```kotlin
+data class SDKConfig(
+    val apiKey: String,                         // Required — your Adhere API key
+    val clientId: String,                       // Required — unique ID per user verification
+    val environment: Environment = SANDBOX,     // SANDBOX | EMULATOR | PRODUCTION
+    val requestTimeoutMs: Long = 30_000L,       // Default 30s for API calls
+    val uploadTimeoutMs: Long = 60_000L,        // Default 60s for video upload
+    val maxUploadRetries: Int = 3               // Retry attempts for failed uploads
+)
+```
+
+| Environment | Base URL |
+|---|---|
+| `SANDBOX` | `http://192.168.1.5:8000` (local dev server) |
+| `EMULATOR` | `http://10.0.2.2:8000` (Android emulator → host machine) |
+| `PRODUCTION` | `https://adhere-api.smartcomply.com` |
+
+---
+
+## FlowResult
+
+The `onComplete` callback receives a `FlowResult`:
+
+```kotlin
+data class FlowResult(
+    val entryId: Int,                                   // Liveness entry ID from backend
+    val status: String,                                 // "submitted", "verified", "failed"
+    val submittedAt: String?,                           // ISO 8601 timestamp
+    val verificationResult: VerifyIdentityResponse?     // Identity check result (name, DOB, etc.)
+)
+```
+
+### Identity result fields
+
+```kotlin
+data class VerifyIdentityResponse(
+    val status: String,             // "verified" | "pending"
+    val onboardingType: String?,    // e.g. "bvn", "nin"
+    val identityCheckId: Int?,      // used internally for face-to-ID matching
+    val providerResult: ProviderResult?
+)
+
+data class ProviderResult(
+    val firstName: String?,
+    val lastName: String?,
+    val middleName: String?,
+    val dob: String?,
+    val gender: String?,
+    val phone: String?
+)
+```
+
+---
+
+## Advanced Usage (Headless)
+
+If you are building your own UI, call the SDK methods directly:
+
+```kotlin
+val sdk = SmartComply(SDKConfig(apiKey = "...", clientId = "..."))
+
+// 1. Create a session
+val session = sdk.createSession()
+
+// 2. Fetch available ID channels
+val config = sdk.initialize()
+val channels = config.channels["nigeria"] ?: emptyList()
+val bvnChannel = channels.first { it.name == "BVN" }
+
+// 3. Verify identity
+val identity = sdk.onboarding.verify(
+    channelId = bvnChannel.id,
+    fields = mapOf("bvn" to "12345678912")
+)
+
+// 4. Start liveness check
+val params = LivenessStartParams(
+    identifier     = "12345678912",
+    identifierType = "bvn",
+    country        = "NG",
+    identityCheckId = identity.identityCheckId   // enables face-to-ID match
+)
+
+// Mount LivenessScreen in your Compose tree
+LivenessScreen(
+    livenessModule = sdk.liveness,
+    params = params,
+    onResult = { state ->
+        when (state) {
+            is LivenessState.Success -> println("Done: ${state.response.id}")
+            is LivenessState.Failed  -> println("Error: ${state.error.message}")
+            else -> { /* update progress UI */ }
+        }
+    }
+)
+```
+
+---
+
+## Liveness States
+
+Observe `LivenessState` to update a custom progress UI:
+
+| State | Description |
+|---|---|
+| `InitializingCamera` | Camera and MediaPipe are starting up |
+| `CameraReady` | Camera open, session being created |
+| `DetectingFace(instruction)` | No face detected; shows positioning guidance |
+| `WaitingForAction(action, instruction, confidence, completedCount, totalCount)` | Active challenge in progress |
+| `CapturingSnapshot` | All actions complete, grabbing final frame |
+| `Uploading` | Video being uploaded to backend |
+| `Verifying` | Backend processing the submission |
+| `Success(response)` | Liveness passed — contains `LivenessSubmitResponse` |
+| `Failed(error, canRetry)` | Liveness failed — show error and optionally retry |
+
+---
+
+## Supported Liveness Actions
+
+| Action | Enum | Description |
+|---|---|---|
+| Blink | `ChallengeAction.BLINK` | Close and open both eyes |
+| Turn left | `ChallengeAction.TURN_LEFT` | Rotate head to the left |
+| Turn right | `ChallengeAction.TURN_RIGHT` | Rotate head to the right |
+| Turn head | `ChallengeAction.TURN_HEAD` | Any horizontal head rotation |
+| Open mouth | `ChallengeAction.OPEN_MOUTH` | Open jaw wide |
+
+Challenge actions are configured in your Adhere Dashboard. The SDK fetches them automatically.
+
+---
+
+## Error Handling
+
+```kotlin
+SmartComplyFlowScreen(
+    sdk = sdk,
+    onComplete = { result -> /* ... */ },
+    onError = { message ->
+        when {
+            message.contains("401") -> // Invalid or expired API key
+            message.contains("session") -> // Session expired — create a new clientId
+            else -> // Show message to user
+        }
+    }
+)
+```
+
+Common error scenarios:
+
+| Error | Cause | Resolution |
+|---|---|---|
+| `401 Unauthorized` | Invalid API key | Verify your key in the Adhere Dashboard |
+| `Session expired` | 30-minute session timeout | Generate a new `clientId` per attempt |
+| `Failed to create liveness entry` | Network error or invalid payload | Retry with a new session |
+| `No face detected` | Poor lighting or camera angle | Prompt user to adjust position |
+
+---
+
+## ProGuard / R8
+
+Add to your `proguard-rules.pro`:
+
+```
+-keep class com.smartcomply.sdk.** { *; }
+-keepattributes *Annotation*
+-dontwarn com.google.mediapipe.**
+```

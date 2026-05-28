@@ -78,6 +78,8 @@
                 "group": "Libraries & Tools",
                 "pages": [
                   "libraries/smartcomply_sdk",
+                  "libraries/android_sdk",
+                  "libraries/ios_sdk",
                   "libraries/flutter_sdk",
                   "libraries/postman"
                 ]
@@ -279,7 +281,7 @@
               },
               {
                 "group": "Libraries",
-                "pages": ["libraries/smartcomply_sdk", "libraries/flutter_sdk"]
+                "pages": ["libraries/smartcomply_sdk", "libraries/android_sdk", "libraries/ios_sdk", "libraries/flutter_sdk"]
               },
               {
                 "group": "Onboarding Suite",
@@ -449,7 +451,7 @@
               },
               {
                 "group": "Libraries",
-                "pages": ["libraries/smartcomply_sdk", "libraries/flutter_sdk"]
+                "pages": ["libraries/smartcomply_sdk", "libraries/android_sdk", "libraries/ios_sdk", "libraries/flutter_sdk"]
               },
               {
                 "group": "Biometrics",
