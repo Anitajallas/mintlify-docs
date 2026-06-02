@@ -1,332 +1,208 @@
 ---
 title: "iOS SDK"
-description: "Integrate Adhere identity verification and liveness detection into your iOS app using our Kotlin Multiplatform XCFramework."
+description: "Integrate SmartComply identity verification and liveness detection into your iOS app with a single drop-in SwiftUI view."
 ---
 
-# Adhere iOS SDK
+# SmartComply iOS SDK
 
-The Adhere iOS SDK is built on Kotlin Multiplatform and distributed as an XCFramework. The shared business logic — session management, onboarding verification, liveness orchestration, action detection, and API communication — runs from a single Kotlin codebase. Your Swift code supplies the camera feed and UI.
+The SmartComply iOS SDK is a native Swift library that delivers a fully self-contained identity verification flow for iOS apps. Drop in one SwiftUI view and the SDK handles session management, country and ID-type selection, document capture, identity verification, and liveness detection automatically.
 
 ## Features
 
-- **Shared liveness engine** — the same MediaPipe-based action detection (blink, turn, open mouth) used on Android
-- **`IosLivenessOrchestrator`** — Kotlin class exposed to Swift for full liveness lifecycle management
-- **Identity onboarding** — BVN, NIN, Passport, National IDs via the `OnboardingModule`
-- **Session management** — automatic session creation and token propagation
-- **Face-to-ID matching** — optionally compares liveness selfie against submitted document
+- **Drop-in SwiftUI view** — `SmartComplyFlowView` manages the entire verification flow with no UI code required
+- **Two verification modes** — document photo capture or ID number data entry, configured from your Dashboard
+- **Guide-box document capture** — crops exactly what falls inside the ID card frame so the image sent to the backend is always clean
+- **Liveness detection** — face challenge system (blink, turn head) runs automatically after identity verification
+- **Dynamic ID types** — channels and fields are fetched live from your Dashboard configuration
+- **Multi-country support** — renders a country picker automatically when more than one country is configured
+- **Dark and light mode** — theme adapts to the system colour scheme; override with `preferredColorScheme`
+- **Automatic retry** — handles upload retries and session errors internally
+
+---
+
+## Requirements
+
+- **iOS 16.0** or later
+- **Swift 5.9** or later
+- **Xcode 15** or later
+- **iPhone X or later** — liveness detection requires a front-facing TrueDepth camera
 
 ---
 
 ## Installation
 
-### CocoaPods
+The SDK is distributed via Swift Package Manager.
 
-The XCFramework and its MediaPipe dependency are distributed via CocoaPods. Add to your `Podfile`:
+### Xcode (recommended)
 
-```ruby
-platform :ios, '15.0'
+1. Open your project in Xcode
+2. Go to **File → Add Package Dependencies**
+3. Enter the repository URL: `https://github.com/386konsult/ios-sdk`
+4. Select **Exact Version** and enter `1.0.0`
+5. Click **Add Package** and select the **SmartComplySDK** library
 
-target 'YourApp' do
-  use_frameworks!
+### Package.swift
 
-  pod 'SmartComplySDK', '~> 1.0.0'
-  pod 'MediaPipeTasksVision', '~> 0.10.14'
-end
+```swift
+dependencies: [
+    .package(url: "https://github.com/386konsult/ios-sdk", exact: "1.0.0")
+],
+targets: [
+    .target(
+        name: "YourApp",
+        dependencies: [
+            .product(name: "SmartComplySDK", package: "ios-sdk")
+        ]
+    )
+]
 ```
-
-Then run:
-
-```bash
-pod install
-```
-
-### Manual XCFramework
-
-1. Download `SmartComplySDK.xcframework` from the [GitHub Releases](https://github.com/386konsult/smartcomply-sdk/releases) page.
-2. Drag it into your Xcode project under **Frameworks, Libraries, and Embedded Content**.
-3. Set **Embed** to `Embed & Sign`.
 
 ---
 
 ## Platform Setup
 
-### Camera permission
-
-In `Info.plist`:
+Add the following key to your app's `Info.plist`:
 
 ```xml
 <key>NSCameraUsageDescription</key>
-<string>Camera access is required for identity liveness verification.</string>
-
-<key>NSMicrophoneUsageDescription</key>
-<string>Microphone access is required for liveness video recording.</string>
+<string>Camera access is required to photograph your ID document and complete liveness verification.</string>
 ```
-
-### Minimum deployment target
-
-iOS 15.0 or later is required.
 
 ---
 
 ## Quick Start
 
-### 1. Initialise the SDK
+### 1. Create the SDK instance
+
+Create a `SmartComply` instance once — for example in your view model or app entry point. Generate a fresh `clientId` (UUID) for each new verification attempt.
 
 ```swift
 import SmartComplySDK
 
-let config = SDKConfig(
-    apiKey: "your_live_api_key",
-    clientId: "unique-client-id-per-user",   // one-time use per verification
-    environment: .PRODUCTION                  // .SANDBOX for local dev
+let sdk = SmartComply(
+    config: SDKConfig(
+        apiKey:      "pk_live_xxxxxxxxxxxx",
+        clientId:    UUID().uuidString,       // unique per verification attempt
+        environment: .production
+    )
 )
-
-let sdk = SmartComply(config: config)
 ```
 
-### 2. Create a session and fetch channels
+### 2. Present the flow view
 
-```swift
-Task {
-    do {
-        let session = try await sdk.createSession()
-        let sdkConfig = try await sdk.initialize()
-
-        // sdkConfig.channels is a [String: [ChannelItem]] keyed by country name
-        let nigeriaChannels = sdkConfig.channels["nigeria"] ?? []
-        let bvnChannel = nigeriaChannels.first { $0.name == "BVN" }
-
-        print("Brand:", sdkConfig.brandName)
-    } catch {
-        print("Setup failed:", error)
-    }
-}
-```
-
-### 3. Verify identity
-
-```swift
-guard let channel = bvnChannel else { return }
-
-let identity = try await sdk.onboarding.verify(
-    channelId: channel.id,
-    fields: ["bvn": "12345678912"]
-)
-
-print("Verification status:", identity.status)
-// identity.identityCheckId is passed to liveness for face-to-ID matching
-```
-
-### 4. Start liveness
+Embed `SmartComplyFlowView` anywhere in your SwiftUI hierarchy. The SDK loads automatically when the view appears.
 
 ```swift
 import SmartComplySDK
 
-let params = LivenessStartParams(
-    identifier: "12345678912",
-    identifierType: "bvn",
-    country: "NG",
-    idImageBytes: nil,                          // optional: document photo bytes
-    identityCheckId: identity.identityCheckId   // enables face-to-ID match
-)
+struct ContentView: View {
+    @State private var showVerification = false
+    let sdk = SmartComply(config: SDKConfig(apiKey: "pk_live_...", clientId: UUID().uuidString))
 
-let orchestrator = IosLivenessOrchestrator(
-    livenessModule: sdk.liveness,
-    params: params,
-    actions: [.BLINK, .TURN_LEFT, .OPEN_MOUTH]
-)
-
-orchestrator.start(
-    onStateChanged: { state in
-        DispatchQueue.main.async {
-            self.handleState(state)
+    var body: some View {
+        Button("Verify Identity") {
+            showVerification = true
         }
-    },
-    onComplete: { result, error in
-        if let result = result {
-            print("Liveness passed — entry ID:", result.id)
-        } else if let error = error {
-            print("Liveness failed:", error.message)
-        }
-    }
-)
-```
-
----
-
-## Camera Integration
-
-The iOS SDK does not manage the camera directly. Your `UIViewController` or SwiftUI view is responsible for opening `AVCaptureSession` and feeding frames to the orchestrator.
-
-### Feed frames to the face engine
-
-Implement `AVCaptureVideoDataOutputSampleBufferDelegate` and forward buffers:
-
-```swift
-extension VerificationViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
-
-    func captureOutput(
-        _ output: AVCaptureOutput,
-        didOutput sampleBuffer: CMSampleBuffer,
-        from connection: AVCaptureConnection
-    ) {
-        // Forward to video recorder (for the liveness submission video)
-        orchestrator.videoRecorder.appendSampleBuffer(sampleBuffer: sampleBuffer)
-
-        // Convert to bitmap and run face detection
-        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
-        let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
-        let context = CIContext()
-        guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { return }
-        let uiImage = UIImage(cgImage: cgImage)
-
-        // Feed into MediaPipe FaceLandmarker (you configure this separately)
-        let mpImage = try? MPImage(uiImage: uiImage)
-        if let mpImage = mpImage {
-            try? faceLandmarker.detectAsync(image: mpImage, timestampInMilliseconds: Int(Date().timeIntervalSince1970 * 1000))
+        .fullScreenCover(isPresented: $showVerification) {
+            SmartComplyFlowView(sdk: sdk) { result in
+                showVerification = false
+                print("Entry ID:", result.entryId)
+                print("Status:", result.status)
+                if let name = result.verifiedName {
+                    print("Verified name:", name)
+                }
+            }
         }
     }
 }
 ```
 
-### Forward MediaPipe results to the face engine
+The SDK manages the entire flow automatically. The exact steps depend on the verification mode configured in your Dashboard:
 
-In your `FaceLandmarkerLiveStreamDelegate`:
+**Document mode** (photo capture):
+1. Creates a secure session
+2. Displays a welcome screen with your brand name and ID type cards
+3. Shows a country picker if multiple countries are configured
+4. User photographs the front of their ID inside the guide box
+5. Photographs the back if required (National ID, Driver's Licence, Voter's Card)
+6. Runs liveness face challenges
+7. Returns a `FlowResult` to your completion handler
 
-```swift
-func faceLandmarker(
-    _ faceLandmarker: FaceLandmarker,
-    didFinishDetection result: FaceLandmarkerResult?,
-    timestampInMilliseconds: Int,
-    error: Error?
-) {
-    guard let result = result else { return }
-
-    // Convert and forward to the Kotlin face engine
-    orchestrator.faceEngine.onDetectionResult(result: result)
-}
-```
-
-### Capture the autoshot
-
-Once the camera is ready (before liveness actions begin), capture a JPEG snapshot and pass it to the orchestrator:
-
-```swift
-func captureAutoshot() {
-    guard let pixelBuffer = currentPixelBuffer,
-          let jpegData = UIImage(ciImage: CIImage(cvPixelBuffer: pixelBuffer)).jpegData(compressionQuality: 0.9)
-    else { return }
-
-    orchestrator.captureAutoshot(jpegBytes: jpegData)
-}
-```
-
----
-
-## Liveness States
-
-Handle `LivenessState` in your `onStateChanged` callback to update your UI:
-
-```swift
-func handleState(_ state: LivenessState) {
-    switch state {
-    case is LivenessState.InitializingCamera:
-        showMessage("Starting camera...")
-
-    case let detecting as LivenessState.DetectingFace:
-        instructionLabel.text = detecting.instruction
-
-    case let waiting as LivenessState.WaitingForAction:
-        instructionLabel.text = waiting.instruction
-        progressView.setProgress(
-            Float(waiting.completedCount) / Float(waiting.totalCount),
-            animated: true
-        )
-
-    case is LivenessState.Uploading:
-        showMessage("Uploading...")
-
-    case is LivenessState.Verifying:
-        showMessage("Verifying...")
-
-    case let success as LivenessState.Success:
-        showSuccess(entryId: success.response.id)
-
-    case let failed as LivenessState.Failed:
-        showError(message: failed.error.message ?? "Liveness check failed")
-        if failed.canRetry {
-            showRetryButton()
-        }
-
-    default:
-        break
-    }
-}
-```
-
----
-
-## Supported Liveness Actions
-
-| Action | Enum | Description |
-|---|---|---|
-| Blink | `ChallengeAction.BLINK` | Close and open both eyes |
-| Turn left | `ChallengeAction.TURN_LEFT` | Rotate head to the left |
-| Turn right | `ChallengeAction.TURN_RIGHT` | Rotate head to the right |
-| Turn head | `ChallengeAction.TURN_HEAD` | Any horizontal head rotation |
-| Open mouth | `ChallengeAction.OPEN_MOUTH` | Open jaw wide |
-
-Challenge actions are configured in your Adhere Dashboard and fetched automatically when you call `sdk.initialize()`.
+**Data mode** (ID number entry):
+1. Creates a secure session
+2. Displays a welcome screen with ID type selection
+3. Shows a country picker if multiple countries are configured
+4. User enters their ID number and any required fields
+5. Identity is verified against the national database
+6. Runs liveness face challenges
+7. Returns a `FlowResult` to your completion handler
 
 ---
 
 ## SDK Configuration
 
 ```swift
-// Available environments
-Environment.SANDBOX     // → http://192.168.1.5:8000  (local dev)
-Environment.PRODUCTION  // → https://adhere-api.smartcomply.com
+public struct SDKConfig {
+    public init(
+        apiKey: String,
+        clientId: String,
+        environment: SDKEnvironment = .sandbox,
+        requestTimeout: TimeInterval = 30,       // seconds
+        uploadTimeout: TimeInterval  = 120,      // seconds
+        maxUploadRetries: Int = 3,
+        debug: Bool = false
+    )
+}
 ```
 
-| Parameter | Type | Default | Description |
-|---|---|---|---|
-| `apiKey` | `String` | — | Your Adhere API key (required) |
-| `clientId` | `String` | — | Unique per-user verification ID (required) |
-| `environment` | `Environment` | `.SANDBOX` | API environment |
-| `requestTimeoutMs` | `Long` | `30000` | Timeout for API calls in milliseconds |
-| `uploadTimeoutMs` | `Long` | `60000` | Timeout for video upload in milliseconds |
-| `maxUploadRetries` | `Int` | `3` | Retry attempts on failed uploads |
+| Parameter | Default | Description |
+|---|---|---|
+| `apiKey` | — | Your SmartComply API key (required) |
+| `clientId` | — | A unique identifier per verification attempt — use `UUID().uuidString` (required) |
+| `environment` | `.sandbox` | `.sandbox` for testing; `.production` for live traffic |
+| `requestTimeout` | `30` | Timeout in seconds for standard API calls |
+| `uploadTimeout` | `120` | Timeout in seconds for video upload |
+| `maxUploadRetries` | `3` | Number of automatic retry attempts on upload failure |
+| `debug` | `false` | Prints verbose network logs to the console when `true` |
 
 ---
 
-## Cleanup
+## FlowResult
 
-Always call `cleanup()` when the verification view is dismissed to release camera, recorder, and MediaPipe resources:
+Delivered to your `onComplete` closure when the user completes the flow in-app.
 
 ```swift
-override func viewWillDisappear(_ animated: Bool) {
-    super.viewWillDisappear(animated)
-    orchestrator.cleanup()
-    captureSession.stopRunning()
+public struct FlowResult {
+    public let entryId: Int          // liveness entry ID — use this to query results via the API
+    public let status: String        // e.g. "submitted"
+    public let submittedAt: String?  // ISO 8601 timestamp
+    public let idTypeName: String?   // e.g. "National ID", "BVN"
+    public let verifiedName: String? // name returned by the identity provider (data mode only)
 }
 ```
+
+> **Final verification results are delivered via webhook.** Once the backend completes processing, SmartComply sends a webhook event to the URL configured in your Dashboard. Set up your webhook endpoint to receive the final status, extracted fields, and any failure reasons. See the [Webhooks](/webhooks) guide for the full payload reference.
 
 ---
 
 ## Error Handling
 
-| Error | Cause | Resolution |
+`SmartComplyFlowView` handles and displays error states automatically. For the headless API, all SDK methods throw on failure:
+
+```swift
+do {
+    _ = try await sdk.createSession()
+} catch let error as SDKError {
+    print("API error \(error.statusCode):", error.message)
+} catch {
+    print("Network error:", error.localizedDescription)
+}
+```
+
+| Scenario | Cause | Resolution |
 |---|---|---|
-| `401 Unauthorized` | Invalid or expired API key | Verify your key in the Adhere Dashboard |
-| `Session expired` | 30-minute session timeout | Generate a new `clientId` and restart |
-| `Failed to capture autoshot` | Camera not ready when `captureAutoshot()` called | Ensure camera is running before calling |
-| `Submission failed` | Network error during upload | `canRetry = true` — prompt user to retry |
-
----
-
-## Notes
-
-- The KMP framework exposes Kotlin classes to Swift via Objective-C interop. All `suspend fun` methods are accessible as async Swift functions via `async/await`.
-- `ChallengeAction` enum cases are accessed in Swift as `ChallengeAction.BLINK`, `ChallengeAction.TURN_LEFT`, etc.
-- `LivenessState` sealed class subclasses are accessed via `is` type checks in Swift switch statements.
-- The iOS SDK does not include a pre-built SwiftUI verification flow screen — you build your own UI using the state callbacks from `IosLivenessOrchestrator`.
+| `401 Unauthorized` | Invalid or missing API key | Check your key in the SmartComply Dashboard |
+| Session expired | Sessions expire after 2 hours and are single-use | Generate a new `clientId` and call `createSession()` again |
+| Camera permission denied | User denied camera access | The flow view shows a Settings deep-link automatically |
+| Upload failed after retries | Network instability | `maxUploadRetries` exhausted — the failure screen offers a retry |
+| Identity not found | ID number not found or details mismatched (data mode) | User is shown the reason and prompted to re-enter |
