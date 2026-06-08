@@ -1,110 +1,252 @@
 ---
 title: "Web SDK"
-description: "Integrate Adhere identity verification and liveness detection into your web applications."
+description: "Integrate Adhere identity verification and liveness detection into your web applications using the SmartComply Web SDK."
 ---
 
 # Adhere Web SDK
 
 The Adhere Web SDK enables you to rapidly and securely verify user identities and perform facial liveness checks directly in your web applications.
 
-This SDK is incredibly lightweight and mounts a beautifully animated drop-in widget right cleanly over your application layout, intercepting user webcam video and securely negotiating verifications with the Adhere backend.
+The SDK mounts a drop-in widget over your application, handling document capture, identity verification, and liveness detection — all in one seamless flow.
 
 ## Features
 
-- **Drop-in UI Modal** — Clean, animated, and responsive design seamlessly overlaying via `SmartComplyFlow.open()`.
-- **Dynamic Routing** — Adapts requirements dynamically, securely streaming permitted document types from your dashboard backend.
-- **One-Time Use Policy** — Built to strictly prevent duplicate verifications ensuring maximum anti-fraud integrity.
-- **Nigeria & Global Identity** — Fully handles Nigeria BVN/NIN validations, alongside passport mapping for International Users.
-- **Hardware Agnostic Liveness** — Operates using raw DOM webcams and MediaRecord capturing for cross-platform device capability.
+- **Drop-in UI Modal** — Responsive, animated widget that overlays your app via `SmartComplyFlow.open()`.
+- **CDN & npm Support** — Install via npm/yarn or load directly from a CDN with zero build steps.
+- **Dynamic Routing** — Automatically adapts document and verification requirements from your dashboard configuration.
+- **One-Time Use Policy** — Each `clientId` is single-use to prevent duplicate verifications.
+- **Nigeria & Global Identity** — Supports BVN, NIN, and International Passport verification.
+- **Hardware Agnostic Liveness** — Uses native webcam and MediaRecorder API for cross-platform compatibility.
+
+---
 
 ## Installation
 
-You can install the SDK via npm or yarn:
+### Option 1 — CDN (No build step required)
 
-```bash
-npm install @smartcomply/sdk
-# or
-yarn add @smartcomply/sdk
+Add the script tag to your HTML:
+
+```html
+<!-- Always latest version -->
+<script src="https://cdn.jsdelivr.net/npm/smartcomply-web-sdk@latest/dist/smartcomply.browser.js"></script>
+
+<!-- Or pin to a specific version (recommended for production) -->
+<script src="https://cdn.jsdelivr.net/npm/smartcomply-web-sdk@1.0.19/dist/smartcomply.browser.js"></script>
 ```
 
-*(Advanced setup allows using the bundled payload located in `./dist/smartcomply.browser.js` via a CDN).*
-
----
-
-## Quick Start (Recommended)
-
-To mount the Adhere drop-in SDK properly, provide your authenticated **API Key**. The widget will automatically spawn a gorgeous welcome screen to guide the end-user into copy-pasting their unique Single-Use **Client ID**.
+The SDK is available globally as `window.SmartComplySDK`:
 
 ```javascript
-import { SmartComplyFlow } from '@smartcomply/sdk';
-
-const launchVerification = () => {
-  const sdkModal = SmartComplyFlow.open({
-    apiKey: "your_live_api_key_here",
-    environment: "production", // Optional, defaults to "sandbox"
-    
-    // Callback Executions
-    onComplete: (result) => {
-      console.log("Success! Verification Payload:", result);
-      /* 
-        Returns an object mapping your session flags:
-        {
-           entryId: 9942,
-           status: "success",
-           verificationResult: { ... }
-        }
-      */
-    },
-    onError: (error) => {
-      console.error("SDK Authorization Refused:", error);
-    },
-    onClose: () => {
-      console.log("User aborted verification.");
-    }
-  });
-};
+const { SmartComplyFlow, SmartComply } = window.SmartComplySDK;
 ```
 
-That's it! When executed, the SDK handles the complete end-to-end user lifecycle:
-1. Validating their provided `client_id` dynamically.
-2. Collecting and OCR processing their NIN/BVN slips or International Passports.
-3. Engaging their hardware camera and testing Liveness checks automatically.
-4. Tearing down the DOM container cleanly and gracefully returning the Promise payload.
+<Tip>
+  Pin to a specific version in production (e.g. `@1.0.19`) to avoid unexpected breaking changes.
+</Tip>
+
+### Option 2 — npm / yarn
+
+```bash
+npm install smartcomply-web-sdk
+# or
+yarn add smartcomply-web-sdk
+```
+
+```javascript
+import { SmartComplyFlow } from 'smartcomply-web-sdk';
+```
 
 ---
 
-## Headless API Architecture (Advanced usage)
+## Quick Start — Drop-in Widget (Recommended)
 
-If you don't want to use our modal window, you can instantiate the underlying `SmartComply` Engine and orchestrate your custom Web UI natively using our methods.
+The easiest way to integrate is the drop-in widget. It handles the complete verification flow automatically.
 
-```typescript
-import { Adhere } from '@smartcomply/sdk/core';
+```javascript
+SmartComplyFlow.open({
+  apiKey: "your_api_key_here",
+  clientId: "your_client_id_here",
+  environment: "production", // "production" or "sandbox"
 
-// 1. Initialise the Engine using your Secret API Token
-const sdk = new SmartComply({
-  apiKey: "your_live_api_key_here",
-  environment: "production"
+  onComplete: (result) => {
+    console.log("Verification complete:", result);
+    // result = { entryId, sessionId, status, submittedAt }
+  },
+  onError: (error) => {
+    console.error("Verification failed:", error);
+  },
+  onClose: () => {
+    console.log("Widget closed.");
+  }
 });
+```
 
-// 2. Safely capture the Client ID from your custom UI input
-const handleBegin = async (userProvidedClientId) => {
-    
-    // Attempt session login
-    const sessionToken = await sdk.createSession(userProvidedClientId);
+<Note>
+  Get your **API Key** and generate a **Client ID** from your [Adhere Dashboard](https://adhere.smartcomply.com). Each `clientId` is single-use and tied to one verification session.
+</Note>
 
-    // Call data verification
-    const idVerified = await sdk.onboarding.verify({ 
-      onboardingType: 'bvn',
-      idNumber: '12345678912',
-      country: 'NG'
+### Configuration Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `apiKey` | string | ✅ Yes | Your API key from the Adhere Dashboard |
+| `clientId` | string | ✅ Yes | Single-use client ID generated per user |
+| `environment` | string | No | `"production"` or `"sandbox"` (default: `"sandbox"`) |
+| `onComplete` | function | No | Callback fired when verification completes successfully |
+| `onError` | function | No | Callback fired on error |
+| `onClose` | function | No | Callback fired when the widget is closed |
+
+### Environment URLs
+
+| Environment | Base URL |
+|-------------|----------|
+| `production` | `https://adhere-api.smartcomply.com` |
+| `sandbox` | `https://dev-adhere.smartcomply.com` |
+
+---
+
+## Framework Examples
+
+### React
+
+```jsx
+import { SmartComplyFlow } from 'smartcomply-web-sdk';
+
+export default function VerifyButton() {
+  const handleVerify = () => {
+    SmartComplyFlow.open({
+      apiKey: process.env.REACT_APP_API_KEY,
+      clientId: process.env.REACT_APP_CLIENT_ID,
+      environment: "production",
+      onComplete: (result) => console.log("Done:", result),
+      onError: (err) => console.error("Error:", err),
     });
+  };
 
-    // Directly bind the camera to a custom HTML Video container
-    const livenessResult = await sdk.liveness.startCheck({
-      videoContainer: document.getElementById('my-camera-div')
-    });
+  return <button onClick={handleVerify}>Verify Identity</button>;
 }
 ```
 
-### Security & Architecture Limits
-**Client ID Redundancy Protection:** Because the architecture handles zero-trust KYC policies, the active `Client ID` immediately vaporizes from the backend the second the final video liveness check computes. Attempting to restart that same `Client ID` again via `createSession` will throw a `CLIENT_ID_ALREADY_USED` status securely blocking entry. Ensure your backend dynamically handles spinning up fresh Client IDs per-user.
+### Vue
+
+```vue
+<template>
+  <button @click="handleVerify">Verify Identity</button>
+</template>
+
+<script setup>
+import { SmartComplyFlow } from 'smartcomply-web-sdk';
+
+const handleVerify = () => {
+  SmartComplyFlow.open({
+    apiKey: import.meta.env.VITE_API_KEY,
+    clientId: import.meta.env.VITE_CLIENT_ID,
+    environment: "production",
+    onComplete: (result) => console.log("Done:", result),
+    onError: (err) => console.error("Error:", err),
+  });
+};
+</script>
+```
+
+### Plain HTML (CDN)
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/smartcomply-web-sdk@1.0.19/dist/smartcomply.browser.js"></script>
+</head>
+<body>
+  <button onclick="startVerification()">Verify Identity</button>
+
+  <script>
+    const { SmartComplyFlow } = window.SmartComplySDK;
+
+    function startVerification() {
+      SmartComplyFlow.open({
+        apiKey: "your_api_key_here",
+        clientId: "your_client_id_here",
+        environment: "production",
+        onComplete: (result) => console.log("Done:", result),
+        onError: (err) => console.error("Error:", err),
+      });
+    }
+  </script>
+</body>
+</html>
+```
+
+---
+
+## Headless API (Advanced)
+
+For full control over the UI, use the `SmartComply` class directly without the modal.
+
+```typescript
+import { SmartComply } from 'smartcomply-web-sdk';
+
+const sdk = new SmartComply({
+  apiKey: "your_api_key_here",
+  clientId: "your_client_id_here",
+  environment: "production",
+});
+
+const run = async () => {
+  // 1. Create a session
+  await sdk.createSession();
+
+  // 2. Fetch SDK configuration
+  const config = await sdk.initializeConfig();
+  console.log("Verification type:", config.verification_type);
+
+  // 3. Verify identity (BVN/NIN/Passport)
+  await sdk.onboarding.verify({
+    identity_type_id: 1,  // from config.channels
+    fields: { bank_verification_number: "12345678901" }
+  });
+
+  // 4. Run liveness check — requires an HTMLElement container for the camera
+  const container = document.getElementById("camera-container") as HTMLElement;
+  const liveness = await sdk.liveness.startCheck(container, {
+    identifier: "user-unique-id",
+    identifier_type: "bvn",
+    country: "NG",
+  });
+  console.log("Liveness status:", liveness.status);
+};
+
+run();
+```
+
+---
+
+## onComplete Payload
+
+```json
+{
+  "entryId": 365,
+  "sessionId": "da7623bd-9158-4b56-a9e4-4bccf3c0133f",
+  "status": "passed",
+  "submittedAt": "2026-06-05T23:11:22.873161+00:00"
+}
+```
+
+---
+
+## Security Notes
+
+- **Single-use Client IDs** — Each `clientId` expires immediately after a completed verification. Generate a fresh one per user session from your backend.
+- **API Key** — Never expose your API key in client-side code in production. Use environment variables.
+- **Session Tokens** — Session tokens are automatically managed by the SDK and expire after 30 minutes.
+
+---
+
+## Troubleshooting
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `CLIENT_ID_ALREADY_USED` | `clientId` was already used | Generate a new `clientId` from your backend |
+| `SESSION_EXPIRED` | Session exceeded 30 min timeout | Call `createSession()` again |
+| `401 Unauthorized` | Invalid or missing API key | Check your `apiKey` value |
+| `Camera not available` | Browser blocked camera access | Ensure HTTPS and camera permissions granted |
