@@ -19,7 +19,7 @@
     "light": "#07C983",
     "dark": "#0D9373"
   },
-  "theme": "luma",
+  "theme": "mint",
   "openapi": "openapi.yaml",
   "banner": {
     "content": "Adhere v3 is live — faster identity verification across Nigeria, Ghana, Kenya, Rwanda & Uganda. [Explore what's new →](/introduction)",
@@ -596,7 +596,7 @@
     "links": [
       {
         "label": "What's New",
-        "href": "/changelog"
+        "href": "https://docs.adhere.smartcomply.com/changelog"
       },
       {
         "label": "Postman Collection",
@@ -604,7 +604,7 @@
       },
       {
         "label": "Get Help",
-        "href": "/pages/support"
+        "href": "https://docs.adhere.smartcomply.com/pages/support"
       }
     ],
     "primary": {
