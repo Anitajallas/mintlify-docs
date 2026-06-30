@@ -1,7 +1,9 @@
 openapi: 3.0.3
 info:
   title: Adhere API
-  description: Identity verification, credit checks, transaction monitoring, and loan fraud detection across Africa.
+  description:
+    Identity verification, credit checks, transaction monitoring, and loan fraud
+    detection across Africa.
   version: "3.0.0"
 
 servers:
@@ -65,7 +67,6 @@ tags:
   - name: User Journey
 
 paths:
-
   # ── BIOMETRICS ──────────────────────────────────────────────
 
   /api/onboarding/biometrics/face/comparison:
@@ -485,7 +486,8 @@ paths:
           application/json:
             schema:
               type: object
-              required: [first_name, last_name, phone_number, address, lga, state]
+              required:
+                [first_name, last_name, phone_number, address, lga, state]
               properties:
                 first_name: { type: string }
                 last_name: { type: string }
@@ -509,7 +511,8 @@ paths:
           application/json:
             schema:
               type: object
-              required: [first_name, last_name, phone_number, address, lga, state]
+              required:
+                [first_name, last_name, phone_number, address, lga, state]
               properties:
                 first_name: { type: string }
                 last_name: { type: string }
@@ -537,7 +540,8 @@ paths:
               properties:
                 identity_check_id:
                   type: string
-                  description: Reference ID from the digital address verification response
+                  description:
+                    Reference ID from the digital address verification response
       responses:
         "200": { description: Digital address result retrieved }
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -577,7 +581,8 @@ paths:
           application/json:
             schema:
               type: object
-              required: [first_name, last_name, phone_number, address, lga, state]
+              required:
+                [first_name, last_name, phone_number, address, lga, state]
               properties:
                 first_name: { type: string }
                 last_name: { type: string }
@@ -605,7 +610,8 @@ paths:
               properties:
                 identity_check_id:
                   type: integer
-                  description: Integer ID from the physical address verification response
+                  description:
+                    Integer ID from the physical address verification response
       responses:
         "200": { description: Physical address result retrieved }
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -622,7 +628,8 @@ paths:
           application/json:
             schema:
               type: object
-              required: [first_name, last_name, nin, phone_number, state, time_range]
+              required:
+                [first_name, last_name, nin, phone_number, state, time_range]
               properties:
                 first_name: { type: string }
                 last_name: { type: string }
@@ -784,10 +791,13 @@ paths:
               properties:
                 identification_number:
                   type: string
-                  description: Ghana Card, Passport, Voter ID, SSNIT, or Driver's License number
+                  description:
+                    Ghana Card, Passport, Voter ID, SSNIT, or Driver's License
+                    number
                 id_type:
                   type: string
-                  description: "GhanaCard, Passport, VoterID, SSNIT, or DriversLicense"
+                  description:
+                    "GhanaCard, Passport, VoterID, SSNIT, or DriversLicense"
       responses:
         "200": { description: ID card verified }
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -872,7 +882,8 @@ paths:
           application/json:
             schema:
               type: object
-              required: [national_id, surname, given_name, date_of_birth, document_id]
+              required:
+                [national_id, surname, given_name, date_of_birth, document_id]
               properties:
                 national_id: { type: string }
                 surname: { type: string }
@@ -1264,7 +1275,18 @@ paths:
           application/json:
             schema:
               type: object
-              required: [transaction_id, amount, currency, transaction_type, account_type, origin_account, destination_account, customer_details, additional_info]
+              required:
+                [
+                  transaction_id,
+                  amount,
+                  currency,
+                  transaction_type,
+                  account_type,
+                  origin_account,
+                  destination_account,
+                  customer_details,
+                  additional_info,
+                ]
               properties:
                 transaction_id:
                   type: string
@@ -1317,7 +1339,7 @@ paths:
 
   # ── TRANSACTION SCREENING ────────────────────────────────────
 
-  /api/v1/monitoring/transaction_screening:
+  /api/v1/monitoring/transaction_screening/:
     post:
       tags: [Transaction Screening]
       summary: Screen a Transaction
@@ -1413,12 +1435,10 @@ paths:
                   enum: [person, company, business, organization]
                 sources:
                   type: string
-                  description: "Comma-separated sources, e.g. \"Sanctions, PEPs\""
+                  description: 'Comma-separated sources, e.g. "Sanctions, PEPs"'
                 continuous_monitoring:
                   type: boolean
                   default: false
-                branch:
-                  type: integer
       responses:
         "200": { description: KYC check initiated or completed }
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -1455,12 +1475,27 @@ paths:
           multipart/form-data:
             schema:
               type: object
-              required: [loan_amount_requested, loan_repayment_duration_type, loan_repayment_duration_value, collateral_required]
+              required:
+                [
+                  loan_amount_requested,
+                  loan_repayment_duration_type,
+                  loan_repayment_duration_value,
+                  collateral_required,
+                ]
               properties:
-                first_name: { type: string, description: Individual applicant first name }
+                first_name:
+                  { type: string, description: Individual applicant first name }
                 last_name: { type: string }
-                business_name: { type: string, description: Business name (business applications only) }
-                rc_number: { type: string, description: CAC registration number (business only) }
+                business_name:
+                  {
+                    type: string,
+                    description: Business name (business applications only),
+                  }
+                rc_number:
+                  {
+                    type: string,
+                    description: CAC registration number (business only),
+                  }
                 date_of_birth: { type: string, format: date }
                 gender: { type: string, enum: [male, female] }
                 country: { type: string, example: "Nigeria" }
@@ -1475,18 +1510,28 @@ paths:
                 job_role: { type: string }
                 employer_name: { type: string }
                 annual_income: { type: number }
-                annual_revenue: { type: number, description: Annual revenue (business only) }
+                annual_revenue:
+                  { type: number, description: Annual revenue (business only) }
                 employment_duration: { type: string }
                 bank_name: { type: string }
                 account_number: { type: string }
                 loan_amount_requested: { type: number, example: 100000 }
                 purpose_of_loan: { type: string }
-                loan_repayment_duration_type: { type: string, enum: [weeks, months, years] }
+                loan_repayment_duration_type:
+                  { type: string, enum: [weeks, months, years] }
                 loan_repayment_duration_value: { type: integer, example: 6 }
                 collateral_required: { type: boolean, default: false }
                 collateral: { type: string }
-                is_individual: { type: boolean, description: Set true for individual applications }
-                is_business: { type: boolean, description: Set true for business applications }
+                is_individual:
+                  {
+                    type: boolean,
+                    description: Set true for individual applications,
+                  }
+                is_business:
+                  {
+                    type: boolean,
+                    description: Set true for business applications,
+                  }
                 run_aml_check: { type: boolean, default: false }
       responses:
         "200": { description: Loan fraud check processed }
@@ -1512,7 +1557,8 @@ paths:
                 session_id: { type: string }
                 event:
                   type: string
-                  enum: [LOGIN, OTP_VERIFY, PAYMENT_INIT, PAYMENT_COMPLETE, LOGOUT]
+                  enum:
+                    [LOGIN, OTP_VERIFY, PAYMENT_INIT, PAYMENT_COMPLETE, LOGOUT]
                 timestamp: { type: string, format: date-time }
                 device_id: { type: string }
                 ip_address: { type: string }
@@ -1583,7 +1629,10 @@ paths:
       tags: [Customer Onboarding]
       summary: Verify Customer
       operationId: verifyCustomer
-      description: Combines identity verification and AML screening into a single call. Returns a consolidated risk decision alongside raw IVS and screening results.
+      description:
+        Combines identity verification and AML screening into a single call.
+        Returns a consolidated risk decision alongside raw IVS and screening
+        results.
       requestBody:
         required: true
         content:
@@ -1600,24 +1649,33 @@ paths:
                 identifier:
                   type: string
                   example: "12345678901"
-                  description: The ID number to verify (BVN, NIN, National ID, etc.)
+                  description:
+                    The ID number to verify (BVN, NIN, National ID, etc.)
                 identifier_type:
                   type: string
                   example: "bvn"
-                  description: "Overrides the country default. Nigeria: bvn, nin, vnin. Others: national_id or ghana_id."
+                  description:
+                    "Overrides the country default. Nigeria: bvn, nin, vnin.
+                    Others: national_id or ghana_id."
       responses:
-        "200": { description: Onboarding completed — check decision field for pass/review/fail }
+        "200":
+          {
+            description:
+              Onboarding completed — check decision field for pass/review/fail,
+          }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403":
-          description: Feature not enabled for this branch or account not verified
+          description:
+            Feature not enabled for this branch or account not verified
 
   /api/onboarding/settings:
     get:
       tags: [Customer Onboarding]
       summary: Get Onboarding Settings
       operationId: getOnboardingSettings
-      description: Retrieve the current IVS and AML toggle settings for your branch.
+      description:
+        Retrieve the current IVS and AML toggle settings for your branch.
       responses:
         "200": { description: Settings retrieved }
         "401": { $ref: "#/components/responses/Unauthorized" }
@@ -1625,7 +1683,9 @@ paths:
       tags: [Customer Onboarding]
       summary: Update Onboarding Settings
       operationId: updateOnboardingSettings
-      description: Enable or disable identity verification (IVS) and AML screening for your branch.
+      description:
+        Enable or disable identity verification (IVS) and AML screening for your
+        branch.
       requestBody:
         required: true
         content:
