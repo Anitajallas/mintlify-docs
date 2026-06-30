@@ -27,10 +27,9 @@ POST /api/v1/monitoring/kyc_search/
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `entity_name` | string | Yes | Name of the entity to screen |
-| `entity_type` | string | No | Entity type: `"person"`, `"company"`, `"business"`, or `"organization"` |
+| `entity_type` | string | No | Entity type: `"person"`, `"company"`, `"business"`, or `"organization"` (defaults to `person` if none provided) |
 | `sources` | string | No | Comma-separated data sources to query (e.g., `"Sanctions, PEPs, Adverse Media"`) |
 | `continuous_monitoring` | boolean | No | Enable ongoing monitoring for this entity. Defaults to `false` |
-| `branch` | integer | No | Branch ID to associate with this check |
 
 ### Example
 
@@ -58,7 +57,6 @@ When results are immediately available, the response includes the full KYC resul
 |-------|------|-------------|
 | `data.id` | number | Unique identifier for this KYC request |
 | `data.entity_name` | string | Name of the entity screened |
-| `data.branch_id` | number | Associated branch ID |
 | `data.status` | string | Check status: `"completed"` or `"running"` |
 | `data.result.risk_level` | string | Assessed risk: `"low"`, `"medium"`, or `"high"` |
 | `data.result.total_hits` | number | Total flagged matches across all sources |
@@ -74,7 +72,6 @@ When results are immediately available, the response includes the full KYC resul
   "data": {
     "id": 6036,
     "entity_name": "Qudratullah Jamal",
-    "branch_id": 2,
     "status": "completed",
     "result": {
       "risk_level": "high",
