@@ -114,8 +114,29 @@ When the transaction matches a screening criterion, the response includes the fu
 | `data.sanction[].topics` | array | Sanction categories (e.g., `sanction`, `crime.terror`) |
 | `data.sanction[].match_score` | number | Match confidence score (0 to 1) |
 | `data.screeningStatus` | string | Outcome: `"flagged"` or `"approved"` |
+| `data.sender_risk_level` | string | Risk level for sender: `"low"`, `"medium"`, or `"high"` |
+| `data.receiver_risk_level` | string | Risk level for receiver: `"low"`, `"medium"`, or `"high"` |
 | `data.comments` | string | Reason for the screening outcome |
 | `data.additionalActions` | array | Recommended follow-up actions |
+| `data.additionalActions[].actionType` | string | Type of action (e.g., `"Notify Customer"`) |
+| `data.additionalActions[].assignedTo` | string | Team or person responsible |
+| `data.additionalActions[].notes` | string | Instructions for the action |
+| `data.summary` | object | Summary of screening results |
+| `data.summary.verdict` | string | Overall screening verdict |
+| `data.summary.sender_risk_level` | string | Sender risk level |
+| `data.summary.receiver_risk_level` | string | Receiver risk level |
+| `data.summary.sender_matches` | object | Sender match details |
+| `data.summary.sender_matches.matched_status` | boolean | Whether sender had matches |
+| `data.summary.sender_matches.highest_match_score` | string | Highest match score percentage |
+| `data.summary.sender_matches.sanctions_count` | number | Number of sanction matches |
+| `data.summary.sender_matches.peps_count` | number | Number of PEP matches |
+| `data.summary.sender_matches.on_blacklist` | boolean | Whether sender is on blacklist |
+| `data.summary.receiver_matches` | object | Receiver match details |
+| `data.summary.receiver_matches.matched_status` | boolean | Whether receiver had matches |
+| `data.summary.receiver_matches.highest_match_score` | string | Highest match score percentage |
+| `data.summary.receiver_matches.sanctions_count` | number | Number of sanction matches |
+| `data.summary.receiver_matches.peps_count` | number | Number of PEP matches |
+| `data.summary.receiver_matches.on_blacklist` | boolean | Whether receiver is on blacklist |
 
 ```json
 {
@@ -167,6 +188,8 @@ When the transaction matches a screening criterion, the response includes the fu
       ]
     },
     "screeningStatus": "flagged",
+    "sender_risk_level": "medium",
+    "receiver_risk_level": "high",
     "comments": "Transaction denied due to high-risk blacklist match, high risk level, or sanctions match.",
     "additionalActions": [
       {
@@ -174,7 +197,26 @@ When the transaction matches a screening criterion, the response includes the fu
         "assignedTo": "Customer Service",
         "notes": "Inform the customer about the transaction denial."
       }
-    ]
+    ],
+    "summary": {
+      "verdict": "flagged",
+      "sender_risk_level": "medium",
+      "receiver_risk_level": "high",
+      "sender_matches": {
+        "matched_status": true,
+        "highest_match_score": "100%",
+        "sanctions_count": 0,
+        "peps_count": 1,
+        "on_blacklist": false
+      },
+      "receiver_matches": {
+        "matched_status": true,
+        "highest_match_score": "100%",
+        "sanctions_count": 1,
+        "peps_count": 4,
+        "on_blacklist": false
+      }
+    }
   }
 }
 ```
