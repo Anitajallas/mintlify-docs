@@ -30,6 +30,7 @@ POST /api/v1/monitoring/transaction_monitoring/
 | `amount` | number | Yes | Transaction amount |
 | `currency` | string | Yes | Currency code (e.g., `NGN`, `USD`) |
 | `transaction_type` | string | Yes | Transaction type (e.g., `card`) |
+| `account_type` | string | Yes | Account type: `individual` or `corporate` |
 | `timestamp` | string | Yes | ISO-8601 datetime of the transaction |
 | `card_details` | object | Yes | Details of the card used |
 | `card_details.bin` | string | Yes | First six digits of the card number (BIN) |
@@ -59,6 +60,7 @@ curl -X POST "https://adhere-api.smartcomply.com/api/v1/monitoring/transaction_m
     "amount": 300000,
     "currency": "NGN",
     "transaction_type": "card",
+    "account_type": "individual",
     "timestamp": "2025-08-23T14:30:00Z",
     "card_details": {
       "bin": "345676",
