@@ -223,6 +223,13 @@
                 "group": "Fraud & Transaction Monitoring",
                 "pages": [
                   {
+                    "group": "Card Transaction",
+                    "pages": [
+                      "v3/transaction/card_transaction/card_transaction_overview",
+                      "v3/transaction/card_transaction/post_fraud_request"
+                    ]
+                  },
+                  {
                     "group": "Transaction Monitoring",
                     "pages": [
                       "v3/transaction/transaction_monitoring/transaction_monitoring_overview",

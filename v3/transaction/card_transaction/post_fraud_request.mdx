@@ -5,7 +5,7 @@ description: "Submit a card transaction for real-time fraud scoring based on you
 openapi: "POST /api/v1/monitoring/transaction_monitoring/"
 ---
 
-The Card Fraud Detection endpoint evaluates a card transaction in real-time, computing a fraud score using your configured thresholds and limits. All fields are required. Use a unique `transaction_id` for each request to ensure accurate tracking.
+The Card Fraud Detection endpoint evaluates a card transaction in real-time, computing a activity code using your configured thresholds and limits. All fields are required. Use a unique `transaction_id` for each request to ensure accurate tracking.
 
 ## Endpoint
 
@@ -89,7 +89,7 @@ curl -X POST "https://adhere-api.smartcomply.com/api/v1/monitoring/transaction_m
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `data.activity_code` | string | Fraud activity code (see [activity codes](/v3/transaction/card_transaction/card_transaction_overview)) |
+| `data.activity_code` | string | Activity code returned from the fraud assessment (see [activity codes](/v3/transaction/card_transaction/card_transaction_overview)) |
 | `data.status` | string | Transaction status: `"clean"` or `"suspicious"` |
 | `data.comment` | array | List of triggered fraud rules, if any |
 

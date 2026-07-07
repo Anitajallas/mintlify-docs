@@ -4,7 +4,9 @@ sidebarTitle: "Overview"
 description: "Real-time fraud assessment for card transactions using algorithmic analysis and spending pattern detection."
 ---
 
-The Card Transaction Monitoring system performs real-time fraud assessments on card transactions. Each transaction receives a fraud score — a calculated risk indicator — which you can use to flag, review, or auto-reject suspicious activity.
+## Overview
+
+The Card Transaction Monitoring system performs real-time fraud assessments on card transactions. Each transaction receives a activity code — a calculated risk indicator — which you can use to flag, review, or auto-reject suspicious activity.
 
 ## How It Works
 
@@ -15,19 +17,19 @@ The Card Transaction Monitoring system performs real-time fraud assessments on c
   <Step title="Algorithmic analysis">
     The system evaluates transaction characteristics including location, transaction history, and spending patterns.
   </Step>
-  <Step title="Real-time scoring">
-    A fraud score is computed immediately, reflecting the probability of fraudulent behavior.
+  <Step title="Real-time assessment">
+    An activity code is returned immediately, reflecting the outcome of the fraud assessment.
   </Step>
   <Step title="Take action">
-    Use the returned score to approve, flag for manual review, or auto-reject the transaction.
+    Use the returned activity code to approve, flag for manual review, or auto-reject the transaction.
   </Step>
 </Steps>
 
 ## Key Features
 
 <CardGroup cols={2}>
-  <Card title="Real-Time Scoring" icon="bolt">
-    Fraud scores are computed instantly, enabling immediate action on suspicious transactions.
+  <Card title="Real-Time Assessment" icon="bolt">
+    Activity codes are returned instantly, enabling immediate action on suspicious transactions.
   </Card>
   <Card title="Spending Pattern Analysis" icon="chart-bar">
     Detects anomalies by comparing each transaction against historical spending behaviour.
@@ -35,8 +37,8 @@ The Card Transaction Monitoring system performs real-time fraud assessments on c
   <Card title="Location Intelligence" icon="location-dot">
     Flags transactions from unusual or high-risk locations.
   </Card>
-  <Card title="Flexible Action Thresholds" icon="sliders">
-    Configure score thresholds to match your risk tolerance and approval workflow.
+  <Card title="Actionable Results" icon="sliders">
+    Use the returned activity code to configure your own approve, flag, or reject logic based on your risk appetite.
   </Card>
 </CardGroup>
 
@@ -45,3 +47,56 @@ The Card Transaction Monitoring system performs real-time fraud assessments on c
 | Endpoint | Description |
 |----------|-------------|
 | [Post Fraud Request](/v3/transaction/card_transaction/post_fraud_request) | Submit a card transaction for real-time fraud assessment |
+
+## Rule Criteria
+
+Fraud rules can be based on any combination of the following:
+
+| Criterion | Example |
+|-----------|---------|
+| Transaction amount | Flag any transaction over $5,000 |
+| Transaction frequency | Flag more than 5 transactions in 10 minutes |
+| Geographic location | Flag transactions from high-risk countries |
+| Merchant category | Flag gambling or crypto merchant codes |
+| Time of day | Flag transactions between 1am–4am |
+| Card type | Apply different rules to credit vs. debit cards |
+
+## Activity Codes
+
+**Suspicious (flag for review):**
+
+| Code | Description |
+|------|-------------|
+| `450` | Suspicious Transaction Detected — Requires Manual Review |
+| `451` | High-Risk Transaction — Potential Fraud |
+| `452` | Unusual Transaction Behavior — Pattern Anomaly |
+| `453` | Velocity Check Failed — Too Many Transactions in Short Time |
+| `454` | Geographic Inconsistency — Unusual Location |
+| `455` | Transaction Amount Too High — Above Threshold |
+| `456` | Blacklisted Account or Entity |
+| `457` | Repeated Failed Transactions — Possible Fraud Attempt |
+
+**Safe:**
+
+| Code | Description |
+|------|-------------|
+| `200` | Transaction Approved — No Issues |
+| `201` | Transaction Successfully Processed |
+| `202` | Transaction Pending Review — Routine Check |
+| `210` | Trusted Transaction — Verified and Safe |
+| `211` | Low-Risk Transaction — No Anomalies Detected |
+| `212` | Recurring Transaction Approved — Previously Authorized Pattern |
+| `220` | Whitelisted Entity — Pre-approved Account or Business |
+| `221` | Known Customer — Transaction Aligns with User History |
+
+## Webhook Notifications
+
+When a card transaction is flagged, Adhere sends a `suspicious_transaction` event to your configured webhook URL. See [Webhooks](/webhooks) for the full payload structure and signature verification guide.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Submit a Transaction" icon="paper-plane" href="/v3/transaction/card_transaction/post_fraud_request">
+    Send your first card transaction for fraud assessment.
+  </Card>
+</CardGroup>
