@@ -29,7 +29,7 @@ POST /api/v1/monitoring/transaction_monitoring/
 | `transaction_id` | string | Yes | Unique identifier for the transaction |
 | `amount` | number | Yes | Transaction amount |
 | `currency` | string | Yes | Currency code (e.g., `NGN`, `USD`) |
-| `transaction_type` | string | Yes | Type of transaction: `transfer`, `card`, `ussd`, or `web` |
+| `transaction_type` | string | Yes | Type of transaction: `transfer`, `ussd`, or `web` |
 | `account_type` | string | Yes | Account type: `individual` or `corporate` |
 | `origin_account` | object | Yes | Originating account details |
 | `origin_account.account_number` | string | Yes | Account number of the sender |
@@ -58,7 +58,7 @@ curl -X POST "https://adhere-api.smartcomply.com/api/v1/monitoring/transaction_m
     "transaction_id": "12345678",
     "amount": 14000000,
     "currency": "NGN",
-    "transaction_type": "card",
+    "transaction_type": "transfer",
     "account_type": "individual",
     "origin_account": {
       "account_number": "9876543219",
