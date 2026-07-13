@@ -1299,7 +1299,7 @@ paths:
                   example: "NGN"
                 transaction_type:
                   type: string
-                  enum: [transfer, card, ussd, web]
+                  enum: [transfer, ussd, web]
                 account_type:
                   type: string
                   enum: [individual, corporate]
