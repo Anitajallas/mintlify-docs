@@ -108,7 +108,7 @@ paths:
               properties:
                 image:
                   type: string
-                  description: URL of the image to check for liveness
+                  description: URL of the live selfie video to check for liveness. Supported formats .mp4, .mov, .webm, .avi, .m4v. Static images are accepted but will perform a self-comparison, not true liveness detection.
       responses:
         "200": { description: Liveness check successful }
         "400": { $ref: "#/components/responses/BadRequest" }

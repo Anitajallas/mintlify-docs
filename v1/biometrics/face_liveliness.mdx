@@ -1,9 +1,9 @@
 ## Face Liveliness Check
 Face authentication with liveliness check
 
-Liveliness check is a feature that ensures the person being authenticated is physically present and not just a photograph or video.
+Liveliness check ensures the person being authenticated is physically present and not just a photograph or pre-recorded video.
 
-With this endpoint, users can provide their facial features as input to the system, which will then perform a liveliness check to ensure that the user is present and not just a still image or pre-recorded video. This ensures the security and reliability of the authentication process, as it reduces the risk of unauthorized access by fraudulent means.
+Send a **live selfie video** for true liveness detection. The endpoint will run blink and motion analysis on the video to confirm the user is real. If you send a static image, the endpoint will fall back to comparison mode and compare the image to itself, which will always appear to pass but does not prove liveness.
 
 #### Request Endpoint
 
@@ -14,7 +14,7 @@ With this endpoint, users can provide their facial features as input to the syst
 
 ```json
 {
-    "image": " https://res.cloudinary.com/dh3i1wodq/image/upload/v1675417496/cbimage_3_drqdoc.jpg", 
+    "image": "https://res.cloudinary.com/dh3i1wodq/video/upload/v1675417496/selfie_liveness.mp4"
 }
 ```
 
