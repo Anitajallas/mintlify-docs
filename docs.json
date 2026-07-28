@@ -123,14 +123,7 @@
                           "v3/kyc/nigeria/phone_number_basic",
                           "v3/kyc/nigeria/tin",
                           "v3/kyc/nigeria/VNIN",
-                          "v3/kyc/nigeria/Voters_ID",
-                          "v3/kyc/nigeria/Address_Verification",
-                          "v3/kyc/nigeria/digital_address_verification",
-                          "v3/kyc/nigeria/Digital_Address_Verification_Confirmation",
-                          "v3/kyc/nigeria/Physical_Address_Verification_Lagos",
-                          "v3/kyc/nigeria/Physical_Address_Verification_Other",
-                          "v3/kyc/nigeria/Physical_Address_Verification_Confirmation",
-                          "v3/kyc/nigeria/Get_Identity_Address"
+                          "v3/kyc/nigeria/Voters_ID"
                         ]
                       },
                       {
@@ -149,19 +142,6 @@
                         "pages": [
                           "v3/kyc/ghana/ID_Card",
                           "v3/kyc/ghana/ID_Card_with_face"
-                        ]
-                      },
-                      {
-                        "group": "Rwanda",
-                        "pages": [
-                          "v3/kyc/rwanda/national_id",
-                          "v3/kyc/rwanda/passport"
-                        ]
-                      },
-                      {
-                        "group": "Uganda",
-                        "pages": [
-                          "v3/kyc/uganda/national_id"
                         ]
                       }
                     ]

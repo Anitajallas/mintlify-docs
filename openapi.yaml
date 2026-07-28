@@ -157,6 +157,10 @@ paths:
                   type: string
                   description: 11-digit Bank Verification Number
                   example: "22244545518"
+                date_of_birth:
+                  type: string
+                  description: Date of birth in YYYY-MM-DD format (optional, used for additional verification)
+                  example: "1990-01-15"
       responses:
         "200": { description: BVN advanced data retrieved }
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -198,12 +202,12 @@ paths:
           application/json:
             schema:
               type: object
-              required: [nin]
+              required: [identification_number]
               properties:
-                nin:
+                identification_number:
                   type: string
                   description: 11-digit National Identification Number
-                  example: "12345678901"
+                  example: "70123456789"
       responses:
         "200": { description: NIN verified successfully }
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -267,12 +271,32 @@ paths:
           application/json:
             schema:
               type: object
-              required: [vin]
+              required: [voters_id, first_name, last_name, date_of_birth, lga, state]
               properties:
-                vin:
+                voters_id:
                   type: string
-                  description: Voter Identification Number
-                  example: "95C67890123400001"
+                  description: Permanent Voter's Card number
+                  example: "91F6B1F5BE295355586"
+                first_name:
+                  type: string
+                  description: First name as on the voter's card
+                  example: "John"
+                last_name:
+                  type: string
+                  description: Last name as on the voter's card
+                  example: "Doe"
+                date_of_birth:
+                  type: string
+                  description: Date of birth in YYYY-MM-DD format
+                  example: "1994-08-11"
+                lga:
+                  type: string
+                  description: Local government area of registration
+                  example: "Lagos"
+                state:
+                  type: string
+                  description: State of registration
+                  example: "Lagos"
       responses:
         "200": { description: Voter's ID verified }
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -289,12 +313,24 @@ paths:
           application/json:
             schema:
               type: object
-              required: [license_number]
+              required: [license_number, first_name, last_name, date_of_birth]
               properties:
                 license_number:
                   type: string
                   description: Driver's license number
-                  example: "AAA00000AA00"
+                  example: "ARR10892UU00"
+                first_name:
+                  type: string
+                  description: First name as on the license
+                  example: "EDIKAN"
+                last_name:
+                  type: string
+                  description: Last name as on the license
+                  example: "EFE"
+                date_of_birth:
+                  type: string
+                  description: Date of birth in YYYY-MM-DD format
+                  example: "1994-08-11"
       responses:
         "200": { description: Driver's license verified }
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -311,11 +347,20 @@ paths:
           application/json:
             schema:
               type: object
-              required: [passport_number]
+              required: [passport_number, surname, date_of_birth]
               properties:
                 passport_number:
                   type: string
-                  example: "A00000000"
+                  description: The customer's passport number
+                  example: "Z18679232"
+                surname:
+                  type: string
+                  description: Surname as on the passport
+                  example: "John"
+                date_of_birth:
+                  type: string
+                  description: Date of birth in YYYY-MM-DD format
+                  example: "1994-08-11"
       responses:
         "200": { description: Passport verified }
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -332,11 +377,12 @@ paths:
           application/json:
             schema:
               type: object
-              required: [tin]
+              required: [tax_identification_number]
               properties:
-                tin:
+                tax_identification_number:
                   type: string
-                  example: "12345678-0001"
+                  description: "The customer's TIN (format: N-XXXXXXXX)"
+                  example: "N-01234567"
       responses:
         "200": { description: TIN verified }
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -444,11 +490,20 @@ paths:
           application/json:
             schema:
               type: object
-              required: [registration_number]
+              required: [registration_number, company_name, company_type]
               properties:
                 registration_number:
                   type: string
-                  example: "RC-123456"
+                  description: The CAC registration number
+                  example: "1261103"
+                company_name:
+                  type: string
+                  description: Registered company name
+                  example: "JOYCE VENTURES"
+                company_type:
+                  type: string
+                  description: "Entity type: RC (registered company), BN (business name), or IT (incorporated trustee)"
+                  example: "RC"
       responses:
         "200": { description: CAC verified }
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -465,11 +520,20 @@ paths:
           application/json:
             schema:
               type: object
-              required: [registration_number]
+              required: [registration_number, company_name, company_type]
               properties:
                 registration_number:
                   type: string
-                  example: "RC-123456"
+                  description: The CAC registration number
+                  example: "10056"
+                company_name:
+                  type: string
+                  description: Registered company name
+                  example: "JOYCE VENTURES"
+                company_type:
+                  type: string
+                  description: "Entity type: RC (registered company), BN (business name), or IT (incorporated trustee)"
+                  example: "IT"
       responses:
         "200": { description: CAC advanced data retrieved }
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -657,12 +721,12 @@ paths:
           application/json:
             schema:
               type: object
-              required: [id_number]
+              required: [national_id]
               properties:
-                id_number:
+                national_id:
                   type: string
                   description: Kenyan national ID number
-                  example: "12345678"
+                  example: "00000000"
       responses:
         "200": { description: National ID verified }
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -679,11 +743,12 @@ paths:
           application/json:
             schema:
               type: object
-              required: [id_number]
+              required: [national_id]
               properties:
-                id_number:
+                national_id:
                   type: string
-                  example: "12345678"
+                  description: Kenyan national ID number
+                  example: "1010101010"
       responses:
         "200": { description: National ID advanced data retrieved }
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -1321,7 +1386,13 @@ paths:
                   properties:
                     customer_name: { type: string }
                     customer_email: { type: string, format: email }
-                    bvn: { type: string }
+                    bvn: { type: string, description: "Customer BVN (Nigeria). Use identifier + identifier_type for other countries" }
+                    identifier:
+                      type: string
+                      description: Customer identifier for non-Nigeria customers (e.g. national ID)
+                    identifier_type:
+                      type: string
+                      description: "Key of the identifier type (e.g. bvn, national_id, ghana_card)"
                 additional_info:
                   type: object
                   required: [ip_address, location]
@@ -1334,6 +1405,95 @@ paths:
                   default: false
       responses:
         "201": { description: Transaction processed }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  # ── CARD FRAUD CHECK ─────────────────────────────────────────
+
+  /api/v1/monitoring/post_monitoring_data/:
+    post:
+      tags: [Transaction Monitoring]
+      summary: Card Fraud Detection
+      operationId: cardFraudCheck
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [transaction_id, amount, currency, transaction_type, account_type]
+              properties:
+                transaction_id:
+                  type: string
+                  description: Unique identifier for the transaction
+                  example: "TXN-CARD-12345678"
+                amount:
+                  type: number
+                  description: Transaction amount
+                  example: 300000
+                currency:
+                  type: string
+                  description: Currency code
+                  example: "NGN"
+                transaction_type:
+                  type: string
+                  description: Must be 'card' for card fraud checks
+                  example: "card"
+                account_type:
+                  type: string
+                  enum: [individual, corporate]
+                  example: "individual"
+                card_bin:
+                  type: string
+                  description: First six digits of the card number (BIN)
+                  example: "345676"
+                card_last4:
+                  type: string
+                  description: Last four digits of the card number
+                  example: "9809"
+                customer_name:
+                  type: string
+                  example: "John Doe"
+                customer_email:
+                  type: string
+                  format: email
+                  example: "john.doe@example.com"
+                customer_phone_number:
+                  type: string
+                  example: "+2347012345678"
+                bvn:
+                  type: string
+                  description: Customer's BVN (Nigeria). Use identifier + identifier_type for other countries
+                  example: "12345678901"
+                identifier:
+                  type: string
+                  description: Customer identifier for non-Nigeria customers (e.g. national ID number)
+                  example: "12345678"
+                identifier_type:
+                  type: string
+                  description: "Key of the identifier type (e.g. bvn, national_id, ghana_card). Required when identifier is provided"
+                  example: "national_id"
+                merchant_name:
+                  type: string
+                  example: "ABC Stores"
+                merchant_location:
+                  type: string
+                  example: "Lagos, Nigeria"
+                customer_ip_address:
+                  type: string
+                  example: "102.89.1.1"
+                customer_location:
+                  type: string
+                  example: "Lagos, Nigeria"
+                transaction_date:
+                  type: string
+                  description: "Date of transaction. Formats: DD-MM-YYYY, YYYY-MM-DD HH:MM:SS, or ISO 8601"
+                  example: "2025-08-23T14:30:00Z"
+                transaction_description:
+                  type: string
+                  example: "Online purchase"
+      responses:
+        "201": { description: Card fraud check processed }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
 

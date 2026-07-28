@@ -35,7 +35,9 @@ POST /api/v1/loan/fraud_check/
 | `duration_of_stay` | string | Yes | Duration at current address (e.g., `5 years`) |
 | `identification_type` | string | Yes | ID type (e.g., `Passport`, `NIN`) |
 | `identification_number` | string | Yes | ID number |
-| `bvn` | string | Yes | 11-digit Bank Verification Number |
+| `bvn` | string | Yes | 11-digit Bank Verification Number (Nigeria). Use `identifier` + `identifier_type` for other countries |
+| `identifier` | string | No | Customer identifier for non-Nigeria applicants (e.g. a Kenya national ID number) |
+| `identifier_type` | string | No | Key of the identifier type (e.g. `bvn`, `national_id`, `ghana_card`). Required when `identifier` is provided |
 | `phone_number` | string | Yes | Phone number with country code |
 | `email_address` | string | Yes | Applicant's email address |
 | `employment_type` | string | Yes | Employment type (e.g., `Full-time`, `Self-employed`) |
@@ -86,6 +88,10 @@ curl -X POST "https://adhere-api.smartcomply.com/api/v1/loan/fraud_check/" \
   -F "run_aml_check=false"
 ```
 </CodeGroup>
+
+<Note>
+For non-Nigeria applicants, omit `bvn` and pass `identifier` (the ID value) and `identifier_type` (the key, e.g. `national_id`, `ghana_card`) instead. This enables multi-country loan fraud assessment.
+</Note>
 
 ## Response
 
