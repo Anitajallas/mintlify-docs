@@ -2,15 +2,15 @@
 title: "Card Fraud Detection"
 sidebarTitle: "Card Fraud Check"
 description: "Submit a card transaction for real-time fraud scoring based on your configured thresholds and limits."
-openapi: "POST /api/v1/monitoring/transaction_monitoring/"
+openapi: "POST /api/v1/monitoring/post_monitoring_data/"
 ---
 
-The Card Fraud Detection endpoint evaluates a card transaction in real-time, computing a activity code using your configured thresholds and limits. All fields are required. Use a unique `transaction_id` for each request to ensure accurate tracking.
+The Card Fraud Detection endpoint evaluates a card transaction in real-time against your configured thresholds and limits. Submit card-specific details including BIN, last 4 digits, merchant info, and customer details. Use a unique `transaction_id` for each request.
 
 ## Endpoint
 
 ```
-POST /api/v1/monitoring/transaction_monitoring/
+POST /api/v1/monitoring/post_monitoring_data/
 ```
 
 ## Request
@@ -27,63 +27,115 @@ POST /api/v1/monitoring/transaction_monitoring/
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `transaction_id` | string | Yes | Unique identifier for the transaction |
-| `amount` | number | Yes | Transaction amount |
+| `amount` | number | Yes | Transaction amount (e.g. `300000` or `"300,000.00"`) |
 | `currency` | string | Yes | Currency code (e.g., `NGN`, `USD`) |
-| `transaction_type` | string | Yes | Transaction type (e.g., `card`) |
-| `account_type` | string | Yes | Account type: `individual` or `corporate` |
-| `timestamp` | string | Yes | ISO-8601 datetime of the transaction |
-| `card_details` | object | Yes | Details of the card used |
-| `card_details.bin` | string | Yes | First six digits of the card number (BIN) |
-| `card_details.last4` | string | Yes | Last four digits of the card number |
-| `merchant_details` | object | Yes | Merchant details |
-| `merchant_details.merchant_name` | string | Yes | Name of the merchant |
-| `merchant_details.merchant_location` | string | Yes | Location of the merchant |
-| `customer_details` | object | Yes | Customer details |
-| `customer_details.customer_name` | string | Yes | Customer's full name |
-| `customer_details.customer_email` | string | Yes | Customer's email address |
-| `customer_details.customer_phone` | string | Yes | Customer's phone number with country code |
-| `customer_details.bvn` | string | Yes | Customer's Bank Verification Number |
-| `additional_info` | object | Yes | Additional context for fraud evaluation |
-| `additional_info.ip_address` | string | Yes | IP address during the transaction |
-| `additional_info.country_code` | string | Yes | Country code (e.g., `234`) |
-| `additional_info.location` | string | Yes | Customer location (e.g., `Lagos, Nigeria`) |
+| `transaction_type` | string | Yes | Must be `card` for card fraud checks |
+| `account_type` | string | Yes | `individual` or `corporate` |
+| `card_bin` | string | Yes | First six digits of the card number (BIN) |
+| `card_last4` | string | Yes | Last four digits of the card number |
+| `customer_name` | string | Yes | Customer's full name |
+| `customer_email` | string | Yes | Customer's email address |
+| `customer_phone_number` | string | No | Customer's phone number |
+| `bvn` | string | No | Customer's Bank Verification Number (Nigeria). Use `identifier` + `identifier_type` for other countries |
+| `identifier` | string | No | Customer's identifier value — use this instead of `bvn` for non-Nigeria customers (e.g. a Kenya national ID number) |
+| `identifier_type` | string | No | The key of the identifier type (e.g. `bvn`, `national_id`, `ghana_card`). Must be provided when `identifier` is provided |
+| `merchant_name` | string | No | Name of the merchant |
+| `merchant_location` | string | No | Location of the merchant |
+| `customer_ip_address` | string | No | IP address during the transaction |
+| `customer_location` | string | No | Customer's location (e.g., `Lagos, Nigeria`) |
+| `transaction_date` | string | No | Date of transaction (formats: `DD-MM-YYYY`, `YYYY-MM-DD HH:MM:SS`, or ISO 8601) |
+| `transaction_description` | string | No | Optional description of the transaction |
 
 ### Example
 
 <CodeGroup>
 ```bash cURL
-curl -X POST "https://adhere-api.smartcomply.com/api/v1/monitoring/transaction_monitoring/" \
+curl -X POST "https://adhere-api.smartcomply.com/api/v1/monitoring/post_monitoring_data/" \
   -H "x-access-token: YOUR_SECRET_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "transaction_id": "12345678",
+    "transaction_id": "TXN-CARD-12345678",
     "amount": 300000,
     "currency": "NGN",
     "transaction_type": "card",
     "account_type": "individual",
-    "timestamp": "2025-08-23T14:30:00Z",
-    "card_details": {
-      "bin": "345676",
-      "last4": "9809"
-    },
-    "merchant_details": {
-      "merchant_name": "ABC Stores",
-      "merchant_location": "Lagos, Nigeria"
-    },
-    "customer_details": {
-      "customer_name": "John Doe",
-      "customer_email": "john.doe@example.com",
-      "customer_phone": "+2347012345678",
-      "bvn": "12345678901"
-    },
-    "additional_info": {
-      "ip_address": "102.89.1.1",
-      "country_code": "234",
-      "location": "Lagos, Nigeria"
-    }
+    "card_bin": "345676",
+    "card_last4": "9809",
+    "customer_name": "John Doe",
+    "customer_email": "john.doe@example.com",
+    "customer_phone_number": "+2347012345678",
+    "bvn": "12345678901",
+    "merchant_name": "ABC Stores",
+    "merchant_location": "Lagos, Nigeria",
+    "customer_ip_address": "102.89.1.1",
+    "customer_location": "Lagos, Nigeria",
+    "transaction_date": "2025-08-23T14:30:00Z"
   }'
 ```
+
+```javascript Node.js
+const response = await fetch(
+  "https://adhere-api.smartcomply.com/api/v1/monitoring/post_monitoring_data/",
+  {
+    method: "POST",
+    headers: {
+      "x-access-token": "YOUR_SECRET_KEY",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      transaction_id: "TXN-CARD-12345678",
+      amount: 300000,
+      currency: "NGN",
+      transaction_type: "card",
+      account_type: "individual",
+      card_bin: "345676",
+      card_last4: "9809",
+      customer_name: "John Doe",
+      customer_email: "john.doe@example.com",
+      bvn: "12345678901",
+      merchant_name: "ABC Stores",
+      merchant_location: "Lagos, Nigeria",
+      customer_location: "Lagos, Nigeria",
+      transaction_date: "2025-08-23T14:30:00Z",
+    }),
+  }
+);
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/v1/monitoring/post_monitoring_data/",
+    headers={
+        "x-access-token": "YOUR_SECRET_KEY",
+        "Content-Type": "application/json",
+    },
+    json={
+        "transaction_id": "TXN-CARD-12345678",
+        "amount": 300000,
+        "currency": "NGN",
+        "transaction_type": "card",
+        "account_type": "individual",
+        "card_bin": "345676",
+        "card_last4": "9809",
+        "customer_name": "John Doe",
+        "customer_email": "john.doe@example.com",
+        "bvn": "12345678901",
+        "merchant_name": "ABC Stores",
+        "merchant_location": "Lagos, Nigeria",
+        "customer_location": "Lagos, Nigeria",
+        "transaction_date": "2025-08-23T14:30:00Z",
+    },
+)
+data = response.json()
+```
 </CodeGroup>
+
+<Note>
+For non-Nigeria customers, omit `bvn` and use `identifier` + `identifier_type` instead. For example, a Kenyan customer would pass `"identifier": "12345678"` and `"identifier_type": "national_id"`.
+</Note>
 
 ## Response
 
@@ -91,8 +143,8 @@ curl -X POST "https://adhere-api.smartcomply.com/api/v1/monitoring/transaction_m
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `data.activity_code` | string | Activity code returned from the fraud assessment (see [activity codes](/v3/transaction/card_transaction/card_transaction_overview)) |
-| `data.status` | string | Transaction status: `"clean"` or `"suspicious"` |
+| `data.activity_code` | string | Activity code from the fraud assessment (see [activity codes](/v3/transaction/card_transaction/card_transaction_overview)) |
+| `data.status` | string | `"clean"` or `"suspicious"` |
 | `data.comment` | array | List of triggered fraud rules, if any |
 
 ```json
