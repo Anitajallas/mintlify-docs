@@ -177,15 +177,16 @@ paths:
           application/json:
             schema:
               type: object
-              required: [bvn, image_url]
+              required: [bvn, image_upload]
               properties:
                 bvn:
                   type: string
                   description: 11-digit Bank Verification Number
                   example: "22244545518"
-                image_url:
+                image_upload:
                   type: string
-                  description: URL of the selfie image
+                  description: URL of the customer's photo for facial comparison
+                  example: "https://example.com/photo.jpg"
       responses:
         "200": { description: BVN with face verified }
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -224,15 +225,16 @@ paths:
           application/json:
             schema:
               type: object
-              required: [nin, image_url]
+              required: [identification_number, image_url]
               properties:
-                nin:
+                identification_number:
                   type: string
-                  description: 11-digit NIN
-                  example: "12345678901"
+                  description: 11-digit National Identification Number
+                  example: "70123456789"
                 image_url:
                   type: string
-                  description: URL of the selfie image
+                  description: URL of the customer's photo for facial comparison
+                  example: "https://example.com/photo.jpg"
       responses:
         "200": { description: NIN with face verified }
         "400": { $ref: "#/components/responses/BadRequest" }

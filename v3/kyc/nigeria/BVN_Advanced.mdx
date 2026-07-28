@@ -27,6 +27,7 @@ POST /api/onboarding/nigeria_kyc/bvn_advanced/
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `bvn` | string | Yes | The customer's 11-digit Bank Verification Number |
+| `date_of_birth` | string | Yes | The customer's date of birth in `YYYY-MM-DD` format |
 
 ### Example
 
@@ -35,7 +36,7 @@ POST /api/onboarding/nigeria_kyc/bvn_advanced/
 curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/bvn_advanced/" \
   -H "x-access-token: YOUR_SECRET_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"bvn": "22000000001"}'
+  -d '{"bvn": "22000000001", "date_of_birth": "1990-01-15"}'
 ```
 
 ```javascript Node.js
@@ -47,7 +48,7 @@ const response = await fetch(
       "x-access-token": "YOUR_SECRET_KEY",
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ bvn: "22000000001" }),
+    body: JSON.stringify({ bvn: "22000000001", date_of_birth: "1990-01-15" }),
   }
 );
 const data = await response.json();
@@ -62,7 +63,7 @@ response = requests.post(
         "x-access-token": "YOUR_SECRET_KEY",
         "Content-Type": "application/json",
     },
-    json={"bvn": "22000000001"},
+    json={"bvn": "22000000001", "date_of_birth": "1990-01-15"},
 )
 data = response.json()
 ```
