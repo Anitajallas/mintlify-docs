@@ -5,7 +5,9 @@ description: "Verify that a submitted facial image belongs to a live person, not
 openapi: "POST /api/onboarding/biometrics/face/liveliness_check/"
 ---
 
-The Face Liveness Check endpoint analyzes a facial image to confirm physical presence. It returns a confidence score and a verification status to help you distinguish real users from spoofing attempts.
+The Face Liveness Check endpoint analyzes a live selfie video to confirm physical presence. It runs blink and motion analysis on the video to distinguish a real user from a photograph or pre-recorded video, then compares the face in the video to the face in the same video.
+
+For true liveness detection, send a selfie video. Sending a static image will perform a self-comparison, not a liveness check.
 
 ## Endpoint
 
@@ -26,7 +28,7 @@ POST /api/onboarding/biometrics/face/liveliness_check/
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `image` | string | Yes | URL of the facial image to check for liveness |
+| `image` | string | Yes | URL of the live selfie **video** to check for liveness. Supported formats: `.mp4`, `.mov`, `.webm`, `.avi`, `.m4v`. |
 
 ### Example
 
@@ -35,8 +37,12 @@ POST /api/onboarding/biometrics/face/liveliness_check/
 curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/biometrics/face/liveliness_check/" \
   -H "x-access-token: YOUR_SECRET_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"image": "https://example.com/photo.jpg"}'
+  -d '{"image": "https://example.com/selfie_liveness.mp4"}'
 ```
+
+<Note>
+A static image (e.g. `.jpg` or `.png`) will be processed in comparison mode against itself, so it will always appear to pass. For real liveness detection, send a selfie video captured by the user.
+</Note>
 </CodeGroup>
 
 ## Response

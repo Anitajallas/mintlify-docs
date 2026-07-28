@@ -26,8 +26,8 @@ POST /api/onboarding/biometrics/face/comparison
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `image_one` | string | Yes | URL or base64-encoded string of the first face image |
-| `image_two` | string | Yes | URL or base64-encoded string of the second face image |
+| `image_url` | string | Yes | URL of the reference ID photo or database face image |
+| `selfie_url` | string | Yes | URL of the live selfie to compare against the reference |
 
 ### Example
 
@@ -37,8 +37,8 @@ curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/biometrics/face/
   -H "x-access-token: YOUR_SECRET_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "image_one": "https://example.com/photo1.jpg",
-    "image_two": "https://example.com/photo2.jpg"
+    "image_url": "https://example.com/id_photo.jpg",
+    "selfie_url": "https://example.com/selfie.jpg"
   }'
 ```
 
@@ -52,8 +52,8 @@ const response = await fetch(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      image_one: "https://example.com/photo1.jpg",
-      image_two: "https://example.com/photo2.jpg",
+      image_url: "https://example.com/id_photo.jpg",
+      selfie_url: "https://example.com/selfie.jpg",
     }),
   }
 );
@@ -70,8 +70,8 @@ response = requests.post(
         "Content-Type": "application/json",
     },
     json={
-        "image_one": "https://example.com/photo1.jpg",
-        "image_two": "https://example.com/photo2.jpg",
+        "image_url": "https://example.com/id_photo.jpg",
+        "selfie_url": "https://example.com/selfie.jpg",
     },
 )
 data = response.json()
