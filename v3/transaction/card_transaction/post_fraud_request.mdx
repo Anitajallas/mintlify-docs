@@ -5,7 +5,7 @@ description: "Submit a card transaction for real-time fraud scoring based on you
 openapi: "POST /api/v1/monitoring/post_monitoring_data/"
 ---
 
-The Card Fraud Detection endpoint evaluates a card transaction in real-time against your configured thresholds and limits. Submit card-specific details including BIN, last 4 digits, merchant info, and customer details. Use a unique `transaction_id` for each request.
+The Card Fraud Detection endpoint evaluates a card transaction in real-time against your configured thresholds and limits. Use a unique `transaction_id` for each request to ensure accurate tracking.
 
 ## Endpoint
 
@@ -27,24 +27,28 @@ POST /api/v1/monitoring/post_monitoring_data/
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `transaction_id` | string | Yes | Unique identifier for the transaction |
-| `amount` | number | Yes | Transaction amount (e.g. `300000` or `"300,000.00"`) |
+| `amount` | number | Yes | Transaction amount (e.g. `99.13`) |
 | `currency` | string | Yes | Currency code (e.g., `NGN`, `USD`) |
 | `transaction_type` | string | Yes | Must be `card` for card fraud checks |
 | `account_type` | string | Yes | `individual` or `corporate` |
-| `card_bin` | string | Yes | First six digits of the card number (BIN) |
-| `card_last4` | string | Yes | Last four digits of the card number |
-| `customer_name` | string | Yes | Customer's full name |
-| `customer_email` | string | Yes | Customer's email address |
-| `customer_phone_number` | string | No | Customer's phone number |
-| `bvn` | string | No | Customer's Bank Verification Number (Nigeria). Use `identifier` + `identifier_type` for other countries |
-| `identifier` | string | No | Customer's identifier value — use this instead of `bvn` for non-Nigeria customers (e.g. a Kenya national ID number) |
-| `identifier_type` | string | No | The key of the identifier type (e.g. `bvn`, `national_id`, `ghana_card`). Must be provided when `identifier` is provided |
-| `merchant_name` | string | No | Name of the merchant |
-| `merchant_location` | string | No | Location of the merchant |
-| `customer_ip_address` | string | No | IP address during the transaction |
-| `customer_location` | string | No | Customer's location (e.g., `Lagos, Nigeria`) |
-| `transaction_date` | string | No | Date of transaction (formats: `DD-MM-YYYY`, `YYYY-MM-DD HH:MM:SS`, or ISO 8601) |
-| `transaction_description` | string | No | Optional description of the transaction |
+| `timestamp` | string | No | ISO 8601 transaction timestamp |
+| `card_details` | object | Yes | Card-specific information |
+| `card_details.bin` | integer | Yes | First six digits of the card number (BIN) |
+| `card_details.last4` | integer | Yes | Last four digits of the card number |
+| `merchant_details` | object | No | Merchant information |
+| `merchant_details.merchant_name` | string | No | Name of the merchant |
+| `merchant_details.merchant_location` | string | No | Location of the merchant |
+| `merchant_details.merchant_code` | string | No | Merchant category code (MCC) |
+| `customer_details` | object | Yes | Customer information |
+| `customer_details.customer_name` | string | Yes | Customer's full name |
+| `customer_details.customer_email` | string | Yes | Customer's email address |
+| `customer_details.customer_phone` | string | No | Customer's phone number |
+| `customer_details.identifier` | string | No | Customer's identifier value. Use `identifier_type` to specify the type (e.g. BVN for Nigeria, national ID for Kenya) |
+| `customer_details.identifier_type` | string | No | Key of the identifier type: `bvn`, `national_id`, `ghana_card`, etc. Required when `identifier` is provided |
+| `additional_info` | object | Yes | Additional context for fraud evaluation |
+| `additional_info.ip_address` | string | Yes | IP address during the transaction |
+| `additional_info.location` | string | Yes | Location of the transaction (e.g., `"Lagos, Nigeria"`) |
+| `additional_info.transaction_description` | string | No | Optional description of the transaction |
 
 ### Example
 
@@ -55,21 +59,32 @@ curl -X POST "https://adhere-api.smartcomply.com/api/v1/monitoring/post_monitori
   -H "Content-Type: application/json" \
   -d '{
     "transaction_id": "TXN-CARD-12345678",
-    "amount": 300000,
+    "amount": 99.13,
     "currency": "NGN",
     "transaction_type": "card",
-    "account_type": "individual",
-    "card_bin": "345676",
-    "card_last4": "9809",
-    "customer_name": "John Doe",
-    "customer_email": "john.doe@example.com",
-    "customer_phone_number": "+2347012345678",
-    "bvn": "12345678901",
-    "merchant_name": "ABC Stores",
-    "merchant_location": "Lagos, Nigeria",
-    "customer_ip_address": "102.89.1.1",
-    "customer_location": "Lagos, Nigeria",
-    "transaction_date": "2025-08-23T14:30:00Z"
+    "account_type": "corporate",
+    "timestamp": "2025-08-23T14:30:00Z",
+    "card_details": {
+      "bin": 345676,
+      "last4": 9809
+    },
+    "merchant_details": {
+      "merchant_name": "ABC Stores",
+      "merchant_location": "Lagos, Nigeria",
+      "merchant_code": "5813"
+    },
+    "customer_details": {
+      "customer_name": "Imagine Dragons",
+      "customer_email": "imaginedragons@gmail.com",
+      "customer_phone": "+2347012345678",
+      "identifier": "98765432109",
+      "identifier_type": "bvn"
+    },
+    "additional_info": {
+      "ip_address": "102.89.1.1",
+      "location": "Lagos, Nigeria",
+      "transaction_description": "Online purchase"
+    }
   }'
 ```
 
@@ -84,19 +99,32 @@ const response = await fetch(
     },
     body: JSON.stringify({
       transaction_id: "TXN-CARD-12345678",
-      amount: 300000,
+      amount: 99.13,
       currency: "NGN",
       transaction_type: "card",
-      account_type: "individual",
-      card_bin: "345676",
-      card_last4: "9809",
-      customer_name: "John Doe",
-      customer_email: "john.doe@example.com",
-      bvn: "12345678901",
-      merchant_name: "ABC Stores",
-      merchant_location: "Lagos, Nigeria",
-      customer_location: "Lagos, Nigeria",
-      transaction_date: "2025-08-23T14:30:00Z",
+      account_type: "corporate",
+      timestamp: "2025-08-23T14:30:00Z",
+      card_details: {
+        bin: 345676,
+        last4: 9809,
+      },
+      merchant_details: {
+        merchant_name: "ABC Stores",
+        merchant_location: "Lagos, Nigeria",
+        merchant_code: "5813",
+      },
+      customer_details: {
+        customer_name: "Imagine Dragons",
+        customer_email: "imaginedragons@gmail.com",
+        customer_phone: "+2347012345678",
+        identifier: "98765432109",
+        identifier_type: "bvn",
+      },
+      additional_info: {
+        ip_address: "102.89.1.1",
+        location: "Lagos, Nigeria",
+        transaction_description: "Online purchase",
+      },
     }),
   }
 );
@@ -114,19 +142,32 @@ response = requests.post(
     },
     json={
         "transaction_id": "TXN-CARD-12345678",
-        "amount": 300000,
+        "amount": 99.13,
         "currency": "NGN",
         "transaction_type": "card",
-        "account_type": "individual",
-        "card_bin": "345676",
-        "card_last4": "9809",
-        "customer_name": "John Doe",
-        "customer_email": "john.doe@example.com",
-        "bvn": "12345678901",
-        "merchant_name": "ABC Stores",
-        "merchant_location": "Lagos, Nigeria",
-        "customer_location": "Lagos, Nigeria",
-        "transaction_date": "2025-08-23T14:30:00Z",
+        "account_type": "corporate",
+        "timestamp": "2025-08-23T14:30:00Z",
+        "card_details": {
+            "bin": 345676,
+            "last4": 9809,
+        },
+        "merchant_details": {
+            "merchant_name": "ABC Stores",
+            "merchant_location": "Lagos, Nigeria",
+            "merchant_code": "5813",
+        },
+        "customer_details": {
+            "customer_name": "Imagine Dragons",
+            "customer_email": "imaginedragons@gmail.com",
+            "customer_phone": "+2347012345678",
+            "identifier": "98765432109",
+            "identifier_type": "bvn",
+        },
+        "additional_info": {
+            "ip_address": "102.89.1.1",
+            "location": "Lagos, Nigeria",
+            "transaction_description": "Online purchase",
+        },
     },
 )
 data = response.json()
@@ -134,7 +175,7 @@ data = response.json()
 </CodeGroup>
 
 <Note>
-For non-Nigeria customers, omit `bvn` and use `identifier` + `identifier_type` instead. For example, a Kenyan customer would pass `"identifier": "12345678"` and `"identifier_type": "national_id"`.
+Use `identifier` + `identifier_type` inside `customer_details` to pass the customer's ID. For Nigeria use `"identifier_type": "bvn"`, for Kenya use `"identifier_type": "national_id"`, for Ghana use `"identifier_type": "ghana_card"`.
 </Note>
 
 ## Response
@@ -143,7 +184,7 @@ For non-Nigeria customers, omit `bvn` and use `identifier` + `identifier_type` i
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `data.activity_code` | string | Activity code from the fraud assessment (see [activity codes](/v3/transaction/card_transaction/card_transaction_overview)) |
+| `data.activity_code` | string | Activity code from the fraud assessment |
 | `data.status` | string | `"clean"` or `"suspicious"` |
 | `data.comment` | array | List of triggered fraud rules, if any |
 
