@@ -1388,13 +1388,14 @@ paths:
                   properties:
                     customer_name: { type: string }
                     customer_email: { type: string, format: email }
-                    bvn: { type: string, description: "Customer BVN (Nigeria). Use identifier + identifier_type for other countries" }
                     identifier:
                       type: string
-                      description: Customer identifier for non-Nigeria customers (e.g. national ID)
+                      description: "Customer identifier value. Use bvn for Nigeria, national_id for Kenya, ghana_card for Ghana, etc."
+                      example: "22430372151"
                     identifier_type:
                       type: string
-                      description: "Key of the identifier type (e.g. bvn, national_id, ghana_card)"
+                      description: "Key of the identifier type (e.g. bvn, national_id, ghana_card). Required when identifier is provided"
+                      example: "bvn"
                 additional_info:
                   type: object
                   required: [ip_address, location]
@@ -1423,77 +1424,88 @@ paths:
           application/json:
             schema:
               type: object
-              required: [transaction_id, amount, currency, transaction_type, account_type]
+              required: [transaction_id, amount, currency, transaction_type, account_type, card_details, customer_details, additional_info]
               properties:
                 transaction_id:
                   type: string
-                  description: Unique identifier for the transaction
                   example: "TXN-CARD-12345678"
                 amount:
                   type: number
-                  description: Transaction amount
-                  example: 300000
+                  example: 99.13
                 currency:
                   type: string
-                  description: Currency code
                   example: "NGN"
                 transaction_type:
                   type: string
-                  description: Must be 'card' for card fraud checks
                   example: "card"
                 account_type:
                   type: string
                   enum: [individual, corporate]
-                  example: "individual"
-                card_bin:
+                  example: "corporate"
+                timestamp:
                   type: string
-                  description: First six digits of the card number (BIN)
-                  example: "345676"
-                card_last4:
-                  type: string
-                  description: Last four digits of the card number
-                  example: "9809"
-                customer_name:
-                  type: string
-                  example: "John Doe"
-                customer_email:
-                  type: string
-                  format: email
-                  example: "john.doe@example.com"
-                customer_phone_number:
-                  type: string
-                  example: "+2347012345678"
-                bvn:
-                  type: string
-                  description: Customer's BVN (Nigeria). Use identifier + identifier_type for other countries
-                  example: "12345678901"
-                identifier:
-                  type: string
-                  description: Customer identifier for non-Nigeria customers (e.g. national ID number)
-                  example: "12345678"
-                identifier_type:
-                  type: string
-                  description: "Key of the identifier type (e.g. bvn, national_id, ghana_card). Required when identifier is provided"
-                  example: "national_id"
-                merchant_name:
-                  type: string
-                  example: "ABC Stores"
-                merchant_location:
-                  type: string
-                  example: "Lagos, Nigeria"
-                customer_ip_address:
-                  type: string
-                  example: "102.89.1.1"
-                customer_location:
-                  type: string
-                  example: "Lagos, Nigeria"
-                transaction_date:
-                  type: string
-                  description: "Date of transaction. Formats: DD-MM-YYYY, YYYY-MM-DD HH:MM:SS, or ISO 8601"
+                  description: ISO 8601 transaction timestamp
                   example: "2025-08-23T14:30:00Z"
-                transaction_description:
-                  type: string
-                  example: "Online purchase"
+                card_details:
+                  type: object
+                  required: [bin, last4]
+                  properties:
+                    bin:
+                      type: integer
+                      description: First six digits of the card (BIN)
+                      example: 345676
+                    last4:
+                      type: integer
+                      description: Last four digits of the card
+                      example: 9809
+                merchant_details:
+                  type: object
+                  properties:
+                    merchant_name:
+                      type: string
+                      example: "ABC Stores"
+                    merchant_location:
+                      type: string
+                      example: "Lagos, Nigeria"
+                    merchant_code:
+                      type: string
+                      description: Merchant category code (MCC)
+                      example: "5813"
+                customer_details:
+                  type: object
+                  required: [customer_name, customer_email]
+                  properties:
+                    customer_name:
+                      type: string
+                      example: "Imagine Dragons"
+                    customer_email:
+                      type: string
+                      format: email
+                      example: "imaginedragons@gmail.com"
+                    customer_phone:
+                      type: string
+                      example: "+2347012345678"
+                    identifier:
+                      type: string
+                      description: "Customer identifier value (e.g. BVN for Nigeria, national ID for Kenya)"
+                      example: "98765432109"
+                    identifier_type:
+                      type: string
+                      description: "Key of the identifier type: bvn, national_id, ghana_card, etc."
+                      example: "bvn"
+                additional_info:
+                  type: object
+                  required: [ip_address, location]
+                  properties:
+                    ip_address:
+                      type: string
+                      example: "102.89.1.1"
+                    location:
+                      type: string
+                      example: "Lagos, Nigeria"
+                    transaction_description:
+                      type: string
+                      example: "Online purchase"
       responses:
         "201": { description: Card fraud check processed }
         "400": { $ref: "#/components/responses/BadRequest" }
