@@ -7,14 +7,11 @@ description: "Detect and mitigate fraud in real time using transaction monitorin
 The Fraud and Transaction Monitoring API provides tools to compute fraud probabilities, screen transactions against compliance lists, and monitor user behaviour across your platform. It combines machine learning, data analytics, and sanctions intelligence to help you detect and act on suspicious activity before it causes harm.
 
 <CardGroup cols={2}>
-  <Card title="Transaction Monitoring" icon="chart-line">
-    Submit transactions for real-time fraud scoring against your configured limits and thresholds.
+  <Card title="Transaction Monitoring" icon="chart-line" href="/v3/transaction/transaction_monitoring/post_transaction_request">
+    Submit transactions for real-time fraud scoring against your configured limits and thresholds. Supports transfer, USSD, web, and card transaction types.
   </Card>
   <Card title="Transaction Screening" icon="shield-check">
     Screen sender and receiver names against global sanctions lists and high-risk country databases.
-  </Card>
-  <Card title="Card Fraud Detection" icon="credit-card">
-    Evaluate card transactions using BIN data, merchant context, and customer profiles.
   </Card>
   <Card title="KYC Checks" icon="user-check">
     Screen entities against PEP lists, sanctions databases, and adverse media sources.

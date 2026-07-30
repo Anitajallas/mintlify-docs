@@ -42,6 +42,27 @@ Transaction Monitoring provides real-time analysis of every transaction processe
   </Card>
 </CardGroup>
 
+## Supported Transaction Types
+
+The Submit Transaction endpoint accepts four `transaction_type` values, each with a different payload shape. Pick the type that matches the transaction you're submitting.
+
+<CardGroup cols={2}>
+  <Card title="Transfer" icon="money-bill-transfer">
+    Account-to-account transfer. Requires `origin_account` and `destination_account`. The most common transaction type.
+  </Card>
+  <Card title="USSD" icon="hashtag">
+    USSD-initiated transaction. Same payload as Transfer — only `transaction_type` changes to `ussd`.
+  </Card>
+  <Card title="Web" icon="globe">
+    Web-initiated transaction. Same payload as Transfer — only `transaction_type` changes to `web`.
+  </Card>
+  <Card title="Card" icon="credit-card">
+    Card transaction. Requires `card_details` (BIN + last4) and optionally `merchant_details`. No `origin_account` or `destination_account` required.
+  </Card>
+</CardGroup>
+
+See [Submit Transaction](/v3/transaction/transaction_monitoring/post_transaction_request) for the full request, examples per type, and response codes.
+
 ## Rule Criteria
 
 Rules can be based on any combination of the following:

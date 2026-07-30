@@ -1349,8 +1349,6 @@ paths:
                   currency,
                   transaction_type,
                   account_type,
-                  origin_account,
-                  destination_account,
                   customer_details,
                   additional_info,
                 ]
@@ -1366,28 +1364,66 @@ paths:
                   example: "NGN"
                 transaction_type:
                   type: string
-                  enum: [transfer, ussd, web]
+                  enum: [transfer, ussd, web, card]
+                  description: "Discriminator for the payload shape. transfer/ussd/web require origin_account and destination_account. card requires card_details."
                 account_type:
                   type: string
                   enum: [individual, corporate]
                 origin_account:
                   type: object
+                  description: "Required when transaction_type is transfer, ussd, or web"
                   required: [account_number, bank_code]
                   properties:
                     account_number: { type: string, example: "9876543219" }
                     bank_code: { type: string, example: "001" }
                 destination_account:
                   type: object
+                  description: "Required when transaction_type is transfer, ussd, or web"
                   required: [account_number, bank_code]
                   properties:
                     account_number: { type: string, example: "123456789" }
                     bank_code: { type: string, example: "002" }
+                card_details:
+                  type: object
+                  description: "Required when transaction_type is card"
+                  required: [bin, last4]
+                  properties:
+                    bin:
+                      type: integer
+                      description: First six digits of the card (BIN)
+                      example: 345676
+                    last4:
+                      type: integer
+                      description: Last four digits of the card
+                      example: 9809
+                merchant_details:
+                  type: object
+                  description: "Optional but recommended when transaction_type is card"
+                  properties:
+                    merchant_name:
+                      type: string
+                      example: "ABC Stores"
+                    merchant_location:
+                      type: string
+                      example: "Lagos, Nigeria"
+                    merchant_code:
+                      type: string
+                      description: Merchant category code (MCC)
+                      example: "5813"
+                timestamp:
+                  type: string
+                  format: date-time
+                  description: ISO 8601 transaction timestamp (used with card transactions)
+                  example: "2025-08-23T14:30:00Z"
                 customer_details:
                   type: object
                   required: [customer_name, customer_email]
                   properties:
                     customer_name: { type: string }
                     customer_email: { type: string, format: email }
+                    customer_phone:
+                      type: string
+                      example: "+2347012345678"
                     identifier:
                       type: string
                       description: "Customer identifier value. Use bvn for Nigeria, national_id for Kenya, ghana_card for Ghana, etc."
@@ -1408,106 +1444,6 @@ paths:
                   default: false
       responses:
         "201": { description: Transaction processed }
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-
-  # ── CARD FRAUD CHECK ─────────────────────────────────────────
-
-  /api/v1/monitoring/post_monitoring_data/:
-    post:
-      tags: [Transaction Monitoring]
-      summary: Card Fraud Detection
-      operationId: cardFraudCheck
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [transaction_id, amount, currency, transaction_type, account_type, card_details, customer_details, additional_info]
-              properties:
-                transaction_id:
-                  type: string
-                  example: "TXN-CARD-12345678"
-                amount:
-                  type: number
-                  example: 99.13
-                currency:
-                  type: string
-                  example: "NGN"
-                transaction_type:
-                  type: string
-                  example: "card"
-                account_type:
-                  type: string
-                  enum: [individual, corporate]
-                  example: "corporate"
-                timestamp:
-                  type: string
-                  description: ISO 8601 transaction timestamp
-                  example: "2025-08-23T14:30:00Z"
-                card_details:
-                  type: object
-                  required: [bin, last4]
-                  properties:
-                    bin:
-                      type: integer
-                      description: First six digits of the card (BIN)
-                      example: 345676
-                    last4:
-                      type: integer
-                      description: Last four digits of the card
-                      example: 9809
-                merchant_details:
-                  type: object
-                  properties:
-                    merchant_name:
-                      type: string
-                      example: "ABC Stores"
-                    merchant_location:
-                      type: string
-                      example: "Lagos, Nigeria"
-                    merchant_code:
-                      type: string
-                      description: Merchant category code (MCC)
-                      example: "5813"
-                customer_details:
-                  type: object
-                  required: [customer_name, customer_email]
-                  properties:
-                    customer_name:
-                      type: string
-                      example: "Imagine Dragons"
-                    customer_email:
-                      type: string
-                      format: email
-                      example: "imaginedragons@gmail.com"
-                    customer_phone:
-                      type: string
-                      example: "+2347012345678"
-                    identifier:
-                      type: string
-                      description: "Customer identifier value (e.g. BVN for Nigeria, national ID for Kenya)"
-                      example: "98765432109"
-                    identifier_type:
-                      type: string
-                      description: "Key of the identifier type: bvn, national_id, ghana_card, etc."
-                      example: "bvn"
-                additional_info:
-                  type: object
-                  required: [ip_address, location]
-                  properties:
-                    ip_address:
-                      type: string
-                      example: "102.89.1.1"
-                    location:
-                      type: string
-                      example: "Lagos, Nigeria"
-                    transaction_description:
-                      type: string
-                      example: "Online purchase"
-      responses:
-        "201": { description: Card fraud check processed }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
 
