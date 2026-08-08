@@ -14,7 +14,7 @@ The SDK mounts a drop-in widget over your application, handling document capture
 - **Drop-in UI Modal** — Responsive, animated widget that overlays your app via `SmartComplyFlow.open()`.
 - **CDN & npm Support** — Install via npm/yarn or load directly from a CDN with zero build steps.
 - **Dynamic Routing** — Automatically adapts document and verification requirements from your dashboard configuration.
-- **One-Time Use Policy** — Each `clientId` is single-use to prevent duplicate verifications.
+- **Single-Use Sessions** — `clientId` is your permanent integration key (from your SDK Config) and is reused for every session. Each `createSession()` call issues a fresh, single-use session token — that token, not the `clientId`, is what's scoped to one verification.
 - **Nigeria & Global Identity** — Supports BVN, NIN, passports, driver's licenses, voter's cards, and other document/data channels enabled in your dashboard.
 - **Two-Sided Document Capture** — Front is always required; back is required, optional, or not offered depending on the document type (e.g. NIN is optional-back, since not every physical NIN document has a usable reverse side).
 - **Hardware Agnostic Liveness** — Uses native webcam and MediaRecorder API for cross-platform compatibility. A single passive scan (blink + natural head movement) — no discrete step-by-step prompts.
@@ -31,8 +31,10 @@ Add the script tag to your HTML:
 <!-- Always latest version -->
 <script src="https://cdn.jsdelivr.net/npm/smartcomply-web-sdk@latest/dist/smartcomply.browser.js"></script>
 
-<!-- Or pin to a specific version (recommended for production) -->
-<script src="https://cdn.jsdelivr.net/npm/smartcomply-web-sdk@1.0.70/dist/smartcomply.browser.js"></script>
+<!-- Or pin to a specific version (recommended for production) — replace X.Y.Z
+     with the version you've actually tested against. Current version:
+     https://www.npmjs.com/package/smartcomply-web-sdk -->
+<script src="https://cdn.jsdelivr.net/npm/smartcomply-web-sdk@X.Y.Z/dist/smartcomply.browser.js"></script>
 ```
 
 The SDK is available globally as `window.SmartComplySDK`:
@@ -42,8 +44,12 @@ const { SmartComplyFlow, SmartComply } = window.SmartComplySDK;
 ```
 
 <Tip>
-  Pin to a specific version in production (e.g. `@1.0.70`) to avoid unexpected breaking changes.
+  Pin to a specific version in production (e.g. `@X.Y.Z`, replacing `X.Y.Z` with the version you've tested against — see [npmjs.com/package/smartcomply-web-sdk](https://www.npmjs.com/package/smartcomply-web-sdk) for the current version) to avoid unexpected breaking changes.
 </Tip>
+
+<Warning>
+  CDN `@latest` re-resolves on **every page load** — new releases reach your live site automatically, with no update step and no warning if a release includes a breaking change. Pin to a specific version instead, and update the pin deliberately when you're ready to test the new version.
+</Warning>
 
 ### Option 2 — npm / yarn
 
@@ -56,6 +62,10 @@ yarn add smartcomply-web-sdk
 ```javascript
 import { SmartComplyFlow } from 'smartcomply-web-sdk';
 ```
+
+<Note>
+  `npm install` resolves to the latest version **at the moment you run it**, then locks that exact version in `package-lock.json` (or `yarn.lock`) — unlike the CDN's `@latest`, it will not silently update itself afterward. To pick up new fixes or releases later, run `npm update smartcomply-web-sdk` (stays within your `package.json` version range) or `npm install smartcomply-web-sdk@latest` (jumps to the newest release regardless of range). Check [npmjs.com/package/smartcomply-web-sdk](https://www.npmjs.com/package/smartcomply-web-sdk) for the current version number.
+</Note>
 
 ---
 
@@ -83,7 +93,7 @@ SmartComplyFlow.open({
 ```
 
 <Note>
-  Get your **API Key** and generate a **Client ID** from your [Adhere Dashboard](https://adhere.smartcomply.com). Each `clientId` is single-use and tied to one verification session.
+  Get your **API Key** and **Client ID** from your [Adhere Dashboard](https://adhere.smartcomply.com) — both come from your SDK Config and are permanent; reuse the same values for every session. What's single-use is the *session token* the SDK obtains internally via `createSession()` (30-minute expiry, revoked after submission) — you never see or manage that token directly through the drop-in widget.
 </Note>
 
 ### Configuration Parameters
@@ -156,7 +166,9 @@ const handleVerify = () => {
 <!DOCTYPE html>
 <html>
 <head>
-  <script src="https://cdn.jsdelivr.net/npm/smartcomply-web-sdk@1.0.70/dist/smartcomply.browser.js"></script>
+  <!-- Pin to a specific version in production — replace X.Y.Z with the version
+       you've tested against. Current version: https://www.npmjs.com/package/smartcomply-web-sdk -->
+  <script src="https://cdn.jsdelivr.net/npm/smartcomply-web-sdk@X.Y.Z/dist/smartcomply.browser.js"></script>
 </head>
 <body>
   <button onclick="startVerification()">Verify Identity</button>
@@ -428,17 +440,20 @@ app.post(
 
 ## Security Notes
 
-- **Single-use Client IDs** — Each `clientId` expires immediately after a completed verification. Generate a fresh one per user session from your backend.
+- **Client ID** — Permanent, from your SDK Config. Reuse the same `clientId` for every session — there's no per-session ID to generate.
 - **API Key** — Never expose your API key in client-side code in production. Use environment variables.
-- **Session Tokens** — Session tokens are automatically managed by the SDK and expire after 30 minutes.
+- **Session Tokens** — The single-use part. Automatically obtained and managed by the SDK per verification via `createSession()`, expire after 30 minutes, and are revoked immediately once liveness is submitted.
 
 ---
 
 ## Troubleshooting
 
-| Error | Cause | Fix |
-|-------|-------|-----|
-| `CLIENT_ID_ALREADY_USED` | `clientId` was already used | Generate a new `clientId` from your backend |
-| `SESSION_EXPIRED` | Session exceeded 30 min timeout | Call `createSession()` again |
-| `401 Unauthorized` | Invalid or missing API key | Check your `apiKey` value |
-| `Camera not available` | Browser blocked camera access | Ensure HTTPS and camera permissions granted |
+| Error Code | HTTP | Cause | Fix |
+|------------|------|-------|-----|
+| `INVALID_API_KEY` | 401 | Bad or missing `apiKey` | Check your `apiKey` value in the SDK Config |
+| `SDK_CONFIG_NOT_FOUND` | 404 | Invalid `clientId` | Check your `clientId` value — it should be the UUID from your SDK Config, not regenerated per session |
+| `INVALID_SESSION` | 401 | Session token missing, malformed, expired (30 min), or already revoked (a session is single-use — it's consumed once liveness is submitted) | Call `createSession()` again to get a fresh token; `clientId`/`apiKey` stay the same |
+| `VALIDATION_ERROR` | 400 | Missing or invalid fields in the request | Check `data.errors` in the response for which field failed |
+| `RETRY_LIMIT_EXCEEDED` | 429 | User exceeded the retry limit for confirmation/liveness attempts | The user must restart with a new session |
+| `INSUFFICIENT_BALANCE` | 402 | Wallet balance too low | Top up your wallet in the dashboard |
+| `Camera not available` | — | Browser blocked camera access | Ensure HTTPS and camera permissions are granted |
