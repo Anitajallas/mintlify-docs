@@ -77,7 +77,7 @@ The easiest way to integrate is the drop-in widget. It handles the complete veri
 SmartComplyFlow.open({
   apiKey: "your_api_key_here",
   clientId: "your_client_id_here",
-  environment: "production", // "production" or "sandbox"
+  environment: "production", // sandbox is not currently available
 
   onComplete: (result) => {
     console.log("Verification complete:", result);
@@ -101,18 +101,21 @@ SmartComplyFlow.open({
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `apiKey` | string | ✅ Yes | Your API key from the Adhere Dashboard |
-| `clientId` | string | ✅ Yes | Single-use client ID generated per user |
-| `environment` | string | No | `"production"` or `"sandbox"` (default: `"sandbox"`) |
+| `clientId` | string | ✅ Yes | Your permanent client ID from the Adhere Dashboard (SDK Config) — the same value for every session |
+| `environment` | string | No | `"production"` (default) |
 | `onComplete` | function | No | Callback fired when verification completes successfully |
 | `onError` | function | No | Callback fired on error |
 | `onClose` | function | No | Callback fired when the widget is closed |
+
+<Warning>
+  `sandbox` is not currently available — use `"production"` for all integration and testing today. This section will be updated once sandbox is back.
+</Warning>
 
 ### Environment URLs
 
 | Environment | Base URL |
 |-------------|----------|
 | `production` | `https://adhere-api.smartcomply.com` |
-| `sandbox` | `https://dev-adhere.smartcomply.com` |
 
 ---
 
