@@ -14,9 +14,10 @@ The SDK mounts a drop-in widget over your application, handling document capture
 - **Drop-in UI Modal** — Responsive, animated widget that overlays your app via `SmartComplyFlow.open()`.
 - **CDN & npm Support** — Install via npm/yarn or load directly from a CDN with zero build steps.
 - **Dynamic Routing** — Automatically adapts document and verification requirements from your dashboard configuration.
-- **One-Time Use Policy** — Each `clientId` is single-use to prevent duplicate verifications.
-- **Nigeria & Global Identity** — Supports BVN, NIN, and International Passport verification.
-- **Hardware Agnostic Liveness** — Uses native webcam and MediaRecorder API for cross-platform compatibility.
+- **Single-Use Sessions** — `clientId` is your permanent integration key (from your SDK Config) and is reused for every session. Each `createSession()` call issues a fresh, single-use session token — that token, not the `clientId`, is what's scoped to one verification.
+- **Nigeria & Global Identity** — Supports BVN, NIN, passports, driver's licenses, voter's cards, and other document/data channels enabled in your dashboard.
+- **Two-Sided Document Capture** — Front is always required; back is required, optional, or not offered depending on the document type (e.g. NIN is optional-back, since not every physical NIN document has a usable reverse side).
+- **Hardware Agnostic Liveness** — Uses native webcam and MediaRecorder API for cross-platform compatibility. A single passive scan (blink + natural head movement) — no discrete step-by-step prompts.
 
 ---
 
@@ -30,8 +31,10 @@ Add the script tag to your HTML:
 <!-- Always latest version -->
 <script src="https://cdn.jsdelivr.net/npm/smartcomply-web-sdk@latest/dist/smartcomply.browser.js"></script>
 
-<!-- Or pin to a specific version (recommended for production) -->
-<script src="https://cdn.jsdelivr.net/npm/smartcomply-web-sdk@1.0.19/dist/smartcomply.browser.js"></script>
+<!-- Or pin to a specific version (recommended for production) — replace X.Y.Z
+     with the version you've actually tested against. Current version:
+     https://www.npmjs.com/package/smartcomply-web-sdk -->
+<script src="https://cdn.jsdelivr.net/npm/smartcomply-web-sdk@X.Y.Z/dist/smartcomply.browser.js"></script>
 ```
 
 The SDK is available globally as `window.SmartComplySDK`:
@@ -41,8 +44,12 @@ const { SmartComplyFlow, SmartComply } = window.SmartComplySDK;
 ```
 
 <Tip>
-  Pin to a specific version in production (e.g. `@1.0.19`) to avoid unexpected breaking changes.
+  Pin to a specific version in production (e.g. `@X.Y.Z`, replacing `X.Y.Z` with the version you've tested against — see [npmjs.com/package/smartcomply-web-sdk](https://www.npmjs.com/package/smartcomply-web-sdk) for the current version) to avoid unexpected breaking changes.
 </Tip>
+
+<Warning>
+  CDN `@latest` re-resolves on **every page load** — new releases reach your live site automatically, with no update step and no warning if a release includes a breaking change. Pin to a specific version instead, and update the pin deliberately when you're ready to test the new version.
+</Warning>
 
 ### Option 2 — npm / yarn
 
@@ -55,6 +62,10 @@ yarn add smartcomply-web-sdk
 ```javascript
 import { SmartComplyFlow } from 'smartcomply-web-sdk';
 ```
+
+<Note>
+  `npm install` resolves to the latest version **at the moment you run it**, then locks that exact version in `package-lock.json` (or `yarn.lock`) — unlike the CDN's `@latest`, it will not silently update itself afterward. To pick up new fixes or releases later, run `npm update smartcomply-web-sdk` (stays within your `package.json` version range) or `npm install smartcomply-web-sdk@latest` (jumps to the newest release regardless of range). Check [npmjs.com/package/smartcomply-web-sdk](https://www.npmjs.com/package/smartcomply-web-sdk) for the current version number.
+</Note>
 
 ---
 
@@ -82,7 +93,7 @@ SmartComplyFlow.open({
 ```
 
 <Note>
-  Get your **API Key** and generate a **Client ID** from your [Adhere Dashboard](https://adhere.smartcomply.com). Each `clientId` is single-use and tied to one verification session.
+  Get your **API Key** and **Client ID** from your [Adhere Dashboard](https://adhere.smartcomply.com) — both come from your SDK Config and are permanent; reuse the same values for every session. What's single-use is the *session token* the SDK obtains internally via `createSession()` (30-minute expiry, revoked after submission) — you never see or manage that token directly through the drop-in widget.
 </Note>
 
 ### Configuration Parameters
@@ -155,7 +166,9 @@ const handleVerify = () => {
 <!DOCTYPE html>
 <html>
 <head>
-  <script src="https://cdn.jsdelivr.net/npm/smartcomply-web-sdk@1.0.19/dist/smartcomply.browser.js"></script>
+  <!-- Pin to a specific version in production — replace X.Y.Z with the version
+       you've tested against. Current version: https://www.npmjs.com/package/smartcomply-web-sdk -->
+  <script src="https://cdn.jsdelivr.net/npm/smartcomply-web-sdk@X.Y.Z/dist/smartcomply.browser.js"></script>
 </head>
 <body>
   <button onclick="startVerification()">Verify Identity</button>
@@ -193,27 +206,48 @@ const sdk = new SmartComply({
 });
 
 const run = async () => {
-  // 1. Create a session
+  // 1. Create a session — sessions last 30 minutes and are single-use
+  //    (revoked as soon as liveness is submitted)
   await sdk.createSession();
 
-  // 2. Fetch SDK configuration
+  // 2. Fetch SDK configuration — brand, theme, and available channels per country
   const config = await sdk.initializeConfig();
   console.log("Verification type:", config.verification_type);
+  console.log("Channels:", config.channels);
+  // config.channels["nigeria"] is an array of:
+  //   { id, name, code?, requires_back_side?: boolean | "optional", fields: [...] }
 
-  // 3. Verify identity (BVN/NIN/Passport)
-  await sdk.onboarding.verify({
-    identity_type_id: 1,  // from config.channels
+  // 3a. Data verification (BVN/NIN/etc.) — validates against the government database
+  const verifyResult = await sdk.onboarding.verify({
+    identity_type_id: 1,  // channel id from config.channels
     fields: { bank_verification_number: "12345678901" }
   });
+  const identityCheckId = verifyResult.data?.identity_check_id;
 
-  // 4. Run liveness check — requires an HTMLElement container for the camera
+  // 3b. Document verification — capture front (and back, if the channel's
+  //     requires_back_side is true or "optional") instead of step 3a.
+  // const documentFront: Blob = /* from a file input or camera capture */;
+  // const documentBack: Blob | undefined = /* only if the channel needs/offers one */;
+
+  // 4. Run liveness check — requires an HTMLElement container for the camera.
+  //    Runs a single passive scan (blink + natural head movement); the
+  //    3rd argument is a descriptive tag for your dashboard, not a live
+  //    prompt sequence the UI steps through.
   const container = document.getElementById("camera-container") as HTMLElement;
-  const liveness = await sdk.liveness.startCheck(container, {
-    identifier: "user-unique-id",
-    identifier_type: "bvn",
-    country: "NG",
-  });
-  console.log("Liveness status:", liveness.status);
+  const liveness = await sdk.liveness.startCheck(
+    container,
+    {
+      identifier: "12345678901",
+      identifier_type: "bvn",
+      country: "NG",
+      identity_check: identityCheckId,   // link to the data-verification result above
+      // document: documentFront,        // for document verification instead
+      // document_back: documentBack,
+    },
+    ["BLINK", "TURN_HEAD"]
+  );
+  console.log("Liveness status:", liveness.status); // "processing" — final
+  // pass/fail result arrives via webhook, not this return value.
 };
 
 run();
@@ -223,30 +257,203 @@ run();
 
 ## onComplete Payload
 
+`onComplete` fires as soon as the user finishes their part of the flow (the "Verification Submitted" screen renders) — it is a **submission receipt, not a verification verdict**. Backend processing (face match, document read, government DB check) continues after this fires, and `status` is always `"processing"` here regardless of the eventual outcome. The real pass/fail result only ever arrives via [webhook](#receiving-results-webhook).
+
 ```json
 {
   "entryId": 365,
   "sessionId": "da7623bd-9158-4b56-a9e4-4bccf3c0133f",
-  "status": "passed",
-  "submittedAt": "2026-06-05T23:11:22.873161+00:00"
+  "status": "processing",
+  "submittedAt": "2026-06-05T23:11:22.873161+00:00",
+  "verificationResult": {
+    "status": "success",
+    "code": "VERIFICATION_COMPLETE",
+    "data": { "first_name": "Amara", "last_name": "Okafor", "identity_check_id": 123 }
+  }
 }
+```
+
+<Note>
+  `verificationResult` is only present for **data verification** (BVN/NIN) — it's the immediate government-database lookup result confirming the ID number matched a real record. It says nothing about the face match, which is still pending. It's absent for document verification and liveness-only flows.
+</Note>
+
+---
+
+## Receiving Results (Webhook)
+
+The backend delivers exactly one `liveness.completed` webhook per verification, to the URL configured in your SDK Config, once face matching (and OCR / government DB check, depending on the flow) has finished.
+
+<Note>
+  This is the SDK's own webhook — configured per SDK Config and specific to `liveness.completed`. It's separate from the platform-wide webhook system described in [Webhooks](/webhooks) (transaction monitoring, general KYC module events, `{success, module, event, data}` shape). Both currently sign with HMAC-SHA256 and a `sha256=`-prefixed header, hex-encoded — verify against the raw request body either way.
+</Note>
+
+### Payload shape
+
+```json
+POST https://your-server.com/webhook
+Content-Type: application/json
+X-Adhere-Signature: sha256=<hmac-sha256-hex>
+
+{
+  "event": "liveness.completed",
+  "verification_id": 42,
+  "verification_type": "data_verification",
+  "status": "passed",
+  "failure_reason": null,
+  "timestamp": "2026-08-08T10:15:00.000Z",
+  "subject": {
+    "identifier": "12345678901",
+    "identifier_type": "National Identity Number (NIN)",
+    "country": "nigeria"
+  },
+  "biometrics": {
+    "liveness_verified": true,
+    "face_match": {
+      "attempted": true,
+      "verified": true,
+      "confidence_percentage": 70.0
+    },
+    "selfie_url": "https://.../autoshot.jpg",
+    "face_analysis": {
+      "gender": "Female",
+      "dominant_emotion": "neutral",
+      "face_quality": {
+        "face_detected": true,
+        "face_confidence": 0.98,
+        "blur_score": 142.3,
+        "is_blurry": false
+      }
+    }
+  },
+  "activity": {
+    "session_id": "da7623bd-9158-4b56-a9e4-4bccf3c0133f",
+    "started_at": "2026-08-08T10:12:00.000Z",
+    "submitted_at": "2026-08-08T10:14:30.000Z",
+    "completed_at": "2026-08-08T10:15:00.000Z",
+    "duration_seconds": 180
+  },
+  "request_context": {
+    "ip": { "address": "102.67.1.66", "city": "Lagos", "country_code": "NG" },
+    "device": { "user_agent": "Mozilla/5.0 ...", "type": "desktop", "os": "Windows" }
+  },
+  "customer_profile": {
+    "first_name": "AMARA",
+    "last_name": "OKAFOR",
+    "other_name": null,
+    "date_of_birth": "01-Jan-1997",
+    "age": 29,
+    "gender": "Female",
+    "id_number": "12345678901",
+    "serial_number": null,
+    "occupation": null,
+    "place_of_birth": null,
+    "place_of_live": "...",
+    "date_of_issue": null,
+    "photo_url": null
+  }
+}
+```
+
+For **document verification**, the same top-level shape applies, with `verification_type: "document_verification"` and a `document` block (OCR fields + document-to-selfie face match) instead of `customer_profile`:
+
+```json
+"document": {
+  "status": "verified",
+  "document_type": "passport",
+  "is_expired": false,
+  "first_name": "AMARA",
+  "last_name": "OKAFOR",
+  "date_of_birth": "1997-01-01",
+  "age": 29,
+  "gender": "Female",
+  "nationality": "NGA",
+  "document_number": "A12345678",
+  "expiry_date": "2030-06-15",
+  "issue_date": "2020-06-15",
+  "issuing_authority": "...",
+  "document_url": "https://.../document.jpg",
+  "document_back_url": null,
+  "face_match": {
+    "attempted": true,
+    "verified": true,
+    "confidence_percentage": 55.0,
+    "threshold_percentage": 35.0,
+    "reason": null,
+    "selfie_url": "https://.../autoshot.jpg",
+    "document_face_url": "https://.../document_face.jpg"
+  }
+}
+```
+
+<Note>
+  `document` also carries `place_of_birth`, `place_of_issue`, `address`, `district`, `division`, `location`, `sub_location`, `serial_number`, and `barcode_number` — `null` unless the specific document type carries that field (e.g. serial/barcode numbers mainly apply to newer Kenyan ID cards). `face_match.reason` is populated with a user-facing explanation when `verified` is `false` or the match was skipped.
+</Note>
+
+<Warning>
+  `status: "passed"` means **the check ran to completion — not that the person matched**. A face mismatch, low confidence score, or expired document still reports `status: "passed"`, with the real outcome recorded in `biometrics.face_match.verified` (and `document.is_expired` for document verification). `status: "failed"` is reserved for cases where the check itself couldn't run (service error, no selfie captured, government DB rejection). Never gate access on `status` alone — always check `face_match.verified`.
+</Warning>
+
+`verification_id` matches the `entryId` your `onComplete` callback received.
+
+### Verify the signature
+
+The signature header is `X-Adhere-Signature: sha256=<hex>` — note the `sha256=` prefix. It's computed over the exact compact-JSON bytes of the request body, so your handler must verify against the **raw body**, not a re-serialized copy of the parsed JSON (re-stringifying can produce different bytes and the signature will never match).
+
+```javascript
+const crypto = require("crypto");
+
+app.post(
+  "/webhook/smartcomply",
+  express.json({ verify: (req, res, buf) => { req.rawBody = buf; } }),
+  (req, res) => {
+    const signature = (req.headers["x-adhere-signature"] || "").replace(/^sha256=/, "");
+    const secret = process.env.WEBHOOK_SECRET.replace(/-/g, "");
+    const expected = crypto.createHmac("sha256", secret).update(req.rawBody).digest("hex");
+
+    const isValid =
+      signature.length === expected.length &&
+      crypto.timingSafeEqual(Buffer.from(signature, "hex"), Buffer.from(expected, "hex"));
+
+    if (!isValid) return res.status(401).send("Bad signature");
+
+    const { event, verification_id, status, biometrics, document } = req.body;
+
+    // status === "passed" only means the check ran to completion — check
+    // the real outcome before treating the user as verified:
+    const faceMatched = biometrics?.face_match?.attempted
+      ? biometrics.face_match.verified === true
+      : true; // not attempted (e.g. NIN slip, CAC) — nothing to fail here
+    const documentOk = document ? document.is_expired === false : true;
+
+    if (event === "liveness.completed" && status === "passed" && faceMatched && documentOk) {
+      markUserAsVerified(verification_id);
+    } else if (event === "liveness.completed") {
+      recordVerificationOutcome(verification_id, req.body);
+    }
+
+    res.json({ received: true });
+  }
+);
 ```
 
 ---
 
 ## Security Notes
 
-- **Single-use Client IDs** — Each `clientId` expires immediately after a completed verification. Generate a fresh one per user session from your backend.
+- **Client ID** — Permanent, from your SDK Config. Reuse the same `clientId` for every session — there's no per-session ID to generate.
 - **API Key** — Never expose your API key in client-side code in production. Use environment variables.
-- **Session Tokens** — Session tokens are automatically managed by the SDK and expire after 30 minutes.
+- **Session Tokens** — The single-use part. Automatically obtained and managed by the SDK per verification via `createSession()`, expire after 30 minutes, and are revoked immediately once liveness is submitted.
 
 ---
 
 ## Troubleshooting
 
-| Error | Cause | Fix |
-|-------|-------|-----|
-| `CLIENT_ID_ALREADY_USED` | `clientId` was already used | Generate a new `clientId` from your backend |
-| `SESSION_EXPIRED` | Session exceeded 30 min timeout | Call `createSession()` again |
-| `401 Unauthorized` | Invalid or missing API key | Check your `apiKey` value |
-| `Camera not available` | Browser blocked camera access | Ensure HTTPS and camera permissions granted |
+| Error Code | HTTP | Cause | Fix |
+|------------|------|-------|-----|
+| `INVALID_API_KEY` | 401 | Bad or missing `apiKey` | Check your `apiKey` value in the SDK Config |
+| `SDK_CONFIG_NOT_FOUND` | 404 | Invalid `clientId` | Check your `clientId` value — it should be the UUID from your SDK Config, not regenerated per session |
+| `INVALID_SESSION` | 401 | Session token missing, malformed, expired (30 min), or already revoked (a session is single-use — it's consumed once liveness is submitted) | Call `createSession()` again to get a fresh token; `clientId`/`apiKey` stay the same |
+| `VALIDATION_ERROR` | 400 | Missing or invalid fields in the request | Check `data.errors` in the response for which field failed |
+| `RETRY_LIMIT_EXCEEDED` | 429 | User exceeded the retry limit for confirmation/liveness attempts | The user must restart with a new session |
+| `INSUFFICIENT_BALANCE` | 402 | Wallet balance too low | Top up your wallet in the dashboard |
+| `Camera not available` | — | Browser blocked camera access | Ensure HTTPS and camera permissions are granted |
