@@ -383,8 +383,8 @@ paths:
               properties:
                 tax_identification_number:
                   type: string
-                  description: "The customer's TIN (format: N-XXXXXXXX)"
-                  example: "N-01234567"
+                  description: "The company's Tax Identification Number (format: 234123456-0001, 8-14 digits)"
+                  example: "234123456-0001"
       responses:
         "200": { description: TIN verified }
         "400": { $ref: "#/components/responses/BadRequest" }
