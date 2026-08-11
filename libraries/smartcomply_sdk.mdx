@@ -23,18 +23,12 @@ The SDK mounts a drop-in widget over your application, handling document capture
 
 ## Installation
 
-### Option 1 — CDN (No build step required)
+### Option 1 — CDN (No build step required, recommended)
 
 Add the script tag to your HTML:
 
 ```html
-<!-- Always latest version -->
-<script src="https://cdn.jsdelivr.net/npm/smartcomply-web-sdk@latest/dist/smartcomply.browser.js"></script>
-
-<!-- Or pin to a specific version (recommended for production) — replace X.Y.Z
-     with the version you've actually tested against. Current version:
-     https://www.npmjs.com/package/smartcomply-web-sdk -->
-<script src="https://cdn.jsdelivr.net/npm/smartcomply-web-sdk@X.Y.Z/dist/smartcomply.browser.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/smartcomply-web-sdk@1/dist/smartcomply.browser.js"></script>
 ```
 
 The SDK is available globally as `window.SmartComplySDK`:
@@ -44,11 +38,23 @@ const { SmartComplyFlow, SmartComply } = window.SmartComplySDK;
 ```
 
 <Tip>
-  Pin to a specific version in production (e.g. `@X.Y.Z`, replacing `X.Y.Z` with the version you've tested against — see [npmjs.com/package/smartcomply-web-sdk](https://www.npmjs.com/package/smartcomply-web-sdk) for the current version) to avoid unexpected breaking changes.
+  `@1` always resolves to the latest `1.x.x` release — bug fixes and new features reach your site automatically the moment we publish them, with **no code change on your end, ever**. We commit to never shipping a breaking change as a `1.x` release; if a breaking change is ever needed, it ships as `2.0.0`, and `@1` keeps serving the last safe `1.x` release until you deliberately opt in. This is the same versioning model used by most public JS SDKs (Stripe.js, Google Maps, etc.).
 </Tip>
 
+Other CDN options:
+
+```html
+<!-- Always the newest release, including any future major version — for
+     prototyping, or if you specifically want every change instantly -->
+<script src="https://cdn.jsdelivr.net/npm/smartcomply-web-sdk@latest/dist/smartcomply.browser.js"></script>
+
+<!-- Pin to one exact version — only if you need manual control over
+     updates. Replace X.Y.Z with the version you've tested against. -->
+<script src="https://cdn.jsdelivr.net/npm/smartcomply-web-sdk@X.Y.Z/dist/smartcomply.browser.js"></script>
+```
+
 <Warning>
-  CDN `@latest` re-resolves on **every page load** — new releases reach your live site automatically, with no update step and no warning if a release includes a breaking change. Pin to a specific version instead, and update the pin deliberately when you're ready to test the new version.
+  `@1`/`@latest` re-resolve on **every page load** — that's what makes them self-updating, with no rebuild or redeploy needed on your side. An exact `@X.Y.Z` pin never moves until you manually change the number in your script tag. See [npmjs.com/package/smartcomply-web-sdk](https://www.npmjs.com/package/smartcomply-web-sdk) for release history.
 </Warning>
 
 ### Option 2 — npm / yarn
@@ -64,7 +70,7 @@ import { SmartComplyFlow } from 'smartcomply-web-sdk';
 ```
 
 <Note>
-  `npm install` resolves to the latest version **at the moment you run it**, then locks that exact version in `package-lock.json` (or `yarn.lock`) — unlike the CDN's `@latest`, it will not silently update itself afterward. To pick up new fixes or releases later, run `npm update smartcomply-web-sdk` (stays within your `package.json` version range) or `npm install smartcomply-web-sdk@latest` (jumps to the newest release regardless of range). Check [npmjs.com/package/smartcomply-web-sdk](https://www.npmjs.com/package/smartcomply-web-sdk) for the current version number.
+  Unlike the CDN, npm has no auto-updating option — this is true for every npm package, not specific to ours. `npm install` resolves to the latest version **at the moment you run it**, then locks that exact version in `package-lock.json` (or `yarn.lock`); it will not change again on its own. Run `npm update smartcomply-web-sdk` periodically (or before each deploy) to pick up new fixes — this stays within the `^1.0.x` range already set in your `package.json`, and we commit to never shipping a breaking change within `1.x`, so it's always safe to run. Check [npmjs.com/package/smartcomply-web-sdk](https://www.npmjs.com/package/smartcomply-web-sdk) for the current version number.
 </Note>
 
 ---
@@ -169,9 +175,9 @@ const handleVerify = () => {
 <!DOCTYPE html>
 <html>
 <head>
-  <!-- Pin to a specific version in production — replace X.Y.Z with the version
-       you've tested against. Current version: https://www.npmjs.com/package/smartcomply-web-sdk -->
-  <script src="https://cdn.jsdelivr.net/npm/smartcomply-web-sdk@X.Y.Z/dist/smartcomply.browser.js"></script>
+  <!-- @1 always serves the latest 1.x release — no code change needed
+       when we ship fixes. See Installation above for other options. -->
+  <script src="https://cdn.jsdelivr.net/npm/smartcomply-web-sdk@1/dist/smartcomply.browser.js"></script>
 </head>
 <body>
   <button onclick="startVerification()">Verify Identity</button>
