@@ -5,6 +5,10 @@ description: "Verify a customer's identity using their Nigerian Tax Identificati
 openapi: "POST /api/onboarding/nigeria_kyc/tin/"
 ---
 
+<Note>
+  This service only works for company/business TIN. Individual TIN lookups are not supported.
+</Note>
+
 The TIN endpoint validates a Tax Identification Number against the FIRS (Federal Inland Revenue Service) database and returns the associated taxpayer name, CAC registration number, tax office, and contact details.
 
 ## Endpoint
