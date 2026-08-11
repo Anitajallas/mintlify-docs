@@ -26,7 +26,7 @@ POST /api/onboarding/nigeria_kyc/tin/
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `tax_identification_number` | string | Yes | The customer's TIN (format: `N-XXXXXXXX`) |
+| `tax_identification_number` | string | Yes | The company's Tax Identification Number (format: `234123456-0001`, 8-14 digits) |
 
 ### Example
 
@@ -35,7 +35,7 @@ POST /api/onboarding/nigeria_kyc/tin/
 curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/tin/" \
   -H "x-access-token: YOUR_SECRET_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"tax_identification_number": "N-01234567"}'
+  -d '{"tax_identification_number": "234123456-0001"}'
 ```
 
 ```python Python
@@ -43,7 +43,7 @@ import requests
 response = requests.post(
     "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/tin/",
     headers={"x-access-token": "YOUR_SECRET_KEY", "Content-Type": "application/json"},
-    json={"tax_identification_number": "N-01234567"},
+    json={"tax_identification_number": "234123456-0001"},
 )
 ```
 </CodeGroup>
