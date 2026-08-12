@@ -1,0 +1,127 @@
+---
+title: "Utility Bill"
+sidebarTitle: "Utility Bill"
+description: "Extract address and biller details from a utility bill using OCR."
+openapi: "POST /api/onboarding/document_verification"
+---
+
+Verify a customer's proof of address by uploading a photo of a utility bill — no manual data entry required. Extraction only; no face match, no liveness check. This document doesn't carry a face photo, so `data.photo` is always `null`.
+
+<Note>
+  Only `document_front` is needed for this document.
+</Note>
+
+## Endpoint
+
+```
+POST /api/onboarding/document_verification
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `multipart/form-data` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|--------------|
+| `document_type` | string | Yes | `utility_bill` |
+| `country` | string | Yes | `nigeria` |
+| `document_front` | file | Yes | Photo of the utility bill. JPG or PNG, max 5MB |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/document_verification" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -F "document_type=utility_bill" \
+  -F "country=nigeria" \
+  -F "document_front=@/path/to/utility_bill.jpg"
+```
+
+```javascript Node.js
+const formData = new FormData();
+formData.append("document_type", "utility_bill");
+formData.append("country", "nigeria");
+formData.append("document_front", fs.createReadStream("/path/to/utility_bill.jpg"));
+
+const response = await fetch(
+  "https://adhere-api.smartcomply.com/api/onboarding/document_verification",
+  {
+    method: "POST",
+    headers: { "x-access-token": "YOUR_SECRET_KEY" },
+    body: formData,
+  }
+);
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/document_verification",
+    headers={"x-access-token": "YOUR_SECRET_KEY"},
+    data={"document_type": "utility_bill", "country": "nigeria"},
+    files={"document_front": open("/path/to/utility_bill.jpg", "rb")},
+)
+data = response.json()
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|--------------|
+| `status` | string | `"success"` on a successful extraction |
+| `data.full_name` | string | Name on the bill |
+| `data.address` | string | Extracted billing address |
+| `data.document_type` | string | `"utility_bill"` |
+| `data.photo` | string | Always `null` — utility bills don't carry a face |
+| `message` | string | Human-readable result summary |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "valid": true,
+    "full_name": "AYODELE TUNDE",
+    "address": "12 Adeola Odeku Street, Victoria Island, Lagos",
+    "id_type": "utility_bill",
+    "document_type": "utility_bill",
+    "photo": null
+  },
+  "message": "Document details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "ID photo is too blurry — please retake in good lighting with a steady hand"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```
+
+<Note>
+  For a full list of error codes, see the [Error Codes](/error_codes) reference.
+</Note>
