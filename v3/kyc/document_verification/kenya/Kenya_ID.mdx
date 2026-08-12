@@ -7,9 +7,9 @@ openapi: "POST /api/onboarding/document_verification"
 
 Verify a customer's Kenyan national ID card by uploading a photo — no manual ID entry required. OCR extraction, with an optional face match against a selfie — no liveness check (no video, no blink/motion challenge).
 
-<Warning>
-  Use `kenya_id`, not `national_id` — Kenya's national ID has its own document type value. Submitting a Kenyan ID as `national_id` will be rejected as a document type mismatch.
-</Warning>
+<Note>
+  Use `kenya_id` as the `document_type` for a Kenyan national ID — this is the correct, current value for this API. (Internally, this endpoint's own document type list differs slightly from the underlying OCR provider's — the provider treats Kenyan national ID as a variant of its own `national_id` type. That distinction only matters if you're integrating against the OCR provider directly; through this API, `kenya_id` is what you send.)
+</Note>
 
 <Note>
   This is a two-sided document — supply both `document_front` and `document_back` for the most complete extraction. Kenya has two ID card generations in circulation: the older laminated design and the newer "Maisha Card." Fields specific to the Maisha Card (`serial_number`, `place_of_issue`, expiry date) will come back empty on an older card — that's expected, not an error.
