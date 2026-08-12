@@ -106,42 +106,51 @@
                     "group": "KYC",
                     "pages": [
                       {
-                        "group": "Nigeria",
+                        "group": "Data Verification",
                         "pages": [
-                          "v3/kyc/nigeria/BVN",
-                          "v3/kyc/nigeria/BVN_Advanced",
-                          "v3/kyc/nigeria/CAC",
-                          "v3/kyc/nigeria/CAC_Advanced",
-                          "v3/kyc/nigeria/Drivers_License",
-                          "v3/kyc/nigeria/nin",
-                          "v3/kyc/nigeria/nin_with_face",
-                          "v3/kyc/nigeria/nuban",
-                          "v3/kyc/nigeria/nuban_advanced",
-                          "v3/kyc/nigeria/passport_verification",
-                          "v3/kyc/nigeria/Phone_Number_Advanced",
-                          "v3/kyc/nigeria/phone_number_basic",
-                          "v3/kyc/nigeria/tin",
-                          "v3/kyc/nigeria/VNIN",
-                          "v3/kyc/nigeria/Voters_ID"
+                          {
+                            "group": "Nigeria",
+                            "pages": [
+                              "v3/kyc/nigeria/BVN",
+                              "v3/kyc/nigeria/BVN_Advanced",
+                              "v3/kyc/nigeria/CAC",
+                              "v3/kyc/nigeria/CAC_Advanced",
+                              "v3/kyc/nigeria/Drivers_License",
+                              "v3/kyc/nigeria/nin",
+                              "v3/kyc/nigeria/nin_with_face",
+                              "v3/kyc/nigeria/nuban",
+                              "v3/kyc/nigeria/nuban_advanced",
+                              "v3/kyc/nigeria/passport_verification",
+                              "v3/kyc/nigeria/Phone_Number_Advanced",
+                              "v3/kyc/nigeria/phone_number_basic",
+                              "v3/kyc/nigeria/tin",
+                              "v3/kyc/nigeria/VNIN",
+                              "v3/kyc/nigeria/Voters_ID"
+                            ]
+                          },
+                          {
+                            "group": "Kenya",
+                            "pages": [
+                              "v3/kyc/kenya/national_id_basic",
+                              "v3/kyc/kenya/national_id_advance",
+                              "v3/kyc/kenya/business_registration",
+                              "v3/kyc/kenya/alien_ID",
+                              "v3/kyc/kenya/kra_pin",
+                              "v3/kyc/kenya/Passport_Verification"
+                            ]
+                          },
+                          {
+                            "group": "Ghana",
+                            "pages": [
+                              "v3/kyc/ghana/ID_Card",
+                              "v3/kyc/ghana/ID_Card_with_face"
+                            ]
+                          }
                         ]
                       },
                       {
-                        "group": "Kenya",
-                        "pages": [
-                          "v3/kyc/kenya/national_id_basic",
-                          "v3/kyc/kenya/national_id_advance",
-                          "v3/kyc/kenya/business_registration",
-                          "v3/kyc/kenya/alien_ID",
-                          "v3/kyc/kenya/kra_pin",
-                          "v3/kyc/kenya/Passport_Verification"
-                        ]
-                      },
-                      {
-                        "group": "Ghana",
-                        "pages": [
-                          "v3/kyc/ghana/ID_Card",
-                          "v3/kyc/ghana/ID_Card_with_face"
-                        ]
+                        "group": "Document Verification",
+                        "pages": ["v3/kyc/document_verification"]
                       }
                     ]
                   },
