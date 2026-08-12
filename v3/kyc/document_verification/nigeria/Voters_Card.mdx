@@ -5,10 +5,14 @@ description: "Extract identity details from a Nigerian Permanent Voter's Card (P
 openapi: "POST /api/onboarding/document_verification"
 ---
 
-Verify a customer's Nigerian Permanent Voter's Card (PVC) by uploading a photo — no manual voter ID entry required. Extraction only; no face match, no liveness check.
+Verify a customer's Nigerian Permanent Voter's Card (PVC) by uploading a photo — no manual voter ID entry required. OCR extraction, with an optional face match against a selfie — no liveness check (no video, no blink/motion challenge).
 
 <Note>
   Only `document_front` is needed for this document.
+</Note>
+
+<Note>
+  Add `selfie_image` to compare the face extracted from the document against a selfie. This is a still-image comparison (not liveness) — omit it for OCR-only extraction.
 </Note>
 
 ## Endpoint
@@ -33,6 +37,7 @@ POST /api/onboarding/document_verification
 | `document_type` | string | Yes | `voters_card` |
 | `country` | string | Yes | `nigeria` |
 | `document_front` | file | Yes | Photo of the PVC. JPG or PNG, max 5MB |
+| `selfie_image` | file | No | A selfie to compare against the document's face photo. JPG or PNG, max 5MB |
 
 ### Example
 
@@ -42,7 +47,8 @@ curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/document_verific
   -H "x-access-token: YOUR_SECRET_KEY" \
   -F "document_type=voters_card" \
   -F "country=nigeria" \
-  -F "document_front=@/path/to/pvc.jpg"
+  -F "document_front=@/path/to/pvc.jpg" \
+  -F "selfie_image=@/path/to/selfie.jpg"
 ```
 
 ```javascript Node.js
@@ -50,6 +56,7 @@ const formData = new FormData();
 formData.append("document_type", "voters_card");
 formData.append("country", "nigeria");
 formData.append("document_front", fs.createReadStream("/path/to/pvc.jpg"));
+formData.append("selfie_image", fs.createReadStream("/path/to/selfie.jpg")); // optional
 
 const response = await fetch(
   "https://adhere-api.smartcomply.com/api/onboarding/document_verification",
@@ -69,7 +76,10 @@ response = requests.post(
     "https://adhere-api.smartcomply.com/api/onboarding/document_verification",
     headers={"x-access-token": "YOUR_SECRET_KEY"},
     data={"document_type": "voters_card", "country": "nigeria"},
-    files={"document_front": open("/path/to/pvc.jpg", "rb")},
+    files={
+        "document_front": open("/path/to/pvc.jpg", "rb"),
+        "selfie_image": open("/path/to/selfie.jpg", "rb"),  # optional
+    },
 )
 data = response.json()
 ```
@@ -90,6 +100,11 @@ data = response.json()
 | `data.id_number` | string | The Voter Identification Number (VIN) |
 | `data.document_type` | string | `"voters_card"` |
 | `data.photo` | string | Base64-encoded face photo extracted from the document |
+| `data.face_match` | object | Present only when `selfie_image` was supplied — see below |
+| `data.face_match.attempted` | boolean | Whether a comparison was actually run |
+| `data.face_match.verified` | boolean \| null | `true`/`false` if the comparison ran; `null` if it couldn't (see Face Match Notes) |
+| `data.face_match.confidence_percentage` | number | Match confidence, 0–100 |
+| `data.face_match.selfie_image` | string | URL of the uploaded selfie |
 | `message` | string | Human-readable result summary |
 
 ```json
@@ -104,11 +119,21 @@ data = response.json()
     "id_number": "90F5A1B2C3D4E5F6",
     "id_type": "voters_card",
     "document_type": "voters_card",
-    "photo": "/9j/4AAQSkZJRgABAQAAAQABAAD..."
+    "photo": "/9j/4AAQSkZJRgABAQAAAQABAAD...",
+    "face_match": {
+      "attempted": true,
+      "verified": true,
+      "confidence_percentage": 92.4,
+      "selfie_image": "https://.../selfie.jpg"
+    }
   },
   "message": "Document details retrieved successfully"
 }
 ```
+
+<Note>
+  **Face Match Notes** — `face_match` is omitted entirely if `selfie_image` wasn't supplied. If the comparison service itself fails, `attempted` reflects whether a comparison was actually run and `verified` comes back `null` with a `reason` field explaining why — this is different from `verified: false`, which means the comparison ran and the faces didn't match. A face-match problem never blocks the underlying document data — the rest of `data` is still returned.
+</Note>
 
 ### 400 Bad Request
 

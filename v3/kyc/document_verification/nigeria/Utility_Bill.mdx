@@ -5,7 +5,7 @@ description: "Extract address and biller details from a utility bill using OCR."
 openapi: "POST /api/onboarding/document_verification"
 ---
 
-Verify a customer's proof of address by uploading a photo of a utility bill — no manual data entry required. Extraction only; no face match, no liveness check. This document doesn't carry a face photo, so `data.photo` is always `null`.
+Verify a customer's proof of address by uploading a photo of a utility bill — no manual data entry required. OCR extraction only. This document doesn't carry a face photo, so `data.photo` is always `null` — face match isn't available for this document type; a `selfie_image` submitted alongside it is accepted but ignored (`face_match.attempted: false`).
 
 <Note>
   Only `document_front` is needed for this document.

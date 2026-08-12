@@ -5,7 +5,7 @@ description: "Extract business registration details from a CAC Certificate of In
 openapi: "POST /api/onboarding/document_verification"
 ---
 
-Verify a business's CAC Certificate of Incorporation by uploading a photo — no manual RC number entry required. Extraction only; no face match, no liveness check. This document doesn't carry a face photo, so `data.photo` is always `null`.
+Verify a business's CAC Certificate of Incorporation by uploading a photo — no manual RC number entry required. OCR extraction only. This document doesn't carry a face photo, so `data.photo` is always `null` — face match isn't available for this document type; a `selfie_image` submitted alongside it is accepted but ignored (`face_match.attempted: false`).
 
 <Note>
   Only `document_front` is needed for this document.
