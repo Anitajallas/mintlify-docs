@@ -150,7 +150,42 @@
                       },
                       {
                         "group": "Document Verification",
-                        "pages": ["v3/kyc/document_verification"]
+                        "pages": [
+                          {
+                            "group": "Nigeria",
+                            "pages": [
+                              "v3/kyc/document_verification/nigeria/National_ID",
+                              "v3/kyc/document_verification/nigeria/Passport",
+                              "v3/kyc/document_verification/nigeria/Drivers_License",
+                              "v3/kyc/document_verification/nigeria/Voters_Card",
+                              "v3/kyc/document_verification/nigeria/CAC_Certificate",
+                              "v3/kyc/document_verification/nigeria/Utility_Bill"
+                            ]
+                          },
+                          {
+                            "group": "Kenya",
+                            "pages": [
+                              "v3/kyc/document_verification/kenya/Kenya_ID",
+                              "v3/kyc/document_verification/kenya/Passport"
+                            ]
+                          },
+                          {
+                            "group": "Ghana",
+                            "pages": ["v3/kyc/document_verification/ghana/Passport"]
+                          },
+                          {
+                            "group": "Canada",
+                            "pages": ["v3/kyc/document_verification/canada/Passport"]
+                          },
+                          {
+                            "group": "USA",
+                            "pages": ["v3/kyc/document_verification/usa/Passport"]
+                          },
+                          {
+                            "group": "Cote d'Ivoire",
+                            "pages": ["v3/kyc/document_verification/cote_d_ivoire/Passport"]
+                          }
+                        ]
                       }
                     ]
                   },
