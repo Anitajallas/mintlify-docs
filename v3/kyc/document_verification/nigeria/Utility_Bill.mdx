@@ -5,7 +5,7 @@ description: "Extract address and biller details from a utility bill using OCR."
 openapi: "POST /api/onboarding/document_verification"
 ---
 
-Verify a customer's proof of address by uploading a photo of a utility bill — no manual data entry required. OCR extraction only. This document doesn't carry a face photo, so `data.photo` is always `null` — face match isn't available for this document type; a `selfie_image` submitted alongside it is accepted but ignored (`face_match.attempted: false`).
+Verify a customer's proof of address by uploading a photo of a utility bill — no manual data entry required. OCR extraction only. This document doesn't carry a face photo, so `data.photo` is omitted from the response entirely — face match isn't available for this document type; a `selfie_image` submitted alongside it is accepted but ignored (`face_match.attempted: false`).
 
 <Note>
   Only `document_front` is needed for this document.
@@ -84,10 +84,14 @@ data = response.json()
 | `status` | string | `"success"` on a successful extraction |
 | `data.full_name` | string | Name on the bill |
 | `data.address` | string | Extracted billing address |
+| `data.id_number` | string | Account number printed on the bill |
 | `data.document_type` | string | `"utility_bill"` |
-| `data.photo` | string | Always `null` — utility bills don't carry a face |
 | `data.extra_fields` | object | Other fields printed on the bill — see below |
 | `message` | string | Human-readable result summary |
+
+<Note>
+  `data.photo` is never present for this document type — utility bills don't carry a face, and fields with no value are omitted from the response rather than sent as `null`. The same applies to `face_match`: it's included only when `selfie_image` was supplied, and even then always comes back `attempted: false` for this document type.
+</Note>
 
 ```json
 {
@@ -96,9 +100,9 @@ data = response.json()
     "valid": true,
     "full_name": "AYODELE TUNDE",
     "address": "12 Adeola Odeku Street, Victoria Island, Lagos",
+    "id_number": "1234567890",
     "id_type": "utility_bill",
     "document_type": "utility_bill",
-    "photo": null,
     "extra_fields": {
       "issuer_name": "IKEJA ELECTRIC",
       "billing_period": "July 2026"

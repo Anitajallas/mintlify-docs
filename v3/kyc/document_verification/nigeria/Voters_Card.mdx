@@ -97,7 +97,9 @@ data = response.json()
 | `data.last_name` | string | Extracted last name |
 | `data.date_of_birth` | string | Date of birth in `YYYY-MM-DD` format |
 | `data.gender` | string | Extracted gender |
+| `data.address` | string | Registered address printed on the card |
 | `data.id_number` | string | The Voter Identification Number (VIN) |
+| `data.serial_number` | string | The card's serial number |
 | `data.document_type` | string | `"voters_card"` |
 | `data.photo` | string | Base64-encoded face photo extracted from the document |
 | `data.extra_fields` | object | Other fields printed on the card — see below |
@@ -117,7 +119,10 @@ data = response.json()
     "last_name": "AYODELE",
     "full_name": "AYODELE TUNDE",
     "date_of_birth": "2002-02-16",
+    "gender": "M",
+    "address": "12 ALLEN AVENUE, IKEJA, LAGOS",
     "id_number": "90F5A1B2C3D4E5F6",
+    "serial_number": "SN00123456",
     "id_type": "voters_card",
     "document_type": "voters_card",
     "photo": "/9j/4AAQSkZJRgABAQAAAQABAAD...",
@@ -127,8 +132,7 @@ data = response.json()
       "lga": "IKEJA",
       "ward": "WARD 5",
       "polling_unit_code": "PU001234",
-      "date_of_registration": "2019-01-15",
-      "batch_number": "B00123"
+      "date_of_registration": "2019-01-15"
     },
     "face_match": {
       "attempted": true,
