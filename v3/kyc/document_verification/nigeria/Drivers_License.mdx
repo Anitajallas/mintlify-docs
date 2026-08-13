@@ -5,14 +5,14 @@ description: "Extract identity details from a Nigerian driver's license using OC
 openapi: "POST /api/onboarding/document_verification"
 ---
 
-Verify a customer's Nigerian driver's license by uploading a photo — no manual license number entry required. OCR extraction, with an optional face match against a selfie — no liveness check (no video, no blink/motion challenge).
+Verify a customer's Nigerian driver's license by uploading a photo — no manual license number entry required. OCR extraction plus a required face match against a selfie — no liveness check (no video, no blink/motion challenge).
 
 <Note>
   This is a two-sided document — supply both `document_front` and `document_back` for the most complete extraction.
 </Note>
 
 <Note>
-  Add `selfie_image` to compare the face extracted from the document against a selfie. This is a still-image comparison (not liveness) — omit it for OCR-only extraction.
+  `selfie_image` is required — the face extracted from the document is compared against it. This is a still-image comparison (not liveness).
 </Note>
 
 ## Endpoint
@@ -38,7 +38,7 @@ POST /api/onboarding/document_verification
 | `country` | string | Yes | `nigeria` |
 | `document_front` | file | Yes | Front of the driver's license. JPG or PNG, max 5MB |
 | `document_back` | file | No | Back of the driver's license. JPG or PNG, max 5MB |
-| `selfie_image` | file | No | A selfie to compare against the document's face photo. JPG or PNG, max 5MB |
+| `selfie_image` | file | Yes | A selfie to compare against the document's face photo. JPG or PNG, max 5MB |
 
 ### Example
 
@@ -59,7 +59,7 @@ formData.append("document_type", "drivers_license");
 formData.append("country", "nigeria");
 formData.append("document_front", fs.createReadStream("/path/to/license_front.jpg"));
 formData.append("document_back", fs.createReadStream("/path/to/license_back.jpg"));
-formData.append("selfie_image", fs.createReadStream("/path/to/selfie.jpg")); // optional
+formData.append("selfie_image", fs.createReadStream("/path/to/selfie.jpg"));
 
 const response = await fetch(
   "https://adhere-api.smartcomply.com/api/onboarding/document_verification",
@@ -82,7 +82,7 @@ response = requests.post(
     files={
         "document_front": open("/path/to/license_front.jpg", "rb"),
         "document_back": open("/path/to/license_back.jpg", "rb"),
-        "selfie_image": open("/path/to/selfie.jpg", "rb"),  # optional
+        "selfie_image": open("/path/to/selfie.jpg", "rb"),
     },
 )
 data = response.json()
@@ -107,7 +107,7 @@ data = response.json()
 | `data.is_expired` | boolean | Whether `expiry_date` has already passed |
 | `data.photo` | string | Base64-encoded face photo extracted from the document |
 | `data.extra_fields` | object | Every other field the license printed — see below |
-| `data.face_match` | object | Present only when `selfie_image` was supplied — see below |
+| `data.face_match` | object | Result of comparing the document's face against `selfie_image` — see below |
 | `data.face_match.attempted` | boolean | Whether a comparison was actually run |
 | `data.face_match.verified` | boolean \| null | `true`/`false` if the comparison ran; `null` if it couldn't (see Face Match Notes) |
 | `data.face_match.confidence_percentage` | number | Match confidence, 0–100 |
@@ -162,7 +162,7 @@ data = response.json()
 </Note>
 
 <Note>
-  **Face Match Notes** — `face_match` is omitted entirely if `selfie_image` wasn't supplied. If the comparison service itself fails, `attempted` reflects whether a comparison was actually run and `verified` comes back `null` with a `reason` field explaining why — this is different from `verified: false`, which means the comparison ran and the faces didn't match. A face-match problem never blocks the underlying document data — the rest of `data` is still returned.
+  **Face Match Notes** — if the comparison service itself fails, `attempted` reflects whether a comparison was actually run and `verified` comes back `null` with a `reason` field explaining why — this is different from `verified: false`, which means the comparison ran and the faces didn't match. A face-match problem never blocks the underlying document data — the rest of `data` is still returned.
 </Note>
 
 ### 400 Bad Request
