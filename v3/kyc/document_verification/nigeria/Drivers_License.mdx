@@ -5,10 +5,14 @@ description: "Extract identity details from a Nigerian driver's license using OC
 openapi: "POST /api/onboarding/document_verification"
 ---
 
-Verify a customer's Nigerian driver's license by uploading a photo — no manual license number entry required. Extraction only; no face match, no liveness check.
+Verify a customer's Nigerian driver's license by uploading a photo — no manual license number entry required. OCR extraction, with an optional face match against a selfie — no liveness check (no video, no blink/motion challenge).
 
 <Note>
   This is a two-sided document — supply both `document_front` and `document_back` for the most complete extraction.
+</Note>
+
+<Note>
+  Add `selfie_image` to compare the face extracted from the document against a selfie. This is a still-image comparison (not liveness) — omit it for OCR-only extraction.
 </Note>
 
 ## Endpoint
@@ -34,6 +38,7 @@ POST /api/onboarding/document_verification
 | `country` | string | Yes | `nigeria` |
 | `document_front` | file | Yes | Front of the driver's license. JPG or PNG, max 5MB |
 | `document_back` | file | No | Back of the driver's license. JPG or PNG, max 5MB |
+| `selfie_image` | file | No | A selfie to compare against the document's face photo. JPG or PNG, max 5MB |
 
 ### Example
 
@@ -44,7 +49,8 @@ curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/document_verific
   -F "document_type=drivers_license" \
   -F "country=nigeria" \
   -F "document_front=@/path/to/license_front.jpg" \
-  -F "document_back=@/path/to/license_back.jpg"
+  -F "document_back=@/path/to/license_back.jpg" \
+  -F "selfie_image=@/path/to/selfie.jpg"
 ```
 
 ```javascript Node.js
@@ -53,6 +59,7 @@ formData.append("document_type", "drivers_license");
 formData.append("country", "nigeria");
 formData.append("document_front", fs.createReadStream("/path/to/license_front.jpg"));
 formData.append("document_back", fs.createReadStream("/path/to/license_back.jpg"));
+formData.append("selfie_image", fs.createReadStream("/path/to/selfie.jpg")); // optional
 
 const response = await fetch(
   "https://adhere-api.smartcomply.com/api/onboarding/document_verification",
@@ -75,6 +82,7 @@ response = requests.post(
     files={
         "document_front": open("/path/to/license_front.jpg", "rb"),
         "document_back": open("/path/to/license_back.jpg", "rb"),
+        "selfie_image": open("/path/to/selfie.jpg", "rb"),  # optional
     },
 )
 data = response.json()
@@ -98,6 +106,12 @@ data = response.json()
 | `data.expiry_date` | string | License expiry date |
 | `data.is_expired` | boolean | Whether `expiry_date` has already passed |
 | `data.photo` | string | Base64-encoded face photo extracted from the document |
+| `data.extra_fields` | object | Every other field the license printed — see below |
+| `data.face_match` | object | Present only when `selfie_image` was supplied — see below |
+| `data.face_match.attempted` | boolean | Whether a comparison was actually run |
+| `data.face_match.verified` | boolean \| null | `true`/`false` if the comparison ran; `null` if it couldn't (see Face Match Notes) |
+| `data.face_match.confidence_percentage` | number | Match confidence, 0–100 |
+| `data.face_match.selfie_image` | string | URL of the uploaded selfie |
 | `message` | string | Human-readable result summary |
 
 ```json
@@ -105,20 +119,51 @@ data = response.json()
   "status": "success",
   "data": {
     "valid": true,
-    "first_name": "TUNDE",
-    "last_name": "AYODELE",
-    "full_name": "AYODELE TUNDE",
-    "date_of_birth": "2002-02-16",
-    "id_number": "ABC12345678",
+    "first_name": "GOODLUCK EBELE",
+    "last_name": "JONATHAN",
+    "full_name": "GOODLUCK EBELE JONATHAN",
+    "date_of_birth": "1957-11-20",
+    "gender": "M",
+    "address": "STATE HOUSE",
+    "id_number": "JTC0977DD",
     "id_type": "drivers_license",
     "document_type": "drivers_license",
-    "expiry_date": "2028-05-10",
+    "expiry_date": "2030-11-20",
     "is_expired": false,
-    "photo": "/9j/4AAQSkZJRgABAQAAAQABAAD..."
+    "photo": "/9j/4AAQSkZJRgABAQAAAQABAAD...",
+    "extra_fields": {
+      "height": "1.75M",
+      "blood_group": "AB+",
+      "place_of_residence": "FCT",
+      "category": "PRIVATE",
+      "license_class": "B",
+      "endorsement": "P",
+      "date_of_first_issue": "02-09-2011",
+      "first_issued_state": "FCT",
+      "facial_marks": "N",
+      "glasses_required": "N",
+      "replacement_count": "0",
+      "renewal_count": "1",
+      "next_of_kin_phone": "08072262207"
+    },
+    "face_match": {
+      "attempted": true,
+      "verified": true,
+      "confidence_percentage": 92.4,
+      "selfie_image": "https://.../selfie.jpg"
+    }
   },
   "message": "Document details retrieved successfully"
 }
 ```
+
+<Note>
+  **Extra Fields** — `extra_fields` carries every other field the license actually printed that doesn't have its own dedicated field above. Nigerian licenses print more of these than other countries' — expect anywhere from a few fields to the full set shown here, and expect `null`/absent fields to be dropped rather than sent as `null`, since a field that wasn't printed on the document isn't guessed at.
+</Note>
+
+<Note>
+  **Face Match Notes** — `face_match` is omitted entirely if `selfie_image` wasn't supplied. If the comparison service itself fails, `attempted` reflects whether a comparison was actually run and `verified` comes back `null` with a `reason` field explaining why — this is different from `verified: false`, which means the comparison ran and the faces didn't match. A face-match problem never blocks the underlying document data — the rest of `data` is still returned.
+</Note>
 
 ### 400 Bad Request
 

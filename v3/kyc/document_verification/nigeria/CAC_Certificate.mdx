@@ -5,7 +5,7 @@ description: "Extract business registration details from a CAC Certificate of In
 openapi: "POST /api/onboarding/document_verification"
 ---
 
-Verify a business's CAC Certificate of Incorporation by uploading a photo — no manual RC number entry required. Extraction only; no face match, no liveness check. This document doesn't carry a face photo, so `data.photo` is always `null`.
+Verify a business's CAC Certificate of Incorporation by uploading a photo — no manual RC number entry required. OCR extraction only. This document doesn't carry a face photo, so `data.photo` is always `null` — face match isn't available for this document type; a `selfie_image` submitted alongside it is accepted but ignored (`face_match.attempted: false`).
 
 <Note>
   Only `document_front` is needed for this document.
@@ -86,6 +86,7 @@ data = response.json()
 | `data.id_number` | string | RC/BN registration number |
 | `data.document_type` | string | `"cac_certificate"` |
 | `data.photo` | string | Always `null` — CAC certificates don't carry a face |
+| `data.extra_fields` | object | Other fields printed on the certificate — see below |
 | `message` | string | Human-readable result summary |
 
 ```json
@@ -97,11 +98,21 @@ data = response.json()
     "id_number": "RC012345",
     "id_type": "cac_certificate",
     "document_type": "cac_certificate",
-    "photo": null
+    "photo": null,
+    "extra_fields": {
+      "business_type": "LIMITED LIABILITY COMPANY",
+      "date_of_incorporation": "2015-06-10",
+      "share_capital": "1000000",
+      "tin": "12345678-0001"
+    }
   },
   "message": "Document details retrieved successfully"
 }
 ```
+
+<Note>
+  **Extra Fields** — `extra_fields` carries whatever else the certificate printed beyond business name, registration number, and address (business type, incorporation date, share capital, TIN). Only fields actually present on the certificate are included.
+</Note>
 
 ### 400 Bad Request
 

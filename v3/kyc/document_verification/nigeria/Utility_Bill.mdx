@@ -5,7 +5,7 @@ description: "Extract address and biller details from a utility bill using OCR."
 openapi: "POST /api/onboarding/document_verification"
 ---
 
-Verify a customer's proof of address by uploading a photo of a utility bill — no manual data entry required. Extraction only; no face match, no liveness check. This document doesn't carry a face photo, so `data.photo` is always `null`.
+Verify a customer's proof of address by uploading a photo of a utility bill — no manual data entry required. OCR extraction only. This document doesn't carry a face photo, so `data.photo` is always `null` — face match isn't available for this document type; a `selfie_image` submitted alongside it is accepted but ignored (`face_match.attempted: false`).
 
 <Note>
   Only `document_front` is needed for this document.
@@ -86,6 +86,7 @@ data = response.json()
 | `data.address` | string | Extracted billing address |
 | `data.document_type` | string | `"utility_bill"` |
 | `data.photo` | string | Always `null` — utility bills don't carry a face |
+| `data.extra_fields` | object | Other fields printed on the bill — see below |
 | `message` | string | Human-readable result summary |
 
 ```json
@@ -97,11 +98,19 @@ data = response.json()
     "address": "12 Adeola Odeku Street, Victoria Island, Lagos",
     "id_type": "utility_bill",
     "document_type": "utility_bill",
-    "photo": null
+    "photo": null,
+    "extra_fields": {
+      "issuer_name": "IKEJA ELECTRIC",
+      "billing_period": "July 2026"
+    }
   },
   "message": "Document details retrieved successfully"
 }
 ```
+
+<Note>
+  **Extra Fields** — `extra_fields` carries whatever else the bill printed beyond name, address, and account number (the issuing utility company, the billing period). Only fields actually present on the bill are included.
+</Note>
 
 ### 400 Bad Request
 
