@@ -1822,11 +1822,13 @@ paths:
       summary: Document Verification
       operationId: documentVerification
       description: >
-        Extract identity details from a photo of a document using OCR — no
-        face match, no liveness. Fallback for the number-lookup checks
-        (Passport, Driver's License, NIN with Face, VNIN, Voter's ID) while
-        those are unavailable. Which document_type values are valid depends
-        on country — see the Supported Documents table on this page.
+        Extract identity details from a photo of a document using OCR, with
+        an optional face match against a selfie (still-image comparison
+        only — no liveness, no video, no blink/motion challenge). Fallback
+        for the number-lookup checks (Passport, Driver's License, NIN with
+        Face, VNIN, Voter's ID) while those are unavailable. Which
+        document_type values are valid depends on country — see the
+        Supported Documents table on this page.
       requestBody:
         required: true
         content:
@@ -1869,8 +1871,69 @@ paths:
                     recommended for two-sided documents (national_id,
                     kenya_id, drivers_license) — extraction may be less
                     complete without it.
+                selfie_image:
+                  type: string
+                  format: binary
+                  description: >
+                    A selfie to compare against the face extracted from the
+                    document. JPG or PNG, max 5MB. Optional — omit for
+                    OCR-only extraction. Still-image comparison only, not
+                    liveness. Ignored (face_match.attempted: false) for
+                    document types that don't carry a face photo
+                    (cac_certificate, utility_bill).
       responses:
         "200":
           description: Document details extracted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  data:
+                    type: object
+                    properties:
+                      valid: { type: boolean }
+                      first_name: { type: string }
+                      last_name: { type: string }
+                      full_name: { type: string }
+                      date_of_birth: { type: string }
+                      gender: { type: string }
+                      nationality: { type: string }
+                      address: { type: string }
+                      id_number: { type: string }
+                      serial_number: { type: string }
+                      id_type: { type: string }
+                      document_type: { type: string }
+                      expiry_date: { type: string }
+                      issue_date: { type: string }
+                      is_expired: { type: boolean }
+                      photo:
+                        type: string
+                        description: Base64-encoded face photo extracted from the document. Absent for document types with no face photo (cac_certificate, utility_bill).
+                      extra_fields:
+                        type: object
+                        description: Every other field OCR read from the document that doesn't have its own dedicated field above. Varies by document_type and country.
+                      face_match:
+                        type: object
+                        description: Present only when selfie_image was supplied.
+                        properties:
+                          attempted: { type: boolean }
+                          verified:
+                            type: boolean
+                            nullable: true
+                            description: "true/false if the comparison ran; null if it couldn't (see reason)."
+                          confidence_percentage: { type: number }
+                          selfie_image:
+                            type: string
+                            description: URL of the uploaded selfie.
+                          reason:
+                            type: string
+                            description: Present when verified is null — explains why the comparison couldn't run or complete.
+                  message:
+                    type: string
+                    example: "Document details retrieved successfully"
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
