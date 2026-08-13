@@ -157,9 +157,7 @@
                               "v3/kyc/document_verification/nigeria/National_ID",
                               "v3/kyc/document_verification/nigeria/Passport",
                               "v3/kyc/document_verification/nigeria/Drivers_License",
-                              "v3/kyc/document_verification/nigeria/Voters_Card",
-                              "v3/kyc/document_verification/nigeria/CAC_Certificate",
-                              "v3/kyc/document_verification/nigeria/Utility_Bill"
+                              "v3/kyc/document_verification/nigeria/Voters_Card"
                             ]
                           },
                           {
