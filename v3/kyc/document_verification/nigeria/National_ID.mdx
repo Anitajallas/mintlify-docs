@@ -104,6 +104,7 @@ data = response.json()
 | `data.id_number` | string | The NIN printed on the document |
 | `data.document_type` | string | `"national_id"` |
 | `data.photo` | string | Base64-encoded face photo extracted from the document |
+| `data.extra_fields` | object | Present if the card is the older two-sided format — see below |
 | `data.face_match` | object | Present only when `selfie_image` was supplied — see below |
 | `data.face_match.attempted` | boolean | Whether a comparison was actually run |
 | `data.face_match.verified` | boolean \| null | `true`/`false` if the comparison ran; `null` if it couldn't (see Face Match Notes) |
@@ -135,6 +136,10 @@ data = response.json()
   "message": "Document details retrieved successfully"
 }
 ```
+
+<Note>
+  **Extra Fields** — the newer, one-sided NIN slip/card has no fields beyond what's listed above. The older, two-sided card prints more (`occupation`, `state`, `lga`, `ward`, `height`, `blood_group`, plus several back-side fields) — these come back in `extra_fields` when present, and are simply absent for the newer format rather than sent as `null`.
+</Note>
 
 <Note>
   **Face Match Notes** — `face_match` is omitted entirely if `selfie_image` wasn't supplied. If it was supplied but the document type doesn't carry a face, or the comparison service itself fails, `attempted` reflects whether a comparison was actually run and `verified` comes back `null` with a `reason` field explaining why — this is different from `verified: false`, which means the comparison ran and the faces didn't match. A face-match problem never blocks the underlying document data — the rest of `data` is still returned.

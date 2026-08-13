@@ -102,6 +102,7 @@ data = response.json()
 | `data.expiry_date` | string | Passport expiry date |
 | `data.is_expired` | boolean | Whether `expiry_date` has already passed |
 | `data.photo` | string | Base64-encoded face photo extracted from the document |
+| `data.extra_fields` | object | Present if OCR could read the machine-readable zone — `mrz_line1`/`mrz_line2`, exactly as printed |
 | `data.face_match` | object | Present only when `selfie_image` was supplied — see below |
 | `data.face_match.attempted` | boolean | Whether a comparison was actually run |
 | `data.face_match.verified` | boolean \| null | `true`/`false` if the comparison ran; `null` if it couldn't (see Face Match Notes) |

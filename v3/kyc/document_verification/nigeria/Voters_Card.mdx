@@ -100,6 +100,7 @@ data = response.json()
 | `data.id_number` | string | The Voter Identification Number (VIN) |
 | `data.document_type` | string | `"voters_card"` |
 | `data.photo` | string | Base64-encoded face photo extracted from the document |
+| `data.extra_fields` | object | Other fields printed on the card — see below |
 | `data.face_match` | object | Present only when `selfie_image` was supplied — see below |
 | `data.face_match.attempted` | boolean | Whether a comparison was actually run |
 | `data.face_match.verified` | boolean \| null | `true`/`false` if the comparison ran; `null` if it couldn't (see Face Match Notes) |
@@ -120,6 +121,15 @@ data = response.json()
     "id_type": "voters_card",
     "document_type": "voters_card",
     "photo": "/9j/4AAQSkZJRgABAQAAAQABAAD...",
+    "extra_fields": {
+      "occupation": "ENGINEER",
+      "state": "LAGOS",
+      "lga": "IKEJA",
+      "ward": "WARD 5",
+      "polling_unit_code": "PU001234",
+      "date_of_registration": "2019-01-15",
+      "batch_number": "B00123"
+    },
     "face_match": {
       "attempted": true,
       "verified": true,
@@ -130,6 +140,10 @@ data = response.json()
   "message": "Document details retrieved successfully"
 }
 ```
+
+<Note>
+  **Extra Fields** — `extra_fields` carries whatever else the PVC printed beyond the fields listed above (occupation, state, LGA, ward, polling unit code, registration date, batch/serial numbers). Only fields actually present on the card are included.
+</Note>
 
 <Note>
   **Face Match Notes** — `face_match` is omitted entirely if `selfie_image` wasn't supplied. If the comparison service itself fails, `attempted` reflects whether a comparison was actually run and `verified` comes back `null` with a `reason` field explaining why — this is different from `verified: false`, which means the comparison ran and the faces didn't match. A face-match problem never blocks the underlying document data — the rest of `data` is still returned.
