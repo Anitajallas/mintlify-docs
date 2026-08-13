@@ -5,7 +5,7 @@ description: "Extract business registration details from a CAC Certificate of In
 openapi: "POST /api/onboarding/document_verification"
 ---
 
-Verify a business's CAC Certificate of Incorporation by uploading a photo — no manual RC number entry required. OCR extraction only. This document doesn't carry a face photo, so `data.photo` is always `null` — face match isn't available for this document type; a `selfie_image` submitted alongside it is accepted but ignored (`face_match.attempted: false`).
+Verify a business's CAC Certificate of Incorporation by uploading a photo — no manual RC number entry required. OCR extraction only. This document doesn't carry a face photo, so `data.photo` is omitted from the response entirely — face match isn't available for this document type; a `selfie_image` submitted alongside it is accepted but ignored (`face_match.attempted: false`).
 
 <Note>
   Only `document_front` is needed for this document.
@@ -83,11 +83,15 @@ data = response.json()
 |-------|------|--------------|
 | `status` | string | `"success"` on a successful extraction |
 | `data.full_name` | string | Registered business name |
+| `data.address` | string | Registered business address |
 | `data.id_number` | string | RC/BN registration number |
 | `data.document_type` | string | `"cac_certificate"` |
-| `data.photo` | string | Always `null` — CAC certificates don't carry a face |
 | `data.extra_fields` | object | Other fields printed on the certificate — see below |
 | `message` | string | Human-readable result summary |
+
+<Note>
+  `data.photo` is never present for this document type — CAC certificates don't carry a face, and fields with no value are omitted from the response rather than sent as `null`. The same applies to `face_match`: it's included only when `selfie_image` was supplied, and even then always comes back `attempted: false` for this document type.
+</Note>
 
 ```json
 {
@@ -95,10 +99,10 @@ data = response.json()
   "data": {
     "valid": true,
     "full_name": "FISAYOMI KAYODE NIG LTD",
+    "address": "12 CORPORATE DRIVE, VICTORIA ISLAND, LAGOS",
     "id_number": "RC012345",
     "id_type": "cac_certificate",
     "document_type": "cac_certificate",
-    "photo": null,
     "extra_fields": {
       "business_type": "LIMITED LIABILITY COMPANY",
       "date_of_incorporation": "2015-06-10",

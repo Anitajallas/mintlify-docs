@@ -103,6 +103,10 @@ data = response.json()
 | `data.gender` | string | Extracted gender |
 | `data.id_number` | string | The ID number |
 | `data.document_type` | string | `"kenya_id"` |
+| `data.expiry_date` | string | Maisha Card expiry date — only present on third-generation cards |
+| `data.issue_date` | string | Date of issue |
+| `data.place_of_issue` | string | Only present on third-generation "Maisha Card" IDs |
+| `data.serial_number` | string | Separate 9-digit card serial number — only present on third-generation "Maisha Card" IDs |
 | `data.photo` | string | Base64-encoded face photo extracted from the document |
 | `data.extra_fields` | object | Other fields printed on the card — see below |
 | `data.face_match` | object | Present only when `selfie_image` was supplied — see below |
@@ -124,6 +128,9 @@ data = response.json()
     "id_number": "34567890",
     "id_type": "kenya_id",
     "document_type": "kenya_id",
+    "issue_date": "2019-05-14",
+    "place_of_issue": "NAIROBI",
+    "serial_number": "123456789",
     "photo": "/9j/4AAQSkZJRgABAQAAAQABAAD...",
     "extra_fields": {
       "district_of_birth": "NAIROBI",
@@ -131,7 +138,10 @@ data = response.json()
       "division": "CENTRAL",
       "location": "NAIROBI CENTRAL",
       "sub_location": "CBD",
-      "barcode_number": "12345678"
+      "barcode_number": "12345678",
+      "mrz_line1": "IDKEN3456789012<<<<<<<<<<<<<<<",
+      "mrz_line2": "9503109F2905147KEN<<<<<<<<<<<8",
+      "mrz_line3": "KAMAU<<WANJIRU<<<<<<<<<<<<<<<<"
     },
     "face_match": {
       "attempted": true,
@@ -145,7 +155,7 @@ data = response.json()
 ```
 
 <Note>
-  **Extra Fields** — `extra_fields` carries whatever else the card printed beyond the fields listed above. Fields specific to the newer "Maisha Card" design (`serial_number`, `place_of_issue`, `date_of_expiry`) are top-level fields when present; back-side fields (`district`, `division`, `location`, `sub_location`, `barcode_number`) land in `extra_fields`. Only fields actually present on the card are included.
+  **Extra Fields** — `extra_fields` carries whatever else the card printed beyond the fields listed above: `district_of_birth`, and — only when `document_back` was supplied — `district`, `division`, `location`, `sub_location`, `barcode_number`, and the three MRZ lines (`mrz_line1`/`mrz_line2`/`mrz_line3`, exactly as printed, including `<` fill characters — not decoded). Only fields actually present on the card are included.
 </Note>
 
 <Note>

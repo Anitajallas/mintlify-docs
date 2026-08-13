@@ -97,12 +97,13 @@ data = response.json()
 | `data.last_name` | string | Extracted last name |
 | `data.date_of_birth` | string | Date of birth in `YYYY-MM-DD` format |
 | `data.gender` | string | Extracted gender |
+| `data.nationality` | string | Extracted nationality |
 | `data.id_number` | string | The passport number |
 | `data.document_type` | string | `"passport"` |
 | `data.expiry_date` | string | Passport expiry date |
 | `data.is_expired` | boolean | Whether `expiry_date` has already passed |
 | `data.photo` | string | Base64-encoded face photo extracted from the document |
-| `data.extra_fields` | object | Present if OCR could read the machine-readable zone — `mrz_line1`/`mrz_line2`, exactly as printed |
+| `data.extra_fields` | object | Other fields OCR read from the data page — `place_of_birth`, `issuing_authority`, `nin` (if embedded), and `mrz_line1`/`mrz_line2` if the machine-readable zone was legible, exactly as printed |
 | `data.face_match` | object | Present only when `selfie_image` was supplied — see below |
 | `data.face_match.attempted` | boolean | Whether a comparison was actually run |
 | `data.face_match.verified` | boolean \| null | `true`/`false` if the comparison ran; `null` if it couldn't (see Face Match Notes) |
@@ -119,12 +120,18 @@ data = response.json()
     "last_name": "MENSAH",
     "full_name": "MENSAH KWAME",
     "date_of_birth": "1992-11-04",
+    "gender": "M",
+    "nationality": "GHANAIAN",
     "id_number": "G1234567",
     "id_type": "passport",
     "document_type": "passport",
     "expiry_date": "2028-02-20",
     "is_expired": false,
     "photo": "/9j/4AAQSkZJRgABAQAAAQABAAD...",
+    "extra_fields": {
+      "place_of_birth": "ACCRA",
+      "issuing_authority": "ACCRA"
+    },
     "face_match": {
       "attempted": true,
       "verified": true,
