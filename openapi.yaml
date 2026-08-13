@@ -1822,13 +1822,14 @@ paths:
       summary: Document Verification
       operationId: documentVerification
       description: >
-        Extract identity details from a photo of a document using OCR, with
-        an optional face match against a selfie (still-image comparison
-        only — no liveness, no video, no blink/motion challenge). Fallback
-        for the number-lookup checks (Passport, Driver's License, NIN with
-        Face, VNIN, Voter's ID) while those are unavailable. Which
-        document_type values are valid depends on country — see the
-        Supported Documents table on this page.
+        Extract identity details from a photo of a document using OCR,
+        plus a required face match against a selfie (still-image
+        comparison only — no liveness, no video, no blink/motion
+        challenge) for every document_type except cac_certificate and
+        utility_bill. Fallback for the number-lookup checks (Passport,
+        Driver's License, NIN with Face, VNIN, Voter's ID) while those
+        are unavailable. Which document_type values are valid depends
+        on country — see the Supported Documents table on this page.
       requestBody:
         required: true
         content:
@@ -1876,11 +1877,11 @@ paths:
                   format: binary
                   description: >
                     A selfie to compare against the face extracted from the
-                    document. JPG or PNG, max 5MB. Optional — omit for
-                    OCR-only extraction. Still-image comparison only, not
-                    liveness. Ignored (face_match.attempted: false) for
-                    document types that don't carry a face photo
-                    (cac_certificate, utility_bill).
+                    document. JPG or PNG, max 5MB. Required for every
+                    document_type except cac_certificate and utility_bill,
+                    which never carry a face photo and reject the request
+                    with 400 if selfie_image is missing for any other type.
+                    Still-image comparison only, not liveness.
       responses:
         "200":
           description: Document details extracted successfully

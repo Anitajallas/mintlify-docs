@@ -5,14 +5,14 @@ description: "Extract identity details from a United States passport using OCR."
 openapi: "POST /api/onboarding/document_verification"
 ---
 
-Verify a customer's United States passport by uploading a photo of the data page — no manual passport number entry required. OCR extraction, with an optional face match against a selfie — no liveness check (no video, no blink/motion challenge).
+Verify a customer's United States passport by uploading a photo of the data page — no manual passport number entry required. OCR extraction plus a required face match against a selfie — no liveness check (no video, no blink/motion challenge).
 
 <Note>
   Passport is single-sided — only `document_front` is needed.
 </Note>
 
 <Note>
-  Add `selfie_image` to compare the face extracted from the document against a selfie. This is a still-image comparison (not liveness) — omit it for OCR-only extraction.
+  `selfie_image` is required — the face extracted from the document is compared against it. This is a still-image comparison (not liveness).
 </Note>
 
 ## Endpoint
@@ -37,7 +37,7 @@ POST /api/onboarding/document_verification
 | `document_type` | string | Yes | `passport` |
 | `country` | string | Yes | `usa` |
 | `document_front` | file | Yes | Photo of the passport data page. JPG or PNG, max 5MB |
-| `selfie_image` | file | No | A selfie to compare against the document's face photo. JPG or PNG, max 5MB |
+| `selfie_image` | file | Yes | A selfie to compare against the document's face photo. JPG or PNG, max 5MB |
 
 ### Example
 
@@ -56,7 +56,7 @@ const formData = new FormData();
 formData.append("document_type", "passport");
 formData.append("country", "usa");
 formData.append("document_front", fs.createReadStream("/path/to/passport.jpg"));
-formData.append("selfie_image", fs.createReadStream("/path/to/selfie.jpg")); // optional
+formData.append("selfie_image", fs.createReadStream("/path/to/selfie.jpg"));
 
 const response = await fetch(
   "https://adhere-api.smartcomply.com/api/onboarding/document_verification",
@@ -78,7 +78,7 @@ response = requests.post(
     data={"document_type": "passport", "country": "usa"},
     files={
         "document_front": open("/path/to/passport.jpg", "rb"),
-        "selfie_image": open("/path/to/selfie.jpg", "rb"),  # optional
+        "selfie_image": open("/path/to/selfie.jpg", "rb"),
     },
 )
 data = response.json()
@@ -104,7 +104,7 @@ data = response.json()
 | `data.is_expired` | boolean | Whether `expiry_date` has already passed |
 | `data.photo` | string | Base64-encoded face photo extracted from the document |
 | `data.extra_fields` | object | Other fields OCR read from the data page — `place_of_birth`, `issuing_authority`, `nin` (if embedded), and `mrz_line1`/`mrz_line2` if the machine-readable zone was legible, exactly as printed |
-| `data.face_match` | object | Present only when `selfie_image` was supplied — see below |
+| `data.face_match` | object | Result of comparing the document's face against `selfie_image` — see below |
 | `data.face_match.attempted` | boolean | Whether a comparison was actually run |
 | `data.face_match.verified` | boolean \| null | `true`/`false` if the comparison ran; `null` if it couldn't (see Face Match Notes) |
 | `data.face_match.confidence_percentage` | number | Match confidence, 0–100 |
@@ -144,7 +144,7 @@ data = response.json()
 ```
 
 <Note>
-  **Face Match Notes** — `face_match` is omitted entirely if `selfie_image` wasn't supplied. If the comparison service itself fails, `attempted` reflects whether a comparison was actually run and `verified` comes back `null` with a `reason` field explaining why — this is different from `verified: false`, which means the comparison ran and the faces didn't match. A face-match problem never blocks the underlying document data — the rest of `data` is still returned.
+  **Face Match Notes** — if the comparison service itself fails, `attempted` reflects whether a comparison was actually run and `verified` comes back `null` with a `reason` field explaining why — this is different from `verified: false`, which means the comparison ran and the faces didn't match. A face-match problem never blocks the underlying document data — the rest of `data` is still returned.
 </Note>
 
 ### 400 Bad Request
