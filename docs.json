@@ -136,14 +136,28 @@
                               "v3/kyc/kenya/business_registration",
                               "v3/kyc/kenya/alien_ID",
                               "v3/kyc/kenya/kra_pin",
-                              "v3/kyc/kenya/Passport_Verification"
+                              "v3/kyc/kenya/Passport_Verification",
+                              "v3/kyc/kenya/Drivers_License"
                             ]
                           },
                           {
                             "group": "Ghana",
                             "pages": [
                               "v3/kyc/ghana/ID_Card",
-                              "v3/kyc/ghana/ID_Card_with_face"
+                              "v3/kyc/ghana/ID_Card_with_face",
+                              "v3/kyc/ghana/International_Passport"
+                            ]
+                          },
+                          {
+                            "group": "Cote d'Ivoire",
+                            "pages": [
+                              "v3/kyc/cote_d_ivoire/National_ID"
+                            ]
+                          },
+                          {
+                            "group": "South Africa",
+                            "pages": [
+                              "v3/kyc/south_africa/National_ID"
                             ]
                           }
                         ]
