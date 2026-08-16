@@ -1,0 +1,120 @@
+---
+title: "National ID"
+sidebarTitle: "National ID"
+description: "Verify a customer's identity using their Côte d'Ivoire national ID number (NNI)."
+openapi: "POST /api/onboarding/cote_divoire_kyc/national_id/"
+---
+
+The Côte d'Ivoire National ID endpoint validates a national ID number (NNI) and returns the associated personal details from the national registry.
+
+## Endpoint
+
+```
+POST /api/onboarding/cote_divoire_kyc/national_id/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `national_id` | string | Yes | The customer's Côte d'Ivoire national ID number (NNI) |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/cote_divoire_kyc/national_id/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"national_id": "11715641589"}'
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://adhere-api.smartcomply.com/api/onboarding/cote_divoire_kyc/national_id/",
+  {
+    method: "POST",
+    headers: {
+      "x-access-token": "YOUR_SECRET_KEY",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ national_id: "11715641589" }),
+  }
+);
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/cote_divoire_kyc/national_id/",
+    headers={
+        "x-access-token": "YOUR_SECRET_KEY",
+        "Content-Type": "application/json",
+    },
+    json={"national_id": "11715641589"},
+)
+data = response.json()
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.valid` | boolean | Whether the ID is valid |
+| `data.first_name` | string | Customer's first name |
+| `data.last_name` | string | Customer's last name |
+| `data.middle_name` | string | Middle name, if any |
+| `data.date_of_birth` | string | Date of birth |
+| `data.gender` | string | Gender |
+| `data.nationality` | string | Nationality |
+| `data.id_number` | string | National ID number |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "valid": true,
+    "first_name": "JEAN",
+    "last_name": "KOUASSI",
+    "middle_name": "",
+    "date_of_birth": "1988-07-22",
+    "gender": "Male",
+    "nationality": "Ivorian",
+    "id_number": "11715641589"
+  },
+  "message": "National ID details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```
