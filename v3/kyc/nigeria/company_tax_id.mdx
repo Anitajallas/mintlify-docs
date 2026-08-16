@@ -9,10 +9,6 @@ openapi: "POST /api/onboarding/business/company_tax_id/"
   Company/business only. This is a different check from [Company TIN](/v3/kyc/nigeria/tin) — Company Tax ID looks up FIRS tax records using the company's **CAC registration number**, while Company TIN looks up FIRS tax records using the company's **TIN**. Use whichever identifier you already have.
 </Note>
 
-<Warning>
-  `registration_number` must include the CAC type prefix (e.g. `RC9435541`, not `9435541`) — the endpoint does not infer the prefix from a separately-sent company type. RC-prefixed (limited company) numbers are confirmed working. BN-prefixed (business name) numbers currently return a provider-side error (`youverify gateway error 500`) even when correctly formatted — this looks like a gap on Youverify's side specific to BN registrations, not a formatting issue.
-</Warning>
-
 The Company Tax ID endpoint validates a Nigerian company's tax records against the FIRS (Federal Inland Revenue Service) database using its CAC registration number, and returns the associated tax identification details.
 
 ## Endpoint
