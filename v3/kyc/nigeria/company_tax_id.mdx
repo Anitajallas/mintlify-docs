@@ -9,6 +9,10 @@ openapi: "POST /api/onboarding/business/company_tax_id/"
   Company/business only. This is a different check from [Company TIN](/v3/kyc/nigeria/tin) — Company Tax ID looks up FIRS tax records using the company's **CAC registration number**, while Company TIN looks up FIRS tax records using the company's **TIN**. Use whichever identifier you already have.
 </Note>
 
+<Warning>
+  `registration_number` must include the CAC type prefix (e.g. `RC9435541`, not `9435541`) — the endpoint does not infer the prefix from a separately-sent company type. RC-prefixed (limited company) numbers are confirmed working. BN-prefixed (business name) numbers currently return a provider-side error (`youverify gateway error 500`) even when correctly formatted — this looks like a gap on Youverify's side specific to BN registrations, not a formatting issue.
+</Warning>
+
 The Company Tax ID endpoint validates a Nigerian company's tax records against the FIRS (Federal Inland Revenue Service) database using its CAC registration number, and returns the associated tax identification details.
 
 ## Endpoint
@@ -58,27 +62,35 @@ response = requests.post(
 
 | Field | Type | Description |
 |-------|------|--------------|
+| `data.valid` | boolean | Whether a match was found |
+| `data.business_name` | string | Registered company name |
+| `data.registration_number` | string | CAC registration number |
+| `data.id_number` | string | Company's Tax ID |
 | `data.company_information.name` | string | Registered company name |
 | `data.company_information.registration_number` | string | CAC registration number |
 | `data.company_information.tax_id` | string | Company's Tax ID |
-| `data.company_information.tax_office` | string | Assigned tax office |
-| `data.company_information.phone` | string | Registered phone number |
-| `data.company_information.email` | string | Registered email (if available) |
+| `data.company_information.tax_office` | string | Assigned tax office (not returned by Youverify for every company) |
+| `data.company_information.phone` | string | Registered phone number (not returned by Youverify for every company) |
+| `data.company_information.email` | string | Registered email (not returned by Youverify for every company) |
 
 ```json
 {
   "status": "success",
   "data": {
+    "valid": true,
+    "id_number": "2622476055669",
     "company_information": {
-      "name": "ONICHA DEVELOPMENT LTD",
-      "registration_number": "RC1234567",
+      "name": "OASIS TASTE & TREAT LTD",
+      "registration_number": "RC9435541",
       "tin": null,
       "jtb_tin": null,
-      "tax_id": "2623784895457",
+      "tax_id": "2622476055669",
       "tax_office": null,
       "phone": null,
       "email": null
-    }
+    },
+    "business_name": "OASIS TASTE & TREAT LTD",
+    "registration_number": "RC9435541"
   },
   "message": "Company Tax ID details retrieved successfully"
 }
