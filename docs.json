@@ -115,6 +115,7 @@
                               "v3/kyc/nigeria/BVN_Advanced",
                               "v3/kyc/nigeria/CAC",
                               "v3/kyc/nigeria/CAC_Advanced",
+                              "v3/kyc/nigeria/company_tax_id",
                               "v3/kyc/nigeria/Drivers_License",
                               "v3/kyc/nigeria/nin",
                               "v3/kyc/nigeria/nin_with_face",

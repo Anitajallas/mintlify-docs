@@ -12,7 +12,7 @@ openapi: "POST /api/onboarding/nigeria_kyc/tin/"
 The Company TIN endpoint validates a business Tax Identification Number against the FIRS (Federal Inland Revenue Service) database and returns the associated taxpayer name, CAC registration number, tax office, and contact details.
 
 <Note>
-  `/api/onboarding/business/company_tin/` is a legacy alias for this same endpoint, kept for backward compatibility. New integrations should use this endpoint.
+  `/api/onboarding/business/company_tin/` is an alias for this same endpoint and check. If you're already integrated against it, no change is needed — it continues to work. For new integrations, use `/api/onboarding/nigeria_kyc/tin/` above.
 </Note>
 
 ## Endpoint

@@ -1,0 +1,104 @@
+---
+title: "Company Tax ID"
+sidebarTitle: "Company Tax ID"
+description: "Verify a Nigerian company's tax records using its CAC registration number."
+openapi: "POST /api/onboarding/business/company_tax_id/"
+---
+
+<Note>
+  Company/business only. This is a different check from [Company TIN](/v3/kyc/nigeria/tin) — Company Tax ID looks up FIRS tax records using the company's **CAC registration number**, while Company TIN looks up FIRS tax records using the company's **TIN**. Use whichever identifier you already have.
+</Note>
+
+The Company Tax ID endpoint validates a Nigerian company's tax records against the FIRS (Federal Inland Revenue Service) database using its CAC registration number, and returns the associated tax identification details.
+
+## Endpoint
+
+```
+POST /api/onboarding/business/company_tax_id/
+```
+
+## Request
+
+### Headers
+
+| Header | Value | Required |
+|--------|-------|----------|
+| `x-access-token` | Your API secret key | Yes |
+| `Content-Type` | `application/json` | Yes |
+
+### Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|--------------|
+| `registration_number` | string | Yes | The company's CAC registration number (e.g. `RC1234567`) |
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/business/company_tax_id/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"registration_number": "RC1234567"}'
+```
+
+```python Python
+import requests
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/business/company_tax_id/",
+    headers={"x-access-token": "YOUR_SECRET_KEY", "Content-Type": "application/json"},
+    json={"registration_number": "RC1234567"},
+)
+```
+</CodeGroup>
+
+## Response
+
+### 200 OK
+
+| Field | Type | Description |
+|-------|------|--------------|
+| `data.company_information.name` | string | Registered company name |
+| `data.company_information.registration_number` | string | CAC registration number |
+| `data.company_information.tax_id` | string | Company's Tax ID |
+| `data.company_information.tax_office` | string | Assigned tax office |
+| `data.company_information.phone` | string | Registered phone number |
+| `data.company_information.email` | string | Registered email (if available) |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "company_information": {
+      "name": "FISAYOMI KAYODE NIG LTD",
+      "registration_number": "RC1234567",
+      "tin": null,
+      "jtb_tin": null,
+      "tax_id": "12345678-0001",
+      "tax_office": "MSTO ALIMOSHO",
+      "phone": "08109110099",
+      "email": "info@example.com"
+    }
+  },
+  "message": "Company Tax ID details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Registration Number is required."
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```
