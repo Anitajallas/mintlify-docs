@@ -1,15 +1,19 @@
 ---
-title: "Tax Identification Number (TIN)"
-sidebarTitle: "TIN"
-description: "Verify a customer's identity using their Nigerian Tax Identification Number."
+title: "Company TIN"
+sidebarTitle: "Company TIN"
+description: "Verify a Nigerian company's Tax Identification Number."
 openapi: "POST /api/onboarding/nigeria_kyc/tin/"
 ---
 
 <Note>
-  This service only works for company/business TIN. Individual TIN lookups are not supported.
+  Company/business TIN only. Individual TIN lookups are not supported by any provider behind this endpoint.
 </Note>
 
-The TIN endpoint validates a Tax Identification Number against the FIRS (Federal Inland Revenue Service) database and returns the associated taxpayer name, CAC registration number, tax office, and contact details.
+The Company TIN endpoint validates a business Tax Identification Number against the FIRS (Federal Inland Revenue Service) database and returns the associated taxpayer name, CAC registration number, tax office, and contact details.
+
+<Note>
+  `/api/onboarding/business/company_tin/` is a legacy alias for this same endpoint, kept for backward compatibility. New integrations should use this endpoint.
+</Note>
 
 ## Endpoint
 
