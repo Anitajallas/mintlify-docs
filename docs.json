@@ -197,6 +197,10 @@
                           {
                             "group": "Cote d'Ivoire",
                             "pages": ["v3/kyc/document_verification/cote_d_ivoire/Passport"]
+                          },
+                          {
+                            "group": "UK",
+                            "pages": ["v3/kyc/document_verification/uk/Passport"]
                           }
                         ]
                       }
