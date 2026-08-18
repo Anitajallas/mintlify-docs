@@ -2,7 +2,7 @@
 title: "Driver's License"
 sidebarTitle: "Driver's License"
 description: "Extract identity details from a Nigerian driver's license using OCR."
-openapi: "POST /api/onboarding/document_verification"
+openapi: "POST /api/onboarding/document_verification/nigeria/drivers_license"
 ---
 
 Verify a customer's Nigerian driver's license by uploading a photo — no manual license number entry required. OCR extraction plus a required face match against a selfie — no liveness check (no video, no blink/motion challenge).
@@ -18,7 +18,7 @@ Verify a customer's Nigerian driver's license by uploading a photo — no manual
 ## Endpoint
 
 ```
-POST /api/onboarding/document_verification
+POST /api/onboarding/document_verification/nigeria/drivers_license
 ```
 
 ## Request
@@ -34,8 +34,6 @@ POST /api/onboarding/document_verification
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|--------------|
-| `document_type` | string | Yes | `drivers_license` |
-| `country` | string | Yes | `nigeria` |
 | `document_front` | file | Yes | Front of the driver's license. JPG or PNG, max 5MB |
 | `document_back` | file | No | Back of the driver's license. JPG or PNG, max 5MB |
 | `selfie_image` | file | Yes | A selfie to compare against the document's face photo. JPG or PNG, max 5MB |
@@ -44,10 +42,8 @@ POST /api/onboarding/document_verification
 
 <CodeGroup>
 ```bash cURL
-curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/document_verification" \
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/document_verification/nigeria/drivers_license" \
   -H "x-access-token: YOUR_SECRET_KEY" \
-  -F "document_type=drivers_license" \
-  -F "country=nigeria" \
   -F "document_front=@/path/to/license_front.jpg" \
   -F "document_back=@/path/to/license_back.jpg" \
   -F "selfie_image=@/path/to/selfie.jpg"
@@ -55,14 +51,12 @@ curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/document_verific
 
 ```javascript Node.js
 const formData = new FormData();
-formData.append("document_type", "drivers_license");
-formData.append("country", "nigeria");
 formData.append("document_front", fs.createReadStream("/path/to/license_front.jpg"));
 formData.append("document_back", fs.createReadStream("/path/to/license_back.jpg"));
 formData.append("selfie_image", fs.createReadStream("/path/to/selfie.jpg"));
 
 const response = await fetch(
-  "https://adhere-api.smartcomply.com/api/onboarding/document_verification",
+  "https://adhere-api.smartcomply.com/api/onboarding/document_verification/nigeria/drivers_license",
   {
     method: "POST",
     headers: { "x-access-token": "YOUR_SECRET_KEY" },
@@ -76,9 +70,8 @@ const data = await response.json();
 import requests
 
 response = requests.post(
-    "https://adhere-api.smartcomply.com/api/onboarding/document_verification",
+    "https://adhere-api.smartcomply.com/api/onboarding/document_verification/nigeria/drivers_license",
     headers={"x-access-token": "YOUR_SECRET_KEY"},
-    data={"document_type": "drivers_license", "country": "nigeria"},
     files={
         "document_front": open("/path/to/license_front.jpg", "rb"),
         "document_back": open("/path/to/license_back.jpg", "rb"),

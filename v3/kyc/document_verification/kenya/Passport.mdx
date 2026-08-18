@@ -2,7 +2,7 @@
 title: "Passport"
 sidebarTitle: "Passport"
 description: "Extract identity details from a Kenyan passport using OCR."
-openapi: "POST /api/onboarding/document_verification"
+openapi: "POST /api/onboarding/document_verification/kenya/passport"
 ---
 
 Verify a customer's Kenyan passport by uploading a photo of the data page — no manual passport number entry required. OCR extraction plus a required face match against a selfie — no liveness check (no video, no blink/motion challenge).
@@ -18,7 +18,7 @@ Verify a customer's Kenyan passport by uploading a photo of the data page — no
 ## Endpoint
 
 ```
-POST /api/onboarding/document_verification
+POST /api/onboarding/document_verification/kenya/passport
 ```
 
 ## Request
@@ -34,8 +34,6 @@ POST /api/onboarding/document_verification
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|--------------|
-| `document_type` | string | Yes | `passport` |
-| `country` | string | Yes | `kenya` |
 | `document_front` | file | Yes | Photo of the passport data page. JPG or PNG, max 5MB |
 | `selfie_image` | file | Yes | A selfie to compare against the document's face photo. JPG or PNG, max 5MB |
 
@@ -43,23 +41,19 @@ POST /api/onboarding/document_verification
 
 <CodeGroup>
 ```bash cURL
-curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/document_verification" \
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/document_verification/kenya/passport" \
   -H "x-access-token: YOUR_SECRET_KEY" \
-  -F "document_type=passport" \
-  -F "country=kenya" \
   -F "document_front=@/path/to/passport.jpg" \
   -F "selfie_image=@/path/to/selfie.jpg"
 ```
 
 ```javascript Node.js
 const formData = new FormData();
-formData.append("document_type", "passport");
-formData.append("country", "kenya");
 formData.append("document_front", fs.createReadStream("/path/to/passport.jpg"));
 formData.append("selfie_image", fs.createReadStream("/path/to/selfie.jpg"));
 
 const response = await fetch(
-  "https://adhere-api.smartcomply.com/api/onboarding/document_verification",
+  "https://adhere-api.smartcomply.com/api/onboarding/document_verification/kenya/passport",
   {
     method: "POST",
     headers: { "x-access-token": "YOUR_SECRET_KEY" },
@@ -73,9 +67,8 @@ const data = await response.json();
 import requests
 
 response = requests.post(
-    "https://adhere-api.smartcomply.com/api/onboarding/document_verification",
+    "https://adhere-api.smartcomply.com/api/onboarding/document_verification/kenya/passport",
     headers={"x-access-token": "YOUR_SECRET_KEY"},
-    data={"document_type": "passport", "country": "kenya"},
     files={
         "document_front": open("/path/to/passport.jpg", "rb"),
         "selfie_image": open("/path/to/selfie.jpg", "rb"),
