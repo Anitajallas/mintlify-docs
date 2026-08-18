@@ -80,10 +80,16 @@ components:
                   is_expired: { type: boolean }
                   photo:
                     type: string
-                    description: Base64-encoded face photo extracted from the document. Absent for document types with no face photo (cac_certificate, utility_bill).
+                    description:
+                      Base64-encoded face photo extracted from the document.
+                      Absent for document types with no face photo
+                      (cac_certificate, utility_bill).
                   extra_fields:
                     type: object
-                    description: Every other field OCR read from the document that doesn't have its own dedicated field above. Varies by document_type and country.
+                    description:
+                      Every other field OCR read from the document that doesn't
+                      have its own dedicated field above. Varies by
+                      document_type and country.
                   face_match:
                     type: object
                     description: Present only when selfie_image was supplied.
@@ -92,14 +98,18 @@ components:
                       verified:
                         type: boolean
                         nullable: true
-                        description: "true/false if the comparison ran; null if it couldn't (see reason)."
+                        description:
+                          "true/false if the comparison ran; null if it couldn't
+                          (see reason)."
                       confidence_percentage: { type: number }
                       selfie_image:
                         type: string
                         description: URL of the uploaded selfie.
                       reason:
                         type: string
-                        description: Present when verified is null — explains why the comparison couldn't run or complete.
+                        description:
+                          Present when verified is null — explains why the
+                          comparison couldn't run or complete.
               message:
                 type: string
                 example: "Document details retrieved successfully"
@@ -162,7 +172,11 @@ paths:
               properties:
                 image:
                   type: string
-                  description: URL of the live selfie video to check for liveness. Supported formats .mp4, .mov, .webm, .avi, .m4v. Static images are accepted but will perform a self-comparison, not true liveness detection.
+                  description:
+                    URL of the live selfie video to check for liveness.
+                    Supported formats .mp4, .mov, .webm, .avi, .m4v. Static
+                    images are accepted but will perform a self-comparison, not
+                    true liveness detection.
       responses:
         "200": { description: Liveness check successful }
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -213,7 +227,9 @@ paths:
                   example: "22244545518"
                 date_of_birth:
                   type: string
-                  description: Date of birth in YYYY-MM-DD format (optional, used for additional verification)
+                  description:
+                    Date of birth in YYYY-MM-DD format (optional, used for
+                    additional verification)
                   example: "1990-01-15"
       responses:
         "200": { description: BVN advanced data retrieved }
@@ -327,7 +343,8 @@ paths:
           application/json:
             schema:
               type: object
-              required: [voters_id, first_name, last_name, date_of_birth, lga, state]
+              required:
+                [voters_id, first_name, last_name, date_of_birth, lga, state]
               properties:
                 voters_id:
                   type: string
@@ -437,7 +454,9 @@ paths:
               properties:
                 tax_identification_number:
                   type: string
-                  description: "The company's Tax Identification Number (format: 234123456-0001, 8-14 digits)"
+                  description:
+                    "The company's Tax Identification Number (format:
+                    234123456-0001, 8-14 digits)"
                   example: "234123456-0001"
       responses:
         "200": { description: TIN verified }
@@ -558,7 +577,9 @@ paths:
                   example: "JOYCE VENTURES"
                 company_type:
                   type: string
-                  description: "Entity type: RC (registered company), BN (business name), or IT (incorporated trustee)"
+                  description:
+                    "Entity type: RC (registered company), BN (business name),
+                    or IT (incorporated trustee)"
                   example: "RC"
       responses:
         "200": { description: CAC verified }
@@ -588,7 +609,9 @@ paths:
                   example: "JOYCE VENTURES"
                 company_type:
                   type: string
-                  description: "Entity type: RC (registered company), BN (business name), or IT (incorporated trustee)"
+                  description:
+                    "Entity type: RC (registered company), BN (business name),
+                    or IT (incorporated trustee)"
                   example: "IT"
       responses:
         "200": { description: CAC advanced data retrieved }
@@ -1419,20 +1442,25 @@ paths:
                 transaction_type:
                   type: string
                   enum: [transfer, ussd, web, card]
-                  description: "Discriminator for the payload shape. transfer/ussd/web require origin_account and destination_account. card requires card_details."
+                  description:
+                    "Discriminator for the payload shape. transfer/ussd/web
+                    require origin_account and destination_account. card
+                    requires card_details."
                 account_type:
                   type: string
                   enum: [individual, corporate]
                 origin_account:
                   type: object
-                  description: "Required when transaction_type is transfer, ussd, or web"
+                  description:
+                    "Required when transaction_type is transfer, ussd, or web"
                   required: [account_number, bank_code]
                   properties:
                     account_number: { type: string, example: "9876543219" }
                     bank_code: { type: string, example: "001" }
                 destination_account:
                   type: object
-                  description: "Required when transaction_type is transfer, ussd, or web"
+                  description:
+                    "Required when transaction_type is transfer, ussd, or web"
                   required: [account_number, bank_code]
                   properties:
                     account_number: { type: string, example: "123456789" }
@@ -1452,7 +1480,8 @@ paths:
                       example: 9809
                 merchant_details:
                   type: object
-                  description: "Optional but recommended when transaction_type is card"
+                  description:
+                    "Optional but recommended when transaction_type is card"
                   properties:
                     merchant_name:
                       type: string
@@ -1460,14 +1489,15 @@ paths:
                     merchant_location:
                       type: string
                       example: "Lagos, Nigeria"
-                    merchant_code:
+                    merchant_mcc:
                       type: string
                       description: Merchant category code (MCC)
                       example: "5813"
                 timestamp:
                   type: string
                   format: date-time
-                  description: ISO 8601 transaction timestamp (used with card transactions)
+                  description:
+                    ISO 8601 transaction timestamp (used with card transactions)
                   example: "2025-08-23T14:30:00Z"
                 customer_details:
                   type: object
@@ -1480,11 +1510,15 @@ paths:
                       example: "+2347012345678"
                     identifier:
                       type: string
-                      description: "Customer identifier value. Use bvn for Nigeria, national_id for Kenya, ghana_card for Ghana, etc."
+                      description:
+                        "Customer identifier value. Use bvn for Nigeria,
+                        national_id for Kenya, ghana_card for Ghana, etc."
                       example: "22430372151"
                     identifier_type:
                       type: string
-                      description: "Key of the identifier type (e.g. bvn, national_id, ghana_card). Required when identifier is provided"
+                      description:
+                        "Key of the identifier type (e.g. bvn, national_id,
+                        ghana_card). Required when identifier is provided"
                       example: "bvn"
                 additional_info:
                   type: object
@@ -1875,22 +1909,21 @@ paths:
       summary: Document Verification (generic)
       operationId: documentVerification
       description: >
-        Extract identity details from a photo of a document using OCR,
-        plus a required face match against a selfie (still-image
-        comparison only — no liveness, no video, no blink/motion
-        challenge) for every document_type except cac_certificate and
-        utility_bill. Fallback for the number-lookup checks (Passport,
-        Driver's License, NIN with Face, VNIN, Voter's ID) while those
-        are unavailable. Which document_type values are valid depends
-        on country.
+        Extract identity details from a photo of a document using OCR, plus a
+        required face match against a selfie (still-image comparison only — no
+        liveness, no video, no blink/motion challenge) for every document_type
+        except cac_certificate and utility_bill. Fallback for the number-lookup
+        checks (Passport, Driver's License, NIN with Face, VNIN, Voter's ID)
+        while those are unavailable. Which document_type values are valid
+        depends on country.
 
 
-        A dedicated endpoint exists per country/document-type combination
-        (see the other Document Verification operations below) — prefer
-        those where possible, since document_type and country are baked
-        into the URL instead of the request body. This generic endpoint
-        still works unchanged for existing integrations that already pass
-        document_type/country explicitly.
+        A dedicated endpoint exists per country/document-type combination (see
+        the other Document Verification operations below) — prefer those where
+        possible, since document_type and country are baked into the URL instead
+        of the request body. This generic endpoint still works unchanged for
+        existing integrations that already pass document_type/country
+        explicitly.
       requestBody:
         required: true
         content:
@@ -1912,9 +1945,9 @@ paths:
                       utility_bill,
                     ]
                   description: >
-                    The kind of document being submitted. Which values are
-                    valid depends on country — passport works for every
-                    supported country; the rest are country-specific.
+                    The kind of document being submitted. Which values are valid
+                    depends on country — passport works for every supported
+                    country; the rest are country-specific.
                   example: "passport"
                 country:
                   type: string
@@ -1931,19 +1964,19 @@ paths:
                   format: binary
                   description: >
                     Back of the document. Optional for every type, but
-                    recommended for two-sided documents (national_id,
-                    kenya_id, drivers_license, voters_card) — extraction
-                    may be less complete without it.
+                    recommended for two-sided documents (national_id, kenya_id,
+                    drivers_license, voters_card) — extraction may be less
+                    complete without it.
                 selfie_image:
                   type: string
                   format: binary
                   description: >
                     A selfie to compare against the face extracted from the
                     document. JPG or PNG, max 5MB. Required for every
-                    document_type except cac_certificate and utility_bill,
-                    which never carry a face photo and reject the request
-                    with 400 if selfie_image is missing for any other type.
-                    Still-image comparison only, not liveness.
+                    document_type except cac_certificate and utility_bill, which
+                    never carry a face photo and reject the request with 400 if
+                    selfie_image is missing for any other type. Still-image
+                    comparison only, not liveness.
       responses:
         "200": { $ref: "#/components/responses/DocumentVerificationSuccess" }
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -1955,10 +1988,10 @@ paths:
       summary: Document Verification — Nigeria National ID
       operationId: documentVerificationNigeriaNationalId
       description: >
-        Extract identity details from a Nigerian NIN slip or National ID
-        card using OCR, plus a required face match against a selfie.
-        document_type and country are fixed by this URL — no need to send
-        them in the request body.
+        Extract identity details from a Nigerian NIN slip or National ID card
+        using OCR, plus a required face match against a selfie. document_type
+        and country are fixed by this URL — no need to send them in the request
+        body.
       requestBody:
         required: true
         content:
@@ -1975,8 +2008,8 @@ paths:
                   type: string
                   format: binary
                   description: >
-                    Back of the card. Optional, but recommended — extraction
-                    may be less complete without it.
+                    Back of the card. Optional, but recommended — extraction may
+                    be less complete without it.
                 selfie_image:
                   type: string
                   format: binary
@@ -1994,10 +2027,10 @@ paths:
       summary: Document Verification — Nigeria Passport
       operationId: documentVerificationNigeriaPassport
       description: >
-        Extract identity details from a Nigerian international passport
-        using OCR, plus a required face match against a selfie.
-        document_type and country are fixed by this URL — no need to send
-        them in the request body.
+        Extract identity details from a Nigerian international passport using
+        OCR, plus a required face match against a selfie. document_type and
+        country are fixed by this URL — no need to send them in the request
+        body.
       requestBody:
         required: true
         content:
@@ -2009,7 +2042,8 @@ paths:
                 document_front:
                   type: string
                   format: binary
-                  description: Photo of the passport data page. JPG or PNG, max 5MB.
+                  description:
+                    Photo of the passport data page. JPG or PNG, max 5MB.
                 selfie_image:
                   type: string
                   format: binary
@@ -2027,10 +2061,9 @@ paths:
       summary: Document Verification — Nigeria Driver's License
       operationId: documentVerificationNigeriaDriversLicense
       description: >
-        Extract identity details from a Nigerian driver's license using
-        OCR, plus a required face match against a selfie. document_type
-        and country are fixed by this URL — no need to send them in the
-        request body.
+        Extract identity details from a Nigerian driver's license using OCR,
+        plus a required face match against a selfie. document_type and country
+        are fixed by this URL — no need to send them in the request body.
       requestBody:
         required: true
         content:
@@ -2042,13 +2075,14 @@ paths:
                 document_front:
                   type: string
                   format: binary
-                  description: Front of the driver's license. JPG or PNG, max 5MB.
+                  description:
+                    Front of the driver's license. JPG or PNG, max 5MB.
                 document_back:
                   type: string
                   format: binary
                   description: >
-                    Back of the license. Optional, but recommended —
-                    extraction may be less complete without it.
+                    Back of the license. Optional, but recommended — extraction
+                    may be less complete without it.
                 selfie_image:
                   type: string
                   format: binary
@@ -2066,10 +2100,10 @@ paths:
       summary: Document Verification — Nigeria Voter's Card
       operationId: documentVerificationNigeriaVotersCard
       description: >
-        Extract identity details from a Nigerian Permanent Voter's Card
-        (PVC) using OCR, plus a required face match against a selfie.
-        document_type and country are fixed by this URL — no need to send
-        them in the request body.
+        Extract identity details from a Nigerian Permanent Voter's Card (PVC)
+        using OCR, plus a required face match against a selfie. document_type
+        and country are fixed by this URL — no need to send them in the request
+        body.
       requestBody:
         required: true
         content:
@@ -2086,8 +2120,8 @@ paths:
                   type: string
                   format: binary
                   description: >
-                    Back of the PVC. Optional, but recommended — extraction
-                    may be less complete without it.
+                    Back of the PVC. Optional, but recommended — extraction may
+                    be less complete without it.
                 selfie_image:
                   type: string
                   format: binary
@@ -2105,14 +2139,14 @@ paths:
       summary: Document Verification — Nigeria CAC Certificate
       operationId: documentVerificationNigeriaCacCertificate
       description: >
-        Extract company details from a Nigerian CAC certificate using OCR.
-        No face match — CAC certificates don't carry a photo, so
-        selfie_image is not applicable. document_type and country are
-        fixed by this URL — no need to send them in the request body.
+        Extract company details from a Nigerian CAC certificate using OCR. No
+        face match — CAC certificates don't carry a photo, so selfie_image is
+        not applicable. document_type and country are fixed by this URL — no
+        need to send them in the request body.
 
 
-        Currently disabled pending relaunch — this endpoint returns 400
-        until re-enabled.
+        Currently disabled pending relaunch — this endpoint returns 400 until
+        re-enabled.
       requestBody:
         required: true
         content:
@@ -2124,7 +2158,8 @@ paths:
                 document_front:
                   type: string
                   format: binary
-                  description: Photo of the CAC certificate. JPG or PNG, max 5MB.
+                  description:
+                    Photo of the CAC certificate. JPG or PNG, max 5MB.
       responses:
         "200": { $ref: "#/components/responses/DocumentVerificationSuccess" }
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -2136,14 +2171,14 @@ paths:
       summary: Document Verification — Nigeria Utility Bill
       operationId: documentVerificationNigeriaUtilityBill
       description: >
-        Extract address details from a Nigerian utility bill using OCR.
-        No face match — utility bills don't carry a photo, so
-        selfie_image is not applicable. document_type and country are
-        fixed by this URL — no need to send them in the request body.
+        Extract address details from a Nigerian utility bill using OCR. No face
+        match — utility bills don't carry a photo, so selfie_image is not
+        applicable. document_type and country are fixed by this URL — no need to
+        send them in the request body.
 
 
-        Currently disabled pending relaunch — this endpoint returns 400
-        until re-enabled.
+        Currently disabled pending relaunch — this endpoint returns 400 until
+        re-enabled.
       requestBody:
         required: true
         content:
@@ -2167,13 +2202,12 @@ paths:
       summary: Document Verification — Kenya ID
       operationId: documentVerificationKenyaId
       description: >
-        Extract identity details from a Kenyan ID card (older laminated
-        design or newer Maisha Card) using OCR, plus a required face match
-        against a selfie. Fields specific to the Maisha Card
-        (serial_number, place_of_issue, expiry date) come back empty on an
-        older card — that's expected, not an error. document_type and
-        country are fixed by this URL — no need to send them in the
-        request body.
+        Extract identity details from a Kenyan ID card (older laminated design
+        or newer Maisha Card) using OCR, plus a required face match against a
+        selfie. Fields specific to the Maisha Card (serial_number,
+        place_of_issue, expiry date) come back empty on an older card — that's
+        expected, not an error. document_type and country are fixed by this URL
+        — no need to send them in the request body.
       requestBody:
         required: true
         content:
@@ -2190,8 +2224,8 @@ paths:
                   type: string
                   format: binary
                   description: >
-                    Back of the card. Optional, but recommended — extraction
-                    may be less complete without it.
+                    Back of the card. Optional, but recommended — extraction may
+                    be less complete without it.
                 selfie_image:
                   type: string
                   format: binary
@@ -2210,8 +2244,8 @@ paths:
       operationId: documentVerificationKenyaPassport
       description: >
         Extract identity details from a Kenyan passport using OCR, plus a
-        required face match against a selfie. document_type and country
-        are fixed by this URL — no need to send them in the request body.
+        required face match against a selfie. document_type and country are
+        fixed by this URL — no need to send them in the request body.
       requestBody:
         required: true
         content:
@@ -2223,7 +2257,8 @@ paths:
                 document_front:
                   type: string
                   format: binary
-                  description: Photo of the passport data page. JPG or PNG, max 5MB.
+                  description:
+                    Photo of the passport data page. JPG or PNG, max 5MB.
                 selfie_image:
                   type: string
                   format: binary
@@ -2241,9 +2276,9 @@ paths:
       summary: Document Verification — Ghana Passport
       operationId: documentVerificationGhanaPassport
       description: >
-        Extract identity details from a Ghanaian passport using OCR, plus
-        a required face match against a selfie. document_type and country
-        are fixed by this URL — no need to send them in the request body.
+        Extract identity details from a Ghanaian passport using OCR, plus a
+        required face match against a selfie. document_type and country are
+        fixed by this URL — no need to send them in the request body.
       requestBody:
         required: true
         content:
@@ -2255,7 +2290,8 @@ paths:
                 document_front:
                   type: string
                   format: binary
-                  description: Photo of the passport data page. JPG or PNG, max 5MB.
+                  description:
+                    Photo of the passport data page. JPG or PNG, max 5MB.
                 selfie_image:
                   type: string
                   format: binary
@@ -2273,9 +2309,9 @@ paths:
       summary: Document Verification — Canada Passport
       operationId: documentVerificationCanadaPassport
       description: >
-        Extract identity details from a Canadian passport using OCR, plus
-        a required face match against a selfie. document_type and country
-        are fixed by this URL — no need to send them in the request body.
+        Extract identity details from a Canadian passport using OCR, plus a
+        required face match against a selfie. document_type and country are
+        fixed by this URL — no need to send them in the request body.
       requestBody:
         required: true
         content:
@@ -2287,7 +2323,8 @@ paths:
                 document_front:
                   type: string
                   format: binary
-                  description: Photo of the passport data page. JPG or PNG, max 5MB.
+                  description:
+                    Photo of the passport data page. JPG or PNG, max 5MB.
                 selfie_image:
                   type: string
                   format: binary
@@ -2305,9 +2342,9 @@ paths:
       summary: Document Verification — USA Passport
       operationId: documentVerificationUsaPassport
       description: >
-        Extract identity details from a US passport using OCR, plus a
-        required face match against a selfie. document_type and country
-        are fixed by this URL — no need to send them in the request body.
+        Extract identity details from a US passport using OCR, plus a required
+        face match against a selfie. document_type and country are fixed by this
+        URL — no need to send them in the request body.
       requestBody:
         required: true
         content:
@@ -2319,7 +2356,8 @@ paths:
                 document_front:
                   type: string
                   format: binary
-                  description: Photo of the passport data page. JPG or PNG, max 5MB.
+                  description:
+                    Photo of the passport data page. JPG or PNG, max 5MB.
                 selfie_image:
                   type: string
                   format: binary
@@ -2337,10 +2375,9 @@ paths:
       summary: Document Verification — Cote d'Ivoire Passport
       operationId: documentVerificationCoteDIvoirePassport
       description: >
-        Extract identity details from a Cote d'Ivoire passport using OCR,
-        plus a required face match against a selfie. document_type and
-        country are fixed by this URL — no need to send them in the
-        request body.
+        Extract identity details from a Cote d'Ivoire passport using OCR, plus a
+        required face match against a selfie. document_type and country are
+        fixed by this URL — no need to send them in the request body.
       requestBody:
         required: true
         content:
@@ -2352,7 +2389,8 @@ paths:
                 document_front:
                   type: string
                   format: binary
-                  description: Photo of the passport data page. JPG or PNG, max 5MB.
+                  description:
+                    Photo of the passport data page. JPG or PNG, max 5MB.
                 selfie_image:
                   type: string
                   format: binary
@@ -2370,10 +2408,10 @@ paths:
       summary: Document Verification — UK Passport
       operationId: documentVerificationUkPassport
       description: >
-        Extract identity details from a UK passport using OCR, plus a
-        required face match against a selfie. document_type and country
-        are fixed by this URL — no need to send them in the request body.
-        UK document verification currently supports passports only.
+        Extract identity details from a UK passport using OCR, plus a required
+        face match against a selfie. document_type and country are fixed by this
+        URL — no need to send them in the request body. UK document verification
+        currently supports passports only.
       requestBody:
         required: true
         content:
@@ -2385,7 +2423,8 @@ paths:
                 document_front:
                   type: string
                   format: binary
-                  description: Photo of the passport data page. JPG or PNG, max 5MB.
+                  description:
+                    Photo of the passport data page. JPG or PNG, max 5MB.
                 selfie_image:
                   type: string
                   format: binary

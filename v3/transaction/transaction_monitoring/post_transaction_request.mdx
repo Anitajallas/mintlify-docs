@@ -294,7 +294,7 @@ These fields are required for every `transaction_type`.
     | `merchant_details` | object | No | Merchant information |
     | `merchant_details.merchant_name` | string | No | Name of the merchant |
     | `merchant_details.merchant_location` | string | No | Location of the merchant |
-    | `merchant_details.merchant_code` | string | No | Merchant category code (MCC) |
+    | `merchant_details.merchant_mcc` | string | No | Merchant category code (MCC) |
     | `run_kyc` | boolean | No | Run a KYC check on the customer. Defaults to `false` |
 
     #### Example
@@ -318,7 +318,7 @@ These fields are required for every `transaction_type`.
         "merchant_details": {
           "merchant_name": "ABC Stores",
           "merchant_location": "Lagos, Nigeria",
-          "merchant_code": "5813"
+          "merchant_mcc": "5813"
         },
         "customer_details": {
           "customer_name": "Imagine Dragons",
@@ -359,7 +359,7 @@ These fields are required for every `transaction_type`.
           merchant_details: {
             merchant_name: "ABC Stores",
             merchant_location: "Lagos, Nigeria",
-            merchant_code: "5813",
+            merchant_mcc: "5813",
           },
           customer_details: {
             customer_name: "Imagine Dragons",
@@ -403,7 +403,7 @@ These fields are required for every `transaction_type`.
             "merchant_details": {
                 "merchant_name": "ABC Stores",
                 "merchant_location": "Lagos, Nigeria",
-                "merchant_code": "5813",
+                "merchant_mcc": "5813",
             },
             "customer_details": {
                 "customer_name": "Imagine Dragons",
