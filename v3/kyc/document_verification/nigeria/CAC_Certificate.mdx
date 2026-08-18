@@ -2,7 +2,7 @@
 title: "CAC Certificate"
 sidebarTitle: "CAC Certificate"
 description: "Extract business registration details from a CAC Certificate of Incorporation using OCR."
-openapi: "POST /api/onboarding/document_verification"
+openapi: "POST /api/onboarding/document_verification/nigeria/cac_certificate"
 ---
 
 Verify a business's CAC Certificate of Incorporation by uploading a photo — no manual RC number entry required. OCR extraction only. This document doesn't carry a face photo, so `data.photo` is omitted from the response entirely — face match isn't available for this document type; a `selfie_image` submitted alongside it is accepted but ignored (`face_match.attempted: false`).
@@ -11,10 +11,14 @@ Verify a business's CAC Certificate of Incorporation by uploading a photo — no
   Only `document_front` is needed for this document.
 </Note>
 
+<Note>
+  This endpoint is currently disabled pending relaunch and returns a 400 error until re-enabled.
+</Note>
+
 ## Endpoint
 
 ```
-POST /api/onboarding/document_verification
+POST /api/onboarding/document_verification/nigeria/cac_certificate
 ```
 
 ## Request
@@ -30,29 +34,23 @@ POST /api/onboarding/document_verification
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|--------------|
-| `document_type` | string | Yes | `cac_certificate` |
-| `country` | string | Yes | `nigeria` |
 | `document_front` | file | Yes | Photo of the CAC certificate. JPG or PNG, max 5MB |
 
 ### Example
 
 <CodeGroup>
 ```bash cURL
-curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/document_verification" \
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/document_verification/nigeria/cac_certificate" \
   -H "x-access-token: YOUR_SECRET_KEY" \
-  -F "document_type=cac_certificate" \
-  -F "country=nigeria" \
   -F "document_front=@/path/to/cac_certificate.jpg"
 ```
 
 ```javascript Node.js
 const formData = new FormData();
-formData.append("document_type", "cac_certificate");
-formData.append("country", "nigeria");
 formData.append("document_front", fs.createReadStream("/path/to/cac_certificate.jpg"));
 
 const response = await fetch(
-  "https://adhere-api.smartcomply.com/api/onboarding/document_verification",
+  "https://adhere-api.smartcomply.com/api/onboarding/document_verification/nigeria/cac_certificate",
   {
     method: "POST",
     headers: { "x-access-token": "YOUR_SECRET_KEY" },
@@ -66,9 +64,8 @@ const data = await response.json();
 import requests
 
 response = requests.post(
-    "https://adhere-api.smartcomply.com/api/onboarding/document_verification",
+    "https://adhere-api.smartcomply.com/api/onboarding/document_verification/nigeria/cac_certificate",
     headers={"x-access-token": "YOUR_SECRET_KEY"},
-    data={"document_type": "cac_certificate", "country": "nigeria"},
     files={"document_front": open("/path/to/cac_certificate.jpg", "rb")},
 )
 data = response.json()

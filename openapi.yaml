@@ -50,6 +50,59 @@ components:
               message:
                 type: string
                 example: Authentication credentials were not provided.
+    DocumentVerificationSuccess:
+      description: Document details extracted successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: "success"
+              data:
+                type: object
+                properties:
+                  valid: { type: boolean }
+                  first_name: { type: string }
+                  last_name: { type: string }
+                  full_name: { type: string }
+                  date_of_birth: { type: string }
+                  gender: { type: string }
+                  nationality: { type: string }
+                  address: { type: string }
+                  id_number: { type: string }
+                  serial_number: { type: string }
+                  id_type: { type: string }
+                  document_type: { type: string }
+                  expiry_date: { type: string }
+                  issue_date: { type: string }
+                  is_expired: { type: boolean }
+                  photo:
+                    type: string
+                    description: Base64-encoded face photo extracted from the document. Absent for document types with no face photo (cac_certificate, utility_bill).
+                  extra_fields:
+                    type: object
+                    description: Every other field OCR read from the document that doesn't have its own dedicated field above. Varies by document_type and country.
+                  face_match:
+                    type: object
+                    description: Present only when selfie_image was supplied.
+                    properties:
+                      attempted: { type: boolean }
+                      verified:
+                        type: boolean
+                        nullable: true
+                        description: "true/false if the comparison ran; null if it couldn't (see reason)."
+                      confidence_percentage: { type: number }
+                      selfie_image:
+                        type: string
+                        description: URL of the uploaded selfie.
+                      reason:
+                        type: string
+                        description: Present when verified is null — explains why the comparison couldn't run or complete.
+              message:
+                type: string
+                example: "Document details retrieved successfully"
 
 tags:
   - name: Nigeria KYC
@@ -1819,7 +1872,7 @@ paths:
   /api/onboarding/document_verification:
     post:
       tags: [Document Verification]
-      summary: Document Verification
+      summary: Document Verification (generic)
       operationId: documentVerification
       description: >
         Extract identity details from a photo of a document using OCR,
@@ -1829,7 +1882,15 @@ paths:
         utility_bill. Fallback for the number-lookup checks (Passport,
         Driver's License, NIN with Face, VNIN, Voter's ID) while those
         are unavailable. Which document_type values are valid depends
-        on country — see the Supported Documents table on this page.
+        on country.
+
+
+        A dedicated endpoint exists per country/document-type combination
+        (see the other Document Verification operations below) — prefer
+        those where possible, since document_type and country are baked
+        into the URL instead of the request body. This generic endpoint
+        still works unchanged for existing integrations that already pass
+        document_type/country explicitly.
       requestBody:
         required: true
         content:
@@ -1857,7 +1918,8 @@ paths:
                   example: "passport"
                 country:
                   type: string
-                  enum: [nigeria, kenya, ghana, canada, usa, "cote d'ivoire"]
+                  enum:
+                    [nigeria, kenya, ghana, canada, usa, "cote d'ivoire", uk]
                   description: Country the document was issued in.
                   example: "nigeria"
                 document_front:
@@ -1870,8 +1932,8 @@ paths:
                   description: >
                     Back of the document. Optional for every type, but
                     recommended for two-sided documents (national_id,
-                    kenya_id, drivers_license) — extraction may be less
-                    complete without it.
+                    kenya_id, drivers_license, voters_card) — extraction
+                    may be less complete without it.
                 selfie_image:
                   type: string
                   format: binary
@@ -1883,58 +1945,454 @@ paths:
                     with 400 if selfie_image is missing for any other type.
                     Still-image comparison only, not liveness.
       responses:
-        "200":
-          description: Document details extracted successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: "success"
-                  data:
-                    type: object
-                    properties:
-                      valid: { type: boolean }
-                      first_name: { type: string }
-                      last_name: { type: string }
-                      full_name: { type: string }
-                      date_of_birth: { type: string }
-                      gender: { type: string }
-                      nationality: { type: string }
-                      address: { type: string }
-                      id_number: { type: string }
-                      serial_number: { type: string }
-                      id_type: { type: string }
-                      document_type: { type: string }
-                      expiry_date: { type: string }
-                      issue_date: { type: string }
-                      is_expired: { type: boolean }
-                      photo:
-                        type: string
-                        description: Base64-encoded face photo extracted from the document. Absent for document types with no face photo (cac_certificate, utility_bill).
-                      extra_fields:
-                        type: object
-                        description: Every other field OCR read from the document that doesn't have its own dedicated field above. Varies by document_type and country.
-                      face_match:
-                        type: object
-                        description: Present only when selfie_image was supplied.
-                        properties:
-                          attempted: { type: boolean }
-                          verified:
-                            type: boolean
-                            nullable: true
-                            description: "true/false if the comparison ran; null if it couldn't (see reason)."
-                          confidence_percentage: { type: number }
-                          selfie_image:
-                            type: string
-                            description: URL of the uploaded selfie.
-                          reason:
-                            type: string
-                            description: Present when verified is null — explains why the comparison couldn't run or complete.
-                  message:
-                    type: string
-                    example: "Document details retrieved successfully"
+        "200": { $ref: "#/components/responses/DocumentVerificationSuccess" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/document_verification/nigeria/national_id:
+    post:
+      tags: [Document Verification]
+      summary: Document Verification — Nigeria National ID
+      operationId: documentVerificationNigeriaNationalId
+      description: >
+        Extract identity details from a Nigerian NIN slip or National ID
+        card using OCR, plus a required face match against a selfie.
+        document_type and country are fixed by this URL — no need to send
+        them in the request body.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [document_front]
+              properties:
+                document_front:
+                  type: string
+                  format: binary
+                  description: Front of the NIN slip/card. JPG or PNG, max 5MB.
+                document_back:
+                  type: string
+                  format: binary
+                  description: >
+                    Back of the card. Optional, but recommended — extraction
+                    may be less complete without it.
+                selfie_image:
+                  type: string
+                  format: binary
+                  description: >
+                    A selfie to compare against the face extracted from the
+                    document. JPG or PNG, max 5MB. Required.
+      responses:
+        "200": { $ref: "#/components/responses/DocumentVerificationSuccess" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/document_verification/nigeria/passport:
+    post:
+      tags: [Document Verification]
+      summary: Document Verification — Nigeria Passport
+      operationId: documentVerificationNigeriaPassport
+      description: >
+        Extract identity details from a Nigerian international passport
+        using OCR, plus a required face match against a selfie.
+        document_type and country are fixed by this URL — no need to send
+        them in the request body.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [document_front]
+              properties:
+                document_front:
+                  type: string
+                  format: binary
+                  description: Photo of the passport data page. JPG or PNG, max 5MB.
+                selfie_image:
+                  type: string
+                  format: binary
+                  description: >
+                    A selfie to compare against the face extracted from the
+                    document. JPG or PNG, max 5MB. Required.
+      responses:
+        "200": { $ref: "#/components/responses/DocumentVerificationSuccess" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/document_verification/nigeria/drivers_license:
+    post:
+      tags: [Document Verification]
+      summary: Document Verification — Nigeria Driver's License
+      operationId: documentVerificationNigeriaDriversLicense
+      description: >
+        Extract identity details from a Nigerian driver's license using
+        OCR, plus a required face match against a selfie. document_type
+        and country are fixed by this URL — no need to send them in the
+        request body.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [document_front]
+              properties:
+                document_front:
+                  type: string
+                  format: binary
+                  description: Front of the driver's license. JPG or PNG, max 5MB.
+                document_back:
+                  type: string
+                  format: binary
+                  description: >
+                    Back of the license. Optional, but recommended —
+                    extraction may be less complete without it.
+                selfie_image:
+                  type: string
+                  format: binary
+                  description: >
+                    A selfie to compare against the face extracted from the
+                    document. JPG or PNG, max 5MB. Required.
+      responses:
+        "200": { $ref: "#/components/responses/DocumentVerificationSuccess" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/document_verification/nigeria/voters_card:
+    post:
+      tags: [Document Verification]
+      summary: Document Verification — Nigeria Voter's Card
+      operationId: documentVerificationNigeriaVotersCard
+      description: >
+        Extract identity details from a Nigerian Permanent Voter's Card
+        (PVC) using OCR, plus a required face match against a selfie.
+        document_type and country are fixed by this URL — no need to send
+        them in the request body.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [document_front]
+              properties:
+                document_front:
+                  type: string
+                  format: binary
+                  description: Photo of the PVC. JPG or PNG, max 5MB.
+                document_back:
+                  type: string
+                  format: binary
+                  description: >
+                    Back of the PVC. Optional, but recommended — extraction
+                    may be less complete without it.
+                selfie_image:
+                  type: string
+                  format: binary
+                  description: >
+                    A selfie to compare against the face extracted from the
+                    document. JPG or PNG, max 5MB. Required.
+      responses:
+        "200": { $ref: "#/components/responses/DocumentVerificationSuccess" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/document_verification/nigeria/cac_certificate:
+    post:
+      tags: [Document Verification]
+      summary: Document Verification — Nigeria CAC Certificate
+      operationId: documentVerificationNigeriaCacCertificate
+      description: >
+        Extract company details from a Nigerian CAC certificate using OCR.
+        No face match — CAC certificates don't carry a photo, so
+        selfie_image is not applicable. document_type and country are
+        fixed by this URL — no need to send them in the request body.
+
+
+        Currently disabled pending relaunch — this endpoint returns 400
+        until re-enabled.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [document_front]
+              properties:
+                document_front:
+                  type: string
+                  format: binary
+                  description: Photo of the CAC certificate. JPG or PNG, max 5MB.
+      responses:
+        "200": { $ref: "#/components/responses/DocumentVerificationSuccess" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/document_verification/nigeria/utility_bill:
+    post:
+      tags: [Document Verification]
+      summary: Document Verification — Nigeria Utility Bill
+      operationId: documentVerificationNigeriaUtilityBill
+      description: >
+        Extract address details from a Nigerian utility bill using OCR.
+        No face match — utility bills don't carry a photo, so
+        selfie_image is not applicable. document_type and country are
+        fixed by this URL — no need to send them in the request body.
+
+
+        Currently disabled pending relaunch — this endpoint returns 400
+        until re-enabled.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [document_front]
+              properties:
+                document_front:
+                  type: string
+                  format: binary
+                  description: Photo of the utility bill. JPG or PNG, max 5MB.
+      responses:
+        "200": { $ref: "#/components/responses/DocumentVerificationSuccess" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/document_verification/kenya/kenya_id:
+    post:
+      tags: [Document Verification]
+      summary: Document Verification — Kenya ID
+      operationId: documentVerificationKenyaId
+      description: >
+        Extract identity details from a Kenyan ID card (older laminated
+        design or newer Maisha Card) using OCR, plus a required face match
+        against a selfie. Fields specific to the Maisha Card
+        (serial_number, place_of_issue, expiry date) come back empty on an
+        older card — that's expected, not an error. document_type and
+        country are fixed by this URL — no need to send them in the
+        request body.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [document_front]
+              properties:
+                document_front:
+                  type: string
+                  format: binary
+                  description: Front of the ID card. JPG or PNG, max 5MB.
+                document_back:
+                  type: string
+                  format: binary
+                  description: >
+                    Back of the card. Optional, but recommended — extraction
+                    may be less complete without it.
+                selfie_image:
+                  type: string
+                  format: binary
+                  description: >
+                    A selfie to compare against the face extracted from the
+                    document. JPG or PNG, max 5MB. Required.
+      responses:
+        "200": { $ref: "#/components/responses/DocumentVerificationSuccess" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/document_verification/kenya/passport:
+    post:
+      tags: [Document Verification]
+      summary: Document Verification — Kenya Passport
+      operationId: documentVerificationKenyaPassport
+      description: >
+        Extract identity details from a Kenyan passport using OCR, plus a
+        required face match against a selfie. document_type and country
+        are fixed by this URL — no need to send them in the request body.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [document_front]
+              properties:
+                document_front:
+                  type: string
+                  format: binary
+                  description: Photo of the passport data page. JPG or PNG, max 5MB.
+                selfie_image:
+                  type: string
+                  format: binary
+                  description: >
+                    A selfie to compare against the face extracted from the
+                    document. JPG or PNG, max 5MB. Required.
+      responses:
+        "200": { $ref: "#/components/responses/DocumentVerificationSuccess" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/document_verification/ghana/passport:
+    post:
+      tags: [Document Verification]
+      summary: Document Verification — Ghana Passport
+      operationId: documentVerificationGhanaPassport
+      description: >
+        Extract identity details from a Ghanaian passport using OCR, plus
+        a required face match against a selfie. document_type and country
+        are fixed by this URL — no need to send them in the request body.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [document_front]
+              properties:
+                document_front:
+                  type: string
+                  format: binary
+                  description: Photo of the passport data page. JPG or PNG, max 5MB.
+                selfie_image:
+                  type: string
+                  format: binary
+                  description: >
+                    A selfie to compare against the face extracted from the
+                    document. JPG or PNG, max 5MB. Required.
+      responses:
+        "200": { $ref: "#/components/responses/DocumentVerificationSuccess" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/document_verification/canada/passport:
+    post:
+      tags: [Document Verification]
+      summary: Document Verification — Canada Passport
+      operationId: documentVerificationCanadaPassport
+      description: >
+        Extract identity details from a Canadian passport using OCR, plus
+        a required face match against a selfie. document_type and country
+        are fixed by this URL — no need to send them in the request body.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [document_front]
+              properties:
+                document_front:
+                  type: string
+                  format: binary
+                  description: Photo of the passport data page. JPG or PNG, max 5MB.
+                selfie_image:
+                  type: string
+                  format: binary
+                  description: >
+                    A selfie to compare against the face extracted from the
+                    document. JPG or PNG, max 5MB. Required.
+      responses:
+        "200": { $ref: "#/components/responses/DocumentVerificationSuccess" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/document_verification/usa/passport:
+    post:
+      tags: [Document Verification]
+      summary: Document Verification — USA Passport
+      operationId: documentVerificationUsaPassport
+      description: >
+        Extract identity details from a US passport using OCR, plus a
+        required face match against a selfie. document_type and country
+        are fixed by this URL — no need to send them in the request body.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [document_front]
+              properties:
+                document_front:
+                  type: string
+                  format: binary
+                  description: Photo of the passport data page. JPG or PNG, max 5MB.
+                selfie_image:
+                  type: string
+                  format: binary
+                  description: >
+                    A selfie to compare against the face extracted from the
+                    document. JPG or PNG, max 5MB. Required.
+      responses:
+        "200": { $ref: "#/components/responses/DocumentVerificationSuccess" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/document_verification/cote_d_ivoire/passport:
+    post:
+      tags: [Document Verification]
+      summary: Document Verification — Cote d'Ivoire Passport
+      operationId: documentVerificationCoteDIvoirePassport
+      description: >
+        Extract identity details from a Cote d'Ivoire passport using OCR,
+        plus a required face match against a selfie. document_type and
+        country are fixed by this URL — no need to send them in the
+        request body.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [document_front]
+              properties:
+                document_front:
+                  type: string
+                  format: binary
+                  description: Photo of the passport data page. JPG or PNG, max 5MB.
+                selfie_image:
+                  type: string
+                  format: binary
+                  description: >
+                    A selfie to compare against the face extracted from the
+                    document. JPG or PNG, max 5MB. Required.
+      responses:
+        "200": { $ref: "#/components/responses/DocumentVerificationSuccess" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /api/onboarding/document_verification/uk/passport:
+    post:
+      tags: [Document Verification]
+      summary: Document Verification — UK Passport
+      operationId: documentVerificationUkPassport
+      description: >
+        Extract identity details from a UK passport using OCR, plus a
+        required face match against a selfie. document_type and country
+        are fixed by this URL — no need to send them in the request body.
+        UK document verification currently supports passports only.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [document_front]
+              properties:
+                document_front:
+                  type: string
+                  format: binary
+                  description: Photo of the passport data page. JPG or PNG, max 5MB.
+                selfie_image:
+                  type: string
+                  format: binary
+                  description: >
+                    A selfie to compare against the face extracted from the
+                    document. JPG or PNG, max 5MB. Required.
+      responses:
+        "200": { $ref: "#/components/responses/DocumentVerificationSuccess" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }

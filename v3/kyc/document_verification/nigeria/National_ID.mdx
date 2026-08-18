@@ -2,7 +2,7 @@
 title: "National ID"
 sidebarTitle: "National ID"
 description: "Extract identity details from a Nigerian NIN slip or card using OCR."
-openapi: "POST /api/onboarding/document_verification"
+openapi: "POST /api/onboarding/document_verification/nigeria/national_id"
 ---
 
 Verify a customer's Nigerian National Identification Number slip or card by uploading a photo — no manual NIN entry required. OCR extraction plus a required face match against a selfie — no liveness check (no video, no blink/motion challenge).
@@ -18,7 +18,7 @@ Verify a customer's Nigerian National Identification Number slip or card by uplo
 ## Endpoint
 
 ```
-POST /api/onboarding/document_verification
+POST /api/onboarding/document_verification/nigeria/national_id
 ```
 
 ## Request
@@ -34,20 +34,20 @@ POST /api/onboarding/document_verification
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|--------------|
-| `document_type` | string | Yes | `national_id` |
-| `country` | string | Yes | `nigeria` |
 | `document_front` | file | Yes | Front of the NIN slip/card. JPG or PNG, max 5MB |
 | `document_back` | file | No | Back of the NIN card. JPG or PNG, max 5MB |
 | `selfie_image` | file | Yes | A selfie to compare against the document's face photo. JPG or PNG, max 5MB |
+
+<Note>
+  `document_type` and `country` are not needed — this endpoint is already scoped to Nigerian National ID.
+</Note>
 
 ### Example
 
 <CodeGroup>
 ```bash cURL
-curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/document_verification" \
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/document_verification/nigeria/national_id" \
   -H "x-access-token: YOUR_SECRET_KEY" \
-  -F "document_type=national_id" \
-  -F "country=nigeria" \
   -F "document_front=@/path/to/nin_front.jpg" \
   -F "document_back=@/path/to/nin_back.jpg" \
   -F "selfie_image=@/path/to/selfie.jpg"
@@ -55,14 +55,12 @@ curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/document_verific
 
 ```javascript Node.js
 const formData = new FormData();
-formData.append("document_type", "national_id");
-formData.append("country", "nigeria");
 formData.append("document_front", fs.createReadStream("/path/to/nin_front.jpg"));
 formData.append("document_back", fs.createReadStream("/path/to/nin_back.jpg"));
 formData.append("selfie_image", fs.createReadStream("/path/to/selfie.jpg"));
 
 const response = await fetch(
-  "https://adhere-api.smartcomply.com/api/onboarding/document_verification",
+  "https://adhere-api.smartcomply.com/api/onboarding/document_verification/nigeria/national_id",
   {
     method: "POST",
     headers: { "x-access-token": "YOUR_SECRET_KEY" },
@@ -76,9 +74,8 @@ const data = await response.json();
 import requests
 
 response = requests.post(
-    "https://adhere-api.smartcomply.com/api/onboarding/document_verification",
+    "https://adhere-api.smartcomply.com/api/onboarding/document_verification/nigeria/national_id",
     headers={"x-access-token": "YOUR_SECRET_KEY"},
-    data={"document_type": "national_id", "country": "nigeria"},
     files={
         "document_front": open("/path/to/nin_front.jpg", "rb"),
         "document_back": open("/path/to/nin_back.jpg", "rb"),
