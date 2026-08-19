@@ -15,7 +15,7 @@ The SDK mounts a drop-in widget over your application, handling document capture
 - **CDN & npm Support** — Install via npm/yarn or load directly from a CDN with zero build steps.
 - **Dynamic Routing** — Automatically adapts document and verification requirements from your dashboard configuration.
 - **Single-Use Sessions** — `clientId` is your permanent integration key (from your SDK Config) and is reused for every session. Each `createSession()` call issues a fresh, single-use session token — that token, not the `clientId`, is what's scoped to one verification.
-- **Nigeria & Global Identity** — Supports BVN, NIN, passports, driver's licenses, voter's cards, and other document/data channels enabled in your dashboard.
+- **Multi-Country Identity** — Supports data and document channels across Nigeria (BVN, NIN, passports, driver's licenses, voter's cards, and more), Ghana, Kenya, South Africa, and Cote d'Ivoire, with generic passport verification available for other countries and country-agnostic liveness/face-match checks — exact channels depend on what's enabled in your dashboard.
 - **Two-Sided Document Capture** — Front is always required; back is required, optional, or not offered depending on the document type (e.g. NIN is optional-back, since not every physical NIN document has a usable reverse side).
 - **Hardware Agnostic Liveness** — Uses native webcam and MediaRecorder API for cross-platform compatibility. A single passive scan (blink + natural head movement) — no discrete step-by-step prompts.
 
@@ -44,7 +44,7 @@ const { SmartComplyFlow, SmartComply } = window.SmartComplySDK;
 Other CDN options:
 
 ```html
-<!-- Always the newest release, including any future major version — for
+<!-- Always use the newest release, including any future major version — for
      prototyping, or if you specifically want every change instantly -->
 <script src="https://cdn.jsdelivr.net/npm/smartcomply-web-sdk@latest/dist/smartcomply.browser.js"></script>
 
@@ -261,6 +261,12 @@ const run = async () => {
 
 run();
 ```
+
+<Note>
+  The liveness scan itself has its own **12-second capture window**, separate from the 30-minute session TTL above. This timer starts only when active recording begins — right after the camera has centered on the user's face and briefly re-stabilized (autofocus/exposure) — not from when the camera first opens. From that point, the widget shows a countdown ring around the face oval; the scan must detect the passive liveness signal (blink + natural head movement) within those 12 seconds or it fails with a "Time's Up" screen and a **Try Again** button that restarts the scan using the same liveness entry (no re-charge).
+
+  This timer is entirely local to the browser tab and only runs *during* the active scan — it is cleared the moment the scan resolves (success or timeout) and does not persist, run in the background, or resume if the user leaves and returns. In practice this means: **if the user has already completed the liveness/face step and moved on to another part of the flow (e.g. reviewing their submission), the 12-second window is long finished and irrelevant** — nothing about that step can time out again. The only clock still running at that point is the 30-minute session TTL, which governs the SDK's API calls generally, not the completed scan.
+</Note>
 
 ---
 

@@ -202,7 +202,8 @@ do {
 | Scenario | Cause | Resolution |
 |---|---|---|
 | `401 Unauthorized` | Invalid or missing API key | Check your key in the SmartComply Dashboard |
-| Session expired | Sessions expire after 2 hours and are single-use | Generate a new `clientId` and call `createSession()` again |
+| Session expired | Sessions expire after 30 minutes and are single-use | Generate a new `clientId` and call `createSession()` again |
+| Liveness timed out | The passive liveness scan has its own 12-second capture window, separate from the 30-minute session TTL. The countdown ring only runs during the active scan (once face-centering finishes) and clears as soon as the scan resolves — it does not apply retroactively once the user has finished the liveness step, and doesn't run while the user is elsewhere in the flow | The flow shows a "Time's Up" screen with a retry that reuses the same liveness entry — no need to restart the whole session |
 | Camera permission denied | User denied camera access | The flow view shows a Settings deep-link automatically |
 | Upload failed after retries | Network instability | `maxUploadRetries` exhausted — the failure screen offers a retry |
 | Identity not found | ID number not found or details mismatched (data mode) | User is shown the reason and prompted to re-enter |
