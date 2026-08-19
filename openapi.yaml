@@ -931,17 +931,11 @@ paths:
           application/json:
             schema:
               type: object
-              required: [identification_number, id_type]
+              required: [identification_number]
               properties:
                 identification_number:
                   type: string
-                  description:
-                    Ghana Card, Passport, Voter ID, SSNIT, or Driver's License
-                    number
-                id_type:
-                  type: string
-                  description:
-                    "GhanaCard, Passport, VoterID, SSNIT, or DriversLicense"
+                  description: The customer's Ghana Card number
       responses:
         "200": { description: ID card verified }
         "400": { $ref: "#/components/responses/BadRequest" }

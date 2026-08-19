@@ -39,6 +39,14 @@ Our Loan Fraud Check API allows you to assess the fraud risk of a loan applicati
 }
 ```
 
+For non-Nigeria applicants, omit `bvn` and pass `identifier` (the ID value) and `identifier_type` (the key, e.g. `national_id`, `ghana_card`) instead. This enables multi-country loan fraud assessment.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `bvn` | string | Nigeria only | 11-digit Bank Verification Number. Use `identifier` + `identifier_type` for other countries |
+| `identifier` | string | Non-Nigeria only | Customer identifier for non-Nigeria applicants (e.g. a Kenya national ID number) |
+| `identifier_type` | string | Non-Nigeria only | Key of the identifier type (e.g. `bvn`, `national_id`, `ghana_card`). Required when `identifier` is provided |
+
 200 OK Response
 
 ```json
