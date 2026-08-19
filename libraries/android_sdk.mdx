@@ -12,7 +12,7 @@ The SmartComply Android SDK delivers a fully self-contained identity verificatio
 - **Single-Activity launch** — start verification with one Intent and receive a typed result back
 - **Two verification modes** — document photo capture or ID number data entry, configured from your Dashboard
 - **Guide-box document capture** — frames the ID card precisely so images are always clean and correctly cropped
-- **Liveness detection** — camera-based face challenge system (blink, turn head) runs automatically after identity verification
+- **Liveness detection** — a passive camera scan (blink plus natural head movement) runs automatically after identity verification, with no step-by-step prompts
 - **Dynamic ID types** — channels and fields are fetched live from your Dashboard configuration
 - **Multi-country support** — renders a country picker automatically when more than one country is configured
 - **Dark and light mode** — theme adapts to the system setting; override via the launch intent
@@ -22,7 +22,8 @@ The SmartComply Android SDK delivers a fully self-contained identity verificatio
 ## Requirements
 
 - **Android API 24** (Android 7.0) or later
-- **Kotlin 1.9** or later
+- **Kotlin 2.1** or later — the SDK is compiled with the Kotlin 2.1 toolchain, so an older consumer compiler rejects it
+- **Java 17** — the SDK targets JVM 17
 - **Jetpack Compose** enabled in your module
 
 ---
@@ -64,6 +65,21 @@ android {
 
 ---
 
+## Credentials
+
+Both values come from your Adhere Dashboard and both are permanent. Reuse the same pair for every verification.
+
+| Value | Where to find it | Notes |
+|---|---|---|
+| `apiKey` | **Settings → API Keys** | A 64-character alphanumeric string with no prefix |
+| `clientId` | **Settings → Integrations → SDK Setup**, then the row menu → **Integration → Client ID** | The UUID of your SDK Config. It is issued by Adhere — do not generate one |
+
+<Warning>
+  `clientId` is not a per-attempt value. Generating your own UUID returns `404 SDK_CONFIG_NOT_FOUND` on the very first call, because the server resolves it against an existing SDK Config record.
+</Warning>
+
+---
+
 ## Permissions
 
 The SDK declares these permissions automatically via manifest merge. You do not need to add them manually unless your project uses a custom manifest merge strategy:
@@ -73,7 +89,7 @@ The SDK declares these permissions automatically via manifest merge. You do not 
 <uses-permission android:name="android.permission.INTERNET" />
 ```
 
-The SDK requests the `CAMERA` permission at runtime before the camera is used. Your app does not need to request it separately.
+`SmartComplyActivity` requests the `CAMERA` permission at runtime before it starts the flow, so if you launch through the Activity your app does not need to request it separately. If you embed `SmartComplyFlowScreen` directly, see [Advanced: Custom Host Activity](#advanced-custom-host-activity).
 
 ---
 
@@ -86,7 +102,6 @@ In your `Activity` or `Fragment`:
 ```kotlin
 import androidx.activity.result.contract.ActivityResultContracts
 import com.smartcomply.sdk.ui.SmartComplyActivity
-import com.smartcomply.sdk.types.FlowResult
 
 val verificationLauncher = registerForActivityResult(
     ActivityResultContracts.StartActivityForResult()
@@ -94,15 +109,11 @@ val verificationLauncher = registerForActivityResult(
     val data = result.data ?: return@registerForActivityResult
     when (data.getStringExtra(SmartComplyActivity.RESULT_TYPE)) {
         SmartComplyActivity.TYPE_SUCCESS -> {
-            val entryId      = data.getIntExtra(SmartComplyActivity.RESULT_ENTRY_ID, -1)
-            val status       = data.getStringExtra(SmartComplyActivity.RESULT_STATUS)
-            val verifiedName = data.getStringExtra(SmartComplyActivity.RESULT_VERIFIED_NAME)
-            val idTypeName   = data.getStringExtra(SmartComplyActivity.RESULT_ID_TYPE_NAME)
-            // handle success
-        }
-        SmartComplyActivity.TYPE_FAILURE -> {
-            val errorMsg = data.getStringExtra(SmartComplyActivity.RESULT_ERROR_MSG)
-            // handle error
+            val entryId    = data.getIntExtra(SmartComplyActivity.RESULT_ENTRY_ID, -1)
+            val status     = data.getStringExtra(SmartComplyActivity.RESULT_STATUS)
+            val idTypeName = data.getStringExtra(SmartComplyActivity.RESULT_ID_TYPE_NAME)
+            // The user has finished their part of the flow. `status` is "processing";
+            // the pass or fail verdict arrives later by webhook.
         }
         SmartComplyActivity.TYPE_CANCELLED -> {
             // user pressed back
@@ -115,12 +126,11 @@ val verificationLauncher = registerForActivityResult(
 
 ```kotlin
 import com.smartcomply.sdk.client.Environment
-import java.util.UUID
 
 val intent = SmartComplyActivity.buildIntent(
     from        = this,
-    apiKey      = "pk_live_xxxxxxxxxxxx",   // your SmartComply API key
-    clientId    = UUID.randomUUID().toString(), // unique per verification attempt
+    apiKey      = "YOUR_API_KEY",     // Settings → API Keys
+    clientId    = "YOUR_CLIENT_ID",   // Settings → Integrations → SDK Setup
     environment = Environment.PRODUCTION
 )
 verificationLauncher.launch(intent)
@@ -133,10 +143,9 @@ If you are launching from a composable, use `rememberLauncherForActivityResult`:
 ```kotlin
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
 import com.smartcomply.sdk.ui.SmartComplyActivity
 import com.smartcomply.sdk.client.Environment
-import java.util.UUID
 
 @Composable
 fun StartVerificationButton() {
@@ -147,8 +156,7 @@ fun StartVerificationButton() {
     ) { result ->
         val data = result.data ?: return@rememberLauncherForActivityResult
         when (data.getStringExtra(SmartComplyActivity.RESULT_TYPE)) {
-            SmartComplyActivity.TYPE_SUCCESS   -> { /* handle success */ }
-            SmartComplyActivity.TYPE_FAILURE   -> { /* handle error */ }
+            SmartComplyActivity.TYPE_SUCCESS   -> { /* handle submission */ }
             SmartComplyActivity.TYPE_CANCELLED -> { /* user cancelled */ }
         }
     }
@@ -156,8 +164,8 @@ fun StartVerificationButton() {
     Button(onClick = {
         val intent = SmartComplyActivity.buildIntent(
             from        = context,
-            apiKey      = "pk_live_xxxxxxxxxxxx",
-            clientId    = UUID.randomUUID().toString(),
+            apiKey      = "YOUR_API_KEY",
+            clientId    = "YOUR_CLIENT_ID",
             environment = Environment.PRODUCTION
         )
         launcher.launch(intent)
@@ -184,10 +192,25 @@ fun buildIntent(
 | Parameter | Default | Description |
 |---|---|---|
 | `from` | — | The calling `Context` |
-| `apiKey` | — | Your SmartComply API key — find it in the Dashboard |
-| `clientId` | — | A unique ID per verification attempt — use `UUID.randomUUID().toString()` |
+| `apiKey` | — | Your Adhere API key — find it in the Dashboard |
+| `clientId` | — | Your SDK Config's Client ID from the Dashboard. Permanent — reuse it for every verification |
 | `darkTheme` | `null` | `true` forces dark mode, `false` forces light, `null` follows the device setting |
-| `environment` | `PRODUCTION` | `PRODUCTION` for live verification, `SANDBOX` for testing |
+| `environment` | `PRODUCTION` | See [Environments](#environments) below |
+
+---
+
+## Environments
+
+| Value | Base URL |
+|---|---|
+| `Environment.PRODUCTION` | `https://adhere-api.smartcomply.com` |
+| `Environment.SANDBOX` | `http://localhost:8000` |
+
+`SANDBOX` targets a server running on the handset itself, for local backend development. It is not a hosted test environment. Use `PRODUCTION` for all integration work.
+
+<Note>
+  `SmartComplyActivity.buildIntent` defaults to `PRODUCTION`, but the `SDKConfig` constructor used by the [embedded flow](#advanced-custom-host-activity) defaults to `SANDBOX`. Set `environment` explicitly when you construct `SDKConfig` yourself.
+</Note>
 
 ---
 
@@ -197,31 +220,42 @@ Read from the `Intent` returned to your activity result callback.
 
 | Constant | Type | Present when |
 |---|---|---|
-| `RESULT_TYPE` | `String` | Always — `"success"`, `"failure"`, or `"cancelled"` |
-| `RESULT_ENTRY_ID` | `Int` | `TYPE_SUCCESS` |
-| `RESULT_STATUS` | `String` | `TYPE_SUCCESS` — e.g. `"submitted"`, `"verified"` |
+| `RESULT_TYPE` | `String` | Always — `"success"` or `"cancelled"` |
+| `RESULT_ENTRY_ID` | `Int` | `TYPE_SUCCESS` — the verification's entry ID |
+| `RESULT_STATUS` | `String` | `TYPE_SUCCESS` — `"processing"` |
 | `RESULT_SUBMITTED_AT` | `String` | `TYPE_SUCCESS` — ISO 8601 timestamp |
-| `RESULT_VERIFIED_NAME` | `String` | `TYPE_SUCCESS` — full name from the identity provider, if available |
-| `RESULT_ID_TYPE_NAME` | `String` | `TYPE_SUCCESS` — e.g. `"National ID"`, `"BVN"` |
-| `RESULT_ERROR_MSG` | `String` | `TYPE_FAILURE` |
+| `RESULT_ID_TYPE_NAME` | `String` | `TYPE_SUCCESS` — e.g. `"National Identity Number (NIN)"`, `"Passport"` |
+| `RESULT_ID_NUMBER` | `String` | `TYPE_SUCCESS` — the ID number the user entered, in data mode |
+
+<Note>
+  **The result is a submission receipt, not a verification verdict.** `RESULT_STATUS` is `"processing"` when the user finishes: face matching, document OCR and the government database check all continue after the Activity returns. An entry's status moves through `pending`, `processing`, and then `passed`, `failed` or `expired`. The final outcome arrives via [webhook](/webhooks#identity-verification).
+</Note>
+
+`TYPE_CANCELLED` is returned whenever the user leaves via the back button, including from the success screen. Treat `RESULT_ENTRY_ID` as the only reliable handle on a run, and reconcile the outcome from the webhook.
 
 ---
 
 ## Verification Flow
 
-The SDK steps through these states automatically.
+The SDK steps through these screens automatically.
 
 | Step | Description |
 |---|---|
 | Loading | Session creation and brand config fetch |
 | Welcome | Brand splash, country picker, and ID type selection |
-| Camera Permission | Requests camera permission at runtime before any camera is opened |
-| Document Capture | Camera view for the front (and back, if required) of the ID document |
+| Camera Permission | Requests camera permission at runtime, in document mode |
+| Camera Permission Denied | "Camera Access Required" screen with **Open Settings** and **Go Back** |
+| Document Capture (front) | Camera view with a guide box, a shutter, and **Upload from gallery** |
+| Document Capture (back) | Shown for ID types whose name contains national, driver, resident or voter |
 | ID Input | Form fields for data-mode verification (BVN, NIN, etc.) |
-| Liveness | Live camera challenge — blink, turn head |
-| Processing | Upload and backend verification in progress |
-| Success | Verification complete — shows a summary card, then calls back |
-| Failure | Unrecoverable error — shows the message and a retry button |
+| Liveness | Passive camera scan — blink plus natural head movement, detected without naming the actions |
+| Processing | Upload and backend submission in progress |
+| Success | Submission complete — shows a summary card, then returns the result |
+| Failure | Error screen with a retry button |
+
+### Document images
+
+Document photos are capped at **5 MB** server-side, in JPG or PNG. Photos taken with the in-SDK camera are downscaled and compressed automatically. Images chosen with **Upload from gallery** are uploaded as-is, so a full-resolution phone photo can exceed the limit and fail with `File too large. Maximum size is 5MB.`
 
 ---
 
@@ -231,7 +265,7 @@ The SDK steps through these states automatically.
 data class SDKConfig(
     val apiKey:             String,
     val clientId:           String,
-    val environment:        Environment = Environment.PRODUCTION,
+    val environment:        Environment = Environment.SANDBOX,
     val requestTimeoutMs:   Long        = 30_000L,
     val uploadTimeoutMs:    Long        = 120_000L,
     val maxUploadRetries:   Int         = 3,
@@ -241,27 +275,26 @@ data class SDKConfig(
 
 | Parameter | Default | Description |
 |---|---|---|
-| `apiKey` | — | Your SmartComply API key (required) |
-| `clientId` | — | Unique identifier per verification attempt (required) |
-| `environment` | `PRODUCTION` | `SANDBOX` for testing, `PRODUCTION` for live verification |
-| `requestTimeoutMs` | `30000` | Timeout in milliseconds for standard API calls |
-| `uploadTimeoutMs` | `120000` | Timeout in milliseconds for video upload |
-| `maxUploadRetries` | `3` | Automatic retry attempts on upload failure |
+| `apiKey` | — | Your Adhere API key (required) |
+| `clientId` | — | Your SDK Config's Client ID (required) |
+| `environment` | `SANDBOX` | Set this explicitly — see [Environments](#environments) |
+| `requestTimeoutMs` | `30000` | Timeout in milliseconds for standard API calls, including identity verification |
+| `uploadTimeoutMs` | `120000` | Timeout in milliseconds for image and video upload |
+| `maxUploadRetries` | `3` | Automatic retry attempts when creating a liveness check. The final submit is not retried |
 | `debug` | `false` | Prints verbose network logs to Logcat when `true` |
 
 ---
 
 ## Error Handling
 
-`SmartComplyActivity` handles and displays all error states automatically. Common scenarios:
+`SmartComplyActivity` handles and displays all error states inside the flow — an invalid key, an expired session, or an exhausted upload retry all render the SDK's own failure screen with a **Try Again** button. The Activity returns a result only when the user completes the flow or backs out.
 
 | Scenario | Cause | Resolution |
 |---|---|---|
-| `TYPE_FAILURE` with `"401"` | Invalid or missing API key | Check your key in the SmartComply Dashboard |
-| `TYPE_FAILURE` — session expired | Session tokens have a 30-minute TTL | Generate a new `clientId` on the next launch |
-| `TYPE_FAILURE` — liveness timed out | The passive liveness scan has its own 12-second capture window, separate from the 30-minute session TTL. This timer only runs during the active scan (once the camera has centered and locked onto the face) and is cleared as soon as the scan resolves — it never applies retroactively to a step the user has already finished, and doesn't run while the user is elsewhere in the flow. | The built-in "Time's Up" screen offers a retry against the same liveness entry — no need to restart the whole flow |
-| `TYPE_CANCELLED` | User pressed back | Re-launch when the user is ready to retry |
-| Upload failed | Network instability | The built-in failure screen offers a retry; if retries are exhausted `TYPE_FAILURE` is returned |
+| Failure screen, invalid key | `apiKey` is wrong or the branch is not enabled for onboarding | Check your key in the Adhere Dashboard |
+| Failure screen, no configuration found | `clientId` is not an active SDK Config | Copy the Client ID from **Settings → Integrations → SDK Setup**. Do not generate a UUID |
+| Failure screen, session expired | Session tokens have a 30-minute TTL | Relaunch. A new session is created on each launch; your `clientId` never changes |
+| `TYPE_CANCELLED` | User pressed back, from any screen | Reconcile against the webhook before assuming the user abandoned the flow |
 
 ---
 
@@ -274,13 +307,12 @@ import com.smartcomply.sdk.SmartComply
 import com.smartcomply.sdk.client.SDKConfig
 import com.smartcomply.sdk.client.Environment
 import com.smartcomply.sdk.ui.SmartComplyFlowScreen
-import java.util.UUID
 
 val sdk = SmartComply(
     SDKConfig(
-        apiKey      = "pk_live_xxxxxxxxxxxx",
-        clientId    = UUID.randomUUID().toString(),
-        environment = Environment.PRODUCTION
+        apiKey      = "YOUR_API_KEY",
+        clientId    = "YOUR_CLIENT_ID",
+        environment = Environment.PRODUCTION   // required: SDKConfig defaults to SANDBOX
     )
 )
 
@@ -289,23 +321,24 @@ SmartComplyFlowScreen(
     sdk        = sdk,
     darkTheme  = null,            // null = follow system setting
     onComplete = { result ->
-        // result.entryId, result.status, result.verifiedName, etc.
-    },
-    onError = { message ->
-        // unrecoverable error not handled by the built-in failure screen
+        // result.entryId, result.status, result.submittedAt
     }
 )
 ```
 
 <Warning>
-Your host `Activity` must be a `ComponentActivity` and must be in the foreground with an active window. Embedding `SmartComplyFlowScreen` inside a `Dialog` or bottom sheet will cause the camera to fail on some devices.
+  Your host `Activity` must be a `ComponentActivity` and must be in the foreground with an active window. Embedding `SmartComplyFlowScreen` inside a `Dialog` or bottom sheet will cause the camera to fail on some devices.
+</Warning>
+
+<Warning>
+  **Request `CAMERA` yourself before entering the flow.** The composable only routes through its own permission screen in document mode. In data mode it goes straight from ID input to liveness, so if the permission has not been granted the camera never opens. `SmartComplyActivity` does not have this problem because it requests the permission up front for both modes.
 </Warning>
 
 ---
 
 ## ProGuard / R8
 
-The SDK ships with its own consumer ProGuard rules. If you see obfuscation-related issues, add to your `proguard-rules.pro`:
+The SDK does not ship consumer ProGuard rules, and it resolves kotlinx.serialization serializers reflectively. If you minify your release build, add these rules to your `proguard-rules.pro`:
 
 ```
 -keep class com.smartcomply.sdk.** { *; }

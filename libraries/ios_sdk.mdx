@@ -12,11 +12,11 @@ The SmartComply iOS SDK is a native Swift library that delivers a fully self-con
 - **Drop-in SwiftUI view** — `SmartComplyFlowView` manages the entire verification flow with no UI code required
 - **Two verification modes** — document photo capture or ID number data entry, configured from your Dashboard
 - **Guide-box document capture** — crops exactly what falls inside the ID card frame so the image sent to the backend is always clean
-- **Liveness detection** — face challenge system (blink, turn head) runs automatically after identity verification
+- **Liveness detection** — a passive face scan (blink plus natural head movement) runs automatically after identity verification, with no step-by-step prompts
 - **Dynamic ID types** — channels and fields are fetched live from your Dashboard configuration
 - **Multi-country support** — renders a country picker automatically when more than one country is configured
 - **Dark and light mode** — theme adapts to the system colour scheme; override with `preferredColorScheme`
-- **Automatic retry** — handles upload retries and session errors internally
+- **Automatic upload retry** — transient upload failures are retried internally
 
 ---
 
@@ -25,7 +25,7 @@ The SmartComply iOS SDK is a native Swift library that delivers a fully self-con
 - **iOS 16.0** or later
 - **Swift 5.9** or later
 - **Xcode 15** or later
-- **iPhone X or later** — liveness detection requires a front-facing TrueDepth camera
+- **A physical device that supports ARKit face tracking.** Liveness gates on `ARFaceTrackingConfiguration.isSupported`, which covers iPhone X and later as well as A12 and later devices without a TrueDepth camera. Liveness cannot run in the Simulator
 
 ---
 
@@ -68,25 +68,46 @@ Add the following key to your app's `Info.plist`:
 <string>Camera access is required to photograph your ID document and complete liveness verification.</string>
 ```
 
+This is the only usage-description key the SDK needs. It records no audio, and the **Upload from library** control uses `PHPickerViewController`, which runs out of process and requires no photo-library key.
+
+---
+
+## Credentials
+
+Both values come from your Adhere Dashboard and both are permanent. Reuse the same pair for every verification.
+
+| Value | Where to find it | Notes |
+|---|---|---|
+| `apiKey` | **Settings → API Keys** | A 64-character alphanumeric string with no prefix |
+| `clientId` | **Settings → Integrations → SDK Setup**, then the row menu → **Integration → Client ID** | The UUID of your SDK Config. It is issued by Adhere — do not generate one |
+
+<Warning>
+  `clientId` is not a per-attempt value. Generating your own UUID returns `404 SDK_CONFIG_NOT_FOUND` on the very first call, because the server resolves it against an existing SDK Config record.
+</Warning>
+
 ---
 
 ## Quick Start
 
 ### 1. Create the SDK instance
 
-Create a `SmartComply` instance once — for example in your view model or app entry point. Generate a fresh `clientId` (UUID) for each new verification attempt.
+Create a `SmartComply` instance once, for example in your view model or app entry point.
 
 ```swift
 import SmartComplySDK
 
 let sdk = SmartComply(
     config: SDKConfig(
-        apiKey:      "pk_live_xxxxxxxxxxxx",
-        clientId:    UUID().uuidString,       // unique per verification attempt
+        apiKey:      "YOUR_API_KEY",
+        clientId:    "YOUR_CLIENT_ID",
         environment: .production
     )
 )
 ```
+
+<Warning>
+  Always pass `environment` explicitly. `SDKConfig` defaults to `.sandbox`, which points at `http://localhost:8000` — see [Environments](#environments).
+</Warning>
 
 ### 2. Present the flow view
 
@@ -97,7 +118,13 @@ import SmartComplySDK
 
 struct ContentView: View {
     @State private var showVerification = false
-    let sdk = SmartComply(config: SDKConfig(apiKey: "pk_live_...", clientId: UUID().uuidString))
+    let sdk = SmartComply(
+        config: SDKConfig(
+            apiKey:      "YOUR_API_KEY",
+            clientId:    "YOUR_CLIENT_ID",
+            environment: .production
+        )
+    )
 
     var body: some View {
         Button("Verify Identity") {
@@ -107,10 +134,7 @@ struct ContentView: View {
             SmartComplyFlowView(sdk: sdk) { result in
                 showVerification = false
                 print("Entry ID:", result.entryId)
-                print("Status:", result.status)
-                if let name = result.verifiedName {
-                    print("Verified name:", name)
-                }
+                print("Status:", result.status)   // "processing"
             }
         }
     }
@@ -124,8 +148,8 @@ The SDK manages the entire flow automatically. The exact steps depend on the ver
 2. Displays a welcome screen with your brand name and ID type cards
 3. Shows a country picker if multiple countries are configured
 4. User photographs the front of their ID inside the guide box
-5. Photographs the back if required (National ID, Driver's Licence, Voter's Card)
-6. Runs liveness face challenges
+5. Photographs the back if the ID type's name contains national, driver, resident or voter
+6. Runs the passive liveness scan
 7. Returns a `FlowResult` to your completion handler
 
 **Data mode** (ID number entry):
@@ -134,8 +158,19 @@ The SDK manages the entire flow automatically. The exact steps depend on the ver
 3. Shows a country picker if multiple countries are configured
 4. User enters their ID number and any required fields
 5. Identity is verified against the national database
-6. Runs liveness face challenges
+6. Runs the passive liveness scan
 7. Returns a `FlowResult` to your completion handler
+
+---
+
+## Environments
+
+| Value | Base URL |
+|---|---|
+| `.production` | `https://adhere-api.smartcomply.com` |
+| `.sandbox` | `http://localhost:8000` |
+
+`.sandbox` targets a server running on the device itself, for local backend development. It is not a hosted test environment. Use `.production` for all integration work.
 
 ---
 
@@ -157,13 +192,13 @@ public struct SDKConfig {
 
 | Parameter | Default | Description |
 |---|---|---|
-| `apiKey` | — | Your SmartComply API key (required) |
-| `clientId` | — | A unique identifier per verification attempt — use `UUID().uuidString` (required) |
-| `environment` | `.sandbox` | `.sandbox` for testing; `.production` for live traffic |
-| `requestTimeout` | `30` | Timeout in seconds for standard API calls |
-| `uploadTimeout` | `120` | Timeout in seconds for video upload |
-| `maxUploadRetries` | `3` | Number of automatic retry attempts on upload failure |
-| `debug` | `false` | Prints verbose network logs to the console when `true` |
+| `apiKey` | — | Your Adhere API key (required) |
+| `clientId` | — | Your SDK Config's Client ID (required) |
+| `environment` | `.sandbox` | Set this explicitly — see [Environments](#environments) |
+| `requestTimeout` | `30` | Timeout in seconds for standard API calls, including identity verification |
+| `uploadTimeout` | `120` | Timeout in seconds for image and video upload |
+| `maxUploadRetries` | `3` | Total upload attempts, not retries after the first. Only transport failures are retried; an API error is surfaced immediately |
+| `debug` | `false` | Writes verbose network logs to the unified log (`os.Logger`, subsystem `com.smartcomply.sdk`) when `true`. Read them in Console.app — they do not appear in Xcode's console pane |
 
 ---
 
@@ -173,15 +208,17 @@ Delivered to your `onComplete` closure when the user completes the flow in-app.
 
 ```swift
 public struct FlowResult {
-    public let entryId: Int          // liveness entry ID — use this to query results via the API
-    public let status: String        // e.g. "submitted"
-    public let submittedAt: String?  // ISO 8601 timestamp
-    public let idTypeName: String?   // e.g. "National ID", "BVN"
-    public let verifiedName: String? // name returned by the identity provider (data mode only)
+    public let entryId: Int                              // verification entry ID
+    public let status: String                            // "processing"
+    public let submittedAt: String?                      // ISO 8601 timestamp
+    public let verificationResult: VerifyIdentityResponse? // data mode only
+    public let idTypeName: String?                       // e.g. "National Identity Number (NIN)"
 }
 ```
 
-> **Final verification results are delivered via webhook.** Once the backend completes processing, SmartComply sends a webhook event to the URL configured in your Dashboard. Set up your webhook endpoint to receive the final status, extracted fields, and any failure reasons. See the [Webhooks](/webhooks) guide for the full payload reference.
+<Note>
+  **The result is a submission receipt, not a verification verdict.** `status` is `"processing"` when the user finishes: face matching, document OCR and the government database check all continue after `onComplete` fires. An entry's status moves through `pending`, `processing`, and then `passed`, `failed` or `expired`. The final status, the extracted fields and any failure reason are delivered to the webhook URL configured on your SDK Config. See [Webhooks](/webhooks#identity-verification) for the full payload.
+</Note>
 
 ---
 
@@ -193,17 +230,19 @@ public struct FlowResult {
 do {
     _ = try await sdk.createSession()
 } catch let error as SDKError {
-    print("API error \(error.statusCode):", error.message)
+    print("API error \(error.statusCode) [\(error.errorCode ?? "-")]:", error.message)
 } catch {
     print("Network error:", error.localizedDescription)
 }
 ```
 
+`SDKError` exposes `message: String`, `statusCode: Int` and `errorCode: String?`. `AuthError` and `NetworkError` both subclass it, so a single `catch let error as SDKError` covers every case.
+
 | Scenario | Cause | Resolution |
 |---|---|---|
-| `401 Unauthorized` | Invalid or missing API key | Check your key in the SmartComply Dashboard |
-| Session expired | Sessions expire after 30 minutes and are single-use | Generate a new `clientId` and call `createSession()` again |
-| Liveness timed out | The passive liveness scan has its own 12-second capture window, separate from the 30-minute session TTL. The countdown ring only runs during the active scan (once face-centering finishes) and clears as soon as the scan resolves — it does not apply retroactively once the user has finished the liveness step, and doesn't run while the user is elsewhere in the flow | The flow shows a "Time's Up" screen with a retry that reuses the same liveness entry — no need to restart the whole session |
+| `401`, `errorCode` `AUTH_ERROR` | Invalid or missing API key. Every authentication failure, including a `403`, is reported with this code and a status of `401` | Check your key in the Adhere Dashboard |
+| `404`, `errorCode` `SDK_CONFIG_NOT_FOUND` | `clientId` is not an active SDK Config | Copy the Client ID from **Settings → Integrations → SDK Setup**. Do not generate a UUID |
+| Session expired | Session tokens live 30 minutes | Present the flow again. A new session is created each time; your `clientId` never changes |
 | Camera permission denied | User denied camera access | The flow view shows a Settings deep-link automatically |
 | Upload failed after retries | Network instability | `maxUploadRetries` exhausted — the failure screen offers a retry |
 | Identity not found | ID number not found or details mismatched (data mode) | User is shown the reason and prompted to re-enter |

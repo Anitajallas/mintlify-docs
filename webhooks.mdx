@@ -36,19 +36,35 @@ To start receiving webhook notifications, follow these steps to configure your e
   </Step>
 </Steps>
 
+<Note>
+  There are two independent webhook channels, each with its own URL and its own signing secret:
+
+  - **Module events** (transaction monitoring, KYC) go to the URL set under **Integrations**, and are signed with the **Hash Key** you set there.
+  - **Identity verification** (`liveness.completed`, sent for every Web, Android and iOS SDK run) goes to the webhook URL set on your **SDK Config**, and is signed with that config's own webhook secret. It is generated for you, not set by you.
+
+  Both use the same `X-Adhere-Signature` header and the same HMAC-SHA256 scheme described below.
+</Note>
+
 ## Security & Verification
 
-All webhook requests from Adhere include a `X-Adhere-Signature` header. This header contains the HMAC SHA256 signature of the request body, signed with your Hash Key.
+All webhook requests from Adhere include an `X-Adhere-Signature` header in the form `sha256=<signature>`, where the signature is the **lowercase hex** HMAC-SHA256 digest of the request body.
 
 ### Verifying Signatures
 
 To ensure that a webhook request is genuinely from Adhere, you should verify the signature before processing the payload.
 
+<Warning>
+  Compute the HMAC over the **raw request body bytes**, exactly as received. Adhere signs a compact JSON serialisation with no whitespace between separators, so re-serialising a parsed payload produces different bytes and the signature will never match.
+</Warning>
+
+<Note>
+  For `liveness.completed`, the signing key is your SDK Config's webhook secret **with the dashes removed** — a 32-character hex string, not the dashed UUID form. The examples below strip them for you.
+</Note>
+
 <CodeGroup>
 ```python Python
 import hmac
 import hashlib
-import base64
 from flask import request, abort
 
 def verify_webhook(request, hash_key):
@@ -56,18 +72,16 @@ def verify_webhook(request, hash_key):
     if not sig_header:
         abort(401, "Missing signature")
 
-    # The header format is "sha256=<signature>"
+    # The header format is "sha256=<hex digest>"
     _, _, received_sig = sig_header.partition("=")
 
     # Compute the HMAC SHA256 digest of the raw request body
     raw_body = request.get_data()
-    digest = hmac.new(
-        hash_key.encode("utf-8"),
+    expected_sig = hmac.new(
+        hash_key.replace("-", "").encode("utf-8"),
         raw_body,
         hashlib.sha256
-    ).digest()
-
-    expected_sig = base64.b64encode(digest).decode("utf-8")
+    ).hexdigest()
 
     if not hmac.compare_digest(received_sig, expected_sig):
         abort(401, "Invalid signature")
@@ -76,17 +90,25 @@ def verify_webhook(request, hash_key):
 ```javascript Node.js
 const crypto = require('crypto');
 
+// `req.rawBody` must be the unparsed body. With Express:
+//   app.use(express.json({ verify: (req, res, buf) => { req.rawBody = buf; } }));
 function verifyWebhook(req, hashKey) {
-  const signature = req.headers['x-hub-signature'];
+  const signature = req.headers['x-adhere-signature'];
   if (!signature) {
     throw new Error('Missing signature');
   }
 
-  const [algo, receivedSig] = signature.split('=');
-  const hmac = crypto.createHmac('sha256', hashKey);
-  const digest = hmac.update(req.rawBody).digest('base64');
+  const receivedSig = signature.replace(/^sha256=/, '');
+  const expected = crypto
+    .createHmac('sha256', hashKey.replace(/-/g, ''))
+    .update(req.rawBody)
+    .digest('hex');
 
-  if (receivedSig !== digest) {
+  const valid =
+    receivedSig.length === expected.length &&
+    crypto.timingSafeEqual(Buffer.from(receivedSig, 'hex'), Buffer.from(expected, 'hex'));
+
+  if (!valid) {
     throw new Error('Invalid signature');
   }
 }
@@ -94,9 +116,10 @@ function verifyWebhook(req, hashKey) {
 
 ```php PHP
 function verify_webhook($request_body, $hash_key, $received_sig) {
-    $expected_sig = base64_encode(hash_hmac('sha256', $request_body, $hash_key, true));
+    $received_sig = preg_replace('/^sha256=/', '', $received_sig);
+    $expected_sig = hash_hmac('sha256', $request_body, str_replace('-', '', $hash_key));
 
-    if (!hash_equals($received_sig, $expected_sig)) {
+    if (!hash_equals($expected_sig, $received_sig)) {
         http_response_code(401);
         exit("Invalid signature");
     }
@@ -107,8 +130,8 @@ function verify_webhook($request_body, $hash_key, $received_sig) {
 import (
 	"crypto/hmac"
 	"crypto/sha256"
-	"encoding/base64"
-	"io/ioutil"
+	"encoding/hex"
+	"io"
 	"net/http"
 	"strings"
 )
@@ -119,17 +142,17 @@ func verifyWebhook(w http.ResponseWriter, r *http.Request, hashKey string) bool 
 		return false
 	}
 
-	// Header format is "sha256=<signature>"
-	parts := strings.Split(sigHeader, "=")
+	// Header format is "sha256=<hex digest>"
+	parts := strings.SplitN(sigHeader, "=", 2)
 	if len(parts) != 2 {
 		return false
 	}
 	receivedSig := parts[1]
 
-	body, _ := ioutil.ReadAll(r.Body)
-	h := hmac.New(sha256.New, []byte(hashKey))
+	body, _ := io.ReadAll(r.Body)
+	h := hmac.New(sha256.New, []byte(strings.ReplaceAll(hashKey, "-", "")))
 	h.Write(body)
-	expectedSig := base64.StdEncoding.EncodeToString(h.Sum(nil))
+	expectedSig := hex.EncodeToString(h.Sum(nil))
 
 	return hmac.Equal([]byte(receivedSig), []byte(expectedSig))
 }
@@ -141,15 +164,19 @@ using System.Text;
 
 public bool VerifyWebhook(string requestBody, string hashKey, string receivedSig)
 {
-    var keyBytes = Encoding.UTF8.GetBytes(hashKey);
+    receivedSig = receivedSig.StartsWith("sha256=") ? receivedSig.Substring(7) : receivedSig;
+
+    var keyBytes = Encoding.UTF8.GetBytes(hashKey.Replace("-", ""));
     var bodyBytes = Encoding.UTF8.GetBytes(requestBody);
 
     using (var hmac = new HMACSHA256(keyBytes))
     {
         var hashBytes = hmac.ComputeHash(bodyBytes);
-        var expectedSig = Convert.ToBase64String(hashBytes);
+        var expectedSig = Convert.ToHexString(hashBytes).ToLowerInvariant();
 
-        return expectedSig == receivedSig;
+        return CryptographicOperations.FixedTimeEquals(
+            Encoding.UTF8.GetBytes(expectedSig),
+            Encoding.UTF8.GetBytes(receivedSig));
     }
 }
 ```
@@ -161,7 +188,7 @@ public bool VerifyWebhook(string requestBody, string hashKey, string receivedSig
 
 ## Event Payload Structure
 
-All webhooks follow a consistent JSON structure:
+Module events follow a consistent JSON structure:
 
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
@@ -169,6 +196,8 @@ All webhooks follow a consistent JSON structure:
 | `module` | string | The Adhere module that triggered the event (e.g., `transaction_monitoring`, `kyc`). |
 | `event` | string | The specific event type. |
 | `data` | object | The actual payload data (e.g., transaction details, KYC results). |
+
+[Identity verification](#identity-verification) does not use this envelope. Its payload is flat, with the verification fields at the top level.
 
 ## Supported Events
 
@@ -226,6 +255,122 @@ All webhooks follow a consistent JSON structure:
         }
         ```
 
+### Identity Verification
+
+*   **Sent by**: every Web, Android and iOS SDK verification
+*   **Delivered to**: the webhook URL on your **SDK Config** (not the Integrations URL)
+*   **Events**:
+    *   `liveness.completed`: fired once per verification, after face matching and, for document runs, OCR have finished.
+
+This payload is **flat** — there is no `success` / `module` / `data` wrapper.
+
+```json
+POST https://your-server.com/webhook
+Content-Type: application/json
+X-Adhere-Signature: sha256=<hmac-sha256-hex>
+
+{
+  "event": "liveness.completed",
+  "verification_id": 42,
+  "verification_type": "data_verification",
+  "status": "passed",
+  "failure_reason": null,
+  "timestamp": "2026-08-08T10:15:00.000Z",
+  "subject": {
+    "identifier": "12345678901",
+    "identifier_type": "National Identity Number (NIN)",
+    "country": "nigeria"
+  },
+  "biometrics": {
+    "liveness_verified": true,
+    "face_match": {
+      "attempted": true,
+      "verified": true,
+      "confidence_percentage": 70.0,
+      "threshold_percentage": 35.0
+    },
+    "selfie_url": "https://.../autoshot.jpg",
+    "face_analysis": {
+      "gender": "Female",
+      "dominant_emotion": "neutral",
+      "face_quality": {
+        "face_detected": true,
+        "face_confidence": 0.98,
+        "blur_score": 142.3,
+        "is_blurry": false
+      }
+    }
+  },
+  "activity": {
+    "session_id": "da7623bd-9158-4b56-a9e4-4bccf3c0133f",
+    "started_at": "2026-08-08T10:12:00.000Z",
+    "submitted_at": "2026-08-08T10:14:30.000Z",
+    "completed_at": "2026-08-08T10:15:00.000Z",
+    "duration_seconds": 180
+  },
+  "request_context": {
+    "ip": { "address": "102.67.1.66", "city": "Lagos", "country_code": "NG" },
+    "device": { "user_agent": "Mozilla/5.0 ...", "type": "desktop", "os": "Windows" }
+  },
+  "customer_profile": {
+    "first_name": "AMARA",
+    "last_name": "OKAFOR",
+    "other_name": null,
+    "date_of_birth": "01-Jan-1997",
+    "age": 29,
+    "gender": "Female",
+    "id_number": "12345678901",
+    "serial_number": null,
+    "occupation": null,
+    "place_of_birth": null,
+    "place_of_live": "...",
+    "date_of_issue": null,
+    "photo_url": null
+  }
+}
+```
+
+`verification_type` is `data_verification`, `document_verification` or `liveness_only`. For a **document** run the same top-level shape applies, with a `document` block (OCR fields plus a document-to-selfie face match) in place of `customer_profile`:
+
+```json
+"document": {
+  "status": "verified",
+  "document_type": "passport",
+  "is_expired": false,
+  "first_name": "AMARA",
+  "last_name": "OKAFOR",
+  "date_of_birth": "1997-01-01",
+  "age": 29,
+  "gender": "Female",
+  "nationality": "NGA",
+  "document_number": "A12345678",
+  "expiry_date": "2030-06-15",
+  "issue_date": "2020-06-15",
+  "issuing_authority": "...",
+  "document_url": "https://.../document.jpg",
+  "document_back_url": null,
+  "face_match": {
+    "attempted": true,
+    "verified": true,
+    "confidence_percentage": 55.0,
+    "threshold_percentage": 35.0,
+    "reason": null,
+    "selfie_url": "https://.../autoshot.jpg",
+    "document_face_url": "https://.../document_face.jpg"
+  }
+}
+```
+
+<Note>
+  `document` also carries `place_of_birth`, `place_of_issue`, `address`, `district`, `division`, `location`, `sub_location`, `serial_number`, and `barcode_number` — `null` unless the specific document type carries that field. `face_match.reason` is populated with a user-facing explanation when `verified` is `false` or the match was skipped.
+</Note>
+
+<Warning>
+  `status: "passed"` means **the check ran to completion — not that the person matched**. A face mismatch, a low confidence score, or an expired document still reports `status: "passed"`, with the real outcome recorded in `biometrics.face_match.verified` (and `document.is_expired` for document verification). `status: "failed"` is reserved for cases where the check itself could not run: a service error, no selfie captured, or a government database rejection. Never gate access on `status` alone — always check `face_match.verified`.
+</Warning>
+
+`verification_id` matches the `entryId` returned by the SDK's completion callback.
+
 ## Testing Locally
 
 Before deploying to production, we recommend testing your webhook implementation locally.
@@ -237,8 +382,8 @@ Before deploying to production, we recommend testing your webhook implementation
 ## Best Practices
 
 *   **Acknowledge Immediately**: Your server should return a `200 OK` response as quickly as possible. Heavy processing should be handled asynchronously using a task queue.
-*   **Handle Retries**: Adhere will retry failed webhook deliveries (non-2xx responses) up to 3 times with an exponential backoff.
-*   **Use Idempotency**: Ensure your system can handle the same webhook multiple times safely. Use the event's unique ID to track processed events.
+*   **Handle Retries**: Adhere will retry failed webhook deliveries (non-2xx responses) up to 3 times, with an exponential backoff that caps at 10 minutes.
+*   **Use Idempotency**: Ensure your system can handle the same webhook multiple times safely. There is no separate delivery ID — de-duplicate on the resource identifier in the payload (`verification_id` for `liveness.completed`, `data.id` for module events).
 
 <Note>
   If your server does not return a 2xx response, Adhere will consider the delivery as failed and will attempt to retry.
