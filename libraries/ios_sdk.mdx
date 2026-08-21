@@ -31,31 +31,39 @@ The SmartComply iOS SDK is a native Swift library that delivers a fully self-con
 
 ## Installation
 
-The SDK is distributed via Swift Package Manager.
+The SDK is distributed via Swift Package Manager as a precompiled **XCFramework**. The package
+you add contains the Swift Package manifest; Xcode downloads the binary automatically and embeds
+it in your app.
 
 ### Xcode (recommended)
 
 1. Open your project in Xcode
 2. Go to **File → Add Package Dependencies**
-3. Enter the repository URL: `https://github.com/386konsult/ios-sdk`
-4. Select **Exact Version** and enter `1.0.0`
+3. Enter the repository URL: `https://github.com/386konsult/smartcomply-ios-sdk`
+4. Select **Up to Next Major Version** and enter `1.0.1`
 5. Click **Add Package** and select the **SmartComplySDK** library
 
 ### Package.swift
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/386konsult/ios-sdk", exact: "1.0.0")
+    .package(url: "https://github.com/386konsult/smartcomply-ios-sdk", from: "1.0.1")
 ],
 targets: [
     .target(
         name: "YourApp",
         dependencies: [
-            .product(name: "SmartComplySDK", package: "ios-sdk")
+            .product(name: "SmartComplySDK", package: "smartcomply-ios-sdk")
         ]
     )
 ]
 ```
+
+<Note>
+  The package URL is `smartcomply-ios-sdk`, which is not the same as the SDK's source repository.
+  It ships both device and simulator slices, so the same dependency builds for a physical device
+  and the Simulator without extra configuration.
+</Note>
 
 ---
 
@@ -213,8 +221,17 @@ public struct FlowResult {
     public let submittedAt: String?                      // ISO 8601 timestamp
     public let verificationResult: VerifyIdentityResponse? // data mode only
     public let idTypeName: String?                       // e.g. "National Identity Number (NIN)"
+    public let verifiedName: String?                     // see the note below
+    public let idNumber: String?                         // see the note below
 }
 ```
+
+<Warning>
+  `verifiedName` and `idNumber` are **not populated in 1.0.1** — both are always `nil`, on either
+  verification mode. Read the verified identity from the webhook payload instead, which carries the
+  full customer profile for data verification and the OCR-extracted document fields for document
+  verification. Do not build UI that depends on these two properties.
+</Warning>
 
 <Note>
   **The result is a submission receipt, not a verification verdict.** `status` is `"processing"` when the user finishes: face matching, document OCR and the government database check all continue after `onComplete` fires. An entry's status moves through `pending`, `processing`, and then `passed`, `failed` or `expired`. The final status, the extracted fields and any failure reason are delivered to the webhook URL configured on your SDK Config. See [Webhooks](/webhooks#identity-verification) for the full payload.
