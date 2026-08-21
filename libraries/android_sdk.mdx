@@ -49,9 +49,15 @@ In your app or feature module `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("io.github.386konsult:android-sdk:1.0.2")
+    implementation("io.github.386konsult:android-sdk:1.0.5")
 }
 ```
+
+<Warning>
+**Use 1.0.5 or later.** 1.0.3 and 1.0.4 crash the host app: both read HTTP responses on
+the main thread, and 1.0.3 additionally crashes when the SDK is closed from a UI callback.
+Neither can be withdrawn from Maven Central, so pin deliberately.
+</Warning>
 
 ### 3 — Enable Compose
 
@@ -338,27 +344,34 @@ SmartComplyFlowScreen(
 
 ---
 
-## ProGuard / R8
+## Dependencies
 
-**From 1.0.2 there is nothing to do.** The SDK ships consumer ProGuard rules inside the AAR, so R8 applies them to your app automatically. They keep the Ktor plugins the SDK installs, the OkHttp engine, the generated kotlinx.serialization serializers, and `SmartComplyActivity`, and they suppress the SLF4J warnings that `ktor-client-logging` would otherwise produce.
+From **1.0.3** the SDK no longer depends on Ktor. It uses OkHttp directly, so your own
+Ktor version cannot conflict with ours.
 
 <Warning>
-  **On 1.0.1 and earlier, a minified build crashes on launch:**
+**On 1.0.2 and earlier, an app that uses Ktor 3 crashes on launch:**
 
-  ```
-  java.lang.NoClassDefFoundError: Failed resolution of:
-  Lio/ktor/client/plugins/contentnegotiation/ContentNegotiation;
-  ```
+```
+java.lang.NoClassDefFoundError: Failed resolution of:
+Lio/ktor/client/plugins/contentnegotiation/ContentNegotiation;
+    at com.smartcomply.sdk.SmartComply.<init>
+```
 
-  Those versions shipped no consumer rules, so R8 stripped classes the SDK resolves at runtime. Upgrade to 1.0.2, or add the rules yourself:
+Those versions were compiled against Ktor 2.3.12 and exported it, so Gradle resolved the
+conflict to your newer Ktor and linked our code against a version where the classes we
+call had been removed. There is no workaround on your side. Upgrade to 1.0.5.
+</Warning>
 
-  ```
-  -keep class io.ktor.** { *; }
-  -keep class kotlinx.serialization.** { *; }
-  -keepclassmembers class io.ktor.** { volatile <fields>; }
-  -keep class com.smartcomply.sdk.** { *; }
-  -keepattributes *Annotation*
-  -dontwarn io.ktor.**
-  -dontwarn org.slf4j.**
-  ```
+---
+
+## ProGuard / R8
+
+**There is nothing to do.** The SDK ships consumer ProGuard rules inside the AAR, so R8
+applies them to your app automatically. They keep the generated kotlinx.serialization
+serializers and `SmartComplyActivity`; OkHttp ships its own rules in its jar.
+
+<Warning>
+**On 1.0.1 and earlier, a minified build crashes on launch** with a `NoClassDefFoundError`
+on a Ktor class. Those versions shipped no consumer rules. Upgrade to 1.0.5.
 </Warning>
