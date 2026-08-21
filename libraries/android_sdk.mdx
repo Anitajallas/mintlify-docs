@@ -49,7 +49,7 @@ In your app or feature module `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("io.github.386konsult:android-sdk:1.0.0")
+    implementation("io.github.386konsult:android-sdk:1.0.2")
 }
 ```
 
@@ -243,7 +243,7 @@ The SDK steps through these screens automatically.
 |---|---|
 | Loading | Session creation and brand config fetch |
 | Welcome | Brand splash, country picker, and ID type selection |
-| Camera Permission | Requests camera permission at runtime, in document mode |
+| Camera Permission | Requests camera permission at runtime, in both modes, before the ID-input or capture step |
 | Camera Permission Denied | "Camera Access Required" screen with **Open Settings** and **Go Back** |
 | Document Capture (front) | Camera view with a guide box, a shutter, and **Upload from gallery** |
 | Document Capture (back) | Shown for ID types whose name contains national, driver, resident or voter |
@@ -330,17 +330,35 @@ SmartComplyFlowScreen(
   Your host `Activity` must be a `ComponentActivity` and must be in the foreground with an active window. Embedding `SmartComplyFlowScreen` inside a `Dialog` or bottom sheet will cause the camera to fail on some devices.
 </Warning>
 
-<Warning>
-  **Request `CAMERA` yourself before entering the flow.** The composable only routes through its own permission screen in document mode. In data mode it goes straight from ID input to liveness, so if the permission has not been granted the camera never opens. `SmartComplyActivity` does not have this problem because it requests the permission up front for both modes.
-</Warning>
+<Note>
+  **You do not need to request `CAMERA` yourself.** From **1.0.2** the composable routes through its own permission screen in both verification modes, before the ID-input or document-capture step, and skips it silently once the permission is granted.
+
+  On **1.0.1 and earlier** data mode never asked, so if the permission had not already been granted the camera never opened: the liveness preview stayed black and the flow ended with `Recording failed: Recording finalized with error code 4`. If you are pinned to an older version, request `CAMERA` yourself before entering the flow, or launch through `SmartComplyActivity`, which always asked for both modes.
+</Note>
 
 ---
 
 ## ProGuard / R8
 
-The SDK does not ship consumer ProGuard rules, and it resolves kotlinx.serialization serializers reflectively. If you minify your release build, add these rules to your `proguard-rules.pro`:
+**From 1.0.2 there is nothing to do.** The SDK ships consumer ProGuard rules inside the AAR, so R8 applies them to your app automatically. They keep the Ktor plugins the SDK installs, the OkHttp engine, the generated kotlinx.serialization serializers, and `SmartComplyActivity`, and they suppress the SLF4J warnings that `ktor-client-logging` would otherwise produce.
 
-```
--keep class com.smartcomply.sdk.** { *; }
--keepattributes *Annotation*
-```
+<Warning>
+  **On 1.0.1 and earlier, a minified build crashes on launch:**
+
+  ```
+  java.lang.NoClassDefFoundError: Failed resolution of:
+  Lio/ktor/client/plugins/contentnegotiation/ContentNegotiation;
+  ```
+
+  Those versions shipped no consumer rules, so R8 stripped classes the SDK resolves at runtime. Upgrade to 1.0.2, or add the rules yourself:
+
+  ```
+  -keep class io.ktor.** { *; }
+  -keep class kotlinx.serialization.** { *; }
+  -keepclassmembers class io.ktor.** { volatile <fields>; }
+  -keep class com.smartcomply.sdk.** { *; }
+  -keepattributes *Annotation*
+  -dontwarn io.ktor.**
+  -dontwarn org.slf4j.**
+  ```
+</Warning>
