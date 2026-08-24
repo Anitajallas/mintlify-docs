@@ -40,14 +40,14 @@ it in your app.
 1. Open your project in Xcode
 2. Go to **File → Add Package Dependencies**
 3. Enter the repository URL: `https://github.com/386konsult/smartcomply-ios-sdk`
-4. Select **Up to Next Major Version** and enter `1.0.1`
+4. Select **Up to Next Major Version** and enter `1.0.2`
 5. Click **Add Package** and select the **SmartComplySDK** library
 
 ### Package.swift
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/386konsult/smartcomply-ios-sdk", from: "1.0.1")
+    .package(url: "https://github.com/386konsult/smartcomply-ios-sdk", from: "1.0.2")
 ],
 targets: [
     .target(
@@ -227,11 +227,20 @@ public struct FlowResult {
 ```
 
 <Warning>
-  `verifiedName` and `idNumber` are **not populated in 1.0.1** — both are always `nil`, on either
-  verification mode. Read the verified identity from the webhook payload instead, which carries the
-  full customer profile for data verification and the OCR-extracted document fields for document
-  verification. Do not build UI that depends on these two properties.
+  `verifiedName` and `idNumber` are **always `nil` on 1.0.1 and earlier**, in both verification
+  modes. If you are pinned to one of those versions, read the verified identity from the webhook
+  payload instead and do not build UI that depends on these two properties. Upgrade to 1.0.2.
 </Warning>
+
+<Note>
+  **From 1.0.2 both are populated.** In document verification they come from the OCR of the captured
+  document; in data verification they come from the identity provider's response. `verifiedName` is
+  the full name where the provider sends one, otherwise it is composed from the first, middle and
+  last name fields.
+
+  They are still only as good as the submission that produced them, so treat them as a receipt of
+  what was read, not as a verdict. The webhook remains the source of truth for the final outcome.
+</Note>
 
 <Note>
   **The result is a submission receipt, not a verification verdict.** `status` is `"processing"` when the user finishes: face matching, document OCR and the government database check all continue after `onComplete` fires. An entry's status moves through `pending`, `processing`, and then `passed`, `failed` or `expired`. The final status, the extracted fields and any failure reason are delivered to the webhook URL configured on your SDK Config. See [Webhooks](/webhooks#identity-verification) for the full payload.
