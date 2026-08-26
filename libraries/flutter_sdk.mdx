@@ -20,7 +20,7 @@ A powerful Flutter package for Adhere identity verification and facial liveness 
 - **Dynamic Client Configuration** — Fetches available document types securely from your Adhere Dashboard rules.
 - **One-Time Use Policy System** — Verifications are securely bound utilizing a single-use parameter.
 - **Identity Onboarding** — Verifies BVN & NIN directly via national APIs, or scans Passports & National ID Cards.
-- **Liveness Detection** — A passive face scan (blink plus natural head movement) with a 20 second cap, backed by Google ML Kit. The actions are never named to the user.
+- **Liveness Detection**: A passive face scan (blink plus natural head movement) with a 20 second cap, backed by Google ML Kit. The actions are never named to the user.
 
 ## Installation
 
@@ -102,11 +102,11 @@ The SDK handles everything automatically:
 
 ## Advanced Usage (Headless Architecture)
 
-If you are building your own UI from scratch instead of using our wrapper, you drive the endpoints yourself. The Client ID is the one from your dashboard — the same permanent value the wrapper uses:
+If you are building your own UI from scratch instead of using our wrapper, you drive the endpoints yourself. The Client ID is the one from your dashboard: the same permanent value the wrapper uses:
 
 ```dart
 // 1. Open a session with your SDK Config's Client ID.
-//    This is issued by Adhere and is permanent — reuse it for every
+//    This is issued by Adhere and is permanent: reuse it for every
 //    verification. Generating a UUID here returns 404 SDK_CONFIG_NOT_FOUND
 //    on the very first call, because the server resolves it against an
 //    existing SDK Config record.

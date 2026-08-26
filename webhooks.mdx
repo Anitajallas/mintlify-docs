@@ -84,7 +84,7 @@ curl https://adhere-api.smartcomply.com/v1/sdk-config/<config-id>/webhook-secret
 }
 ```
 
-Only the **account administrator** can call this — not an employee with the admin
+Only the **account administrator** can call this, not an employee with the admin
 role, and not the owner of a different account. Every call is logged.
 
 To rotate the secret, `POST` to the same URL. The new value takes effect

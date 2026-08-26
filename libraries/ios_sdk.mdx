@@ -201,22 +201,30 @@ The SDK manages the entire flow automatically. The exact steps depend on the ver
 
 ## Liveness
 
-Two actions are drawn from `.blink` and `.turnHead` in random order and detected **passively**. Both are watched on every frame, neither is named to the user, and the HUD only reports how many are done — there is no prompted sequence.
+Two actions are drawn from `.blink` and `.turnHead` in random order and detected **passively**. Both are watched on every frame, neither is named to the user, and the HUD only reports how many are done: there is no prompted sequence.
 
 | Action | What satisfies it |
 |---|---|
 | `.blink` | Mean eye-closure across both eyes reaching 0.22, for one frame |
 | `.turnHead` | About 7.5 degrees of yaw in either direction, held two frames |
 
-Head yaw is measured against the phone, not against the world, and frames during which the device itself is rotating are not credited — turning the handset does not satisfy the challenge.
+Head yaw is measured against the phone, not against the world, and frames during which the device itself is rotating are not credited: turning the handset does not satisfy the challenge.
 
 The scan has a **20 second cap**.
 
 <Warning>
-  Reaching the cap **fails** the check. Nothing is uploaded and nothing is billed, and the user is offered **Try Again**. Earlier versions submitted anyway and reported success with no actions completed — if you are on 1.0.2 or below, expect that behaviour.
+  Reaching the cap **fails** the check. Nothing is uploaded and nothing is billed, and the user is offered **Try Again**. Earlier versions submitted anyway and reported success with no actions completed: if you are on 1.0.2 or below, expect that behaviour.
 </Warning>
 
 Liveness needs a TrueDepth camera and **cannot run on the Simulator**. Test on an iPhone X or later.
+
+---
+
+## Accessibility
+
+From **1.0.3** the flow honours the user's text size setting (Settings → Accessibility → Display & Text Size → Larger Text). Earlier versions used fixed point sizes throughout, so the setting had no effect on any screen.
+
+Scaling is capped at `.accessibility1`. The oval guide, the document frame and the buttons are sized to fit their content, and the accessibility sizes above that cap overflow them: the bound keeps everything below it usable rather than shipping layouts that break at the top of the range.
 
 ### What "Verification Complete" means
 
@@ -226,7 +234,7 @@ If the backend has not resolved within about 15 seconds, the user sees a neutral
 
 ### Knowing the user gave up
 
-`onComplete` only fires on a verification. Pass the optional `onDismiss` to learn that the flow ended without one — the user closed the failure screen, or an error left nothing to retry. Passing it also adds a **Close** control to the failure screen, which otherwise offers only **Try Again**.
+`onComplete` only fires on a verification. Pass the optional `onDismiss` to learn that the flow ended without one: the user closed the failure screen, or an error left nothing to retry. Passing it also adds a **Close** control to the failure screen, which otherwise offers only **Try Again**.
 
 ```swift
 SmartComplyFlowView(
@@ -273,7 +281,7 @@ Delivered to your `onComplete` closure when the user completes the flow in-app.
 ```swift
 public struct FlowResult {
     public let entryId: Int                              // verification entry ID
-    public let status: String                            // "processing"
+    public let status: String                            // "passed", or "processing": see below
     public let submittedAt: String?                      // ISO 8601 timestamp
     public let verificationResult: VerifyIdentityResponse? // data mode only
     public let idTypeName: String?                       // e.g. "National Identity Number (NIN)"
@@ -281,6 +289,17 @@ public struct FlowResult {
     public let idNumber: String?                         // see the note below
 }
 ```
+
+<Note>
+  **`status` is the entry's real status from 1.0.3.** The SDK polls the backend for the terminal
+  outcome before showing anything, so `"passed"` means passed. A run the backend has not resolved
+  within about 15 seconds gives `"processing"`: the entry exists and is billed, and the outcome
+  arrives on your webhook. A run that **failed** never reaches `onComplete`: the user is shown the
+  failure screen, and `onDismiss` fires if you passed one.
+
+  On 1.0.2 and earlier `status` was always `"processing"` and the success screen claimed "Verified"
+  regardless of what the backend decided, including for runs the anti-spoofing check had rejected.
+</Note>
 
 <Warning>
   `verifiedName` and `idNumber` are **always `nil` on 1.0.1 and earlier**, in both verification
@@ -299,7 +318,15 @@ public struct FlowResult {
 </Note>
 
 <Note>
-  **The result is a submission receipt, not a verification verdict.** `status` is `"processing"` when the user finishes: face matching, document OCR and the government database check all continue after `onComplete` fires. An entry's status moves through `pending`, `processing`, and then `passed`, `failed` or `expired`. The final status, the extracted fields and any failure reason are delivered to the webhook URL configured on your SDK Config. See [Webhooks](/webhooks#identity-verification) for the full payload.
+  **The webhook is still the system of record.** An entry's status moves through `pending`,
+  `processing`, and then `passed`, `failed` or `expired`, and the final status, the extracted fields
+  and any failure reason are delivered to the webhook URL configured on your SDK Config. See
+  [Webhooks](/webhooks#identity-verification) for the full payload.
+
+  What changed in 1.0.3 is that `onComplete` no longer fires *ahead* of that verdict. It waits for
+  the backend to reach a terminal status, so `status` agrees with what the webhook will say. Reconcile
+  from the webhook for anything you persist: a run that has not resolved in about 15 seconds still
+  returns `"processing"`.
 </Note>
 
 ---
@@ -318,11 +345,25 @@ do {
 }
 ```
 
-`SDKError` exposes `message: String`, `statusCode: Int` and `errorCode: String?`. `AuthError` and `NetworkError` both subclass it, so a single `catch let error as SDKError` covers every case.
+`SDKError` exposes `message: String`, `statusCode: Int` and `errorCode: String?`. `AuthError`, `NetworkError` and `AlreadySubmittedError` all subclass it, so a single `catch let error as SDKError` covers every case.
+
+<Note>
+  **From 1.0.3 the error carries the backend's own code.** `errorCode` was previously hardcoded to
+  `AUTH_ERROR` for every 401 and 403, so `SDK_CONFIG_NOT_FOUND`, an expired session and an invalid
+  key were indistinguishable and host logic keyed on the code could not work. Validation failures
+  likewise reported only the generic `"One or more fields failed validation."`; the per-field reason
+  is now surfaced.
+
+  `AlreadySubmittedError` is raised when an upload retry is rejected as a duplicate, which means the
+  original attempt reached the server and the entry exists and was billed: the response was simply
+  lost coming back. The bundled flow treats it as such and reads the outcome rather than reporting a
+  failure. Handle it the same way if you drive the modules yourself.
+</Note>
 
 | Scenario | Cause | Resolution |
 |---|---|---|
-| `401`, `errorCode` `AUTH_ERROR` | Invalid or missing API key. Every authentication failure, including a `403`, is reported with this code and a status of `401` | Check your key in the Adhere Dashboard |
+| `401`, `errorCode` from the backend | Invalid or missing API key. On 1.0.2 and earlier every authentication failure reported `AUTH_ERROR` regardless of cause; from 1.0.3 the backend's own code is passed through, and `AUTH_ERROR` is only the fallback | Check your key in the Adhere Dashboard |
+| `errorCode` `MISSING_API_KEY` / `MISSING_CLIENT_ID` | A blank or whitespace-only credential. On 1.0.2 and earlier this was a `precondition()` that **terminated the host app**, uncatchable and live in Release builds | Thrown from the first call that needs credentials: catch it like any other `SDKError` |
 | `404`, `errorCode` `SDK_CONFIG_NOT_FOUND` | `clientId` is not an active SDK Config | Copy the Client ID from **Settings → Integrations → SDK Setup**. Do not generate a UUID |
 | Session expired | Session tokens live 30 minutes | Present the flow again. A new session is created each time; your `clientId` never changes |
 | Camera permission denied | User denied camera access | The flow view shows a Settings deep-link automatically |

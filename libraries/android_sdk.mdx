@@ -248,16 +248,21 @@ Read from the `Intent` returned to your activity result callback.
 |---|---|---|
 | `RESULT_TYPE` | `String` | Always — `"success"` or `"cancelled"` |
 | `RESULT_ENTRY_ID` | `Int` | `TYPE_SUCCESS` — the verification's entry ID |
-| `RESULT_STATUS` | `String` | `TYPE_SUCCESS` — `"processing"` |
+| `RESULT_STATUS` | `String` | `TYPE_SUCCESS`: `"passed"`, or `"processing"` if the backend had not resolved in time |
 | `RESULT_SUBMITTED_AT` | `String` | `TYPE_SUCCESS` — ISO 8601 timestamp |
+| `RESULT_VERIFIED_NAME` | `String` | `TYPE_SUCCESS`: the verified name, when the backend returned one |
 | `RESULT_ID_TYPE_NAME` | `String` | `TYPE_SUCCESS` — e.g. `"National Identity Number (NIN)"`, `"Passport"` |
-| `RESULT_ID_NUMBER` | `String` | `TYPE_SUCCESS` — the ID number the user entered, in data mode |
+| `RESULT_ID_NUMBER` | `String` | `TYPE_SUCCESS`: the ID number, from the user in data mode or from OCR in document mode |
 
 <Note>
-  **The result is a submission receipt, not a verification verdict.** `RESULT_STATUS` is `"processing"` when the user finishes: face matching, document OCR and the government database check all continue after the Activity returns. An entry's status moves through `pending`, `processing`, and then `passed`, `failed` or `expired`. The final outcome arrives via [webhook](/webhooks#identity-verification).
+  **`RESULT_STATUS` is the entry's real status.** The SDK polls the backend for the terminal outcome before it returns, so `"passed"` means passed. A run the backend has not resolved within about 15 seconds returns `"processing"`: the entry exists and is billed, and the outcome arrives on your [webhook](/webhooks#identity-verification). A run that **failed** never reaches this callback: the user is shown the failure screen instead.
+
+  This changed in **1.0.7**. Before that `RESULT_STATUS` was always `"processing"` and the success screen claimed "Verified" regardless of what the backend went on to decide, so the result was a submission receipt rather than a verdict.
 </Note>
 
-`TYPE_CANCELLED` is returned whenever the user leaves via the back button, including from the success screen. Treat `RESULT_ENTRY_ID` as the only reliable handle on a run, and reconcile the outcome from the webhook.
+<Warning>
+  Also changed in **1.0.7**: pressing back on the success screen now returns `TYPE_SUCCESS`, not `TYPE_CANCELLED`. It previously reported a cancellation for a verification that had succeeded and been billed. If your `TYPE_CANCELLED` branch assumed "nothing happened", it was already wrong, but it will now be reached less often.
+</Warning>
 
 ---
 
@@ -272,16 +277,16 @@ The SDK steps through these screens automatically.
 | Camera Permission | Requests camera permission at runtime, in both modes, before the ID-input or capture step |
 | Camera Permission Denied | "Camera Access Required" screen with **Open Settings** and **Go Back** |
 | Document Capture (front) | Camera view with a guide box, a shutter, and **Upload from gallery** |
-| Document Capture (back) | Shown when the channel's `requires_back_side` says so — the server decides, not the app |
+| Document Capture (back) | Shown when the channel's `requires_back_side` says so. The server decides, not the app |
 | ID Input | Form fields for data-mode verification (BVN, NIN, etc.) |
-| Liveness | Passive camera scan — see [Liveness](#liveness) below |
+| Liveness | Passive camera scan: see [Liveness](#liveness) below |
 | Processing | Upload and backend submission in progress |
-| Success | Backend outcome confirmed — shows a summary card, then returns the result |
+| Success | Backend outcome confirmed: shows a summary card, then returns the result |
 | Failure | Error screen with a retry button |
 
 ### Document images
 
-Document photos are capped at **5 MB** server-side, in JPG or PNG. Both routes — the in-SDK camera and **Upload from gallery** — are downscaled to 1600px on the long edge and re-compressed before upload, so a full-resolution phone photo no longer fails with `File too large. Maximum size is 5MB.`
+Document photos are capped at **5 MB** server-side, in JPG or PNG. Both routes, the in-SDK camera and **Upload from gallery**, are downscaled to 1600px on the long edge and re-compressed before upload, so a full-resolution phone photo no longer fails with `File too large. Maximum size is 5MB.`
 
 Before the review screen the SDK checks the photo contains a face and legible text. A failure is a **warning, not a block**: the user can still confirm, because a false negative would otherwise trap someone holding a genuine but unusual ID. The backend OCR is the check that actually rejects.
 
@@ -289,7 +294,7 @@ Before the review screen the SDK checks the photo contains a face and legible te
 
 ## Liveness
 
-Two actions are drawn from `BLINK` and `TURN_HEAD` in random order and detected **passively**. Both are watched on every frame, neither is named to the user, and the HUD only reports how many are done — there is no prompted sequence.
+Two actions are drawn from `BLINK` and `TURN_HEAD` in random order and detected **passively**. Both are watched on every frame, neither is named to the user, and the HUD only reports how many are done: there is no prompted sequence.
 
 | Action | What satisfies it |
 |---|---|
@@ -299,7 +304,7 @@ Two actions are drawn from `BLINK` and `TURN_HEAD` in random order and detected 
 The scan has a **20 second cap**.
 
 <Warning>
-  Reaching the cap **fails** the check. Nothing is uploaded and nothing is billed, and the user is offered **Try Again**. Earlier versions submitted anyway and reported success with no actions completed — if you are on 1.0.6 or below, expect that behaviour.
+  Reaching the cap **fails** the check. Nothing is uploaded and nothing is billed, and the user is offered **Try Again**. Earlier versions submitted anyway and reported success with no actions completed: if you are on 1.0.6 or below, expect that behaviour.
 </Warning>
 
 ### What "Success" means
@@ -318,6 +323,7 @@ data class SDKConfig(
     val clientId:           String,
     val environment:        Environment = Environment.SANDBOX,
     val requestTimeoutMs:   Long        = 30_000L,
+    val verifyTimeoutMs:    Long        = 90_000L,
     val uploadTimeoutMs:    Long        = 120_000L,
     val maxUploadRetries:   Int         = 3,
     val debug:              Boolean     = false
@@ -329,7 +335,8 @@ data class SDKConfig(
 | `apiKey` | — | Your Adhere API key (required) |
 | `clientId` | — | Your SDK Config's Client ID (required) |
 | `environment` | `SANDBOX` | Set this explicitly — see [Environments](#environments) |
-| `requestTimeoutMs` | `30000` | Timeout in milliseconds for standard API calls, including identity verification |
+| `requestTimeoutMs` | `30000` | Timeout in milliseconds for standard API calls |
+| `verifyTimeoutMs` | `90000` | Timeout for `onboarding/verify` alone, which blocks on a government identity provider. At the 30s default it intermittently timed out client-side while the server completed the check and billed for it |
 | `uploadTimeoutMs` | `120000` | Timeout in milliseconds for image and video upload |
 | `maxUploadRetries` | `3` | Automatic retry attempts when creating a liveness check. The final submit is not retried |
 | `debug` | `false` | Prints verbose network logs to Logcat when `true` |
