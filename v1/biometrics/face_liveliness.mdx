@@ -3,7 +3,7 @@ Face authentication with liveliness check
 
 Liveliness check ensures the person being authenticated is physically present and not just a photograph or pre-recorded video.
 
-Send a **live selfie video** for true liveness detection. The endpoint will run blink and motion analysis on the video to confirm the user is real. If you send a static image, the endpoint will fall back to comparison mode and compare the image to itself, which will always appear to pass but does not prove liveness.
+Send a live selfie — either a short video or a single photo — and the endpoint scores it directly for liveness. Video formats: `.mp4`, `.mov`, `.webm`, `.avi`, `.m4v` — anything else is treated as a still image. Both are genuinely checked; you don't need to send video specifically.
 
 #### Request Endpoint
 
