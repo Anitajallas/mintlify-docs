@@ -180,6 +180,62 @@ The SDK manages the entire flow automatically. The exact steps depend on the ver
 
 `.sandbox` targets a server running on the device itself, for local backend development. It is not a hosted test environment. Use `.production` for all integration work.
 
+<Warning>
+  `.sandbox` is a plain **http://** target, which App Transport Security blocks by default. Without an opt-in the flow dies at the loading screen with an ATS error that reads like a backend outage. If you genuinely need it, scope the exception to localhost rather than reaching for `NSAllowsArbitraryLoads`, which weakens every connection your app makes.
+
+```xml
+<key>NSAppTransportSecurity</key>
+<dict>
+  <key>NSExceptionDomains</key>
+  <dict>
+    <key>localhost</key>
+    <dict><key>NSExceptionAllowsInsecureHTTPLoads</key><true/></dict>
+  </dict>
+</dict>
+```
+
+  `.production` is HTTPS and needs none of this.
+</Warning>
+
+---
+
+## Liveness
+
+Two actions are drawn from `.blink` and `.turnHead` in random order and detected **passively**. Both are watched on every frame, neither is named to the user, and the HUD only reports how many are done — there is no prompted sequence.
+
+| Action | What satisfies it |
+|---|---|
+| `.blink` | Mean eye-closure across both eyes reaching 0.22, for one frame |
+| `.turnHead` | About 7.5 degrees of yaw in either direction, held two frames |
+
+Head yaw is measured against the phone, not against the world, and frames during which the device itself is rotating are not credited — turning the handset does not satisfy the challenge.
+
+The scan has a **20 second cap**.
+
+<Warning>
+  Reaching the cap **fails** the check. Nothing is uploaded and nothing is billed, and the user is offered **Try Again**. Earlier versions submitted anyway and reported success with no actions completed — if you are on 1.0.2 or below, expect that behaviour.
+</Warning>
+
+Liveness needs a TrueDepth camera and **cannot run on the Simulator**. Test on an iPhone X or later.
+
+### What "Verification Complete" means
+
+The submit call returns `processing`: the backend resolves face matching on a worker moments later. The SDK polls for the terminal outcome before showing anything, so the success screen and `FlowResult.status` reflect what actually happened.
+
+If the backend has not resolved within about 15 seconds, the user sees a neutral **Verification Submitted / Processing** screen rather than a claim either way, and `FlowResult.status` is `processing`. The entry exists and is billed; the outcome arrives on your webhook.
+
+### Knowing the user gave up
+
+`onComplete` only fires on a verification. Pass the optional `onDismiss` to learn that the flow ended without one — the user closed the failure screen, or an error left nothing to retry. Passing it also adds a **Close** control to the failure screen, which otherwise offers only **Try Again**.
+
+```swift
+SmartComplyFlowView(
+    sdk: sdk,
+    onComplete: { result in /* result.status is "passed" */ },
+    onDismiss:  { error in  /* nil means the user simply closed it */ }
+)
+```
+
 ---
 
 ## SDK Configuration

@@ -214,6 +214,26 @@ fun buildIntent(
 
 `SANDBOX` targets a server running on the handset itself, for local backend development. It is not a hosted test environment. Use `PRODUCTION` for all integration work.
 
+<Warning>
+  `SANDBOX` is a plain **http://** target, which Android blocks by default from API 28 onwards. Without an opt-in the flow dies at the loading screen with a network error that looks like a backend outage. If you genuinely need it, scope the exception to localhost rather than reaching for `android:usesCleartextTraffic="true"`, which permits cleartext for every host your app talks to.
+
+```xml
+<!-- res/xml/network_security_config.xml -->
+<network-security-config>
+  <domain-config cleartextTrafficPermitted="true">
+    <domain includeSubdomains="false">localhost</domain>
+    <domain includeSubdomains="false">10.0.2.2</domain>
+  </domain-config>
+</network-security-config>
+```
+
+```xml
+<application android:networkSecurityConfig="@xml/network_security_config" ...>
+```
+
+  `PRODUCTION` is HTTPS and needs none of this.
+</Warning>
+
 <Note>
   `SmartComplyActivity.buildIntent` defaults to `PRODUCTION`, but the `SDKConfig` constructor used by the [embedded flow](#advanced-custom-host-activity) defaults to `SANDBOX`. Set `environment` explicitly when you construct `SDKConfig` yourself.
 </Note>
@@ -252,16 +272,41 @@ The SDK steps through these screens automatically.
 | Camera Permission | Requests camera permission at runtime, in both modes, before the ID-input or capture step |
 | Camera Permission Denied | "Camera Access Required" screen with **Open Settings** and **Go Back** |
 | Document Capture (front) | Camera view with a guide box, a shutter, and **Upload from gallery** |
-| Document Capture (back) | Shown for ID types whose name contains national, driver, resident or voter |
+| Document Capture (back) | Shown when the channel's `requires_back_side` says so — the server decides, not the app |
 | ID Input | Form fields for data-mode verification (BVN, NIN, etc.) |
-| Liveness | Passive camera scan — blink plus natural head movement, detected without naming the actions |
+| Liveness | Passive camera scan — see [Liveness](#liveness) below |
 | Processing | Upload and backend submission in progress |
-| Success | Submission complete — shows a summary card, then returns the result |
+| Success | Backend outcome confirmed — shows a summary card, then returns the result |
 | Failure | Error screen with a retry button |
 
 ### Document images
 
-Document photos are capped at **5 MB** server-side, in JPG or PNG. Photos taken with the in-SDK camera are downscaled and compressed automatically. Images chosen with **Upload from gallery** are uploaded as-is, so a full-resolution phone photo can exceed the limit and fail with `File too large. Maximum size is 5MB.`
+Document photos are capped at **5 MB** server-side, in JPG or PNG. Both routes — the in-SDK camera and **Upload from gallery** — are downscaled to 1600px on the long edge and re-compressed before upload, so a full-resolution phone photo no longer fails with `File too large. Maximum size is 5MB.`
+
+Before the review screen the SDK checks the photo contains a face and legible text. A failure is a **warning, not a block**: the user can still confirm, because a false negative would otherwise trap someone holding a genuine but unusual ID. The backend OCR is the check that actually rejects.
+
+---
+
+## Liveness
+
+Two actions are drawn from `BLINK` and `TURN_HEAD` in random order and detected **passively**. Both are watched on every frame, neither is named to the user, and the HUD only reports how many are done — there is no prompted sequence.
+
+| Action | What satisfies it |
+|---|---|
+| `BLINK` | Mean eye-closure across both eyes reaching 0.22, for one frame |
+| `TURN_HEAD` | About 7.5 degrees of yaw in either direction, held two frames |
+
+The scan has a **20 second cap**.
+
+<Warning>
+  Reaching the cap **fails** the check. Nothing is uploaded and nothing is billed, and the user is offered **Try Again**. Earlier versions submitted anyway and reported success with no actions completed — if you are on 1.0.6 or below, expect that behaviour.
+</Warning>
+
+### What "Success" means
+
+The submit call returns `processing`: the backend resolves face matching on a worker moments later. The SDK polls for the terminal outcome before showing anything, so the success screen and `RESULT_STATUS` reflect what actually happened.
+
+If the backend has not resolved within about 15 seconds, the user sees a neutral **Verification Submitted / Processing** screen rather than a claim either way, and `RESULT_STATUS` is `processing`. The entry exists and is billed; the outcome arrives on your webhook.
 
 ---
 
