@@ -1695,7 +1695,23 @@ paths:
                 business_address: { type: string }
                 identification_type: { type: string, example: "Passport" }
                 identification_number: { type: string }
-                bvn: { type: string }
+                bvn:
+                  {
+                    type: string,
+                    description: "Legacy field, Nigeria only. Superseded by identifier + identifier_type — use those instead for both Nigeria and other countries.",
+                  }
+                identifier:
+                  {
+                    type: number,
+                    description: "Customer identifier value (e.g. BVN for Nigeria, a Kenya national ID number). Use with identifier_type instead of bvn.",
+                    example: 22244545518,
+                  }
+                identifier_type:
+                  {
+                    type: string,
+                    description: "Key of the identifier type (e.g. bvn, national_id, ghana_card). Required when identifier is provided.",
+                    example: "bvn",
+                  }
                 phone_number: { type: string }
                 email_address: { type: string, format: email }
                 employment_type: { type: string }
