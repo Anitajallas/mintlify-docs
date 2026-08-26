@@ -5,7 +5,7 @@ description: "Retrieve enhanced account verification data including account name
 openapi: "POST /api/onboarding/nigeria_kyc/nuban_advanced/"
 ---
 
-The NUBAN Advanced endpoint provides a more comprehensive view of a bank account compared to the standard NUBAN check, returning additional identity data linked to the account.
+The NUBAN Advanced endpoint provides a more comprehensive view of a bank account compared to the standard NUBAN check. In addition to resolving the account name, it compares the account against a `customer_name` you provide and returns a name-match confidence score — useful for confirming that a bank account genuinely belongs to the person or business claiming it.
 
 ## Endpoint
 
@@ -28,6 +28,7 @@ POST /api/onboarding/nigeria_kyc/nuban_advanced/
 |-----------|------|----------|-------------|
 | `account_number` | string | Yes | The 10-digit NUBAN account number |
 | `bank_code` | string | Yes | The bank code (see [NUBAN bank codes](/v3/kyc/nigeria/nuban#bank-codes-reference)) |
+| `customer_name` | string | Yes | The name to check against the registered account holder's name |
 
 ### Example
 
@@ -36,7 +37,7 @@ POST /api/onboarding/nigeria_kyc/nuban_advanced/
 curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/nuban_advanced/" \
   -H "x-access-token: YOUR_SECRET_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"account_number": "0768540312", "bank_code": "035"}'
+  -d '{"account_number": "0768540312", "bank_code": "035", "customer_name": "STEPHEN BADMUS"}'
 ```
 
 ```python Python
@@ -44,7 +45,7 @@ import requests
 response = requests.post(
     "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/nuban_advanced/",
     headers={"x-access-token": "YOUR_SECRET_KEY", "Content-Type": "application/json"},
-    json={"account_number": "0768540312", "bank_code": "035"},
+    json={"account_number": "0768540312", "bank_code": "035", "customer_name": "STEPHEN BADMUS"},
 )
 ```
 </CodeGroup>
@@ -58,6 +59,8 @@ response = requests.post(
 | `data.bank_id` | integer | Internal bank identifier |
 | `data.account_name` | string | Registered account holder name |
 | `data.account_number` | string | Account number that was queried |
+| `data.comparism_data.status` | boolean | Whether `customer_name` matches the registered account holder |
+| `data.comparism_data.confidence` | number | Name-match confidence score (0–1) |
 
 ```json
 {
@@ -65,7 +68,11 @@ response = requests.post(
   "data": {
     "bank_id": 11,
     "account_name": "STEPHEN BADMUS",
-    "account_number": "0768540312"
+    "account_number": "0768540312",
+    "comparism_data": {
+      "status": true,
+      "confidence": 1.0
+    }
   },
   "message": "Nuban details retrieved successfully"
 }
