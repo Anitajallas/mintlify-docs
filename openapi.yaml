@@ -499,7 +499,7 @@ paths:
           application/json:
             schema:
               type: object
-              required: [account_number, bank_code]
+              required: [account_number, bank_code, customer_name]
               properties:
                 account_number:
                   type: string
@@ -507,6 +507,10 @@ paths:
                 bank_code:
                   type: string
                   example: "044"
+                customer_name:
+                  type: string
+                  description: "The name to check against the registered account holder's name"
+                  example: "STEPHEN BADMUS"
       responses:
         "200": { description: NUBAN advanced data retrieved }
         "400": { $ref: "#/components/responses/BadRequest" }

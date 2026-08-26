@@ -100,6 +100,8 @@ SmartComplyFlow.open({
 
 <Note>
   Get your **API Key** and **Client ID** from your [Adhere Dashboard](https://adhere.smartcomply.com) — both come from your SDK Config and are permanent; reuse the same values for every session. What's single-use is the *session token* the SDK obtains internally via `createSession()` (30-minute expiry, revoked after submission) — you never see or manage that token directly through the drop-in widget.
+
+  The widget warns the user 2 minutes before this 30-minute expiry, then automatically shows a "session expired" message and closes itself (firing `onClose`) once the deadline actually passes — with a brief grace period if the user is mid-scan, so an active capture is never torn down mid-flow. If you need a fresh verification after that, call `SmartComplyFlow.open()` again to start a new session (available from `smartcomply-web-sdk@1.0.76`).
 </Note>
 
 ### Configuration Parameters
