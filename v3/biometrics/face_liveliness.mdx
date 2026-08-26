@@ -5,9 +5,9 @@ description: "Verify that a submitted facial image belongs to a live person, not
 openapi: "POST /api/onboarding/biometrics/face/liveliness_check/"
 ---
 
-The Face Liveness Check endpoint analyzes a live selfie video to confirm physical presence. It runs blink and motion analysis on the video to distinguish a real user from a photograph or pre-recorded video, then compares the face in the video to the face in the same video.
+The Face Liveness Check endpoint analyzes a submitted selfie — a short video or a single photo — to confirm it shows a live person, not a spoofed replay (a photo of a photo, a screen recording, etc.). It scores liveness directly; it does not compare the submission against any other image.
 
-For true liveness detection, send a selfie video. Sending a static image will perform a self-comparison, not a liveness check.
+Both a video and a still photo are genuinely scored for liveness — you don't need to send video specifically. The endpoint detects which was submitted from the file itself.
 
 ## Endpoint
 
@@ -28,7 +28,7 @@ POST /api/onboarding/biometrics/face/liveliness_check/
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `image` | string | Yes | URL of the live selfie **video** to check for liveness. Supported formats: `.mp4`, `.mov`, `.webm`, `.avi`, `.m4v`. |
+| `image` | string | Yes | URL of the selfie photo or short video to check for liveness. Video formats: `.mp4`, `.mov`, `.webm`, `.avi`, `.m4v` — anything else is treated as a still image. |
 
 ### Example
 
@@ -39,25 +39,26 @@ curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/biometrics/face/
   -H "Content-Type: application/json" \
   -d '{"image": "https://example.com/selfie_liveness.mp4"}'
 ```
-
-<Note>
-A static image (e.g. `.jpg` or `.png`) will be processed in comparison mode against itself, so it will always appear to pass. For real liveness detection, send a selfie video captured by the user.
-</Note>
 </CodeGroup>
 
 ## Response
 
-### 200 OK
+<Note>
+  The HTTP status is `200` whenever the check ran to completion, **regardless of whether liveness passed or failed** — a failed liveness attempt is a normal, successful check outcome, not an error. Read `status`/`data.status` in the body to get the real verdict; a `400` means the request itself couldn't be processed (missing field, unreadable file, authentication problem), not that liveness failed.
+</Note>
+
+### 200 OK — liveness passed
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `data.status` | boolean | `true` if liveness detected, `false` otherwise |
-| `data.detail` | string | Human-readable liveness result |
-| `data.response_code` | string | `"00"` indicates success |
+| `data.status` | boolean | `true` if liveness was detected, `false` otherwise |
+| `data.detail` | string | Human-readable result |
+| `data.response_code` | string | `"00"` on a pass, `"01"` on a fail |
 | `data.confidence` | number | Raw confidence score (0–1) |
-| `data.confidence_in_percentage` | number | Confidence as a percentage |
-| `data.verification.status` | string | `"VERIFIED"` or `"FAILED"` |
-| `data.verification.reference` | string | Unique reference for this check |
+| `data.confidence_in_percentage` | number | Confidence as a percentage (0–100) |
+| `data.liveness_passed` | boolean | The underlying pass/fail verdict — the same value `data.status` is derived from |
+| `data.verification.status` | string | `"VERIFIED"` or `"NOT_VERIFIED"` |
+| `data.verification.reference` | number | Internal record ID for this check |
 
 ```json
 {
@@ -66,11 +67,12 @@ A static image (e.g. `.jpg` or `.png`) will be processed in comparison mode agai
     "status": true,
     "detail": "Liveliness Detected",
     "response_code": "00",
-    "confidence": 0.9999987030029297,
-    "confidence_in_percentage": 99.99987030029297,
+    "confidence": 0.968,
+    "confidence_in_percentage": 96.8,
+    "liveness_passed": true,
     "verification": {
       "status": "VERIFIED",
-      "reference": "067cbed9-acda-4d30-97c2-7f8e0c2ad687"
+      "reference": 76981
     },
     "widget_info": {},
     "session": {}
@@ -79,13 +81,38 @@ A static image (e.g. `.jpg` or `.png`) will be processed in comparison mode agai
 }
 ```
 
+### 200 OK — liveness failed (still a successful check)
+
+```json
+{
+  "status": "failed",
+  "data": {
+    "status": false,
+    "detail": "Liveliness Not Detected",
+    "response_code": "01",
+    "confidence": 0.452,
+    "confidence_in_percentage": 45.2,
+    "liveness_passed": false,
+    "verification": {
+      "status": "NOT_VERIFIED",
+      "reference": 76982
+    },
+    "widget_info": {},
+    "session": {}
+  },
+  "message": "Liveness check failed"
+}
+```
+
 ### 400 Bad Request
+
+Returned when the request itself couldn't be processed — a missing `image` field, an unreachable/unreadable URL, or an unexpected error from the underlying check.
 
 ```json
 {
   "status": "failed",
   "data": [],
-  "message": "Missing required fields"
+  "message": "image is required — provide the URL of the live selfie or video."
 }
 ```
 
