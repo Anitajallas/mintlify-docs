@@ -29,7 +29,6 @@ POST /api/onboarding/biometrics/face/liveliness_check/
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `live_media` | string | Yes | URL of the short selfie video to check for liveness (recommended). Video formats: `.mp4`, `.mov`, `.webm`, `.avi`, `.m4v` — anything else is treated as a still image, which is also accepted. |
-| `image` | string | No | **Deprecated** alias for `live_media`, kept for backward compatibility with existing integrations. Use `live_media` for new integrations — if both are sent, `live_media` takes precedence. |
 
 ### Example
 
