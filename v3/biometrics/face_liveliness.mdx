@@ -5,9 +5,9 @@ description: "Verify that a submitted facial image belongs to a live person, not
 openapi: "POST /api/onboarding/biometrics/face/liveliness_check/"
 ---
 
-The Face Liveness Check endpoint analyzes a submitted selfie — a short video or a single photo — to confirm it shows a live person, not a spoofed replay (a photo of a photo, a screen recording, etc.). It scores liveness directly; it does not compare the submission against any other image.
+The Face Liveness Check endpoint analyzes a submitted selfie — recommended as a short video, though a single photo is also accepted — to confirm it shows a live person, not a spoofed replay (a photo of a photo, a screen recording, etc.). It scores liveness directly; it does not compare the submission against any other image.
 
-Both a video and a still photo are genuinely scored for liveness — you don't need to send video specifically. The endpoint detects which was submitted from the file itself.
+Both a video and a still photo are genuinely scored for liveness, so a still image works too — but a short video is the recommended submission, since motion gives the liveness check more to work with. The endpoint detects which was submitted from the file itself.
 
 ## Endpoint
 
@@ -28,7 +28,7 @@ POST /api/onboarding/biometrics/face/liveliness_check/
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `image` | string | Yes | URL of the selfie photo or short video to check for liveness. Video formats: `.mp4`, `.mov`, `.webm`, `.avi`, `.m4v` — anything else is treated as a still image. |
+| `image` | string | Yes | URL of the short selfie video to check for liveness (recommended). Video formats: `.mp4`, `.mov`, `.webm`, `.avi`, `.m4v` — anything else is treated as a still image, which is also accepted. |
 
 ### Example
 
