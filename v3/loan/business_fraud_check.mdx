@@ -33,8 +33,8 @@ POST /api/v1/loan/fraud_check/
 | `country` | string | Yes | Country of the business |
 | `phone_number` | string | Yes | Business phone number |
 | `email_address` | string | Yes | Business email address |
-| `identification_type` | string | Yes | ID type used (e.g., `Passport`, `RC Number`) |
-| `identification_number` | string | Yes | ID number |
+| `identifier` | number | Yes | Business identifier value (e.g. RC number for Nigeria) |
+| `identifier_type` | string | Yes | Key of the identifier type (e.g. `rc_number`) |
 | `annual_revenue` | number | Yes | Annual revenue in local currency |
 | `bank_name` | string | Yes | Business bank name |
 | `account_number` | string | Yes | Business account number |
@@ -59,8 +59,8 @@ curl -X POST "https://adhere-api.smartcomply.com/api/v1/loan/fraud_check/" \
   -F "country=Nigeria" \
   -F "phone_number=2349012345678" \
   -F "email_address=business@example.com" \
-  -F "identification_type=RC Number" \
-  -F "identification_number=RC-123456" \
+  -F "identifier=RC-123456" \
+  -F "identifier_type=rc_number" \
   -F "annual_revenue=12345678" \
   -F "bank_name=Access Bank" \
   -F "account_number=1234567890" \
@@ -72,6 +72,10 @@ curl -X POST "https://adhere-api.smartcomply.com/api/v1/loan/fraud_check/" \
   -F "run_aml_check=false"
 ```
 </CodeGroup>
+
+<Note>
+`rc_number` (top-level) is a legacy field kept for backward compatibility (Nigeria only). Use `identifier` (the ID value) and `identifier_type` (the key, e.g. `rc_number`) instead — this works for Nigeria and every other supported country.
+</Note>
 
 ## Response
 
@@ -100,7 +104,8 @@ curl -X POST "https://adhere-api.smartcomply.com/api/v1/loan/fraud_check/" \
     "country": "Nigeria",
     "city": "Lagos",
     "business_address": "23 Main Street, Apapa",
-    "identification_type": "RC Number",
+    "identifier": "RC-123456",
+    "identifier_type_name": "rc_number",
     "rc_number": "RC-123456",
     "phone_number": "2349012345678",
     "annual_revenue": "12345678.00",

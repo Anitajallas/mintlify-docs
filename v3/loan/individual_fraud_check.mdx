@@ -33,11 +33,9 @@ POST /api/v1/loan/fraud_check/
 | `country` | string | Yes | Country of residence |
 | `current_address` | string | Yes | Current residential address |
 | `duration_of_stay` | string | Yes | Duration at current address (e.g., `5 years`) |
-| `identification_type` | string | Yes | ID type (e.g., `Passport`, `NIN`) |
-| `identification_number` | string | Yes | ID number |
+| `identifier` | number | Yes | Customer identifier value (e.g. BVN for Nigeria, a Kenya national ID number) |
+| `identifier_type` | string | Yes | Key of the identifier type (e.g. `bvn`, `national_id`, `ghana_card`) |
 | `bvn` | string | No | Legacy field, Nigeria only. Superseded by `identifier` + `identifier_type` — use those instead |
-| `identifier` | number | No | Customer identifier value (e.g. BVN for Nigeria, a Kenya national ID number). Use with `identifier_type` instead of `bvn` |
-| `identifier_type` | string | No | Key of the identifier type (e.g. `bvn`, `national_id`, `ghana_card`). Required when `identifier` is provided |
 | `phone_number` | string | Yes | Phone number with country code |
 | `email_address` | string | Yes | Applicant's email address |
 | `employment_type` | string | Yes | Employment type (e.g., `Full-time`, `Self-employed`) |
@@ -68,8 +66,6 @@ curl -X POST "https://adhere-api.smartcomply.com/api/v1/loan/fraud_check/" \
   -F "country=Nigeria" \
   -F "current_address=12 Ojuelegba St" \
   -F "duration_of_stay=5 years" \
-  -F "identification_type=Passport" \
-  -F "identification_number=A123456789" \
   -F "identifier=12345678901" \
   -F "identifier_type=bvn" \
   -F "phone_number=+2349105678901" \
@@ -121,7 +117,8 @@ curl -X POST "https://adhere-api.smartcomply.com/api/v1/loan/fraud_check/" \
     "date_of_birth": "1980-01-01",
     "country": "Nigeria",
     "current_address": "12 Ojuelegba St",
-    "identification_type": "Passport",
+    "identifier": "12345678901",
+    "identifier_type_name": "bvn",
     "bvn": "12345678901",
     "loan_amount_requested": "15000.00",
     "fraud_risk_score": 80,

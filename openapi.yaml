@@ -1756,6 +1756,8 @@ paths:
               type: object
               required:
                 [
+                  identifier,
+                  identifier_type,
                   loan_amount_requested,
                   loan_repayment_duration_type,
                   loan_repayment_duration_value,
@@ -1773,15 +1775,13 @@ paths:
                 rc_number:
                   {
                     type: string,
-                    description: CAC registration number (business only),
+                    description: "Legacy field, Nigeria business only. Superseded by identifier + identifier_type — use those instead for both Nigeria and other countries.",
                   }
                 date_of_birth: { type: string, format: date }
                 gender: { type: string, enum: [male, female] }
                 country: { type: string, example: "Nigeria" }
                 current_address: { type: string }
                 business_address: { type: string }
-                identification_type: { type: string, example: "Passport" }
-                identification_number: { type: string }
                 bvn:
                   {
                     type: string,
@@ -1790,13 +1790,13 @@ paths:
                 identifier:
                   {
                     type: number,
-                    description: "Customer identifier value (e.g. BVN for Nigeria, a Kenya national ID number). Use with identifier_type instead of bvn.",
+                    description: "Customer or business identifier value (e.g. BVN for a Nigeria individual, RC number for a Nigeria business, a Kenya national ID number).",
                     example: 22244545518,
                   }
                 identifier_type:
                   {
                     type: string,
-                    description: "Key of the identifier type (e.g. bvn, national_id, ghana_card). Required when identifier is provided.",
+                    description: "Key of the identifier type (e.g. bvn, rc_number, national_id, ghana_card).",
                     example: "bvn",
                   }
                 phone_number: { type: string }
