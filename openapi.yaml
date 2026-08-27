@@ -154,18 +154,46 @@ paths:
                   description: URL of the selfie image
       responses:
         "200":
-          description: Comparison successful
+          description:
+            Comparison ran to completion. This includes the anti-spoofing
+            rejection case below — the provider still returns HTTP 200 with
+            status "failed" when selfie_url fails its own liveness check
+            before any comparison is attempted.
           content:
             application/json:
-              example:
-                status: success
-                data:
-                  status: true
-                  response_code: "00"
-                  message: "Face Match"
-                  confidence: 100
-                  record_id: 76981
-                message: "Face comparison completed successfully"
+              examples:
+                facesMatch:
+                  summary: Faces match
+                  value:
+                    status: success
+                    data:
+                      status: true
+                      response_code: "00"
+                      message: "Face Match"
+                      confidence: 100
+                      record_id: 76981
+                    message: "Face comparison completed successfully"
+                facesDoNotMatch:
+                  summary: Faces do not match
+                  value:
+                    status: failed
+                    data:
+                      status: false
+                      response_code: "01"
+                      message: "Face Mismatch"
+                      confidence: 42
+                      record_id: 76982
+                    message: "Face comparison failed — faces do not match"
+                antiSpoofingRejected:
+                  summary: Rejected by anti-spoofing check (no comparison performed)
+                  value:
+                    status: failed
+                    data:
+                      status: false
+                      response_code: "01"
+                      message: "Liveness check failed — the submitted video did not pass the liveness/anti-spoofing check, so no face comparison was performed."
+                      confidence: 0
+                    message: "Liveness check failed — the submitted video did not pass the liveness/anti-spoofing check, so no face comparison was performed."
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
 
