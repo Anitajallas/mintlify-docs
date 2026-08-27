@@ -17,9 +17,8 @@ Our Loan Fraud Check API allows you to assess the fraud risk of a loan applicati
   "country": "Nigeria",
   "current_address": "12 Ojuelegba St",
   "duration_of_stay": "5 years",
-  "identification_type": "Passport",
-  "identification_number": "A123456789",
-  "bvn": "12345678901",
+  "identifier": "12345678901",
+  "identifier_type": "bvn",
   "phone_number": "+2349105678901",
   "email_address": "john.doe@example.com",
   "employment_type": "Full-time",
@@ -39,13 +38,13 @@ Our Loan Fraud Check API allows you to assess the fraud risk of a loan applicati
 }
 ```
 
-For non-Nigeria applicants, omit `bvn` and pass `identifier` (the ID value) and `identifier_type` (the key, e.g. `national_id`, `ghana_card`) instead. This enables multi-country loan fraud assessment.
+Use `identifier` (the ID value) and `identifier_type` (the key, e.g. `bvn`, `national_id`, `ghana_card`) for the applicant's identification — this works for Nigeria and every other supported country.
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `bvn` | string | Nigeria only | 11-digit Bank Verification Number. Use `identifier` + `identifier_type` for other countries |
-| `identifier` | string | Non-Nigeria only | Customer identifier for non-Nigeria applicants (e.g. a Kenya national ID number) |
-| `identifier_type` | string | Non-Nigeria only | Key of the identifier type (e.g. `bvn`, `national_id`, `ghana_card`). Required when `identifier` is provided |
+| `identifier` | number | Yes | Customer identifier value (e.g. BVN for Nigeria, a Kenya national ID number) |
+| `identifier_type` | string | Yes | Key of the identifier type (e.g. `bvn`, `national_id`, `ghana_card`) |
+| `bvn` | string | No | Legacy field, Nigeria only. Superseded by `identifier` + `identifier_type` — use those instead |
 
 200 OK Response
 
@@ -65,8 +64,8 @@ For non-Nigeria applicants, omit `bvn` and pass `identifier` (the ID value) and 
     "current_address": "12 Ojuelegba St",
     "duration_of_stay": "5 years",
     "business_address": null,
-    "identification_type": "Passport",
-    "identification_number": "A123456789",
+    "identifier": "12345678901",
+    "identifier_type_name": "bvn",
     "bvn": "12345678901",
     "phone_number": "+2349105678901",
     "email_address": "john.doe@example.com",
