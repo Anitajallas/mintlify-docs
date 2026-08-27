@@ -88,6 +88,7 @@ data = response.json()
 | `data.response_code` | string | `"00"` indicates a successful comparison |
 | `data.message` | string | Human-readable match result |
 | `data.confidence` | integer | Match confidence percentage (0–100) |
+| `data.record_id` | number | Internal record ID for this check |
 
 ```json
 {
@@ -96,7 +97,8 @@ data = response.json()
     "status": true,
     "response_code": "00",
     "message": "Face Match",
-    "confidence": 100
+    "confidence": 100,
+    "record_id": 76981
   },
   "message": "Face comparison completed successfully"
 }

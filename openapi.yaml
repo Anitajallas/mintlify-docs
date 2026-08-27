@@ -153,7 +153,19 @@ paths:
                   type: string
                   description: URL of the selfie image
       responses:
-        "200": { description: Comparison successful }
+        "200":
+          description: Comparison successful
+          content:
+            application/json:
+              example:
+                status: success
+                data:
+                  status: true
+                  response_code: "00"
+                  message: "Face Match"
+                  confidence: 100
+                  record_id: 76981
+                message: "Face comparison completed successfully"
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
 
@@ -173,12 +185,55 @@ paths:
                 image:
                   type: string
                   description:
-                    URL of the live selfie video to check for liveness.
-                    Supported formats .mp4, .mov, .webm, .avi, .m4v. Static
-                    images are accepted but will perform a self-comparison, not
-                    true liveness detection.
+                    URL of the selfie photo or short video to check for
+                    liveness. Supported formats .mp4, .mov, .webm, .avi, .m4v
+                    — anything else is treated as a still image. Both a video
+                    and a still photo are genuinely scored for liveness; the
+                    endpoint detects which was submitted from the file itself.
       responses:
-        "200": { description: Liveness check successful }
+        "200":
+          description:
+            Liveness check ran to completion. Returned for both a pass and a
+            fail — a failed liveness attempt is a normal, successful check
+            outcome, not an error. Read data.status / data.liveness_passed
+            for the real verdict.
+          content:
+            application/json:
+              examples:
+                livenessPassed:
+                  summary: Liveness passed
+                  value:
+                    status: success
+                    data:
+                      status: true
+                      detail: "Liveliness Detected"
+                      response_code: "00"
+                      confidence: 0.968
+                      confidence_in_percentage: 96.8
+                      liveness_passed: true
+                      verification:
+                        status: "VERIFIED"
+                        reference: 76981
+                      widget_info: {}
+                      session: {}
+                    message: "Face Liveliness successful"
+                livenessFailed:
+                  summary: Liveness failed (still HTTP 200)
+                  value:
+                    status: failed
+                    data:
+                      status: false
+                      detail: "Liveliness Not Detected"
+                      response_code: "01"
+                      confidence: 0.452
+                      confidence_in_percentage: 45.2
+                      liveness_passed: false
+                      verification:
+                        status: "NOT_VERIFIED"
+                        reference: 76982
+                      widget_info: {}
+                      session: {}
+                    message: "Liveness check failed"
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
 
