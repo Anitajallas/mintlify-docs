@@ -208,9 +208,9 @@ paths:
           application/json:
             schema:
               type: object
-              required: [image]
+              required: [live_media]
               properties:
-                image:
+                live_media:
                   type: string
                   description:
                     URL of the short selfie video to check for liveness
@@ -220,6 +220,13 @@ paths:
                     still image. Both a video and a still photo are genuinely
                     scored for liveness; the endpoint detects which was
                     submitted from the file itself.
+                image:
+                  type: string
+                  deprecated: true
+                  description:
+                    Deprecated alias for `live_media`, kept for backward
+                    compatibility with existing integrations. Use `live_media`
+                    instead — if both are sent, `live_media` takes precedence.
       responses:
         "200":
           description:
