@@ -7,6 +7,8 @@ openapi: "POST /api/onboarding/biometrics/face/comparison"
 
 The Face Comparison endpoint uses biometric analysis to compare two face images and returns a confidence score indicating whether they depict the same individual. Use this for identity verification during onboarding or transaction approval.
 
+Before comparing, the provider runs an anti-spoofing check on `selfie_url`; if that check fails, no comparison is attempted and the response says so explicitly — see [200 OK — rejected by anti-spoofing check](#200-ok-rejected-by-anti-spoofing-check-no-comparison-performed) below.
+
 ## Endpoint
 
 ```
@@ -105,6 +107,29 @@ data = response.json()
 ```
 
 A `data.status` of `false` indicates the faces do not match. Use `data.confidence` to apply your own threshold for acceptance (e.g., require `>= 80` for a positive match).
+
+### 200 OK — rejected by anti-spoofing check (no comparison performed)
+
+Before comparing the two images, the provider runs its own anti-spoofing check on `selfie_url` — this catches a photo of a photo, a screen replay, or another spoofed submission. If `selfie_url` fails that check, the comparison itself never runs, and the response explains why in `data.message` rather than simply saying the faces don't match. `data.confidence` is `0` in this case since no match score was produced.
+
+<Note>
+  This check runs even though `selfie_url` is a still image, not a video — the message text below still refers to "the submitted video" because it's shared with the Face Liveness Check endpoint's internal wording. Treat this response the same way regardless of whether you submitted a photo or a video as the selfie.
+</Note>
+
+```json
+{
+  "status": "failed",
+  "data": {
+    "status": false,
+    "response_code": "01",
+    "message": "Liveness check failed — the submitted video did not pass the liveness/anti-spoofing check, so no face comparison was performed.",
+    "confidence": 0
+  },
+  "message": "Liveness check failed — the submitted video did not pass the liveness/anti-spoofing check, so no face comparison was performed."
+}
+```
+
+Ask the user for a clearer selfie (better lighting, no screen/photo in frame) and resubmit — this is not the same failure as a genuine face mismatch, and retrying with a better-quality selfie of the same person is the correct next step.
 
 ### 400 Bad Request
 
