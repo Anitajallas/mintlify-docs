@@ -213,11 +213,13 @@ paths:
                 image:
                   type: string
                   description:
-                    URL of the selfie photo or short video to check for
-                    liveness. Supported formats .mp4, .mov, .webm, .avi, .m4v
-                    — anything else is treated as a still image. Both a video
-                    and a still photo are genuinely scored for liveness; the
-                    endpoint detects which was submitted from the file itself.
+                    URL of the short selfie video to check for liveness
+                    (recommended — supported formats .mp4, .mov, .webm, .avi,
+                    .m4v). A still selfie photo is also accepted — anything
+                    that isn't one of those video formats is treated as a
+                    still image. Both a video and a still photo are genuinely
+                    scored for liveness; the endpoint detects which was
+                    submitted from the file itself.
       responses:
         "200":
           description:
