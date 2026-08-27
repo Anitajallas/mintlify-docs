@@ -28,7 +28,8 @@ POST /api/onboarding/biometrics/face/liveliness_check/
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `image` | string | Yes | URL of the short selfie video to check for liveness (recommended). Video formats: `.mp4`, `.mov`, `.webm`, `.avi`, `.m4v` — anything else is treated as a still image, which is also accepted. |
+| `live_media` | string | Yes | URL of the short selfie video to check for liveness (recommended). Video formats: `.mp4`, `.mov`, `.webm`, `.avi`, `.m4v` — anything else is treated as a still image, which is also accepted. |
+| `image` | string | No | **Deprecated** alias for `live_media`, kept for backward compatibility with existing integrations. Use `live_media` for new integrations — if both are sent, `live_media` takes precedence. |
 
 ### Example
 
@@ -37,7 +38,7 @@ POST /api/onboarding/biometrics/face/liveliness_check/
 curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/biometrics/face/liveliness_check/" \
   -H "x-access-token: YOUR_SECRET_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"image": "https://example.com/selfie_liveness.mp4"}'
+  -d '{"live_media": "https://example.com/selfie_liveness.mp4"}'
 ```
 </CodeGroup>
 
@@ -106,13 +107,13 @@ curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/biometrics/face/
 
 ### 400 Bad Request
 
-Returned when the request itself couldn't be processed — a missing `image` field, an unreachable/unreadable URL, or an unexpected error from the underlying check.
+Returned when the request itself couldn't be processed — a missing `live_media` field, an unreachable/unreadable URL, or an unexpected error from the underlying check.
 
 ```json
 {
   "status": "failed",
   "data": [],
-  "message": "image is required — provide the URL of the live selfie or video."
+  "message": "live_media is required — provide the URL of the live selfie video or photo."
 }
 ```
 
