@@ -17,6 +17,7 @@ The SmartComply Android SDK delivers a fully self-contained identity verificatio
 - **Multi-country support** — renders a country picker automatically when more than one country is configured
 - **Dark and light mode** — theme adapts to the system setting; override via the launch intent
 - **Your brand, not ours**: name, description, colour and logo come from the Dashboard, and the font is passed by your app. See [Branding](#branding)
+- **Any backend host**: production, staging, or your own, without a rebuild
 
 ---
 
@@ -50,7 +51,7 @@ In your app or feature module `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("io.github.386konsult:android-sdk:1.0.6")
+    implementation("io.github.386konsult:android-sdk:1.0.7")
 }
 ```
 
@@ -61,10 +62,11 @@ Neither can be withdrawn from Maven Central, so pin deliberately.
 </Warning>
 
 <Note>
-  **1.0.7 is the release to move to when it lands.** It carries [Branding](#branding),
-  a `RESULT_STATUS` that finally holds the real verdict, and a fix for a blank
-  liveness camera after skipping the back-side capture. Anything on this page marked
-  "Requires 1.0.7" is not in 1.0.6.
+  **1.0.7 changes two behaviours.** `RESULT_STATUS` now holds the real verdict, and
+  the success screen no longer means a pass. Read [Result Extras](#result-extras)
+  before upgrading from 1.0.6 or below. It also adds [Branding](#branding) and a
+  custom backend host, and fixes a blank liveness camera after skipping the
+  back-side capture.
 </Note>
 
 ### 3 — Enable Compose
@@ -200,7 +202,8 @@ fun buildIntent(
     clientId:    String,
     darkTheme:   Boolean? = null,                    // null = follow system
     environment: Environment = Environment.PRODUCTION,
-    fontResId:   Int? = null                         // null = platform default
+    fontResId:   Int? = null,                        // null = platform default
+    baseUrl:     String? = null                      // null = use environment
 ): Intent
 ```
 
@@ -212,6 +215,7 @@ fun buildIntent(
 | `darkTheme` | `null` | `true` forces dark mode, `false` forces light, `null` follows the device setting |
 | `environment` | `PRODUCTION` | See [Environments](#environments) below |
 | `fontResId` | `null` | A font resource from your own app, e.g. `R.font.inter`. See [Branding](#branding). Added in **1.0.7** |
+| `baseUrl` | `null` | Overrides `environment`'s host. See [A different host](#a-different-host). Added in **1.0.7** |
 
 ---
 
@@ -223,6 +227,26 @@ fun buildIntent(
 | `Environment.SANDBOX` | `http://localhost:8000` |
 
 `SANDBOX` targets a server running on the handset itself, for local backend development. It is not a hosted test environment. Use `PRODUCTION` for all integration work.
+
+### A different host
+
+`Environment` covers the two hosts you ship against. For anything else, a staging
+deployment or a QA build that has to reach more than one backend without being
+rebuilt, override it. Added in **1.0.7**.
+
+```kotlin
+SmartComplyActivity.buildIntent(
+    from = context, apiKey = "...", clientId = "...",
+    baseUrl = "https://your-staging-host.example.com"
+)
+
+// or, on SDKConfig directly
+SDKConfig(apiKey = "...", clientId = "...", baseUrl = "https://your-staging-host.example.com")
+```
+
+A trailing slash is trimmed, and a blank value falls back to `environment` rather
+than being treated as a host, so a build reading this off an empty field does not
+post verifications to a relative URL.
 
 <Warning>
   `SANDBOX` is a plain **http://** target, which Android blocks by default from API 28 onwards. Without an opt-in the flow dies at the loading screen with a network error that looks like a backend outage. If you genuinely need it, scope the exception to localhost rather than reaching for `android:usesCleartextTraffic="true"`, which permits cleartext for every host your app talks to.
