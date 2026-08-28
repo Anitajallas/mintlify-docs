@@ -28,13 +28,12 @@ POST /api/v1/loan/fraud_check/
 |-----------|------|----------|-------------|
 | `business_name` | string | Yes | Registered name of the business |
 | `business_address` | string | Yes | Business address |
-| `rc_number` | string | Yes | CAC registration number (e.g., `RC-123456`) |
 | `city` | string | Yes | City of the business |
 | `country` | string | Yes | Country of the business |
+| `identifier` | number | No | Business identifier value (e.g. RC number for Nigeria) |
+| `identifier_type` | string | No | Key of the identifier type (e.g. `rc_number`) |
 | `phone_number` | string | Yes | Business phone number |
 | `email_address` | string | Yes | Business email address |
-| `identifier` | number | Yes | Business identifier value (e.g. RC number for Nigeria) |
-| `identifier_type` | string | Yes | Key of the identifier type (e.g. `rc_number`) |
 | `annual_revenue` | number | Yes | Annual revenue in local currency |
 | `bank_name` | string | Yes | Business bank name |
 | `account_number` | string | Yes | Business account number |
@@ -54,13 +53,12 @@ curl -X POST "https://adhere-api.smartcomply.com/api/v1/loan/fraud_check/" \
   -H "x-access-token: YOUR_SECRET_KEY" \
   -F "business_name=Heineken" \
   -F "business_address=23 Main Street, Marina" \
-  -F "rc_number=RC-123456" \
   -F "city=Lagos" \
   -F "country=Nigeria" \
-  -F "phone_number=2349012345678" \
-  -F "email_address=business@example.com" \
   -F "identifier=RC-123456" \
   -F "identifier_type=rc_number" \
+  -F "phone_number=2349012345678" \
+  -F "email_address=business@example.com" \
   -F "annual_revenue=12345678" \
   -F "bank_name=Access Bank" \
   -F "account_number=1234567890" \
@@ -72,10 +70,6 @@ curl -X POST "https://adhere-api.smartcomply.com/api/v1/loan/fraud_check/" \
   -F "run_aml_check=false"
 ```
 </CodeGroup>
-
-<Note>
-`rc_number` (top-level) is a legacy field kept for backward compatibility (Nigeria only). Use `identifier` (the ID value) and `identifier_type` (the key, e.g. `rc_number`) instead — this works for Nigeria and every other supported country.
-</Note>
 
 ## Response
 

@@ -1758,8 +1758,6 @@ paths:
               type: object
               required:
                 [
-                  identifier,
-                  identifier_type,
                   loan_amount_requested,
                   loan_repayment_duration_type,
                   loan_repayment_duration_value,
@@ -1774,21 +1772,11 @@ paths:
                     type: string,
                     description: Business name (business applications only),
                   }
-                rc_number:
-                  {
-                    type: string,
-                    description: "Legacy field, Nigeria business only. Superseded by identifier + identifier_type — use those instead for both Nigeria and other countries.",
-                  }
                 date_of_birth: { type: string, format: date }
                 gender: { type: string, enum: [male, female] }
                 country: { type: string, example: "Nigeria" }
                 current_address: { type: string }
                 business_address: { type: string }
-                bvn:
-                  {
-                    type: string,
-                    description: "Legacy field, Nigeria only. Superseded by identifier + identifier_type — use those instead for both Nigeria and other countries.",
-                  }
                 identifier:
                   {
                     type: number,
