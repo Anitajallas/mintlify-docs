@@ -5,6 +5,13 @@ description: "Integrate Adhere identity verification and liveness detection into
 
 # Adhere Flutter SDK
 
+<Warning>
+  This page is not linked from the navigation and describes a package that is
+  not part of the current SDK release set. The maintained mobile SDKs are
+  [Android](/libraries/android_sdk) and [iOS](/libraries/ios_sdk). Treat what
+  follows as unverified against a shipping build.
+</Warning>
+
 A powerful Flutter package for Adhere identity verification and facial liveness detection. Our SDK delivers a drop-in UI that seamlessly orchestrates BVN/NIN verification (Nigeria), Document parsing (International), and video-based ML Kit facial liveness challenges.
 
 ## Features
@@ -13,7 +20,7 @@ A powerful Flutter package for Adhere identity verification and facial liveness 
 - **Dynamic Client Configuration** — Fetches available document types securely from your Adhere Dashboard rules.
 - **One-Time Use Policy System** — Verifications are securely bound utilizing a single-use parameter.
 - **Identity Onboarding** — Verifies BVN & NIN directly via national APIs, or scans Passports & National ID Cards.
-- **Liveness Detection** — Animated face action challenges (Blinking, Turning Head) backed by Google ML Kit.
+- **Liveness Detection**: A passive face scan (blink plus natural head movement) with a 20 second cap, backed by Google ML Kit. The actions are never named to the user.
 
 ## Installation
 
@@ -95,11 +102,15 @@ The SDK handles everything automatically:
 
 ## Advanced Usage (Headless Architecture)
 
-If you are building your own UI from scratch instead of using our wrapper, you must capture the `Client ID` manually and trigger the endpoints yourself:
+If you are building your own UI from scratch instead of using our wrapper, you drive the endpoints yourself. The Client ID is the one from your dashboard: the same permanent value the wrapper uses:
 
 ```dart
-// 1. Manually initialize the session using a dynamic input UUID
-final session = await sdk.createSession("user_provided_client_id");
+// 1. Open a session with your SDK Config's Client ID.
+//    This is issued by Adhere and is permanent: reuse it for every
+//    verification. Generating a UUID here returns 404 SDK_CONFIG_NOT_FOUND
+//    on the very first call, because the server resolves it against an
+//    existing SDK Config record.
+final session = await sdk.createSession("YOUR_CLIENT_ID");
 
 // 2. Verify identity directly via backend API
 final identity = await sdk.onboarding.verify(
