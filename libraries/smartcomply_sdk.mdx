@@ -329,7 +329,8 @@ X-Adhere-Signature: sha256=<hmac-sha256-hex>
     "face_match": {
       "attempted": true,
       "verified": true,
-      "confidence_percentage": 70.0
+      "confidence_percentage": 70.0,
+      "decision": "MATCH"
     },
     "selfie_url": "https://.../autoshot.jpg",
     "face_analysis": {
@@ -395,7 +396,6 @@ For **document verification**, the same top-level shape applies, with `verificat
     "attempted": true,
     "verified": true,
     "confidence_percentage": 55.0,
-    "threshold_percentage": 35.0,
     "reason": null,
     "selfie_url": "https://.../autoshot.jpg",
     "document_face_url": "https://.../document_face.jpg"
@@ -405,6 +405,10 @@ For **document verification**, the same top-level shape applies, with `verificat
 
 <Note>
   `document` also carries `place_of_birth`, `place_of_issue`, `address`, `district`, `division`, `location`, `sub_location`, `serial_number`, and `barcode_number` — `null` unless the specific document type carries that field (e.g. serial/barcode numbers mainly apply to newer Kenyan ID cards). `face_match.reason` is populated with a user-facing explanation when `verified` is `false` or the match was skipped.
+</Note>
+
+<Note>
+  `face_match.decision` (`"MATCH"`, `"NO_MATCH"`, or `"REJECTED"`) is what `verified` is actually derived from — read `decision` rather than comparing `confidence_percentage` against a threshold of your own, since our internal match threshold isn't part of this payload and may change over time. `"REJECTED"` means liveness/anti-spoofing failed before any comparison ran, so `confidence_percentage` can be absent or `0` alongside `verified: false` for a reason unrelated to how similar the faces looked.
 </Note>
 
 For **liveness-only** SDK Configs — `verification_type: "liveness_only"` — there's no ID number and no document, so `customer_profile`/`document` are both absent. `biometrics` carries the real liveness verdict instead of an unconditional pass:
