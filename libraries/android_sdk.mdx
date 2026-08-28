@@ -16,6 +16,8 @@ The SmartComply Android SDK delivers a fully self-contained identity verificatio
 - **Dynamic ID types** — channels and fields are fetched live from your Dashboard configuration
 - **Multi-country support** — renders a country picker automatically when more than one country is configured
 - **Dark and light mode** — theme adapts to the system setting; override via the launch intent
+- **Your brand, not ours**: name, description, colour and logo come from the Dashboard, and the font is passed by your app. See [Branding](#branding)
+- **Any backend host**: production, staging, or your own, without a rebuild
 
 ---
 
@@ -49,7 +51,7 @@ In your app or feature module `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("io.github.386konsult:android-sdk:1.0.5")
+    implementation("io.github.386konsult:android-sdk:1.0.7")
 }
 ```
 
@@ -58,6 +60,14 @@ dependencies {
 the main thread, and 1.0.3 additionally crashes when the SDK is closed from a UI callback.
 Neither can be withdrawn from Maven Central, so pin deliberately.
 </Warning>
+
+<Note>
+  **1.0.7 changes two behaviours.** `RESULT_STATUS` now holds the real verdict, and
+  the success screen no longer means a pass. Read [Result Extras](#result-extras)
+  before upgrading from 1.0.6 or below. It also adds [Branding](#branding) and a
+  custom backend host, and fixes a blank liveness camera after skipping the
+  back-side capture.
+</Note>
 
 ### 3 — Enable Compose
 
@@ -191,7 +201,9 @@ fun buildIntent(
     apiKey:      String,
     clientId:    String,
     darkTheme:   Boolean? = null,                    // null = follow system
-    environment: Environment = Environment.PRODUCTION
+    environment: Environment = Environment.PRODUCTION,
+    fontResId:   Int? = null,                        // null = platform default
+    baseUrl:     String? = null                      // null = use environment
 ): Intent
 ```
 
@@ -202,6 +214,8 @@ fun buildIntent(
 | `clientId` | — | Your SDK Config's Client ID from the Dashboard. Permanent — reuse it for every verification |
 | `darkTheme` | `null` | `true` forces dark mode, `false` forces light, `null` follows the device setting |
 | `environment` | `PRODUCTION` | See [Environments](#environments) below |
+| `fontResId` | `null` | A font resource from your own app, e.g. `R.font.inter`. See [Branding](#branding). Added in **1.0.7** |
+| `baseUrl` | `null` | Overrides `environment`'s host. See [A different host](#a-different-host). Added in **1.0.7** |
 
 ---
 
@@ -213,6 +227,26 @@ fun buildIntent(
 | `Environment.SANDBOX` | `http://localhost:8000` |
 
 `SANDBOX` targets a server running on the handset itself, for local backend development. It is not a hosted test environment. Use `PRODUCTION` for all integration work.
+
+### A different host
+
+`Environment` covers the two hosts you ship against. For anything else, a staging
+deployment or a QA build that has to reach more than one backend without being
+rebuilt, override it. Added in **1.0.7**.
+
+```kotlin
+SmartComplyActivity.buildIntent(
+    from = context, apiKey = "...", clientId = "...",
+    baseUrl = "https://your-staging-host.example.com"
+)
+
+// or, on SDKConfig directly
+SDKConfig(apiKey = "...", clientId = "...", baseUrl = "https://your-staging-host.example.com")
+```
+
+A trailing slash is trimmed, and a blank value falls back to `environment` rather
+than being treated as a host, so a build reading this off an empty field does not
+post verifications to a relative URL.
 
 <Warning>
   `SANDBOX` is a plain **http://** target, which Android blocks by default from API 28 onwards. Without an opt-in the flow dies at the loading screen with a network error that looks like a backend outage. If you genuinely need it, scope the exception to localhost rather than reaching for `android:usesCleartextTraffic="true"`, which permits cleartext for every host your app talks to.
@@ -248,16 +282,26 @@ Read from the `Intent` returned to your activity result callback.
 |---|---|---|
 | `RESULT_TYPE` | `String` | Always — `"success"` or `"cancelled"` |
 | `RESULT_ENTRY_ID` | `Int` | `TYPE_SUCCESS` — the verification's entry ID |
-| `RESULT_STATUS` | `String` | `TYPE_SUCCESS`: `"passed"`, or `"processing"` if the backend had not resolved in time |
+| `RESULT_STATUS` | `String` | `TYPE_SUCCESS`: `"passed"`, `"failed"`, or `"processing"` if the backend had not resolved in time |
 | `RESULT_SUBMITTED_AT` | `String` | `TYPE_SUCCESS` — ISO 8601 timestamp |
 | `RESULT_VERIFIED_NAME` | `String` | `TYPE_SUCCESS`: the verified name, when the backend returned one |
 | `RESULT_ID_TYPE_NAME` | `String` | `TYPE_SUCCESS` — e.g. `"National Identity Number (NIN)"`, `"Passport"` |
 | `RESULT_ID_NUMBER` | `String` | `TYPE_SUCCESS`: the ID number, from the user in data mode or from OCR in document mode |
 
-<Note>
-  **`RESULT_STATUS` is the entry's real status.** The SDK polls the backend for the terminal outcome before it returns, so `"passed"` means passed. A run the backend has not resolved within about 15 seconds returns `"processing"`: the entry exists and is billed, and the outcome arrives on your [webhook](/webhooks#identity-verification). A run that **failed** never reaches this callback: the user is shown the failure screen instead.
+<Warning>
+  **Branch on `RESULT_STATUS`. Reaching this callback is not a pass.**
 
-  This changed in **1.0.7**. Before that `RESULT_STATUS` was always `"processing"` and the success screen claimed "Verified" regardless of what the backend went on to decide, so the result was a submission receipt rather than a verdict.
+  From **1.0.7** the SDK polls the backend for the terminal outcome and puts it here, so `"passed"` means passed and `"failed"` means failed. But **every submitted entry shows the end user the success screen**, including a failed one. That is deliberate and was asked for: tenants wanted their user to see a submitted verification as accepted and to read the real verdict themselves. The screen is neutral-positive; this value is not.
+
+  So a `TYPE_SUCCESS` result with `RESULT_STATUS` of `"failed"` is a normal outcome you must handle. Code that treats `TYPE_SUCCESS` as a pass will admit users who failed verification.
+
+  `"processing"` means the backend had not resolved within about 15 seconds. The entry exists and is billed, and the outcome arrives on your [webhook](/webhooks#identity-verification).
+
+  Before 1.0.7 `RESULT_STATUS` was always `"processing"` and carried no verdict at all, so the result was a submission receipt.
+</Warning>
+
+<Note>
+  The [`liveness.completed` webhook](/webhooks#identity-verification) is the authoritative record. The value here is the same verdict delivered earlier for convenience, and it is absent when the worker is slow; the webhook always arrives.
 </Note>
 
 <Warning>
@@ -281,14 +325,98 @@ The SDK steps through these screens automatically.
 | ID Input | Form fields for data-mode verification (BVN, NIN, etc.) |
 | Liveness | Passive camera scan: see [Liveness](#liveness) below |
 | Processing | Upload and backend submission in progress |
-| Success | Backend outcome confirmed: shows a summary card, then returns the result |
-| Failure | Error screen with a retry button |
+| Success | Shown for every submitted entry. The verdict is in `RESULT_STATUS`, not on the screen |
+| Failure | Pre-submission errors only: camera denied, config or network failure, liveness timeout. Offers **Try Again** |
 
 ### Document images
 
 Document photos are capped at **5 MB** server-side, in JPG or PNG. Both routes, the in-SDK camera and **Upload from gallery**, are downscaled to 1600px on the long edge and re-compressed before upload, so a full-resolution phone photo no longer fails with `File too large. Maximum size is 5MB.`
 
 Before the review screen the SDK checks the photo contains a face and legible text. A failure is a **warning, not a block**: the user can still confirm, because a false negative would otherwise trap someone holding a genuine but unusual ID. The backend OCR is the check that actually rejects.
+
+---
+
+## Branding
+
+The flow carries your brand, not Adhere's. Colour, name, description and logo all
+come from the **SDK Config on the dashboard**, so they change without an app
+release. The font is the one exception and is passed by the host.
+
+| What | Set where | Shows up as |
+|---|---|---|
+| Brand name | Dashboard, SDK Config | The welcome heading |
+| Short description | Dashboard, SDK Config | The welcome subheading |
+| Theme colour | Dashboard, SDK Config | Primary buttons, highlights, progress |
+| Logo | Dashboard, SDK Config | The mark on the welcome screen |
+| Font | Your app, at launch | Every screen |
+
+### Logo
+
+Upload it under **Settings → Integrations → SDK → Brand Details**. PNG, JPEG or
+WebP, up to 512 KB and 1024x1024 pixels. Requires **1.0.7**.
+
+It is drawn on its own, with no box or border behind it, and bounded by height
+rather than fitted into a square so a wordmark stays legible. Only the SDK's
+fallback shield sits in a tinted frame.
+
+The logo belongs to the **SDK Config, not the company**. A branch running several
+configs for different products gives each its own mark, and a config with no logo
+shows the SDK's own shield rather than falling back to the company logo on your
+profile page. If you want the same mark everywhere, upload it to each config.
+
+<Note>
+  A logo never delays or blocks a verification. The SDK fetches it after the
+  welcome screen is already on screen, on a three second budget, and keeps its own
+  shield if the fetch fails. It is also decoded with a size cap, so an oversized
+  image cannot exhaust memory on the handset.
+</Note>
+
+<Warning>
+  The logo is rendered by the **Android and iOS SDKs**. The [Web SDK](/libraries/smartcomply_sdk)
+  does not show it yet, so a config used by both will carry your mark on mobile
+  and the default on web.
+</Warning>
+
+### Font
+
+Passed by your app, because the SDK neither ships nor downloads font files: your
+loading, caching and licensing stay yours. Requires **1.0.7**.
+
+Through `buildIntent`, with a font resource:
+
+```kotlin
+val intent = SmartComplyActivity.buildIntent(
+    from      = context,
+    apiKey    = "YOUR_API_KEY",
+    clientId  = "YOUR_CLIENT_ID",
+    fontResId = R.font.inter        // res/font in your own app
+)
+```
+
+Or, if you host `SmartComplyFlowScreen` yourself, with a `FontFamily` directly,
+which is the only way to control each weight:
+
+```kotlin
+SmartComplyFlowScreen(
+    sdk        = sdk,
+    fontFamily = FontFamily(
+        Font(R.font.inter_regular,  FontWeight.Normal),
+        Font(R.font.inter_medium,   FontWeight.Medium),
+        Font(R.font.inter_semibold, FontWeight.SemiBold),
+        Font(R.font.inter_bold,     FontWeight.Bold)
+    ),
+    onComplete = { result -> }
+)
+```
+
+Point `fontResId` at an **XML font family** rather than a single font file and the
+platform resolves real faces per weight on API 28+. A single file is used for every
+weight, which flattens the SDK's type hierarchy.
+
+<Note>
+  A font resource that cannot be loaded, including one R8 has stripped, falls back
+  to the platform font. It does not fail the verification.
+</Note>
 
 ---
 
@@ -307,11 +435,15 @@ The scan has a **20 second cap**.
   Reaching the cap **fails** the check. Nothing is uploaded and nothing is billed, and the user is offered **Try Again**. Earlier versions submitted anyway and reported success with no actions completed: if you are on 1.0.6 or below, expect that behaviour.
 </Warning>
 
-### What "Success" means
+### What the success screen means
 
-The submit call returns `processing`: the backend resolves face matching on a worker moments later. The SDK polls for the terminal outcome before showing anything, so the success screen and `RESULT_STATUS` reflect what actually happened.
+**Nothing about the verdict.** Every submitted entry reaches it, whether the backend passed or failed the check.
 
-If the backend has not resolved within about 15 seconds, the user sees a neutral **Verification Submitted / Processing** screen rather than a claim either way, and `RESULT_STATUS` is `processing`. The entry exists and is billed; the outcome arrives on your webhook.
+The submit call returns `processing`, because the backend resolves face matching on a worker moments later. The SDK polls for up to about 15 seconds and puts whatever it learns in `RESULT_STATUS`, then shows the success screen either way. A user who failed is not told so and is not offered a retry.
+
+This is a product decision, not an oversight: tenants asked for the end user to see a submitted verification as accepted, and to act on the real verdict themselves from the dashboard and the webhook. It means **you** have to close the loop with a user who failed.
+
+Pre-submission failures are unaffected and still show the failure screen with **Try Again**: a denied camera, a configuration or network error, and reaching the 20 second liveness cap. Nothing has been billed at that point and the user can recover on the spot.
 
 ---
 
@@ -378,6 +510,7 @@ val sdk = SmartComply(
 SmartComplyFlowScreen(
     sdk        = sdk,
     darkTheme  = null,            // null = follow system setting
+    fontFamily = null,            // null = platform default; see Branding
     onComplete = { result ->
         // result.entryId, result.status, result.submittedAt
     }
