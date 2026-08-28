@@ -323,13 +323,17 @@ release. The font is the one exception and is passed by the host.
 | Brand name | Dashboard, SDK Config | The welcome heading |
 | Short description | Dashboard, SDK Config | The welcome subheading |
 | Theme colour | Dashboard, SDK Config | Primary buttons, highlights, progress |
-| Logo | Dashboard, SDK Config | The rounded mark on the welcome screen |
+| Logo | Dashboard, SDK Config | The mark on the welcome screen |
 | Font | Your app, at launch | Every screen |
 
 ### Logo
 
 Upload it under **Settings → Integrations → SDK → Brand Details**. PNG, JPEG or
 WebP, up to 512 KB and 1024x1024 pixels. Requires **1.0.7**.
+
+It is drawn on its own, with no box or border behind it, and bounded by height
+rather than fitted into a square so a wordmark stays legible. Only the SDK's
+fallback shield sits in a tinted frame.
 
 The logo belongs to the **SDK Config, not the company**. A branch running several
 configs for different products gives each its own mark, and a config with no logo
