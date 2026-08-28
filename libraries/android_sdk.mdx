@@ -458,7 +458,8 @@ data class SDKConfig(
     val verifyTimeoutMs:    Long        = 90_000L,
     val uploadTimeoutMs:    Long        = 120_000L,
     val maxUploadRetries:   Int         = 3,
-    val debug:              Boolean     = false
+    val debug:              Boolean     = false,
+    val baseUrl:            String?     = null
 )
 ```
 
@@ -472,6 +473,7 @@ data class SDKConfig(
 | `uploadTimeoutMs` | `120000` | Timeout in milliseconds for image and video upload |
 | `maxUploadRetries` | `3` | Automatic retry attempts when creating a liveness check. The final submit is not retried |
 | `debug` | `false` | Prints verbose network logs to Logcat when `true` |
+| `baseUrl` | `null` | Overrides `environment`'s host. See [A different host](#a-different-host). Added in **1.0.7** |
 
 ---
 
