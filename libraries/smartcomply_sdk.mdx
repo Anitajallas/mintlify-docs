@@ -18,7 +18,6 @@ The SDK mounts a drop-in widget over your application, handling document capture
 - **Multi-Country Identity** — Supports data and document channels across Nigeria (BVN, NIN, passports, driver's licenses, voter's cards, and more), Ghana, Kenya, South Africa, and Cote d'Ivoire, with generic passport verification available for other countries and country-agnostic liveness/face-match checks — exact channels depend on what's enabled in your dashboard.
 - **Two-Sided Document Capture** — Front is always required; back is required, optional, or not offered depending on the document type (e.g. NIN is optional-back, since not every physical NIN document has a usable reverse side).
 - **Hardware Agnostic Liveness** — Uses native webcam and MediaRecorder API for cross-platform compatibility. A single passive scan (blink + natural head movement) — no discrete step-by-step prompts.
-- **Liveness-Only Mode** — Set your SDK Config's `verification_type` to `liveness_only` to skip ID/document collection entirely and only confirm the customer is a live person. The widget goes straight from the welcome screen into the camera scan — no country picker, no ID-type picker, no channels to configure.
 
 ---
 
@@ -292,7 +291,7 @@ run();
 ```
 
 <Note>
-  `verificationResult` is only present for **data verification** (BVN/NIN) — it's the immediate government-database lookup result confirming the ID number matched a real record. It says nothing about the face match, which is still pending. It's absent for document verification and liveness-only flows.
+  `verificationResult` is only present for **data verification** (BVN/NIN) — it's the immediate government-database lookup result confirming the ID number matched a real record. It says nothing about the face match, which is still pending. It's absent for document verification flows.
 </Note>
 
 ---
@@ -409,22 +408,6 @@ For **document verification**, the same top-level shape applies, with `verificat
 
 <Note>
   `face_match.decision` (`"MATCH"`, `"NO_MATCH"`, or `"REJECTED"`) is what `verified` is actually derived from — read `decision` rather than comparing `confidence_percentage` against a threshold of your own, since our internal match threshold isn't part of this payload and may change over time. `"REJECTED"` means liveness/anti-spoofing failed before any comparison ran, so `confidence_percentage` can be absent or `0` alongside `verified: false` for a reason unrelated to how similar the faces looked.
-</Note>
-
-For **liveness-only** SDK Configs — `verification_type: "liveness_only"` — there's no ID number and no document, so `customer_profile`/`document` are both absent. `biometrics` carries the real liveness verdict instead of an unconditional pass:
-
-```json
-"biometrics": {
-  "liveness_verified": true,
-  "liveness_passed": true,
-  "face_match": null,
-  "selfie_url": "https://.../autoshot.jpg",
-  "face_analysis": null
-}
-```
-
-<Note>
-  `face_match` and `face_analysis` are always `null` for `liveness_only` — there's nothing to compare the selfie against, only a direct liveness/anti-spoofing check on the recorded video, so neither a face-match result nor the gender/emotion/quality breakdown the other two verification types populate applies here. `biometrics.liveness_verified` mirrors `status === "passed"`; `biometrics.liveness_passed` is the underlying scored verdict the check actually ran, which is what determines that status in the first place.
 </Note>
 
 <Warning>

@@ -330,7 +330,7 @@ X-Adhere-Signature: sha256=<hmac-sha256-hex>
 }
 ```
 
-`verification_type` is `data_verification`, `document_verification` or `liveness_only`. For a **document** run the same top-level shape applies, with a `document` block (OCR fields plus a document-to-selfie face match) in place of `customer_profile`:
+`verification_type` is `data_verification` or `document_verification`. For a **document** run the same top-level shape applies, with a `document` block (OCR fields plus a document-to-selfie face match) in place of `customer_profile`:
 
 ```json
 "document": {
