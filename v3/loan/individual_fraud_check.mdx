@@ -31,11 +31,10 @@ POST /api/v1/loan/fraud_check/
 | `date_of_birth` | string | Yes | Date of birth in `YYYY-MM-DD` format |
 | `gender` | string | Yes | Gender (e.g., `male`, `female`) |
 | `country` | string | Yes | Country of residence |
+| `identifier` | number | No | Customer identifier value (e.g. BVN for Nigeria, a Kenya national ID number) |
+| `identifier_type` | string | No | Key of the identifier type (e.g. `bvn`, `national_id`, `ghana_card`) |
 | `current_address` | string | Yes | Current residential address |
 | `duration_of_stay` | string | Yes | Duration at current address (e.g., `5 years`) |
-| `identifier` | number | Yes | Customer identifier value (e.g. BVN for Nigeria, a Kenya national ID number) |
-| `identifier_type` | string | Yes | Key of the identifier type (e.g. `bvn`, `national_id`, `ghana_card`) |
-| `bvn` | string | No | Legacy field, Nigeria only. Superseded by `identifier` + `identifier_type` — use those instead |
 | `phone_number` | string | Yes | Phone number with country code |
 | `email_address` | string | Yes | Applicant's email address |
 | `employment_type` | string | Yes | Employment type (e.g., `Full-time`, `Self-employed`) |
@@ -64,10 +63,10 @@ curl -X POST "https://adhere-api.smartcomply.com/api/v1/loan/fraud_check/" \
   -F "date_of_birth=1980-01-01" \
   -F "gender=male" \
   -F "country=Nigeria" \
-  -F "current_address=12 Ojuelegba St" \
-  -F "duration_of_stay=5 years" \
   -F "identifier=12345678901" \
   -F "identifier_type=bvn" \
+  -F "current_address=12 Ojuelegba St" \
+  -F "duration_of_stay=5 years" \
   -F "phone_number=+2349105678901" \
   -F "email_address=john.doe@example.com" \
   -F "employment_type=Full-time" \
@@ -85,10 +84,6 @@ curl -X POST "https://adhere-api.smartcomply.com/api/v1/loan/fraud_check/" \
   -F "run_aml_check=false"
 ```
 </CodeGroup>
-
-<Note>
-`bvn` is a legacy field kept for backward compatibility (Nigeria only). Use `identifier` (the ID value) and `identifier_type` (the key, e.g. `bvn`, `national_id`, `ghana_card`) instead — this works for Nigeria and every other supported country.
-</Note>
 
 ## Response
 
