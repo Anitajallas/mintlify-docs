@@ -17,6 +17,8 @@ The SmartComply iOS SDK is a native Swift library that delivers a fully self-con
 - **Multi-country support** — renders a country picker automatically when more than one country is configured
 - **Dark and light mode** — theme adapts to the system colour scheme; override with `preferredColorScheme`
 - **Automatic upload retry** — transient upload failures are retried internally
+- **Your brand, not ours**: name, description, colour and logo come from the Dashboard, and the font is passed by your app. See [Branding](#branding)
+- **Any backend host**: production, staging, or your own, without a rebuild
 
 ---
 
@@ -197,6 +199,100 @@ The SDK manages the entire flow automatically. The exact steps depend on the ver
   `.production` is HTTPS and needs none of this.
 </Warning>
 
+### A different host
+
+`SDKEnvironment` covers the two hosts you ship against, and one of them is
+loopback on the handset. For anything else, a staging deployment or a QA build
+that has to reach more than one backend without being rebuilt, override it. Added
+in **1.0.3**.
+
+```swift
+let config = SDKConfig(
+    apiKey: "...",
+    clientId: "...",
+    baseURL: "https://your-staging-host.example.com"
+)
+```
+
+A trailing slash is trimmed, and a blank value falls back to `environment` rather
+than being treated as a host, so a build reading this off an empty field does not
+post verifications to a relative URL.
+
+---
+
+## Branding
+
+The flow carries your brand, not Adhere's. Name, description, colour and logo all
+come from the **SDK Config on the dashboard**, so they change without an app
+release. The font is the one exception and is passed by the host.
+
+| What | Set where | Shows up as |
+|---|---|---|
+| Brand name | Dashboard, SDK Config | The welcome heading |
+| Short description | Dashboard, SDK Config | The welcome subheading |
+| Theme colour | Dashboard, SDK Config | Primary buttons, highlights, progress |
+| Logo | Dashboard, SDK Config | The mark on the welcome screen |
+| Font | Your app, at launch | Every screen |
+
+### Logo
+
+Upload it under **Settings → Integrations → SDK → Brand Details**. PNG, JPEG or
+WebP, up to 512 KB and 1024x1024 pixels. Requires **1.0.3**.
+
+It is drawn on its own, with no box or border behind it, and bounded by height
+rather than fitted into a square so a wordmark stays legible. Only the SDK's
+fallback shield sits in a tinted frame.
+
+The logo belongs to the **SDK Config, not the company**. A branch running several
+configs for different products gives each its own mark, and a config with no logo
+shows the SDK's own shield rather than falling back to the company logo on your
+profile page. If you want the same mark everywhere, upload it to each config.
+
+<Note>
+  A logo never delays or blocks a verification. The SDK fetches it after the
+  welcome screen is already on screen, on a three second budget, and keeps its own
+  shield if the fetch fails. It is also decoded through a pixel cap, so an
+  oversized image cannot exhaust memory on the handset.
+</Note>
+
+<Warning>
+  The logo is rendered by the **iOS and Android SDKs**. The [Web SDK](/libraries/smartcomply_sdk)
+  does not show it yet, so a config used by both will carry your mark on mobile
+  and the default on web.
+</Warning>
+
+### Font
+
+Passed by your app, because the SDK neither ships nor downloads font files: your
+loading, caching and licensing stay yours. Requires **1.0.3**.
+
+A face listed under `UIAppFonts`, or registered at runtime, is available
+process-wide, so the SDK needs only its PostScript name.
+
+```swift
+SmartComplyFlowView(
+    sdk: sdk,
+    fontFamily: SDKFontFamily(
+        regular:  "Inter-Regular",
+        medium:   "Inter-Medium",
+        semibold: "Inter-SemiBold",
+        bold:     "Inter-Bold"
+    ),
+    onComplete: { result in }
+)
+```
+
+Names are **per weight** because `Font.custom(_:size:)` selects a face by name and
+takes no weight argument, so a single name would render every screen at one
+weight. Only `regular` is required; anything omitted falls back to the nearest
+name you did supply.
+
+<Note>
+  A name that is not registered logs a warning under the `com.smartcomply.sdk`
+  subsystem and falls back to the system font rather than rendering nothing.
+  Dynamic Type still applies either way.
+</Note>
+
 ---
 
 ## Liveness
@@ -228,9 +324,13 @@ Scaling is capped at `.accessibility1`. The oval guide, the document frame and t
 
 ### What "Verification Complete" means
 
-The submit call returns `processing`: the backend resolves face matching on a worker moments later. The SDK polls for the terminal outcome before showing anything, so the success screen and `FlowResult.status` reflect what actually happened.
+**Nothing about the verdict.** Every submitted entry reaches that screen, whether the backend passed or failed the check.
 
-If the backend has not resolved within about 15 seconds, the user sees a neutral **Verification Submitted / Processing** screen rather than a claim either way, and `FlowResult.status` is `processing`. The entry exists and is billed; the outcome arrives on your webhook.
+The submit call returns `processing`, because the backend resolves face matching on a worker moments later. The SDK polls for up to about 15 seconds and puts whatever it learns in `FlowResult.status`, then shows the success screen either way. A user who failed is not told so and is not offered a retry.
+
+This is a product decision, not an oversight: tenants asked for the end user to see a submitted verification as accepted, and to act on the real verdict themselves from the dashboard and the webhook. It means **you** have to close the loop with a user who failed.
+
+Pre-submission failures are unaffected and still show the failure screen with **Try Again**: a denied camera, a configuration or network error, and reaching the 20 second liveness cap. Nothing has been billed at that point and the user can recover on the spot.
 
 ### Knowing the user gave up
 
@@ -257,7 +357,8 @@ public struct SDKConfig {
         requestTimeout: TimeInterval = 30,       // seconds
         uploadTimeout: TimeInterval  = 120,      // seconds
         maxUploadRetries: Int = 3,
-        debug: Bool = false
+        debug: Bool = false,
+        baseURL: String? = nil
     )
 }
 ```
@@ -271,6 +372,7 @@ public struct SDKConfig {
 | `uploadTimeout` | `120` | Timeout in seconds for image and video upload |
 | `maxUploadRetries` | `3` | Total upload attempts, not retries after the first. Only transport failures are retried; an API error is surfaced immediately |
 | `debug` | `false` | Writes verbose network logs to the unified log (`os.Logger`, subsystem `com.smartcomply.sdk`) when `true`. Read them in Console.app — they do not appear in Xcode's console pane |
+| `baseURL` | `nil` | Overrides `environment`'s host. See [A different host](#a-different-host). Added in **1.0.3** |
 
 ---
 
@@ -290,15 +392,29 @@ public struct FlowResult {
 }
 ```
 
-<Note>
-  **`status` is the entry's real status from 1.0.3.** The SDK polls the backend for the terminal
-  outcome before showing anything, so `"passed"` means passed. A run the backend has not resolved
-  within about 15 seconds gives `"processing"`: the entry exists and is billed, and the outcome
-  arrives on your webhook. A run that **failed** never reaches `onComplete`: the user is shown the
-  failure screen, and `onDismiss` fires if you passed one.
+<Warning>
+  **Branch on `status`. Reaching `onComplete` is not a pass.**
 
-  On 1.0.2 and earlier `status` was always `"processing"` and the success screen claimed "Verified"
-  regardless of what the backend decided, including for runs the anti-spoofing check had rejected.
+  From **1.0.3** the SDK polls the backend for the terminal outcome and puts it here, so `"passed"`
+  means passed and `"failed"` means failed. But **every submitted entry shows the end user the
+  success screen**, including a failed one. That is deliberate and was asked for: tenants wanted
+  their user to see a submitted verification as accepted and to read the real verdict themselves.
+  The screen is neutral-positive; this value is not.
+
+  So `onComplete` firing with `status` of `"failed"` is a normal outcome you must handle. Code that
+  treats `onComplete` as a pass will admit users who failed verification.
+
+  `"processing"` means the backend had not resolved within about 15 seconds. The entry exists and is
+  billed, and the outcome arrives on your [webhook](/webhooks#identity-verification).
+
+  On 1.0.2 and earlier `status` was always `"processing"` and carried no verdict at all, so the
+  result was a submission receipt.
+</Warning>
+
+<Note>
+  `verifiedName` and `idNumber` are populated from the poll as well as from submit, from **1.0.3**.
+  In document mode they previously appeared only when OCR happened to finish before the user
+  completed liveness, so whether a user saw their own name came down to timing.
 </Note>
 
 <Warning>
