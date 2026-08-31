@@ -63,38 +63,14 @@ To ensure that a webhook request is genuinely from Adhere, you should verify the
 
 ### Getting your SDK Config's webhook secret
 
-The secret is generated for you when the SDK Config is created and is deliberately
-absent from the ordinary config read, since anyone holding it can forge a validly
-signed webhook. Retrieve it explicitly instead:
+The secret is generated for you when the SDK Config is created. Get it from the
+Adhere Dashboard: go to **Settings → Integrations → SDK**, open the menu on your
+config's row and choose **Integration**. The secret is shown there with your
+Config ID, with a button to copy it.
 
-```bash
-curl https://adhere-api.smartcomply.com/v1/sdk-config/<config-id>/webhook-secret/ \
-  -H "Authorization: Token <your-dashboard-token>"
-```
-
-```json
-{
-  "status": "Success",
-  "data": {
-    "client_id": "3e44115c-ccba-4460-92fc-0539d74beb7d",
-    "webhook_secret": "…",
-    "signature_header": "x-adhere-signature",
-    "algorithm": "sha256"
-  }
-}
-```
-
-Only the **account administrator** can call this, not an employee with the admin
-role, and not the owner of a different account. Every call is logged.
-
-To rotate the secret, `POST` to the same URL. The new value takes effect
-immediately, so deploy it before your next verification completes or signatures
-will fail in the gap.
-
-```bash
-curl -X POST https://adhere-api.smartcomply.com/v1/sdk-config/<config-id>/webhook-secret/ \
-  -H "Authorization: Token <your-dashboard-token>"
-```
+Treat it like a password. Anyone holding it can forge a validly signed webhook
+carrying fabricated verification results, so store it the way you store any other
+server-side credential and never ship it in client code.
 
 <CodeGroup>
 ```python Python
