@@ -1,0 +1,143 @@
+---
+title: "SDK Flutter"
+description: "Intégrez la vérification d'identité et la détection de vivacité Adhere dans votre application Flutter."
+---
+
+# Adhere Flutter SDK
+
+<Warning>
+  Cette page n'est pas liée depuis la navigation et décrit un package qui
+  ne fait pas partie de la série de sortie actuelle du SDK. Les SDK mobiles
+  maintenus sont [Android](/fr/libraries/android_sdk) et [iOS](/fr/libraries/ios_sdk). Traitez ce qui suit comme non vérifié contre une construction d'envoi.
+</Warning>
+
+Un puissant package Flutter pour la vérification d'identité et la détection de vivacité Adhere. Notre SDK propose une UI prête à l'emploi qui orchestre de manière transparente la vérification BVN/NIN (Nigeria), Document parsing (International), et les défis de vivacité faciale basés sur ML Kit vidéo.
+
+## Fonctionnalités
+
+- **Intégration UI prête à l'emploi** — `sdk.open(context)` lance notre module UI poli nativement au-dessus de votre application.
+- **Configuration dynamique du client** — Récupère les types de documents disponibles de manière sécurisée depuis les règles de votre tableau de bord Adhere.
+- **Système à usage unique** — Les vérifications sont sécurisées en utilisant un paramètre à usage unique.
+- **Onboarding d'identité** — Vérifie le BVN & NIN directement via des API nationales, ou scanne les passeports et les cartes d'identité nationales.
+- **Détection de vivacité** : Un scan facial passif (clignement + mouvement naturel de la tête) avec un cap de 20 secondes, soutenu par Google ML Kit. Les actions ne sont jamais nommées à l'utilisateur.
+
+## Installation
+
+Dans le `pubspec.yaml` de votre application :
+
+```yaml
+dependencies:
+  smartcomply_sdk: ^0.1.0
+```
+
+Ensuite exécutez `flutter pub get`.
+
+## Configuration de la plateforme
+
+### Android
+Dans `android/app/src/main/AndroidManifest.xml`, assurez-vous que votre application a la permission d'accéder à la caméra :
+```xml
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.INTERNET" />
+```
+Définissez la version minimale du SDK dans `android/app/build.gradle` :
+```groovy
+android {
+    defaultConfig {
+        minSdk 21
+    }
+}
+```
+
+### iOS
+Dans `ios/Runner/Info.plist`, déclarez la description d'utilisation de la caméra :
+```xml
+<key>NSCameraUsageDescription</key>
+<string>Camera is needed for liveness verification.</string>
+```
+
+---
+
+## Démarrage rapide (recommandé)
+
+La façon la plus simple d'intégrer notre SDK est d'utiliser le widget enveloppe complet. Au lancement, le SDK invitera automatiquement l'utilisateur à fournir son **Client ID**.
+
+```dart
+import 'package:smartcomply_sdk/smartcomply_sdk.dart';
+
+// 1. Créez l'instance SDK en utilisant votre clé API secrète
+final sdk = SmartComply(
+  const SDKConfig(
+    apiKey: 'your_live_api_key',
+    environment: Environment.production, // Use Environment.sandbox for testing
+  )
+);
+
+// 2. Enveloppez l'exécution dans un callback asynchrone
+void startVerification(BuildContext context) async {
+  try {
+    // Ouvrez l'UI Adhere
+    final result = await sdk.open(context);
+
+    if (result.success) {
+      print('Verification passed! Live Session Token: ${result.sessionToken}');
+    } else {
+      print('Failed or Canceled: ${result.errorMessage}');
+    }
+  } catch (e) {
+    print("Fatal App Error processing SDK: $e");
+  }
+}
+```
+
+Le SDK gère tout automatiquement :
+1. Affiche un écran d'entrée d'ID client initial.
+2. Identifie l'origine de l'utilisateur et invite pour les types d'ID (BVN, NIN, Passport, etc).
+3. Demande les permissions de caméra.
+4. Guide l'utilisateur à travers la capture faciale de vivacité.
+5. Révoque de façon sécurisée la session pour appliquer la politique d'utilisation unique.
+
+---
+
+## Utilisation avancée (architecture headless)
+
+Si vous construisez votre propre UI depuis zéro au lieu d'utiliser notre wrapper, vous pilotez vous-même les points de terminaison. L'ID Client est celui de votre tableau de bord : la même valeur permanente que le wrapper utilise :
+
+```dart
+// 1. Ouvrez une session avec votre SDK Config's Client ID.
+//    Ce dernier est émis par Adhere et est permanent : réutilisez-le pour chaque
+//    vérification. Générer un UUID ici renvoie 404 SDK_CONFIG_NOT_FOUND
+//    au tout premier appel, car le serveur le résout contre un enregistrement
+//    SDK Config existant.
+final session = await sdk.createSession("YOUR_CLIENT_ID");
+
+// 2. Vérifiez l'identité directement via backend API
+final identity = await sdk.onboarding.verify(
+  onboardingType: OnboardingType.bvn,
+  idNumber: '22012345678',
+);
+
+// 3. Montez le Camera UI Liveness Checker Widget directement dans votre arbre d'application
+if (identity.isVerified) {
+  final liveness = await sdk.liveness.startCheck(
+    context,
+    identifier: '22012345678',
+    identifierType: 'bvn',
+    country: 'nigeria',
+    challengeActions: [ChallengeAction.blink, ChallengeAction.turnLeft],
+  );
+  print('Liveness: ${liveness.status}');
+}
+```
+
+## Actions de vivacité prises en charge
+
+Notre moteur peut défier les utilisateurs en fonction des règles de votre tableau de bord :
+
+| Action | Valeur Enum | Méthode de détection |
+|---|---|---|
+| Blink | `ChallengeAction.blink` | ML Kit eye open probability tracking |
+| Turn left | `ChallengeAction.turnLeft` | ML Kit `headEulerAngleY` analysis |
+| Turn right | `ChallengeAction.turnRight` | ML Kit `headEulerAngleY` analysis |
+| Turn head | `ChallengeAction.turnHead` | ML Kit `headEulerAngleY` analysis |
+| Open mouth | `ChallengeAction.openMouth` | ML Kit classification |

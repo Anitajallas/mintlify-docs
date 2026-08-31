@@ -1,0 +1,41 @@
+---
+title: "Journal des modifications"
+sidebarTitle: "Quoi de neuf"
+description: "Notes de version et mises à jour pour l'API Adhere."
+---
+
+## Mai 2025 — Lancement de la v3
+
+**Adhere v3** est désormais la version principale de l'API. La v3 apporte une structure d'endpoint plus propre, des données de réponse plus riches et une couverture géographique étendue.
+
+### Nouveautés de la v3
+
+- **Suivi du parcours utilisateur** — Nouvelle API basée sur les sessions pour suivre et valider les séquences d'événements de transaction et signaler les comportements hors séquence ou suspects en temps réel.
+- **Playground OpenAPI** — Chaque page d'endpoint dispose désormais d'un playground interactif intégré. Authentifiez-vous une fois avec votre clé API et testez les requêtes directement depuis la documentation.
+
+### Améliorations
+
+- Authentification unifiée par en-tête `x-access-token` sur tous les endpoints.
+- Structure de réponse JSON cohérente : `{ status, data, message }` sur tous les endpoints.
+- Codes d'activité pour la surveillance des transactions consolidés et documentés (200–221 sûrs, 450–457 suspects).
+- La vérification de fraude de prêt prend désormais en charge un indicateur optionnel `run_aml_check` pour les demandes individuelles et professionnelles.
+
+---
+
+## Mars 2025 — Mises à jour v2
+
+- Ajout de la vérification de la carte d'identité ghanéenne avec photo.
+- Rapports de crédit du Kenya (individuel et professionnel) ajoutés à la suite de rapports de crédit.
+- Rapport de crédit premium ajouté pour les individus nigérians.
+- Filtrage des transactions étendu avec correspondance complète des listes de sanctions OFAC, UN et UE.
+
+---
+
+## 2024 — Lancement de la v1
+
+- Version initiale couvrant le KYC nigérian (BVN, NIN, VNIN, CAC, Permis de conduire, Passeport, Carte d'électeur, NUBAN, Téléphone, TIN).
+- Carte d'identité nationale du Kenya (basique et avancée) et vérification de passeport.
+- Vérification de carte d'identité ghanéenne.
+- Rapports de crédit individuels et professionnels de CRC, First Central et Credit Registry.
+- Surveillance des transactions, détection de fraude à la carte bancaire et filtrage KYC.
+- Vérification de fraude de prêt pour les individus et les entreprises.

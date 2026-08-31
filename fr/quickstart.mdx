@@ -1,0 +1,90 @@
+---
+title: "Quickstart"
+description: "Effectuez votre premier appel à l'API Smartcomply en moins de 5 minutes."
+---
+
+## Prérequis
+
+Avant de commencer, assurez-vous d'avoir :
+
+- Un compte Smartcomply — [inscrivez-vous ici](https://adhere-app.smartcomply.com/signup)
+- Complété votre KYC professionnel sur le tableau de bord Adhere
+- Généré une clé secrète dans **Paramètres → Clés API**
+
+## Faire votre première requête
+
+L'exemple ci-dessous vérifie un BVN nigérian. Remplacez `YOUR_SECRET_KEY` par votre clé réelle.
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/bvn/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"bvn": "22000000001"}'
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/bvn/",
+  {
+    method: "POST",
+    headers: {
+      "x-access-token": "YOUR_SECRET_KEY",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ bvn: "22000000001" }),
+  }
+);
+const data = await response.json();
+console.log(data);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/bvn/",
+    headers={
+        "x-access-token": "YOUR_SECRET_KEY",
+        "Content-Type": "application/json",
+    },
+    json={"bvn": "22000000001"},
+)
+print(response.json())
+```
+</CodeGroup>
+
+## Réponse réussie
+
+```json
+{
+  "status": "success",
+  "data": {
+    "lastName": "OMOLE",
+    "firstName": "ABRAHAM",
+    "middleName": "ISAAC",
+    "dateOfBirth": "1909-09-19",
+    "phoneNumber1": "09011001100"
+  },
+  "message": "Bank Verification Number details retrieved successfully"
+}
+```
+
+Si vous recevez une erreur `401`, vérifiez que votre en-tête `x-access-token` est correctement configuré. Pour une liste complète des réponses d'erreur, consultez [Codes d'erreur](/fr/error_codes).
+
+## Étapes suivantes
+
+<CardGroup cols={2}>
+  <Card title="Authentification" icon="key" href="/fr/authentication">
+    Apprenez à sécuriser et à gérer vos clés API.
+  </Card>
+  <Card title="Endpoints KYC" icon="id-card" href="/fr/v3/kyc/nigeria/BVN">
+    Explorez tous les endpoints de vérification d'identité.
+  </Card>
+  <Card title="Codes d'erreur" icon="triangle-exclamation" href="/fr/error_codes">
+    Comprendre toutes les réponses d'erreur possibles.
+  </Card>
+  <Card title="Webhooks" icon="bell" href="/fr/webhooks">
+    Configurez des notifications d'événements en temps réel.
+  </Card>
+</CardGroup>

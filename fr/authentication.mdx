@@ -1,0 +1,47 @@
+---
+title: "Authentification"
+description: "Comment authentifier les requêtes vers l'API Smartcomply."
+---
+
+Toutes les requêtes vers l'API Adhere doivent inclure votre clé secrète dans les en-têtes de requête. Les requêtes sans clé valide retourneront une erreur `401 Unauthorized`.
+
+## URL de base
+
+```
+https://adhere-api.smartcomply.com
+```
+
+## Obtenir votre clé API
+
+Après avoir complété votre KYC professionnel sur le [tableau de bord Adhere](https://adhere-app.smartcomply.com) :
+
+1. Accédez à **Paramètres → Clés API**
+2. Cliquez sur **Générer une clé**
+3. Copiez et stockez la clé en toute sécurité — elle ne sera plus affichée
+
+## En-têtes de requête
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé API secrète | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+## Exemple de requête
+
+```bash
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/bvn/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"bvn": "22000000001"}'
+```
+
+## Meilleures pratiques de sécurité
+
+<Warning>
+  N'exposez jamais votre clé secrète dans le code côté client, les dépôts publics ou les journaux.
+</Warning>
+
+- **Utilisez des variables d'environnement** — stockez votre clé dans des fichiers `.env` et chargez-la au moment de l'exécution, ne la codez jamais en dur
+- **Utilisez des clés distinctes par environnement** — maintenez des clés distinctes pour le développement, la pré-production et la production
+- **Faites pivoter les clés périodiquement** — régénérez votre clé depuis le tableau de bord si vous soupçonnez qu'elle a été compromise
+- **Restreignez l'utilisation des clés** — ne partagez les clés qu'avec les services qui en ont strictement besoin

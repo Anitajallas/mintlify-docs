@@ -1,0 +1,118 @@
+---
+title: "Rapport de crédit complet CRC"
+sidebarTitle: "Rapport complet CRC"
+description: "Récupérez le rapport de crédit complet d'un individu auprès du bureau CRC, notamment l'historique de prêt, la performance et les demandes."
+openapi: "POST /api/onboarding/individual/crc_full/"
+---
+
+L'endpoint Rapport de crédit complet CRC renvoie un rapport de crédit complet auprès du bureau CRC, notamment l'historique détaillé des prêts, la performance de remboursement, les demandes de crédit et l'historique d'emploi.
+
+## Endpoint
+
+```
+POST /api/onboarding/individual/crc_full/
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `bvn` | string | Oui | Le numéro d'identification bancaire à 11 chiffres de l'individu |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/individual/crc_full/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"bvn": "22244545518"}'
+```
+</CodeGroup>
+
+## Réponse
+
+### 200 OK
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `data.name` | string | Nom complet |
+| `data.score.totalNoOfLoans` | number | Prêts totaux au dossier |
+| `data.score.totalNoOfActiveLoans` | number | Prêts actuellement actifs |
+| `data.score.totalNoOfClosedLoans` | number | Prêts clôturés |
+| `data.score.totalBorrowed` | number | Montant total emprunté |
+| `data.score.totalOutstanding` | number | Solde impayé total |
+| `data.score.highestLoanAmount` | number | Montant le plus élevé d'un seul prêt |
+| `data.score.creditEnquiries` | array | Liste des demandes de crédit |
+| `data.score.loanPerformance` | array | Résumés de performance par prêteur |
+| `data.score.loanHistory` | array | Historique détaillé prêt par prêt |
+| `data.score.employmentHistory` | array | Enregistrements d'emploi au dossier |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "_id": "64f600608aaf9386c646de32",
+    "bvn": "22244545518",
+    "name": "ADELEKE EMMANUEL AYORINDE",
+    "gender": "Male",
+    "dateOfBirth": "29/12/1994",
+    "score": {
+      "totalNoOfDelinquentFacilities": 0,
+      "lastReportedDate": "23/Nov/2023",
+      "totalNoOfLoans": 29,
+      "totalNoOfInstitutions": 6,
+      "totalBorrowed": 4145267,
+      "totalOutstanding": 1,
+      "totalOverdue": 0,
+      "totalNoOfPerformingLoans": 29,
+      "totalNoOfClosedLoans": 27,
+      "totalNoOfActiveLoans": 2,
+      "highestLoanAmount": 1134330,
+      "crcReportOrderNumber": "W-0097887830/2023",
+      "creditEnquiries": [
+        {"loanType": "Overdraft", "date": "12-Oct-2023", "institutionType": "Micro Lenders"}
+      ],
+      "loanPerformance": [
+        {"loanProvider": "UNITED BANK FOR AFRICA", "loanAmount": "NGN 1,134,330", "status": "Open", "performanceStatus": "Performing"}
+      ],
+      "loanHistory": [
+        {"loanProvider": "UNITED BANK FOR AFRICA", "accountNumber": "SF099911020938", "type": "Term Loan", "loanAmount": "1134330", "performanceStatus": "Performing"}
+      ],
+      "employmentHistory": [
+        {"employerName": "ARM INVESTMENT MANAGERS", "address": "1 MEKUNWEN ROAD OYINKAN ABAYOMI ETI OSA", "dateReported": "31-jul-2023"}
+      ]
+    },
+    "searchedDate": "2023-11-23T14:26:42.196Z"
+  },
+  "message": "CRC Full credit report details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Missing required fields"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

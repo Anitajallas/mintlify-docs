@@ -1,0 +1,57 @@
+---
+title: "Intégration client"
+sidebarTitle: "Vue d'ensemble"
+description: "Vérifiez l'identité d'un client et filtrez-le pour les sanctions, les PEP et les médias défavorables en un seul appel API."
+---
+
+L'intégration d'un nouveau client nécessite généralement deux étapes distinctes : vérifier qui il est, puis vérifier s'il figure sur des listes de surveillance. L'API d'intégration client fait les deux en un seul appel — vous envoyez un pays et un numéro d'identification, et l'API renvoie une identité vérifiée, des résultats de filtrage AML et une décision consolidée de `pass`, `review` ou `fail`.
+
+<CardGroup cols={2}>
+  <Card title="Vérifier le client" icon="user-check" href="/fr/v3/onboarding/verify_customer">
+    Soumettez un pays et un identifiant pour recevoir une identité vérifiée et un résultat de filtrage AML dans une seule réponse.
+  </Card>
+  <Card title="Paramètres" icon="sliders" href="/fr/v3/onboarding/get_settings">
+    Configurez quelles étapes — vérification d'identité et filtrage AML — s'exécutent pour votre branche.
+  </Card>
+</CardGroup>
+
+## Comment ça marche
+
+<Steps>
+  <Step title="Soumettre un pays et un identifiant">
+    Envoyez le pays et le numéro d'identification du client. L'API sélectionne automatiquement le type de document correct pour ce pays — pas besoin de le spécifier sauf si vous souhaitez remplacer la valeur par défaut.
+  </Step>
+  <Step title="L'identité est vérifiée">
+    L'API vérifie l'identifiant par rapport à la base de données gouvernementale ou de bureau pertinente et extrait le nom vérifié du client.
+  </Step>
+  <Step title="Le nom est filtré pour l'AML">
+    Le nom vérifié est comparé aux listes de sanctions mondiales et aux bases de données PEP. Si la vérification d'identité a échoué et qu'aucun nom n'a été renvoyé, le filtrage est ignoré et une `note` est incluse dans la réponse.
+  </Step>
+  <Step title="Une décision est renvoyée">
+    Basée sur le résultat combiné IVS et AML, l'API renvoie une `decision` de `pass`, `review` ou `fail`. Les données brutes d'identité et de filtrage sont toujours incluses afin que vous puissiez construire votre propre logique par-dessus.
+  </Step>
+</Steps>
+
+## Guide de décision
+
+Le champ `decision` est le signal principal sur lequel votre système doit agir :
+
+| Décision | Niveau de risque | Signification | Action recommandée |
+|----------|-----------|---------------|-------------------|
+| `pass` | Faible | Identité vérifiée. Aucune correspondance de sanction ou de PEP trouvée. | Poursuivre l'intégration. |
+| `review` | Moyen | Identité vérifiée, mais une correspondance PEP ou à risque élevé a été trouvée. | Suspendre l'intégration. Acheminer vers un agent de conformité pour examen manuel avant de poursuivre. |
+| `fail` | Élevé / invérifiable | L'identité n'a pas pu être vérifiée **ou** une correspondance à haut risque a été trouvée. | Ne pas intégrer. Refuser ou escalader selon votre politique de conformité. |
+
+<Warning>
+  Une décision `review` ne signifie **pas** bloquer le client. Cela signifie que l'intégration doit être mise en pause pour un examen humain avant qu'une décision finale ne soit prise. Refuser automatiquement tous les cas `review` peut exclure des clients légitimes qui sont des PEP mais ne présentent aucun risque réel.
+</Warning>
+
+## Pays pris en charge
+
+| Pays | Identifiant par défaut | Remplacements pris en charge |
+|---------|-------------------|---------------------|
+| `nigeria` | `bvn` | `bvn`, `nin`, `vnin` |
+| `kenya` | `national_id` | `national_id` |
+| `ghana` | `ghana_id` | `ghana_id` |
+| `uganda` | `national_id` | `national_id` |
+| `rwanda` | `national_id` | `national_id` |

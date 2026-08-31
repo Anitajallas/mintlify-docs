@@ -1,0 +1,148 @@
+---
+title: "Numéro de Vérification Bancaire Avancé (BVN)"
+sidebarTitle: "BVN Avancé"
+description: "Récupérez un profil BVN vérifié complet incluant les données d'inscription, l'état matrimonial et la photo du client."
+openapi: "POST /api/onboarding/nigeria_kyc/bvn_advanced/"
+---
+
+L'endpoint BVN Avancé fournit une vue complète de l'identité d'un client. En plus des champs BVN standard, il renvoie les détails d'inscription, le statut de liste de surveillance, l'adresse de résidence et une photo du client encodée en base64.
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/bvn_advanced/
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `bvn` | string | Oui | Le Numéro de Vérification Bancaire à 11 chiffres du client |
+| `date_of_birth` | string | Oui | La date de naissance du client au format `YYYY-MM-DD` |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/bvn_advanced/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"bvn": "22000000001", "date_of_birth": "1990-01-15"}'
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/bvn_advanced/",
+  {
+    method: "POST",
+    headers: {
+      "x-access-token": "YOUR_SECRET_KEY",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ bvn: "22000000001", date_of_birth: "1990-01-15" }),
+  }
+);
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/bvn_advanced/",
+    headers={
+        "x-access-token": "YOUR_SECRET_KEY",
+        "Content-Type": "application/json",
+    },
+    json={"bvn": "22000000001", "date_of_birth": "1990-01-15"},
+)
+data = response.json()
+```
+</CodeGroup>
+
+## Réponse
+
+### 200 OK
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `data.bvn` | string | Le BVN qui a été interrogé |
+| `data.image` | string | Photo JPEG du client encodée en base64 |
+| `data.title` | string | Titre honorifique (par ex. `"Mr"`, `"Mrs"`) |
+| `data.gender` | string | `"male"` ou `"female"` |
+| `data.lastName` | string | Nom de famille du client |
+| `data.firstName` | string | Prénom du client |
+| `data.middleName` | string | Deuxième prénom du client |
+| `data.dateOfBirth` | string | Date de naissance au format `YYYY-MM-DD` |
+| `data.phoneNumber1` | string | Numéro de téléphone principal enregistré |
+| `data.phoneNumber2` | string | Numéro de téléphone secondaire (si disponible) |
+| `data.maritalStatus` | string | Par ex. `"Single"`, `"Married"` |
+| `data.lgaOfOrigin` | string | Zone de gouvernement local d'origine |
+| `data.stateOfOrigin` | string | État d'origine |
+| `data.stateOfResidence` | string | État de résidence actuel |
+| `data.lgaOfResidence` | string | Zone de gouvernement local de résidence (si disponible) |
+| `data.residentialAddress` | string | Adresse de résidence (si disponible) |
+| `data.enrollmentBank` | string | Code bancaire où le BVN a été inscrit |
+| `data.enrollmentBranch` | string | Agence où le BVN a été inscrit |
+| `data.registrationDate` | string | Date d'enregistrement du BVN |
+| `data.levelOfAccount` | string | Niveau de compte CBN |
+| `data.watchListed` | string | `"YES"` si sur une liste de surveillance, sinon `"NO"` |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "bvn": "22000000001",
+    "image": "<base64-encoded-jpeg>",
+    "title": "Mr",
+    "gender": "male",
+    "lastName": "OMOLE",
+    "firstName": "ABRAHAM",
+    "middleName": "ISAAC",
+    "nameOnCard": "",
+    "dateOfBirth": "1909-09-19",
+    "lgaOfOrigin": "Ado-Odo/Ota",
+    "watchListed": "NO",
+    "phoneNumber1": "09011001100",
+    "phoneNumber2": "",
+    "maritalStatus": "Single",
+    "stateOfOrigin": "Ogun State",
+    "enrollmentBank": "033",
+    "levelOfAccount": "Level 1 - Low Level Accounts",
+    "lgaOfResidence": "",
+    "enrollmentBranch": "0517-OTA 2",
+    "registrationDate": "2017-09-05",
+    "stateOfResidence": "Ogun State",
+    "residentialAddress": ""
+  },
+  "message": "Bank Verification Number details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

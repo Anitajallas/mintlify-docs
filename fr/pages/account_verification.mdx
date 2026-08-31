@@ -1,0 +1,68 @@
+---
+title: "Vérification de compte et d'identité"
+sidebarTitle: "Vérification de compte"
+description: "Comment utiliser Adhere pour vérifier l'identité des clients et les comptes bancaires lors de l'intégration."
+---
+
+Vérifier qu'un client est bien celui qu'il prétend être — et que le compte bancaire fourni lui appartient — est la base d'une intégration sécurisée. Adhere vous donne les outils pour le faire numériquement, en quelques secondes, sans demander de documents papier.
+
+## Confirmer l'identité avant l'intégration
+
+Utilisez le BVN ou le NIN du Nigeria pour confirmer instantanément le nom, la date de naissance et le numéro de téléphone d'un client par rapport à la base de données d'identité centrale. Pour le Kenya, le Ghana, le Rwanda et l'Ouganda, vérifiez par rapport aux dossiers de carte d'identité nationale et de passeport.
+
+<CardGroup cols={2}>
+  <Card title="Vérification BVN" icon="id-card" href="/fr/v3/kyc/nigeria/BVN">
+    Vérifiez un numéro de vérification bancaire (BVN) à 11 chiffres et renvoyez le nom complet, le téléphone et la date de naissance du titulaire.
+  </Card>
+  <Card title="Vérification NIN" icon="fingerprint" href="/fr/v3/kyc/nigeria/nin">
+    Confirmez l'identité par rapport à la base de données du numéro d'identification nationale du Nigeria.
+  </Card>
+  <Card title="Carte d'identité nationale du Kenya" icon="id-badge" href="/fr/v3/kyc/kenya/national_id_basic">
+    Vérifiez les clients kenyans en utilisant leur numéro de carte d'identité nationale.
+  </Card>
+  <Card title="Carte d'identité ghanéenne" icon="id-badge" href="/fr/v3/kyc/ghana/ID_Card">
+    Vérifiez les numéros de carte Ghana, passeport, carte d'électeur, SSNIT ou permis de conduire.
+  </Card>
+</CardGroup>
+
+## Vérifier que le compte bancaire leur appartient
+
+Avant de décaisser des fonds ou de configurer un prélèvement automatique, confirmez que le numéro de compte fourni par le client est lié à son identité.
+
+<Card title="Vérification NUBAN" icon="building-columns" href="/fr/v3/kyc/nigeria/nuban">
+  Recherchez n'importe quel numéro de compte bancaire nigérian et renvoyez le nom du titulaire du compte — afin que vous puissiez confirmer qu'il correspond à l'identité de votre client avant de traiter tout paiement.
+</Card>
+
+## Ajouter une couche biométrique
+
+Pour les flux d'intégration à plus haut risque, ajoutez une vérification de vivacité ou une comparaison faciale pour confirmer que la personne présentant l'identité est physiquement présente.
+
+<CardGroup cols={2}>
+  <Card title="Comparaison faciale" icon="camera" href="/fr/v3/biometrics/face_comparism">
+    Comparez un selfie avec une image de référence pour confirmer qu'il s'agit de la même personne.
+  </Card>
+  <Card title="Vivacité faciale" icon="eye" href="/fr/v3/biometrics/face_liveliness">
+    Détectez si le visage dans une image soumise est vivant, et non une photo ou une relecture vidéo.
+  </Card>
+</CardGroup>
+
+## Réduire l'abandon sans sacrifier la conformité
+
+Parce que chaque vérification renvoie un résultat en temps réel, votre flux d'intégration reste rapide. Les clients se vérifient dans la même session — pas de files d'attente de révision manuelle, pas de téléchargements de documents, pas d'allers-retours.
+
+Un flux d'intégration vérifié typique ressemble à ceci :
+
+<Steps>
+  <Step title="Collecter les détails d'identité">
+    Demandez au client son BVN, NIN ou numéro d'identité national — aucun scan de document nécessaire.
+  </Step>
+  <Step title="Exécuter la vérification KYC">
+    Appelez l'endpoint Adhere approprié. La réponse renvoie le nom vérifié, la date de naissance et le numéro de téléphone en quelques secondes.
+  </Step>
+  <Step title="Vérifier leur compte bancaire">
+    Appelez la vérification NUBAN pour confirmer que le numéro de compte correspond au nom vérifié.
+  </Step>
+  <Step title="Optionnel : ajouter la biométrie">
+    Pour les flux réglementés ou à haute valeur, ajoutez une vérification de vivacité ou de comparaison faciale avant l'approbation.
+  </Step>
+</Steps>

@@ -1,0 +1,38 @@
+---
+title: "Filtrage des transactions"
+sidebarTitle: "Aperçu"
+description: "Filtrez les transactions en temps réel par rapport aux listes de sanctions, aux pays à haut risque et aux mots-clés suspects."
+---
+
+Le filtrage des transactions évalue chaque transaction par rapport à un ensemble de critères prédéfinis afin d'identifier une activité potentiellement suspecte ou interdite. Il recoupe les transactions avec l'exposition aux sanctions, la géographie à haut risque et les modèles de mots-clés suspects pour vous aider à maintenir la conformité réglementaire et à prévenir la criminalité financière.
+
+## Critères de filtrage
+
+| Critère | Description |
+|----------|-------------|
+| **Entités sanctionnées** | Transactions impliquant des personnes ou organisations figurant sur les listes de sanctions internationales |
+| **Pays à haut risque** | Transactions associées à des juridictions signalées comme à haut risque |
+| **Mots-clés suspects** | Descriptions de transactions contenant des mots-clés pouvant indiquer un comportement frauduleux ou illicite |
+
+## Caractéristiques clés
+
+<CardGroup cols={2}>
+  <Card title="Filtrage en temps réel" icon="bolt">
+    Les transactions sont analysées immédiatement après leur initiation, permettant une détection rapide de l'activité signalée.
+  </Card>
+  <Card title="Critères personnalisables" icon="sliders">
+    Adaptez les règles de filtrage à vos exigences métier, à votre tolérance au risque et à vos obligations réglementaires.
+  </Card>
+  <Card title="Alertes et notifications" icon="bell">
+    Recevez des alertes lorsque des transactions déclenchent un ou plusieurs critères de filtrage pour un examen rapide.
+  </Card>
+  <Card title="Piste d'audit" icon="file-lines">
+    Chaque décision de filtrage est journalisée, fournissant une piste d'audit complète pour les rapports de conformité.
+  </Card>
+</CardGroup>
+
+## Endpoints
+
+| Endpoint | Description |
+|----------|-------------|
+| [Filtrage d'une transaction](/fr/v3/transaction/transaction_screening/post_transaction_screening) | Soumettez une transaction pour filtrage |

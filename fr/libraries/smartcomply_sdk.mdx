@@ -1,0 +1,493 @@
+---
+title: "SDK Web"
+description: "Intégrez la vérification d'identité et la détection de vivacité Adhere dans vos applications web à l'aide du SmartComply Web SDK."
+---
+
+# Adhere Web SDK
+
+Le Adhere Web SDK vous permet de vérifier rapidement et en toute sécurité l'identité des utilisateurs et d'effectuer des vérifications de vivacité faciale directement dans vos applications web.
+
+Le SDK monte un widget prêt à l'emploi par-dessus votre application, gérant la capture de documents, la vérification d'identité et la détection de vivacité — le tout dans un flux transparent.
+
+## Fonctionnalités
+
+- **Modale UI prête à l'emploi** — Widget responsive et animé qui se superpose à votre app via `SmartComplyFlow.open()`.
+- **Support CDN & npm** — Installez via npm/yarn ou chargez directement depuis un CDN sans étape de build.
+- **Routage dynamique** — Adapte automatiquement les exigences de documents et de vérification depuis la configuration de votre tableau de bord.
+- **Sessions à usage unique** — `clientId` est votre clé d'intégration permanente (depuis votre SDK Config) et est réutilisée pour chaque session. Chaque appel `createSession()` émet un jeton de session frais et à usage unique — ce jeton, pas le `clientId`, est délimité à une seule vérification.
+- **Identité multi-pays** — Prend en charge les canaux de données et de documents pour le Nigéria (BVN, NIN, passeports, permis de conduire, cartes d'électeur, etc.), le Ghana, le Kenya, l'Afrique du Sud et la Côte d'Ivoire, avec une vérification de passeport générique disponible pour d'autres pays et des vérifications de vivacité/concordance faciale indépendantes du pays — les canaux exacts dépendent de ce qui est activé dans votre tableau de bord.
+- **Capture de document recto-verso** — Le recto est toujours requis ; le verso est requis, optionnel ou non proposé selon le type de document (par ex. le NIN est verso-optionnel, car pas chaque document physique NIN a un verso utilisable).
+- **Vivacité indéduite du matériel** — Utilise la webcam native et l'API MediaRecorder pour une compatibilité interplateforme. Un seul scan passif (clignement + mouvement naturel de la tête) — sans étapes explicites pas à pas.
+
+---
+
+## Installation
+
+### Option 1 — CDN (aucune étape de build requise, recommandé)
+
+Ajoutez la balise script à votre HTML :
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/smartcomply-web-sdk@1/dist/smartcomply.browser.js"></script>
+```
+
+Le SDK est disponible globalement en tant que `window.SmartComplySDK` :
+
+```javascript
+const { SmartComplyFlow, SmartComply } = window.SmartComplySDK;
+```
+
+<Tip>
+  `@1` résout toujours vers la dernière version `1.x.x` — les correctifs et nouvelles fonctionnalités atteignent votre site automatiquement dès que nous les publions, **sans modification de code de votre part, jamais**. Nous nous engageons à ne jamais publier de changement déstabilisant en tant que version `1.x` ; si un changement déstabilisant est nécessaire, il sera publié en tant que `2.0.0`, et `@1` continuera de servir la dernière version `1.x` sûre jusqu'à ce que vous optiez volontairement pour la nouvelle version. C'est le même modèle de versionnement utilisé par la plupart des SDK JS publics (Stripe.js, Google Maps, etc.).
+</Tip>
+
+Autres options CDN :
+
+```html
+<!-- Utilisez toujours la dernière version, y compris toute version majeure future — pour
+     le prototypage, ou si vous souhaitez spécifiquement chaque changement instantanément -->
+<script src="https://cdn.jsdelivr.net/npm/smartcomply-web-sdk@latest/dist/smartcomply.browser.js"></script>
+
+<!-- Fixez une version exacte — uniquement si vous avez besoin d'un contrôle manuel sur
+     les mises à jour. Remplacez X.Y.Z par la version contre laquelle vous avez testé. -->
+<script src="https://cdn.jsdelivr.net/npm/smartcomply-web-sdk@X.Y.Z/dist/smartcomply.browser.js"></script>
+```
+
+<Warning>
+  `@1`/`@latest` se re-résolvent à **chaque chargement de page** — c'est ce qui les rend auto-mises à jour, sans rebuild ni redéploiement nécessaire de votre côté. Un point exact `@X.Y.Z` ne bouge jamais jusqu'à ce que vous modifiiez manuellement le numéro dans votre balise script. Voir [npmjs.com/package/smartcomply-web-sdk](https://www.npmjs.com/package/smartcomply-web-sdk) pour l'historique des versions.
+</Warning>
+
+### Option 2 — npm / yarn
+
+```bash
+npm install smartcomply-web-sdk
+# ou
+yarn add smartcomply-web-sdk
+```
+
+```javascript
+import { SmartComplyFlow } from 'smartcomply-web-sdk';
+```
+
+<Note>
+  Contrairement au CDN, npm n'a pas d'option de mise à jour automatique — c'est vrai pour chaque package npm, pas spécifique au nôtre. `npm install` résout vers la dernière version **au moment où vous l'exécutez**, puis verrouille cette version exacte dans `package-lock.json` (ou `yarn.lock`) ; elle ne changera plus d'elle-même. Exécutez `npm update smartcomply-web-sdk` périodiquement (ou avant chaque déploiement) pour récupérer les nouveaux correctifs — cela reste dans la plage `^1.0.x` déjà définie dans votre `package.json`, et nous nous engageons à ne jamais publier de changement déstabilisant dans `1.x`, donc c'est toujours sûr à exécuter. Consultez [npmjs.com/package/smartcomply-web-sdk](https://www.npmjs.com/package/smartcomply-web-sdk) pour le numéro de version actuel.
+</Note>
+
+---
+
+## Démarrage rapide — Widget prêt à l'emploi (recommandé)
+
+La manière la plus simple d'intégrer est le widget prêt à l'emploi. Il gère automatiquement le flux complet de vérification.
+
+```javascript
+SmartComplyFlow.open({
+  apiKey: "your_api_key_here",
+  clientId: "your_client_id_here",
+  environment: "production", // sandbox n'est pas actuellement disponible
+
+  onComplete: (result) => {
+    console.log("Vérification terminée :", result);
+    // result = { entryId, sessionId, status, submittedAt }
+  },
+  onError: (error) => {
+    console.error("Échec de la vérification :", error);
+  },
+  onClose: () => {
+    console.log("Widget fermé.");
+  }
+});
+```
+
+<Note>
+  Récupérez votre **clé API** et votre **ID client** depuis votre [tableau de bord Adhere](https://adhere.smartcomply.com) — les deux proviennent de votre SDK Config et sont permanents ; réutilisez les mêmes valeurs pour chaque session. Ce qui est à usage unique est le *jeton de session* que le SDK obtient en interne via `createSession()` (expiration de 30 minutes, révoqué après soumission) — vous ne voyez jamais ni ne gérez ce jeton directement via le widget prêt à l'emploi.
+
+  Le widget avertit l'utilisateur 2 minutes avant cette expiration de 30 minutes, puis affiche automatiquement un message « session expirée » et se ferme lui-même (en déclenchant `onClose`) une fois la limite réellement atteinte — avec une courte période de grâce si l'utilisateur est en cours de scan, de sorte qu'une capture active ne soit jamais interrompue en plein flux. Si vous avez besoin d'une nouvelle vérification après cela, appelez à nouveau `SmartComplyFlow.open()` pour démarrer une nouvelle session (disponible depuis `smartcomply-web-sdk@1.0.76`).
+</Note>
+
+### Paramètres de configuration
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `apiKey` | string | ✅ Oui | Votre clé API du tableau de bord Adhere |
+| `clientId` | string | ✅ Oui | Votre ID client permanent du tableau de bord Adhere (SDK Config) — la même valeur pour chaque session |
+| `environment` | string | Non | `"production"` (par défaut) |
+| `onComplete` | function | Non | Callback déclenché lorsque la vérification se termine avec succès |
+| `onError` | function | Non | Callback déclenché en cas d'erreur |
+| `onClose` | function | Non | Callback déclenché lorsque le widget est fermé |
+
+<Warning>
+  `sandbox` n'est pas actuellement disponible — utilisez `"production"` pour toute intégration et tout test aujourd'hui. Cette section sera mise à jour une fois que le sandbox sera de retour.
+</Warning>
+
+### URLs d'environnement
+
+| Environnement | URL de base |
+|-------------|----------|
+| `production` | `https://adhere-api.smartcomply.com` |
+
+---
+
+## Image de marque
+
+La configuration du SDK sur votre tableau de bord fournit le nom de marque, la description et la couleur du thème que `initializeConfig()` retourne, et que le widget les affiche.
+
+<Warning>
+  Le logo téléchargé sous **Settings → Integrations → SDK → Brand Details** est affiché par les
+  [Android](/fr/libraries/android_sdk) et [iOS](/fr/libraries/ios_sdk) SDK uniquement. Le SDK Web ne
+  l'affiche pas encore, de sorte qu'une configuration utilisée par les deux porte votre marque
+  sur mobile et le défaut sur le web.
+</Warning>
+
+---
+
+## Exemples pour frameworks
+
+### React
+
+```jsx
+import { SmartComplyFlow } from 'smartcomply-web-sdk';
+
+export default function VerifyButton() {
+  const handleVerify = () => {
+    SmartComplyFlow.open({
+      apiKey: process.env.REACT_APP_API_KEY,
+      clientId: process.env.REACT_APP_CLIENT_ID,
+      environment: "production",
+      onComplete: (result) => console.log("Terminé :", result),
+      onError: (err) => console.error("Erreur :", err),
+    });
+  };
+
+  return <button onClick={handleVerify}>Vérifier l'identité</button>;
+}
+```
+
+### Vue
+
+```vue
+<template>
+  <button @click="handleVerify">Vérifier l'identité</button>
+</template>
+
+<script setup>
+import { SmartComplyFlow } from 'smartcomply-web-sdk';
+
+const handleVerify = () => {
+  SmartComplyFlow.open({
+    apiKey: import.meta.env.VITE_API_KEY,
+    clientId: import.meta.env.VITE_CLIENT_ID,
+    environment: "production",
+    onComplete: (result) => console.log("Terminé :", result),
+    onError: (err) => console.error("Erreur :", err),
+  });
+};
+</script>
+```
+
+### HTML brut (CDN)
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- @1 sert toujours la dernière version 1.x — aucune modification de code nécessaire
+       lorsque nous publions des correctifs. Voir Installation ci-dessus pour d'autres options. -->
+  <script src="https://cdn.jsdelivr.net/npm/smartcomply-web-sdk@1/dist/smartcomply.browser.js"></script>
+</head>
+<body>
+  <button onclick="startVerification()">Vérifier l'identité</button>
+
+  <script>
+    const { SmartComplyFlow } = window.SmartComplySDK;
+
+    function startVerification() {
+      SmartComplyFlow.open({
+        apiKey: "your_api_key_here",
+        clientId: "your_client_id_here",
+        environment: "production",
+        onComplete: (result) => console.log("Terminé :", result),
+        onError: (err) => console.error("Erreur :", err),
+      });
+    }
+  </script>
+</body>
+</html>
+```
+
+---
+
+## API Headless (avancé)
+
+Pour un contrôle total de l'UI, utilisez directement la classe `SmartComply` sans la modale.
+
+```typescript
+import { SmartComply } from 'smartcomply-web-sdk';
+
+const sdk = new SmartComply({
+  apiKey: "your_api_key_here",
+  clientId: "your_client_id_here",
+  environment: "production",
+});
+
+const run = async () => {
+  // 1. Créer une session — les sessions durent 30 minutes et sont à usage unique
+  //    (révoquées dès que la vivacité est soumise)
+  await sdk.createSession();
+
+  // 2. Récupérer la configuration SDK — marque, thème et canaux disponibles par pays
+  const config = await sdk.initializeConfig();
+  console.log("Type de vérification :", config.verification_type);
+  console.log("Canaux :", config.channels);
+  // config.channels["nigeria"] est un tableau de :
+  //   { id, name, code?, requires_back_side?: boolean | "optional", fields: [...] }
+
+  // 3a. Vérification par données (BVN/NIN/etc.) — valide contre la base de données gouvernementale
+  const verifyResult = await sdk.onboarding.verify({
+    identity_type_id: 1,  // id du canal depuis config.channels
+    fields: { bank_verification_number: "12345678901" }
+  });
+  const identityCheckId = verifyResult.data?.identity_check_id;
+
+  // 3b. Vérification de document — capturez le recto (et le verso, si le requires_back_side
+  //     du canal est true ou "optional") à la place de l'étape 3a.
+  // const documentFront: Blob = /* depuis une entrée de fichier ou une capture caméra */;
+  // const documentBack: Blob | undefined = /* uniquement si le canal en a besoin/l'offre */;
+
+  // 4. Exécuter la vérification de vivacité — nécessite un conteneur HTMLElement pour la caméra.
+  //    Exécute un scan passif unique (clignement + mouvement naturel de la tête) ; le
+  //    3ème argument est un tag descriptif pour votre tableau de bord, pas une séquence
+  //    d'invites en direct par lesquelles l'UI défile.
+  const container = document.getElementById("camera-container") as HTMLElement;
+  const liveness = await sdk.liveness.startCheck(
+    container,
+    {
+      identifier: "12345678901",
+      identifier_type: "bvn",
+      country: "NG",
+      identity_check: identityCheckId,   // lien vers le résultat de vérification par données ci-dessus
+      // document: documentFront,        // pour la vérification de document à la place
+      // document_back: documentBack,
+    },
+    ["BLINK", "TURN_HEAD"]
+  );
+  console.log("Statut de vivacité :", liveness.status); // "processing" — le résultat
+  // final pass/fail arrive via webhook, pas via cette valeur de retour.
+};
+
+run();
+```
+
+<Note>
+  Le scan de vivacité lui-même a sa propre **fenêtre de capture de 12 secondes**, séparée du TTL de session de 30 minutes ci-dessus. Ce minuteur ne démarre que lorsque l'enregistrement actif commence — juste après que la caméra s'est centrée sur le visage de l'utilisateur et s'est brièvement re-stabilisée (mise au point/exposition) — et non lorsque la caméra s'ouvre pour la première fois. À partir de ce moment, le widget affiche un anneau de compte à rebours autour de l'ovale du visage ; le scan doit détecter le signal de vivacité passif (clignement + mouvement naturel de la tête) dans ces 12 secondes ou il échoue avec un écran « Temps écoulé » et un bouton **Réessayer** qui redémarre le scan en utilisant la même entrée de vivacité (pas de nouveau débit).
+
+  Ce minuteur est entièrement local à l'onglet du navigateur et ne fonctionne que *pendant* le scan actif — il est effacé au moment où le scan se résout (succès ou timeout) et ne persiste pas, ne fonctionne pas en arrière-plan, ni ne reprend si l'utilisateur part et revient. En pratique, cela signifie : **si l'étape de vivacité/concordance faciale est déjà terminée et que l'utilisateur est passé à une autre partie du flux (par ex. la révision de sa soumission), la fenêtre de 12 secondes est depuis longtemps terminée et sans objet** — rien à propos de cette étape ne peut expirer à nouveau. La seule horloge encore en cours à ce stade est le TTL de session de 30 minutes, qui régit les appels API du SDK de manière générale, pas le scan terminé.
+</Note>
+
+---
+
+## Payload `onComplete`
+
+`onComplete` se déclenche dès que l'utilisateur termine sa partie du flux (l'écran « Vérification soumise » s'affiche) — c'est un **accusé de réception de soumission, pas un verdict de vérification**. Le traitement backend (concordance faciale, lecture de document, vérification BD gouvernementale) se poursuit après ce déclenchement, et `status` est toujours `"processing"` ici quel que soit le résultat final. Le vrai résultat pass/fail n'arrive que via [webhook](#réception-des-résultats-webhook).
+
+```json
+{
+  "entryId": 365,
+  "sessionId": "da7623bd-9158-4b56-a9e4-4bccf3c0133f",
+  "status": "processing",
+  "submittedAt": "2026-06-05T23:11:22.873161+00:00",
+  "verificationResult": {
+    "status": "success",
+    "code": "VERIFICATION_COMPLETE",
+    "data": { "first_name": "Amara", "last_name": "Okafor", "identity_check_id": 123 }
+  }
+}
+```
+
+<Note>
+  `verificationResult` n'est présent que pour la **vérification par données** (BVN/NIN) — c'est le résultat immédiat de recherche en base de données gouvernementale confirmant que le numéro d'identification correspond à un enregistrement réel. Il ne dit rien sur la concordance faciale, qui est toujours en attente. Il est absent pour les flux de vérification de document.
+</Note>
+
+---
+
+## Réception des résultats (Webhook)
+
+Le backend délivre exactement un webhook `liveness.completed` par vérification, vers l'URL configurée dans votre SDK Config, une fois la concordance faciale (et le OCR / la vérification BD gouvernementale, selon le flux) terminée.
+
+<Note>
+  C'est le propre webhook du SDK — configuré par SDK Config et spécifique à `liveness.completed`. Il est séparé du système de webhook global décrit dans [Webhooks](/webhooks) (surveillance des transactions, événements généraux du module KYC, forme `{success, module, event, data}`). Les deux signent actuellement avec HMAC-SHA256 et un en-tête préfixé `sha256=`, encodé en hexadécimal — vérifiez par rapport au corps brut de la requête dans les deux cas.
+</Note>
+
+### Forme du payload
+
+```json
+POST https://your-server.com/webhook
+Content-Type: application/json
+X-Adhere-Signature: sha256=<hmac-sha256-hex>
+
+{
+  "event": "liveness.completed",
+  "verification_id": 42,
+  "verification_type": "data_verification",
+  "status": "passed",
+  "failure_reason": null,
+  "timestamp": "2026-08-08T10:15:00.000Z",
+  "subject": {
+    "identifier": "12345678901",
+    "identifier_type": "National Identity Number (NIN)",
+    "country": "nigeria"
+  },
+  "biometrics": {
+    "liveness_verified": true,
+    "face_match": {
+      "attempted": true,
+      "verified": true,
+      "confidence_percentage": 70.0,
+      "decision": "MATCH"
+    },
+    "selfie_url": "https://.../autoshot.jpg",
+    "face_analysis": {
+      "gender": "Female",
+      "dominant_emotion": "neutral",
+      "face_quality": {
+        "face_detected": true,
+        "face_confidence": 0.98,
+        "blur_score": 142.3,
+        "is_blurry": false
+      }
+    }
+  },
+  "activity": {
+    "session_id": "da7623bd-9158-4b56-a9e4-4bccf3c0133f",
+    "started_at": "2026-08-08T10:12:00.000Z",
+    "submitted_at": "2026-08-08T10:14:30.000Z",
+    "completed_at": "2026-08-08T10:15:00.000Z",
+    "duration_seconds": 180
+  },
+  "request_context": {
+    "ip": { "address": "102.67.1.66", "city": "Lagos", "country_code": "NG" },
+    "device": { "user_agent": "Mozilla/5.0 ...", "type": "desktop", "os": "Windows" }
+  },
+  "customer_profile": {
+    "first_name": "AMARA",
+    "last_name": "OKAFOR",
+    "other_name": null,
+    "date_of_birth": "01-Jan-1997",
+    "age": 29,
+    "gender": "Female",
+    "id_number": "12345678901",
+    "serial_number": null,
+    "occupation": null,
+    "place_of_birth": null,
+    "place_of_live": "...",
+    "date_of_issue": null,
+    "photo_url": null
+  }
+}
+```
+
+Pour la **vérification de document**, la même forme de niveau supérieur s'applique, avec `verification_type: "document_verification"` et un bloc `document` (champs OCR + concordance faciale document-selfie) au lieu de `customer_profile` :
+
+```json
+"document": {
+  "status": "verified",
+  "document_type": "passport",
+  "is_expired": false,
+  "first_name": "AMARA",
+  "last_name": "OKAFOR",
+  "date_of_birth": "1997-01-01",
+  "age": 29,
+  "gender": "Female",
+  "nationality": "NGA",
+  "document_number": "A12345678",
+  "expiry_date": "2030-06-15",
+  "issue_date": "2020-06-15",
+  "issuing_authority": "...",
+  "document_url": "https://.../document.jpg",
+  "document_back_url": null,
+  "face_match": {
+    "attempted": true,
+    "verified": true,
+    "confidence_percentage": 55.0,
+    "reason": null,
+    "selfie_url": "https://.../autoshot.jpg",
+    "document_face_url": "https://.../document_face.jpg"
+  }
+}
+```
+
+<Note>
+  `document` contient également `place_of_birth`, `place_of_issue`, `address`, `district`, `division`, `location`, `sub_location`, `serial_number` et `barcode_number` — `null` sauf si le type de document spécifique porte ce champ (par ex. les numéros de série/code-barres s'appliquent principalement aux nouvelles cartes d'identité kényanes). `face_match.reason` est rempli avec une explication destinée à l'utilisateur lorsque `verified` est `false` ou que la concordance a été ignorée.
+</Note>
+
+<Note>
+  `face_match.decision` (`"MATCH"`, `"NO_MATCH"` ou `"REJECTED"`) est ce à partir de quoi `verified` est réellement dérivé — lisez `decision` plutôt que de comparer `confidence_percentage` par rapport à un seuil de votre choix, car notre seuil de concordance interne ne fait pas partie de ce payload et peut changer au fil du temps. `"REJECTED"` signifie que la vivacité/l'anti-spoofing a échoué avant toute comparaison, donc `confidence_percentage` peut être absent ou `0` aux côtés de `verified: false` pour une raison sans rapport avec la similarité des visages.
+</Note>
+
+<Warning>
+  `status: "passed"` signifie **que la vérification s'est exécutée jusqu'au bout — pas que la personne correspond**. Une non-concordance faciale, un score de confiance faible ou un document expiré signale toujours `status: "passed"` avec le résultat réel enregistré dans `biometrics.face_match.verified` (et `document.is_expired` pour la vérification de document). `status: "failed"` est réservé aux cas où la vérification elle-même n'a pas pu s'exécuter (erreur de service, aucun selfie capturé, rejet de la BD gouvernementale). Ne conditionnez jamais l'accès uniquement à `status` — vérifiez toujours `face_match.verified`.
+</Warning>
+
+`verification_id` correspond au `entryId` reçu par votre callback `onComplete`.
+
+### Vérifier la signature
+
+L'en-tête de signature est `X-Adhere-Signature: sha256=<hex>` — notez le préfixe `sha256=`. Il est calculé sur les octets exacts du JSON compact du corps de la requête, donc votre gestionnaire doit vérifier par rapport au **corps brut**, pas à une copie re-sérialisée du JSON parsé (le re-stringage peut produire différents octets et la signature ne correspondra jamais).
+
+```javascript
+const crypto = require("crypto");
+
+app.post(
+  "/webhook/smartcomply",
+  express.json({ verify: (req, res, buf) => { req.rawBody = buf; } }),
+  (req, res) => {
+    const signature = (req.headers["x-adhere-signature"] || "").replace(/^sha256=/, "");
+    const secret = process.env.WEBHOOK_SECRET.replace(/-/g, "");
+    const expected = crypto.createHmac("sha256", secret).update(req.rawBody).digest("hex");
+
+    const isValid =
+      signature.length === expected.length &&
+      crypto.timingSafeEqual(Buffer.from(signature, "hex"), Buffer.from(expected, "hex"));
+
+    if (!isValid) return res.status(401).send("Mauvaise signature");
+
+    const { event, verification_id, status, biometrics, document } = req.body;
+
+    // status === "passed" signifie uniquement que la vérification s'est exécutée jusqu'au bout — vérifiez
+    // le résultat réel avant de traiter l'utilisateur comme vérifié :
+    const faceMatched = biometrics?.face_match?.attempted
+      ? biometrics.face_match.verified === true
+      : true; // non tenté (par ex. reçu NIN, CAC) — rien à échouer ici
+    const documentOk = document ? document.is_expired === false : true;
+
+    if (event === "liveness.completed" && status === "passed" && faceMatched && documentOk) {
+      markUserAsVerified(verification_id);
+    } else if (event === "liveness.completed") {
+      recordVerificationOutcome(verification_id, req.body);
+    }
+
+    res.json({ received: true });
+  }
+);
+```
+
+---
+
+## Notes de sécurité
+
+- **ID client** — Permanent, depuis votre SDK Config. Réutilisez le même `clientId` pour chaque session — il n'y a pas d'ID par session à générer.
+- **Clé API** — Ne exposez jamais votre clé API dans le code côté client en production. Utilisez des variables d'environnement.
+- **Jetons de session** — La partie à usage unique. Obtenus et gérés automatiquement par le SDK par vérification via `createSession()`, expirent après 30 minutes et sont révoqués immédiatement une fois la vivacité soumise.
+
+---
+
+## Dépannage
+
+| Code d'erreur | HTTP | Cause | Correction |
+|------------|------|-------|-----|
+| `INVALID_API_KEY` | 401 | `apiKey` incorrect ou manquant | Vérifiez la valeur de votre `apiKey` dans la SDK Config |
+| `SDK_CONFIG_NOT_FOUND` | 404 | `clientId` invalide | Vérifiez la valeur de votre `clientId` — il doit être l'UUID de votre SDK Config, pas régénéré par session |
+| `INVALID_SESSION` | 401 | Jeton de session manquant, malformé, expiré (30 min) ou déjà révoqué (une session est à usage unique — elle est consommée dès que la vivacité est soumise) | Appelez à nouveau `createSession()` pour obtenir un jeton frais ; `clientId`/`apiKey` restent les mêmes |
+| `VALIDATION_ERROR` | 400 | Champs manquants ou invalides dans la requête | Vérifiez `data.errors` dans la réponse pour savoir quel champ a échoué |
+| `RETRY_LIMIT_EXCEEDED` | 429 | L'utilisateur a dépassé la limite de tentatives pour confirmation/vivacité | L'utilisateur doit redémarrer avec une nouvelle session |
+| `INSUFFICIENT_BALANCE` | 402 | Solde du portefeuille trop bas | Rechargez votre portefeuille dans le tableau de bord |
+| `Camera not available` | — | Le navigateur a bloqué l'accès à la caméra | Assurez-vous que le HTTPS et les permissions caméra sont accordés |

@@ -1,0 +1,153 @@
+---
+title: "Exécuter une vérification KYC"
+sidebarTitle: "Exécuter une vérification KYC"
+description: "Lancez une vérification KYC pour une entité par rapport aux listes de sanctions, aux bases de données PEP et aux sources de médias défavorables."
+openapi: "POST /api/v1/monitoring/kyc_search/"
+---
+
+L'endpoint Exécuter une vérification KYC filtre une entité par rapport à plusieurs bases de données de risque, notamment les listes de sanctions, les enregistrements de Personnes Politiquement Exposées (PEP) et les sources de médias défavorables. Les résultats sont renvoyés immédiatement pour les vérifications terminées, ou de manière asynchrone si le filtrage des médias défavorables est encore en cours de traitement.
+
+## Endpoint
+
+```
+POST /api/v1/monitoring/kyc_search/
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `entity_name` | string | Oui | Nom de l'entité à filtrer |
+| `entity_type` | string | Non | Type d'entité : `"person"`, `"company"`, `"business"` ou `"organization"` (par défaut `person` si aucun fourni) |
+| `sources` | string | Non | Sources de données à interroger, séparées par des virgules (p. ex., `"Sanctions, PEPs, Adverse Media"`) |
+| `continuous_monitoring` | boolean | Non | Activer la surveillance continue de cette entité. Par défaut `false` |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/v1/monitoring/kyc_search/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "entity_name": "John Doe",
+    "entity_type": "person",
+    "sources": "Sanctions, PEPs, Adverse Media",
+    "continuous_monitoring": false,
+  }'
+```
+</CodeGroup>
+
+## Réponse
+
+### 200 OK — Terminé
+
+Lorsque les résultats sont immédiatement disponibles, la réponse inclut le résultat KYC complet avec le niveau de risque, les constats PEP, les correspondances de sanctions, les médias défavorables et les profils de médias sociaux.
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `data.id` | number | Identifiant unique de cette demande KYC |
+| `data.entity_name` | string | Nom de l'entité filtrée |
+| `data.status` | string | Statut de la vérification : `"completed"` ou `"running"` |
+| `data.result.risk_level` | string | Risque évalué : `"low"`, `"medium"` ou `"high"` |
+| `data.result.total_hits` | number | Total des correspondances signalées dans toutes les sources |
+| `data.result.total_blacklist_hits` | number | Nombre de correspondances de liste noire |
+| `data.result.pep_results` | array | Correspondances PEP avec nom d'entité, pays et classification |
+| `data.result.sanction_results` | array | Correspondances de sanctions avec organisme, types et autres informations |
+| `data.result.adverse_media_results` | array | Articles de médias défavorables avec URL, date, titre et catégorie |
+| `data.result.social_media` | array | Profils de médias sociaux associés à l'entité |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "id": 6036,
+    "entity_name": "Qudratullah Jamal",
+    "status": "completed",
+    "result": {
+      "risk_level": "high",
+      "total_hits": 76,
+      "total_blacklist_hits": 6,
+      "pep_results": [
+        {
+          "entity_name": "qudratullah jamal",
+          "gender": "Not Available",
+          "country": "Unknown",
+          "pep_types": ["pep-class-1"],
+          "other_names": ["qudratullah jamal"],
+          "other_information": {
+            "recorded_date": "2022-04-27T18:12:14",
+            "political_post": ["sanction"]
+          }
+        }
+      ],
+      "sanction_results": [
+        {
+          "entity_name": "QUDRATULLAH JAMAL",
+          "recorded_date": "29 Nov. 2011",
+          "country": "Afghanistan",
+          "sanction_body": null,
+          "sanction_types": ["sanction", "warnings"],
+          "other_names": [],
+          "other_information": {
+            "dob": "Approximately 1963",
+            "pob": "Gardez, Paktia Province, Afghanistan",
+            "title": "Maulavi",
+            "designations": "Minister of Information under the Taliban regime"
+          }
+        }
+      ],
+      "adverse_media_results": [
+        {
+          "url": "https://www.opensanctions.org/entities/NK-a8GaVuetYPU5ZaoT48kMch/",
+          "date": "2026-03-06T12:58:26Z",
+          "title": "Maulavi Qudratullah Jamal - OpenSanctions",
+          "types": ["adverse-media-v2-terrorism"],
+          "provider": "google_cse",
+          "relevance_score": 4
+        }
+      ],
+      "social_media": [
+        {
+          "bio": "TOLOnews - X",
+          "url": "https://x.com/TOLOnews/status/1510158383004930052",
+          "platform": "X",
+          "provider": "google_cse",
+          "description": "Addressing a gathering in Kabul, the deputy minister of commerce and industry, Qudratullah Jamal..."
+        }
+      ],
+      "search_term": "Qudratullah Jamal",
+      "date_updated": "2026-03-06 12:58:30"
+    }
+  },
+  "message": "KYC search completed"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

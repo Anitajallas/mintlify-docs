@@ -1,0 +1,85 @@
+---
+title: "PIN KRA"
+sidebarTitle: "PIN KRA"
+description: "Vérifiez le PIN de l'Kenya Revenue Authority d'un client et récupérez ses détails de contribuable."
+openapi: "POST /api/onboarding/kenya_kyc/kra_pin/"
+---
+
+L'endpoint PIN KRA valide un numéro d'identification personnel de la Kenya Revenue Authority (KRA) et renvoie les détails du contribuable associés incluant le nom, le statut du PIN, le statut iTax et les informations d'obligation fiscale.
+
+## Endpoint
+
+```
+POST /api/onboarding/kenya_kyc/kra_pin/
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `pin` | string | Oui | Le PIN KRA du client (par ex. `A123456789B`) |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/kenya_kyc/kra_pin/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"pin": "A123456789B"}'
+```
+</CodeGroup>
+
+## Réponse
+
+### 200 OK
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `data.pin` | string | PIN KRA |
+| `data.taxpayer_name` | string | Nom du contribuable enregistré |
+| `data.pin_status` | string | Statut du PIN (par ex. `"Active"`) |
+| `data.itax_status` | string | Statut du système iTax |
+| `data.obligation_details` | string | Description de l'obligation fiscale et date d'enregistrement |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "pin": "A123456789B",
+    "taxpayer_name": "ABB APP Limited",
+    "pin_status": "Active",
+    "itax_status": "iPage Updated",
+    "obligation_details": "Income Tax - Company Registered 29/01/2013"
+  },
+  "message": "Pin details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "PIN is required"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

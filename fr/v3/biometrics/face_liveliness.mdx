@@ -1,0 +1,126 @@
+---
+title: "Vérification de vivacité faciale"
+sidebarTitle: "Vivacité faciale"
+description: "Vérifiez qu'une image faciale soumise appartient à une personne vivante, et non à une photographie ou une vidéo préenregistrée."
+openapi: "POST /api/onboarding/biometrics/face/liveliness_check/"
+---
+
+L'endpoint de vérification de vivacité faciale analyse un selfie soumis — recommandé sous forme de courte vidéo, bien qu'une photo unique soit également acceptée — pour confirmer qu'il montre une personne vivante, et non une relecture falsifiée (une photo d'une photo, un enregistrement d'écran, etc.). Il note directement la vivacité ; il ne compare pas la soumission à une autre image.
+
+Une vidéo et une photo fixe sont toutes deux authentiquement notées pour la vivacité, donc une image fixe fonctionne également — mais une courte vidéo est la soumission recommandée, car le mouvement donne plus d'informations à la vérification de vivacité. L'endpoint détecte ce qui a été soumis à partir du fichier lui-même.
+
+## Endpoint
+
+```
+POST /api/onboarding/biometrics/face/liveliness_check/
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `live_media` | string | Oui | URL de la courte vidéo selfie à vérifier pour la vivacité (recommandé). Formats vidéo : `.mp4`, `.mov`, `.webm`, `.avi`, `.m4v` — tout autre format est traité comme une image fixe, ce qui est également accepté. |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/biometrics/face/liveliness_check/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"live_media": "https://example.com/selfie_liveness.mp4"}'
+```
+</CodeGroup>
+
+## Réponse
+
+<Note>
+  Le statut HTTP est `200` chaque fois que la vérification s'est déroulée jusqu'au bout, **indépendamment du fait que la vivacité ait été validée ou non** — une tentative de vivacité échouée est un résultat de vérification normal et réussi, pas une erreur. Lisez `status`/`data.status` dans le corps pour obtenir le verdict réel ; un `400` signifie que la requête elle-même n'a pas pu être traitée (champ manquant, fichier illisible, problème d'authentification), pas que la vivacité a échoué.
+</Note>
+
+### 200 OK — vivacité validée
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `data.status` | boolean | `true` si la vivacité a été détectée, `false` sinon |
+| `data.detail` | string | Résultat lisible par l'homme |
+| `data.response_code` | string | `"00"` en cas de réussite, `"01"` en cas d'échec |
+| `data.confidence` | number | Score de confiance brut (0–1) |
+| `data.confidence_in_percentage` | number | Confiance en pourcentage (0–100) |
+| `data.liveness_passed` | boolean | Le verdict de réussite/échec sous-jacent — la valeur dont `data.status` est dérivé |
+| `data.verification.status` | string | `"VERIFIED"` ou `"NOT_VERIFIED"` |
+| `data.verification.reference` | number | ID d'enregistrement interne pour cette vérification |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "status": true,
+    "detail": "Liveliness Detected",
+    "response_code": "00",
+    "confidence": 0.968,
+    "confidence_in_percentage": 96.8,
+    "liveness_passed": true,
+    "verification": {
+      "status": "VERIFIED",
+      "reference": 76981
+    },
+    "widget_info": {},
+    "session": {}
+  },
+  "message": "Vivacité faciale réussie"
+}
+```
+
+### 200 OK — vivacité échouée (toujours une vérification réussie)
+
+```json
+{
+  "status": "failed",
+  "data": {
+    "status": false,
+    "detail": "Liveliness Not Detected",
+    "response_code": "01",
+    "confidence": 0.452,
+    "confidence_in_percentage": 45.2,
+    "liveness_passed": false,
+    "verification": {
+      "status": "NOT_VERIFIED",
+      "reference": 76982
+    },
+    "widget_info": {},
+    "session": {}
+  },
+  "message": "Échec de la vérification de vivacité"
+}
+```
+
+### 400 Bad Request
+
+Renvoyé lorsque la requête elle-même n'a pas pu être traitée — un champ `live_media` manquant, une URL inaccessible/illisible, ou une erreur inattendue de la vérification sous-jacente.
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "live_media is required — provide the URL of the live selfie video or photo."
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

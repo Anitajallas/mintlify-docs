@@ -1,0 +1,71 @@
+---
+title: "Rapport de crédit individuel au Kenya"
+sidebarTitle: "Rapport de crédit au Kenya"
+description: "Récupérez le rapport de crédit d'un individu au Kenya à l'aide de son numéro de national ID."
+openapi: "POST /api/onboarding/kenya/individual_credit/"
+---
+
+L'endpoint Rapport de crédit individuel au Kenya fournit un enregistrement complet des activités liées au crédit d'un individu au Kenya, notamment les comptes de crédit, les échéanciers de paiement, l'utilisation du crédit et le statut d'impayé.
+
+## Endpoint
+
+```
+POST /api/onboarding/kenya/individual_credit/
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `national_id` | string | Oui | Le numéro de national ID kényan de l'individu |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/kenya/individual_credit/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"national_id": "12345678"}'
+```
+</CodeGroup>
+
+## Réponse
+
+### 200 OK
+
+```json
+{
+  "status": "success",
+  "data": {},
+  "message": "Kenya Individual Credit Report retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

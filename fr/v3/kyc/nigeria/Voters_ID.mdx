@@ -1,0 +1,114 @@
+---
+title: "Carte d'électeur"
+sidebarTitle: "Carte d'électeur"
+description: "Vérifiez l'identité d'un client à l'aide de son numéro de Carte d'Électeur Permanente nigériane."
+openapi: "POST /api/onboarding/nigeria_kyc/voters_id/"
+---
+
+<Warning>
+  Ce service n'est pas disponible actuellement. Nous travaillons à le restaurer — veuillez consulter à nouveau bientôt.
+</Warning>
+
+L'endpoint Carte d'électeur valide un numéro de Carte d'Électeur Permanente (PVC) par rapport à la base de données INEC et renvoie les détails personnels enregistrés de l'électeur, la zone d'inscription et l'unité de vote.
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/voters_id/
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `voters_id` | string | Oui | Le numéro de Carte d'Électeur Permanente |
+| `first_name` | string | Oui | Prénom tel qu'il apparaît sur la carte d'électeur |
+| `last_name` | string | Oui | Nom de famille tel qu'il apparaît sur la carte d'électeur |
+| `date_of_birth` | string | Oui | Date de naissance au format `YYYY-MM-DD` |
+| `lga` | string | Oui | Zone de gouvernement local d'inscription |
+| `state` | string | Oui | État d'inscription |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/voters_id/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"voters_id": "91F6B1F5BE295355586", "first_name": "John", "last_name": "Doe", "date_of_birth": "1994-08-11", "lga": "Lagos", "state": "Lagos"}'
+```
+
+```python Python
+import requests
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/voters_id/",
+    headers={"x-access-token": "YOUR_SECRET_KEY", "Content-Type": "application/json"},
+    json={"voters_id": "91F6B1F5BE295355586", "first_name": "John", "last_name": "Doe",
+          "date_of_birth": "1994-08-11", "lga": "Lagos", "state": "Lagos"},
+)
+```
+</CodeGroup>
+
+## Réponse
+
+### 200 OK
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `data.full_name` | string | Nom complet tel qu'enregistré |
+| `data.voter_identification_number` | string | Numéro d'identification PVC |
+| `data.gender` | string | Genre |
+| `data.occupation` | string | Profession enregistrée |
+| `data.time_of_registration` | string | Date et heure de l'inscription de l'électeur |
+| `data.state` | string | État d'inscription |
+| `data.local_government` | string | Zone de gouvernement local d'inscription |
+| `data.registration_area_ward` | string | Nom du quartier |
+| `data.polling_unit` | string | Description de l'unité de vote |
+| `data.polling_unit_code` | string | Code de l'unité de vote |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "full_name": "JOHN DOE S",
+    "voter_identification_number": "90F5B1C5B1234567890",
+    "gender": "Male",
+    "occupation": "STUDENT",
+    "time_of_registration": "2011-01-18 13:59:46",
+    "state": "ONDO",
+    "local_government": "IDANRE",
+    "registration_area_ward": "ISALU JIGBOKIN",
+    "polling_unit": "OJAJIGBOKIN, O/S IN FRONT OF ABANA I & II",
+    "polling_unit_code": "28/08/08/005"
+  },
+  "message": "Voters Identification details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

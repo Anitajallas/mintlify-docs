@@ -1,0 +1,48 @@
+---
+title: "Vérification de fraude de prêt — Aperçu"
+sidebarTitle: "Aperçu"
+description: "Évaluez le risque de fraude pour les demandes de prêt à l'aide des données de rapport de crédit et des détails financiers du demandeur."
+---
+
+L'API de vérification de fraude de prêt évalue le risque de fraude d'une demande de prêt en combinant les données de rapport de crédit externes au profil financier du demandeur. Elle calcule un score de risque de fraude et renvoie une recommandation exploitable — **Approuver**, **Examiner** ou **Rejeter** — pour chaque demande.
+
+## Comment cela fonctionne
+
+<Steps>
+  <Step title="Soumettre la demande">
+    Envoyez le BVN du demandeur (individu) ou le numéro RC (entreprise) accompagné de ses détails financiers à l'endpoint de vérification de fraude.
+  </Step>
+  <Step title="Récupération du rapport de crédit">
+    Le système récupère l'historique de crédit actuel du demandeur auprès des bureaux de crédit intégrés.
+  </Step>
+  <Step title="Calcul du score de risque">
+    Un moteur basé sur des règles évalue l'historique de crédit, le ratio prêt/revenu, l'âge du demandeur et d'autres facteurs financiers pour calculer un score de risque de fraude.
+  </Step>
+  <Step title="Recevoir la recommandation">
+    L'API renvoie le score calculé accompagné d'une recommandation claire pour votre flux de validation de prêt.
+  </Step>
+</Steps>
+
+## Caractéristiques clés
+
+<CardGroup cols={2}>
+  <Card title="Données de crédit en temps réel" icon="chart-line">
+    Récupère des historiques de crédit à jour pour une base d'évaluation dynamique du risque.
+  </Card>
+  <Card title="Recommandations exploitables" icon="circle-check">
+    Renvoie des consignes claires d'Approuver, Examiner ou Rejeter pour chaque demande.
+  </Card>
+  <Card title="Individu et entreprise" icon="users">
+    Prend en charge à la fois les demandeurs individuels (BVN) et les demandeurs professionnels (numéro RC).
+  </Card>
+  <Card title="Validation des données" icon="shield-check">
+    Une validation stricte aux niveaux du modèle et du sérialiseur garantit l'intégrité des données.
+  </Card>
+</CardGroup>
+
+## Endpoints
+
+| Endpoint | Description |
+|----------|-------------|
+| [Vérification de fraude individuelle](/fr/v3/loan/individual_fraud_check) | Évaluez le risque de fraude pour les demandeurs de prêt individuels |
+| [Vérification de fraude professionnelle](/fr/v3/loan/business_fraud_check) | Évaluez le risque de fraude pour les demandeurs de prêt professionnels |

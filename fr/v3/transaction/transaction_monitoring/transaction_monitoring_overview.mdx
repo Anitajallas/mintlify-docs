@@ -1,0 +1,92 @@
+---
+title: "Surveillance des transactions"
+sidebarTitle: "Aperçu"
+description: "Analyse des transactions en temps réel et alertes automatisées pour détecter une activité suspecte."
+---
+
+## Aperçu
+
+La surveillance des transactions fournit une analyse en temps réel de chaque transaction traitée via votre compte Adhere. Elle évalue les transactions par rapport à un ensemble de règles configurables et déclenche automatiquement des alertes lorsque des modèles suspects sont détectés — vous aidant à respecter les réglementations AML et à prévenir la fraude de manière proactive.
+
+## Comment cela fonctionne
+
+<Steps>
+  <Step title="Soumettre une transaction">
+    Envoyez les données de transaction à l'[endpoint de surveillance des transactions](/fr/v3/transaction/transaction_monitoring/post_transaction_request) via votre backend.
+  </Step>
+  <Step title="Les règles sont évaluées">
+    Le système vérifie la transaction par rapport à vos règles configurées (limites de montant, fréquence, géographie, catégorie de commerçant, etc.).
+  </Step>
+  <Step title="Une alerte est générée (si déclenchée)">
+    Si une ou plusieurs règles se déclenchent, la transaction est signalée comme suspecte et une alerte est envoyée via webhook ou e-mail.
+  </Step>
+  <Step title="Examen et action">
+    Enquêtez sur l'alerte dans le tableau de bord Adhere — approuvez, rejetez ou faites remonter la transaction.
+  </Step>
+</Steps>
+
+## Caractéristiques clés
+
+<CardGroup cols={2}>
+  <Card title="Règles personnalisables" icon="sliders">
+    Configurez des règles basées sur le montant de la transaction, la fréquence, la localisation géographique, la catégorie de commerçant, l'heure de la journée, etc.
+  </Card>
+  <Card title="Alertes automatisées" icon="bell">
+    Soyez notifié instantanément via webhook, e-mail ou Slack lorsqu'une transaction enfreint une règle.
+  </Card>
+  <Card title="Gestion des cas" icon="folder-open">
+    Examinez les transactions signalées, approuvez-les ou rejetez-les, et faites-les remonter au support depuis le tableau de bord Adhere.
+  </Card>
+  <Card title="Filtrage AML" icon="shield-check">
+    Filtrez facultativement les transactions et les contreparties par rapport aux listes de surveillance mondiales et aux bases de données de sanctions.
+  </Card>
+</CardGroup>
+
+## Types de transactions pris en charge
+
+L'endpoint Soumettre une transaction accepte quatre valeurs de `transaction_type`, chacune avec une forme de charge utile différente. Choisissez le type qui correspond à la transaction que vous soumettez.
+
+<CardGroup cols={2}>
+  <Card title="Transfert" icon="money-bill-transfer">
+    Transfert de compte à compte. Nécessite `origin_account` et `destination_account`. Le type de transaction le plus courant.
+  </Card>
+  <Card title="USSD" icon="hashtag">
+    Transaction initiée par USSD. Même charge utile que le transfert — seul `transaction_type` change en `ussd`.
+  </Card>
+  <Card title="Web" icon="globe">
+    Transaction initiée sur le Web. Même charge utile que le transfert — seul `transaction_type` change en `web`.
+  </Card>
+  <Card title="Carte" icon="credit-card">
+    Transaction par carte. Nécessite `card_details` (BIN + 4 derniers chiffres) et facultativement `merchant_details`. Aucun `origin_account` ou `destination_account` requis.
+  </Card>
+</CardGroup>
+
+Voir [Soumettre une transaction](/fr/v3/transaction/transaction_monitoring/post_transaction_request) pour la demande complète, les exemples par type et les codes de réponse.
+
+## Critères de règle
+
+Les règles peuvent être basées sur toute combinaison des éléments suivants :
+
+| Critère | Exemple |
+|-----------|---------|
+| Montant de la transaction | Signaler toute transaction supérieure à ₦500 000 |
+| Fréquence de la transaction | Signaler plus de 10 transactions en 1 heure |
+| Localisation géographique | Signaler les transactions provenant de pays à haut risque |
+| Catégorie de commerçant | Signaler les codes de commerce de jeux d'argent ou de crypto |
+| Heure de la journée | Signaler les transactions entre 1 h et 4 h |
+| Type de compte | Appliquer des règles différentes aux comptes individuels vs professionnels |
+
+## Notifications webhook
+
+Lorsqu'une transaction est signalée, Adhere envoie un événement `suspicious_transaction` à votre URL de webhook configurée. Voir [Webhooks](/fr/webhooks) pour la structure complète de la charge utile et le guide de vérification de signature.
+
+## Prochaines étapes
+
+<CardGroup cols={2}>
+  <Card title="Soumettre une transaction" icon="paper-plane" href="/fr/v3/transaction/transaction_monitoring/post_transaction_request">
+    Envoyez votre première transaction pour surveillance.
+  </Card>
+  <Card title="Parcours utilisateur" icon="route" href="/fr/v3/transaction/transaction_monitoring/user_journey">
+    Comprenez le flux de bout en bout, de la soumission à la résolution.
+  </Card>
+</CardGroup>

@@ -1,0 +1,153 @@
+---
+title: "Comparaison faciale"
+sidebarTitle: "Comparaison faciale"
+description: "Comparez deux images de visage pour déterminer si elles appartiennent à la même personne."
+openapi: "POST /api/onboarding/biometrics/face/comparison"
+---
+
+L'endpoint de comparaison faciale utilise l'analyse biométrique pour comparer deux images de visage et renvoie un score de confiance indiquant si elles représentent le même individu. Utilisez-le pour la vérification d'identité lors de l'intégration ou de l'approbation de transaction.
+
+Avant de comparer, le fournisseur exécute une vérification anti-spoofing sur `selfie_url` ; si cette vérification échoue, aucune comparaison n'est tentée et la réponse l'indique explicitement — voir [200 OK — rejeté par la vérification anti-spoofing](#200-ok-rejeté-par-la-vérification-anti-spoofing-aucune-comparaison-effectuée) ci-dessous.
+
+## Endpoint
+
+```
+POST /api/onboarding/biometrics/face/comparison
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `image_url` | string | Oui | URL de la photo d'identité de référence ou image de visage de base de données |
+| `selfie_url` | string | Oui | URL du selfie en direct à comparer avec la référence |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/biometrics/face/comparison" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "image_url": "https://example.com/id_photo.jpg",
+    "selfie_url": "https://example.com/selfie.jpg"
+  }'
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://adhere-api.smartcomply.com/api/onboarding/biometrics/face/comparison",
+  {
+    method: "POST",
+    headers: {
+      "x-access-token": "YOUR_SECRET_KEY",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      image_url: "https://example.com/id_photo.jpg",
+      selfie_url: "https://example.com/selfie.jpg",
+    }),
+  }
+);
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/biometrics/face/comparison",
+    headers={
+        "x-access-token": "YOUR_SECRET_KEY",
+        "Content-Type": "application/json",
+    },
+    json={
+        "image_url": "https://example.com/id_photo.jpg",
+        "selfie_url": "https://example.com/selfie.jpg",
+    },
+)
+data = response.json()
+```
+</CodeGroup>
+
+## Réponse
+
+### 200 OK
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `data.status` | boolean | `true` si les visages correspondent, `false` sinon |
+| `data.response_code` | string | `"00"` indique une comparaison réussie |
+| `data.message` | string | Résultat de correspondance lisible par l'homme |
+| `data.confidence` | integer | Pourcentage de confiance de correspondance (0–100) |
+| `data.record_id` | number | ID d'enregistrement interne pour cette vérification |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "status": true,
+    "response_code": "00",
+    "message": "Face Match",
+    "confidence": 100,
+    "record_id": 76981
+  },
+  "message": "Comparaison faciale effectuée avec succès"
+}
+```
+
+Un `data.status` à `false` indique que les visages ne correspondent pas. Utilisez `data.confidence` pour appliquer votre propre seuil d'acceptation (ex: exigez `>= 80` pour une correspondance positive).
+
+### 200 OK — rejeté par la vérification anti-spoofing (aucune comparaison effectuée)
+
+Avant de comparer les deux images, le fournisseur exécute sa propre vérification anti-spoofing sur `selfie_url` — cela détecte une photo de photo, une relecture d'écran ou toute autre soumission falsifiée. Si `selfie_url` échoue à cette vérification, la comparaison elle-même ne s'exécute jamais, et la réponse explique pourquoi dans `data.message` plutôt que de simplement dire que les visages ne correspondent pas. `data.confidence` est à `0` dans ce cas puisqu'aucun score de correspondance n'a été produit.
+
+<Note>
+  Cette vérification s'exécute même si `selfie_url` est une image fixe, et non une vidéo — le texte du message ci-dessous fait toujours référence à "la vidéo soumise" car il est partagé avec le libellé interne de l'endpoint de vérification de vivacité faciale. Traitez cette réponse de la même manière, que vous ayez soumis une photo ou une vidéo en tant que selfie.
+</Note>
+
+```json
+{
+  "status": "failed",
+  "data": {
+    "status": false,
+    "response_code": "01",
+    "message": "Liveness check failed — the submitted video did not pass the liveness/anti-spoofing check, so no face comparison was performed.",
+    "confidence": 0
+  },
+  "message": "Liveness check failed — the submitted video did not pass the liveness/anti-spoofing check, so no face comparison was performed."
+}
+```
+
+Demandez à l'utilisateur un selfie plus clair (meilleur éclairage, pas d'écran/photo dans le cadre) et soumettez à nouveau — ce n'est pas la même erreur qu'une véritable inadéquation faciale, et réessayer avec un selfie de meilleure qualité de la même personne est la bonne étape suivante.
+
+### 400 Bad Request
+
+Renvoyé lorsque l'une ou les deux URL d'image sont manquantes, inaccessibles ou ne contiennent pas de visage détectable.
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Could not process one or both images"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

@@ -1,0 +1,116 @@
+---
+title: "Permis de conduire"
+sidebarTitle: "Permis de conduire"
+description: "Vérifiez l'identité d'un client à l'aide de son numéro de permis de conduire kényan."
+openapi: "POST /api/onboarding/kenya_kyc/drivers_license/"
+---
+
+L'endpoint Permis de conduire kényan valide un numéro de permis de conduire et renvoie les détails personnels associés depuis le registre national.
+
+## Endpoint
+
+```
+POST /api/onboarding/kenya_kyc/drivers_license/
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `license_number` | string | Oui | Le numéro de permis de conduire kényan du client |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/kenya_kyc/drivers_license/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"license_number": "24478782"}'
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://adhere-api.smartcomply.com/api/onboarding/kenya_kyc/drivers_license/",
+  {
+    method: "POST",
+    headers: {
+      "x-access-token": "YOUR_SECRET_KEY",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ license_number: "24478782" }),
+  }
+);
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/kenya_kyc/drivers_license/",
+    headers={
+        "x-access-token": "YOUR_SECRET_KEY",
+        "Content-Type": "application/json",
+    },
+    json={"license_number": "24478782"},
+)
+data = response.json()
+```
+</CodeGroup>
+
+## Réponse
+
+### 200 OK
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `data.valid` | boolean | Si le permis est valide |
+| `data.id_number` | string | Numéro de permis de conduire |
+| `data.full_name` | string | Nom complet du client |
+| `data.phone` | string | Numéro de téléphone enregistré |
+| `data.email` | string | Adresse e-mail enregistrée |
+| `data.nationality` | string | Nationalité |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "valid": true,
+    "full_name": "CHARLOTTE SARAH KWENA",
+    "phone": "+254721583847",
+    "email": "kwenacharlotte@gmail.com",
+    "nationality": "KE",
+    "id_number": "24478782"
+  },
+  "message": "Driver's License details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

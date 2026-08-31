@@ -1,0 +1,103 @@
+---
+title: "National ID avancé"
+sidebarTitle: "National ID avancé"
+description: "Récupérez les détails d'identité étendus pour un national ID kényan, incluant la photo, le lieu de naissance et la résidence."
+openapi: "POST /api/onboarding/kenya_kyc/national_id_advance/"
+---
+
+L'endpoint National ID avancé renvoie des informations d'identité complètes pour un national ID kényan, incluant la photo de l'inscrit, le lieu de naissance, le lieu de résidence et les détails de délivrance.
+
+## Endpoint
+
+```
+POST /api/onboarding/kenya_kyc/national_id_advance/
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `national_id` | integer | Oui | Le numéro de national ID kényan du client |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/kenya_kyc/national_id_advance/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"national_id": 1010101010}'
+```
+</CodeGroup>
+
+## Réponse
+
+### 200 OK
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `data.First_Name` | string | Prénom |
+| `data.Surname` | string | Nom de famille |
+| `data.Other_Name` | string | Autre/deuxième prénom |
+| `data.Gender` | string | Genre (`"M"` ou `"F"`) |
+| `data.Date_of_Birth` | string | Date de naissance |
+| `data.Citizenship` | string | Statut de citoyenneté |
+| `data.Date_of_Issue` | string | Date de délivrance de la carte d'identité |
+| `data.Place_of_Birth` | string | Lieu de naissance |
+| `data.Place_of_Live` | string | Lieu de résidence enregistré |
+| `data.Photo` | string | Photo de la carte d'identité encodée en base64 |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "Pin": "",
+    "Clan": "",
+    "Photo": "<base64-encoded-jpeg>",
+    "Family": "",
+    "Gender": "M",
+    "Surname": "Leo",
+    "RegOffice": "",
+    "First_Name": "Joe",
+    "Occupation": "",
+    "Other_Name": "Doe",
+    "Citizenship": "Kenyan",
+    "Date_of_Birth": "2000-09-20 12:00:00 AM",
+    "Date_of_Death": "",
+    "Date_of_Issue": "1/27/2000 12:00:00 AM",
+    "Place_of_Live": "BOX 12345-00800 NAIROBI\nKAREN\nKAREN\nLOCATION - LANGATA\nDIVISION - KIBERA\nDISTRICT - STAREHE",
+    "Serial_Number": 0,
+    "Place_of_Birth": "NAIROBI\nDISTRICT - STAREHE",
+    "Place_of_Death": ""
+  },
+  "message": "National ID Advance details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

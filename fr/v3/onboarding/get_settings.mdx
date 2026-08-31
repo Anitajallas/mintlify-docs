@@ -1,0 +1,87 @@
+---
+title: "Récupérer les paramètres d'intégration"
+sidebarTitle: "Récupérer les paramètres"
+description: "Récupérez les paramètres actuels de vérification d'identité et de filtrage AML pour votre branche."
+openapi: "GET /api/onboarding/settings"
+---
+
+## Endpoint
+
+```
+GET /api/onboarding/settings
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé API | Oui |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl https://adhere-api.smartcomply.com/api/onboarding/settings \
+  -H "x-access-token: YOUR_API_KEY"
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    "https://adhere-api.smartcomply.com/api/onboarding/settings",
+    headers={"x-access-token": "YOUR_API_KEY"},
+)
+print(response.json())
+```
+
+```javascript Node.js
+const response = await fetch("https://adhere-api.smartcomply.com/api/onboarding/settings", {
+  headers: { "x-access-token": "YOUR_API_KEY" },
+});
+const data = await response.json();
+```
+</CodeGroup>
+
+## Réponse
+
+<ResponseField name="status" type="string">
+  `"success"` en cas de requête réussie.
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  `"Settings retrieved"`
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="champs de données" defaultOpen>
+    <ResponseField name="ivs" type="boolean">
+      Si la vérification d'identité est activée pour cette branche. Par défaut à `true`.
+    </ResponseField>
+    <ResponseField name="aml" type="boolean">
+      Si le filtrage AML est activé pour cette branche. Par défaut à `true`.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### 200 OK
+
+```json
+{
+  "status": "success",
+  "message": "Settings retrieved",
+  "data": {
+    "ivs": true,
+    "aml": true
+  }
+}
+```
+
+### Réponses d'erreur
+
+| Statut HTTP | Message | Cause |
+|-------------|---------|-------|
+| `401` | `"Authorization token is missing"` | Aucun en-tête `x-access-token` |
+| `401` | `"Authorization failed"` | Jeton non reconnu ou expiré |

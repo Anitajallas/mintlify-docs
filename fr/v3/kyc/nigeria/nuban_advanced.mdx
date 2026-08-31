@@ -1,0 +1,98 @@
+---
+title: "NUBAN Avancé"
+sidebarTitle: "NUBAN Avancé"
+description: "Récupérez des données de vérification de compte améliorées incluant le nom, la banque et les détails d'identité."
+openapi: "POST /api/onboarding/nigeria_kyc/nuban_advanced/"
+---
+
+L'endpoint NUBAN Avancé fournit une vue plus complète d'un compte bancaire par rapport à la vérification NUBAN standard. En plus de résoudre le nom du compte, il compare le compte par rapport à un `customer_name` que vous fournissez et renvoie un score de confiance de correspondance de nom — utile pour confirmer qu'un compte bancaire appartient réellement à la personne ou à l'entreprise qui le revendique.
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/nuban_advanced/
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `account_number` | string | Oui | Le numéro de compte NUBAN à 10 chiffres |
+| `bank_code` | string | Oui | Le code bancaire (voir [codes bancaires NUBAN](/v3/kyc/nigeria/nuban#référence-des-codes-bancaires)) |
+| `customer_name` | string | Oui | Le nom à comparer par rapport au nom du titulaire du compte enregistré |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/nuban_advanced/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"account_number": "0768540312", "bank_code": "035", "customer_name": "STEPHEN BADMUS"}'
+```
+
+```python Python
+import requests
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/nuban_advanced/",
+    headers={"x-access-token": "YOUR_SECRET_KEY", "Content-Type": "application/json"},
+    json={"account_number": "0768540312", "bank_code": "035", "customer_name": "STEPHEN BADMUS"},
+)
+```
+</CodeGroup>
+
+## Réponse
+
+### 200 OK
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `data.bank_id` | integer | Identifiant bancaire interne |
+| `data.account_name` | string | Nom du titulaire du compte enregistré |
+| `data.account_number` | string | Numéro de compte interrogé |
+| `data.comparism_data.status` | boolean | Si `customer_name` correspond au titulaire du compte enregistré |
+| `data.comparism_data.confidence` | number | Score de confiance de correspondance de nom (0–1) |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "bank_id": 11,
+    "account_name": "STEPHEN BADMUS",
+    "account_number": "0768540312",
+    "comparism_data": {
+      "status": true,
+      "confidence": 1.0
+    }
+  },
+  "message": "Nuban details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Account Number and Bank Code are required"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

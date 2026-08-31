@@ -1,0 +1,108 @@
+---
+title: "Numéro de téléphone avancé"
+sidebarTitle: "Numéro de téléphone avancé"
+description: "Récupérez les données complètes du profil NIN liées à n'importe quel numéro de téléphone enregistré contre une identité."
+openapi: "POST /api/onboarding/nigeria_kyc/phone_no_advanced/"
+---
+
+L'endpoint Numéro de téléphone avancé renvoie un profil d'identité NIN complet associé à un numéro de téléphone donné, incluant les numéros au-delà de l'enregistrement principal. Utilisez-le lorsque vous devez vérifier des numéros de téléphone supplémentaires liés au NIN d'un client.
+
+<Note>
+  Pour le numéro de téléphone principal enregistré à un NIN, utilisez [Numéro de téléphone basique](/v3/kyc/nigeria/phone_number_basic) — il est plus rapide et renvoie les champs d'identité de base.
+</Note>
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/phone_no_advanced/
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `phone_number` | string | Oui | Le numéro de téléphone du client (format nigérian, par ex. `09011001100`) |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/phone_no_advanced/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"phone_number": "09011001100"}'
+```
+
+```python Python
+import requests
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/phone_no_advanced/",
+    headers={"x-access-token": "YOUR_SECRET_KEY", "Content-Type": "application/json"},
+    json={"phone_number": "09011001100"},
+)
+```
+</CodeGroup>
+
+## Réponse
+
+### 200 OK
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `data.nin` | string | NIN lié au numéro de téléphone |
+| `data.surname` | string | Nom de famille |
+| `data.firstname` | string | Prénom |
+| `data.middlename` | string | Deuxième prénom |
+| `data.gender` | string | Genre (`"M"` ou `"F"`) |
+| `data.birthdate` | string | Date de naissance |
+| `data.telephoneno` | string | Numéro de téléphone |
+| `data.residence_address` | string | Adresse de résidence |
+| `data.residence_state` | string | État de résidence |
+| `data.residence_lga` | string | Zone de gouvernement local de résidence |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "nin": "384748493020",
+    "surname": "JOHN",
+    "firstname": "DOE",
+    "middlename": "MID",
+    "gender": "F",
+    "birthdate": "1 JAN 2000",
+    "telephoneno": "09011001100",
+    "residence_address": "",
+    "residence_state": "",
+    "residence_lga": ""
+  },
+  "message": "Phone Number details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

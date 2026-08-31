@@ -1,0 +1,120 @@
+---
+title: "ID fiscal de l'entreprise"
+sidebarTitle: "ID fiscal de l'entreprise"
+description: "Vérifiez les enregistrements fiscaux d'une entreprise nigériane à l'aide de son numéro d'enregistrement CAC."
+openapi: "POST /api/onboarding/business/company_tax_id/"
+---
+
+<Note>
+  Entreprises uniquement. Il s'agit d'une vérification différente de [TIN entreprise](/v3/kyc/nigeria/tin) — l'ID fiscal de l'entreprise recherche les enregistrements fiscaux FIRS en utilisant le **numéro d'enregistrement CAC** de l'entreprise, tandis que le TIN entreprise recherche les enregistrements fiscaux FIRS en utilisant le **TIN** de l'entreprise. Utilisez l'identifiant que vous possédez déjà.
+</Note>
+
+L'endpoint ID fiscal de l'entreprise valide les enregistrements fiscaux d'une entreprise nigériane par rapport à la base de données de la FIRS (Federal Inland Revenue Service) en utilisant son numéro d'enregistrement CAC, et renvoie les détails d'identification fiscale associés.
+
+## Endpoint
+
+```
+POST /api/onboarding/business/company_tax_id/
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|--------------|
+| `registration_number` | string | Oui | Le numéro d'enregistrement CAC de l'entreprise, y compris son préfixe de type (par ex. `RC1234567`, `BN1234567`, `IT1234567`, `LP1234567` ou `LLP1234567`) |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/business/company_tax_id/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"registration_number": "RC1234567"}'
+```
+
+```python Python
+import requests
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/business/company_tax_id/",
+    headers={"x-access-token": "YOUR_SECRET_KEY", "Content-Type": "application/json"},
+    json={"registration_number": "RC1234567"},
+)
+```
+</CodeGroup>
+
+## Réponse
+
+### 200 OK
+
+| Champ | Type | Description |
+|-------|------|--------------|
+| `data.valid` | boolean | Si une correspondance a été trouvée |
+| `data.business_name` | string | Nom de l'entreprise enregistré |
+| `data.registration_number` | string | Numéro d'enregistrement CAC |
+| `data.id_number` | string | ID fiscal de l'entreprise |
+| `data.company_information.name` | string | Nom de l'entreprise enregistré |
+| `data.company_information.registration_number` | string | Numéro d'enregistrement CAC |
+| `data.company_information.tax_id` | string | ID fiscal de l'entreprise |
+| `data.company_information.tax_office` | string | Bureau fiscal assigné (non renvoyé par Youverify pour chaque entreprise) |
+| `data.company_information.phone` | string | Numéro de téléphone enregistré (non renvoyé par Youverify pour chaque entreprise) |
+| `data.company_information.email` | string | E-mail enregistré (non renvoyé par Youverify pour chaque entreprise) |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "valid": true,
+    "id_number": "2622476055669",
+    "company_information": {
+      "name": "OASIS TASTE & TREAT LTD",
+      "registration_number": "RC9435541",
+      "tin": null,
+      "jtb_tin": null,
+      "tax_id": "2622476055669",
+      "tax_office": null,
+      "phone": null,
+      "email": null
+    },
+    "business_name": "OASIS TASTE & TREAT LTD",
+    "registration_number": "RC9435541"
+  },
+  "message": "Company Tax ID details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Registration Number is required."
+}
+```
+
+```json
+{
+  "status": "failed",
+  "data": {"error_code": "INVALID_INPUT"},
+  "message": "Company Tax ID check failed: ValidationError: Invalid registration number format. Valid format => RCxxxx, BNxxxxx, ITxxxxx, LPxxxxx or LLPxxxxx"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

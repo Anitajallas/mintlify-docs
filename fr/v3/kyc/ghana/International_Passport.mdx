@@ -1,0 +1,126 @@
+---
+title: "Passeport international"
+sidebarTitle: "Passeport international"
+description: "Vérifiez l'identité d'un client à l'aide de son numéro de passeport international ghanéen."
+openapi: "POST /api/onboarding/ghana_kyc/international_passport/"
+---
+
+L'endpoint Passeport international Ghana valide un numéro de passeport et renvoie les détails personnels associés depuis le registre national.
+
+## Endpoint
+
+```
+POST /api/onboarding/ghana_kyc/international_passport/
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `passport_number` | string | Oui | Le numéro de passeport ghanéen du client |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/ghana_kyc/international_passport/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"passport_number": "G3759982"}'
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://adhere-api.smartcomply.com/api/onboarding/ghana_kyc/international_passport/",
+  {
+    method: "POST",
+    headers: {
+      "x-access-token": "YOUR_SECRET_KEY",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ passport_number: "G3759982" }),
+  }
+);
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/ghana_kyc/international_passport/",
+    headers={
+        "x-access-token": "YOUR_SECRET_KEY",
+        "Content-Type": "application/json",
+    },
+    json={"passport_number": "G3759982"},
+)
+data = response.json()
+```
+</CodeGroup>
+
+## Réponse
+
+### 200 OK
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `data.FullName` | string | Nom complet |
+| `data.FirstName` | string | Prénom |
+| `data.LastName` | string | Nom de famille |
+| `data.OtherNames` | string | Autres noms |
+| `data.DOB` | string | Date de naissance |
+| `data.Gender` | string | Genre |
+| `data.Nationality` | string | Nationalité |
+| `data.DateOfIssue` | string | Date de délivrance du passeport |
+| `data.DateOfExpiry` | string | Date d'expiration du passeport |
+| `data.PassportNumber` | string | Numéro de passeport |
+| `data.Photo` | string | Photo du passeport encodée en base64 |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "FullName": "JOHN DOE",
+    "FirstName": "JOHN",
+    "LastName": "DOE",
+    "OtherNames": "",
+    "DOB": "1990-01-15",
+    "Gender": "Male",
+    "Nationality": "GHANAIAN",
+    "DateOfIssue": "2020-01-15",
+    "DateOfExpiry": "2030-01-15",
+    "PassportNumber": "G3759982",
+    "Photo": "<base64-encoded-jpeg>"
+  },
+  "message": "International Passport details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```
