@@ -16,7 +16,7 @@ The SmartComply Android SDK delivers a fully self-contained identity verificatio
 - **Dynamic ID types** — channels and fields are fetched live from your Dashboard configuration
 - **Multi-country support** — renders a country picker automatically when more than one country is configured
 - **Dark and light mode** — theme adapts to the system setting; override via the launch intent
-- **Your brand, not ours**: name, description, colour and logo come from the Dashboard, and the font is passed by your app. See [Branding](#branding)
+- **Your brand, not ours**: colour and logo come from the Dashboard, your name appears while the session is being set up, and the font is passed by your app. See [Branding](#branding)
 - **Any backend host**: production, staging, or your own, without a rebuild
 
 ---
@@ -128,11 +128,15 @@ val verificationLauncher = registerForActivityResult(
             val entryId    = data.getIntExtra(SmartComplyActivity.RESULT_ENTRY_ID, -1)
             val status     = data.getStringExtra(SmartComplyActivity.RESULT_STATUS)
             val idTypeName = data.getStringExtra(SmartComplyActivity.RESULT_ID_TYPE_NAME)
-            // The user has finished their part of the flow. `status` is "processing";
-            // the pass or fail verdict arrives later by webhook.
+            // Branch on `status`: "passed", "failed", or "processing" when the backend
+            // had not resolved in time. Reaching this branch is not a pass.
         }
         SmartComplyActivity.TYPE_CANCELLED -> {
-            // user pressed back
+            // User pressed back, or denied the camera permission prompt on launch.
+        }
+        SmartComplyActivity.TYPE_FAILURE -> {
+            // apiKey or clientId was blank, so the flow never started.
+            val why = data.getStringExtra(SmartComplyActivity.RESULT_ERROR_MSG)
         }
     }
 }
@@ -172,8 +176,9 @@ fun StartVerificationButton() {
     ) { result ->
         val data = result.data ?: return@rememberLauncherForActivityResult
         when (data.getStringExtra(SmartComplyActivity.RESULT_TYPE)) {
-            SmartComplyActivity.TYPE_SUCCESS   -> { /* handle submission */ }
-            SmartComplyActivity.TYPE_CANCELLED -> { /* user cancelled */ }
+            SmartComplyActivity.TYPE_SUCCESS   -> { /* branch on RESULT_STATUS */ }
+            SmartComplyActivity.TYPE_CANCELLED -> { /* back pressed, or camera denied */ }
+            SmartComplyActivity.TYPE_FAILURE   -> { /* read RESULT_ERROR_MSG */ }
         }
     }
 
@@ -280,13 +285,28 @@ Read from the `Intent` returned to your activity result callback.
 
 | Constant | Type | Present when |
 |---|---|---|
-| `RESULT_TYPE` | `String` | Always — `"success"` or `"cancelled"` |
+| `RESULT_TYPE` | `String` | Always: `"success"`, `"cancelled"`, or `"failure"` |
 | `RESULT_ENTRY_ID` | `Int` | `TYPE_SUCCESS` — the verification's entry ID |
 | `RESULT_STATUS` | `String` | `TYPE_SUCCESS`: `"passed"`, `"failed"`, or `"processing"` if the backend had not resolved in time |
 | `RESULT_SUBMITTED_AT` | `String` | `TYPE_SUCCESS` — ISO 8601 timestamp |
 | `RESULT_VERIFIED_NAME` | `String` | `TYPE_SUCCESS`: the verified name, when the backend returned one |
 | `RESULT_ID_TYPE_NAME` | `String` | `TYPE_SUCCESS` — e.g. `"National Identity Number (NIN)"`, `"Passport"` |
 | `RESULT_ID_NUMBER` | `String` | `TYPE_SUCCESS`: the ID number, from the user in data mode or from OCR in document mode |
+| `RESULT_ERROR_MSG` | `String` | `TYPE_FAILURE` only: why the launch was rejected, e.g. `"SmartComply: apiKey is required"` |
+
+<Note>
+  From **1.0.7** the Activity returns `TYPE_FAILURE` when `apiKey` or `clientId` is blank, which
+  is the usual sign of an unset `BuildConfig` field or a missing CI value. That result carries no
+  other extras. Before 1.0.7 the same input crashed the host app, so no released version returned
+  `TYPE_FAILURE` for anything else.
+</Note>
+
+<Note>
+  `RESULT_VERIFIED_NAME` and `RESULT_ID_NUMBER` are populated from the result poll as well as
+  from submit, from **1.0.7**. In document mode they previously appeared only when OCR happened
+  to finish before the user completed liveness, so whether a user saw their own name came down
+  to timing.
+</Note>
 
 <Warning>
   **Branch on `RESULT_STATUS`. Reaching this callback is not a pass.**
@@ -318,37 +338,39 @@ The SDK steps through these screens automatically.
 |---|---|
 | Loading | Session creation and brand config fetch |
 | Welcome | Brand splash, country picker, and ID type selection |
-| Camera Permission | Requests camera permission at runtime, in both modes, before the ID-input or capture step |
-| Camera Permission Denied | "Camera Access Required" screen with **Open Settings** and **Go Back** |
+| Camera Permission | Requested in `onCreate`, before the Loading screen, on the `SmartComplyActivity` path. On the embedded `SmartComplyFlowScreen` path it is requested in both modes, before the ID-input or capture step |
+| Camera Permission Denied | Embedded `SmartComplyFlowScreen` path only: "Camera Access Required" screen with **Open Settings** and **Go Back**. On the `SmartComplyActivity` path a denial returns `TYPE_CANCELLED` instead and this screen is never shown |
 | Document Capture (front) | Camera view with a guide box, a shutter, and **Upload from gallery** |
-| Document Capture (back) | Shown when the channel's `requires_back_side` says so. The server decides, not the app |
+| Document Capture (back) | Shown when the channel's `requires_back_side` is `required` or `optional`. The server decides, not the app. On `optional` the screen also shows a **This ID has no back side** control, which skips straight to liveness |
 | ID Input | Form fields for data-mode verification (BVN, NIN, etc.) |
 | Liveness | Passive camera scan: see [Liveness](#liveness) below |
 | Processing | Upload and backend submission in progress |
 | Success | Shown for every submitted entry. The verdict is in `RESULT_STATUS`, not on the screen |
-| Failure | Pre-submission errors only: camera denied, config or network failure, liveness timeout. Offers **Try Again** |
+| Failure | Pre-submission errors only: config or network failure, liveness timeout. Offers **Try Again** |
 
 ### Document images
 
-Document photos are capped at **5 MB** server-side, in JPG or PNG. Both routes, the in-SDK camera and **Upload from gallery**, are downscaled to 1600px on the long edge and re-compressed before upload, so a full-resolution phone photo no longer fails with `File too large. Maximum size is 5MB.`
+Document photos are capped at **5 MB** server-side, in JPG or PNG. The two routes are treated differently: an in-SDK camera capture is cropped to the guide box and re-encoded at JPEG quality 85, while an **Upload from gallery** pick is downscaled to 1600px on the long edge and re-encoded, so a full-resolution phone photo no longer fails with `File too large. Maximum size is 5MB.`
 
-Before the review screen the SDK checks the photo contains a face and legible text. A failure is a **warning, not a block**: the user can still confirm, because a false negative would otherwise trap someone holding a genuine but unusual ID. The backend OCR is the check that actually rejects.
+Before the review screen the SDK checks the **front** photo contains a face. A failure is a **warning, not a block**: the user can still confirm, because a false negative would otherwise trap someone holding a genuine but unusual ID. The backend OCR is the check that actually rejects. The back photo is not checked.
 
 ---
 
 ## Branding
 
-The flow carries your brand, not Adhere's. Colour, name, description and logo all
-come from the **SDK Config on the dashboard**, so they change without an app
-release. The font is the one exception and is passed by the host.
+The flow carries your brand, not Adhere's. Colour and logo come from the **SDK Config on the
+dashboard**, so they change without an app release, and your name is shown while the session is
+being set up. The font is the one exception and is passed by the host.
 
 | What | Set where | Shows up as |
 |---|---|---|
-| Brand name | Dashboard, SDK Config | The welcome heading |
-| Short description | Dashboard, SDK Config | The welcome subheading |
+| Brand name | Dashboard, SDK Config | The loading screen ("Setting up &lt;name&gt;…") and the logo's content description |
 | Theme colour | Dashboard, SDK Config | Primary buttons, highlights, progress |
 | Logo | Dashboard, SDK Config | The mark on the welcome screen |
 | Font | Your app, at launch | Every screen |
+
+The welcome heading and subheading are fixed SDK copy: "Verify Your Identity", then one of two
+lines keyed off the verification mode.
 
 ### Logo
 
@@ -458,7 +480,8 @@ data class SDKConfig(
     val verifyTimeoutMs:    Long        = 90_000L,
     val uploadTimeoutMs:    Long        = 120_000L,
     val maxUploadRetries:   Int         = 3,
-    val debug:              Boolean     = false
+    val debug:              Boolean     = false,
+    val baseUrl:            String?     = null
 )
 ```
 
@@ -470,21 +493,23 @@ data class SDKConfig(
 | `requestTimeoutMs` | `30000` | Timeout in milliseconds for standard API calls |
 | `verifyTimeoutMs` | `90000` | Timeout for `onboarding/verify` alone, which blocks on a government identity provider. At the 30s default it intermittently timed out client-side while the server completed the check and billed for it |
 | `uploadTimeoutMs` | `120000` | Timeout in milliseconds for image and video upload |
-| `maxUploadRetries` | `3` | Automatic retry attempts when creating a liveness check. The final submit is not retried |
+| `maxUploadRetries` | `3` | Total upload attempts, not retries after the first. Only transport failures are retried; an API error is surfaced immediately. The final submit is not retried |
 | `debug` | `false` | Prints verbose network logs to Logcat when `true` |
+| `baseUrl` | `null` | Overrides `environment`'s host. See [A different host](#a-different-host). Added in **1.0.7** |
 
 ---
 
 ## Error Handling
 
-`SmartComplyActivity` handles and displays all error states inside the flow — an invalid key, an expired session, or an exhausted upload retry all render the SDK's own failure screen with a **Try Again** button. The Activity returns a result only when the user completes the flow or backs out.
+`SmartComplyActivity` handles and displays all error states inside the flow: an invalid key, an expired session, or an exhausted upload retry all render the SDK's own failure screen with a **Try Again** button. From **1.0.7** the Activity also returns immediately, before any screen renders, when `apiKey` or `clientId` is blank. Otherwise it returns a result only when the user completes the flow or backs out.
 
 | Scenario | Cause | Resolution |
 |---|---|---|
 | Failure screen, invalid key | `apiKey` is wrong or the branch is not enabled for onboarding | Check your key in the Adhere Dashboard |
 | Failure screen, no configuration found | `clientId` is not an active SDK Config | Copy the Client ID from **Settings → Integrations → SDK Setup**. Do not generate a UUID |
 | Failure screen, session expired | Session tokens have a 30-minute TTL | Relaunch. A new session is created on each launch; your `clientId` never changes |
-| `TYPE_CANCELLED` | User pressed back, from any screen | Reconcile against the webhook before assuming the user abandoned the flow |
+| `TYPE_CANCELLED` | User pressed back, or denied the camera permission prompt on launch | Reconcile against the webhook before assuming the user abandoned the flow |
+| `TYPE_FAILURE` | `apiKey` or `clientId` was blank at launch, so the flow never started | Read `RESULT_ERROR_MSG`. Check the value is actually reaching `buildIntent`; a blank string is not the same as a wrong key, which shows the failure screen instead |
 
 ---
 
@@ -557,6 +582,6 @@ applies them to your app automatically. They keep the generated kotlinx.serializ
 serializers and `SmartComplyActivity`; OkHttp ships its own rules in its jar.
 
 <Warning>
-**On 1.0.1 and earlier, a minified build crashes on launch** with a `NoClassDefFoundError`
-on a Ktor class. Those versions shipped no consumer rules. Upgrade to 1.0.5.
+**On 1.0.0, a minified build crashes on launch** with a `NoClassDefFoundError`
+on a Ktor class. That version shipped no consumer rules. Upgrade to 1.0.5.
 </Warning>

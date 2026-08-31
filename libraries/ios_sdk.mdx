@@ -25,8 +25,8 @@ The SmartComply iOS SDK is a native Swift library that delivers a fully self-con
 ## Requirements
 
 - **iOS 16.0** or later
-- **Swift 5.9** or later
-- **Xcode 15** or later
+- **Xcode 16** or later. The shipped XCFramework's module interface names `SwiftUICore` in public
+  signatures, a module that first ships in the iOS 18 SDK, so Xcode 15 cannot compile it
 - **A physical device that supports ARKit face tracking.** Liveness gates on `ARFaceTrackingConfiguration.isSupported`, which covers iPhone X and later as well as A12 and later devices without a TrueDepth camera. Liveness cannot run in the Simulator
 
 ---
@@ -153,7 +153,7 @@ struct ContentView: View {
             SmartComplyFlowView(sdk: sdk) { result in
                 showVerification = false
                 print("Entry ID:", result.entryId)
-                print("Status:", result.status)   // "processing"
+                print("Status:", result.status)   // "passed", "failed", or "processing"
             }
         }
     }
@@ -164,10 +164,10 @@ The SDK manages the entire flow automatically. The exact steps depend on the ver
 
 **Document mode** (photo capture):
 1. Creates a secure session
-2. Displays a welcome screen with your brand name and ID type cards
+2. Displays a welcome screen with your logo and ID type cards
 3. Shows a country picker if multiple countries are configured
 4. User photographs the front of their ID inside the guide box
-5. Photographs the back if the ID type's name contains national, driver, resident or voter
+5. Photographs the back, when the Dashboard's `requires_back_side` for that ID type is `required` or `optional`. On `optional` the capture screen also shows a **This ID has no back side** control; tapping it goes straight to the liveness scan and the entry is submitted with no back image. When the backend sends no value at all, the SDK falls back to matching the ID type's name against national, driver, resident and voter
 6. Runs the passive liveness scan
 7. Returns a `FlowResult` to your completion handler
 
@@ -179,6 +179,18 @@ The SDK manages the entire flow automatically. The exact steps depend on the ver
 5. Identity is verified against the national database
 6. Runs the passive liveness scan
 7. Returns a `FlowResult` to your completion handler
+
+### Document images
+
+Document photos are capped at **5 MB** server-side. Both routes, the in-SDK camera and
+**Upload from library**, are downscaled to 1280px on the long edge and re-encoded as JPEG at
+quality 0.72 before upload, typically 150 to 350 KB, so a full-resolution phone photo does not
+fail the size limit.
+
+Before the review screen the SDK checks the **front** photo shows a face and legible text: it
+needs a face and at least three text regions. A failure is a **warning, not a block**. The user
+can still confirm, because a false negative would otherwise trap someone holding a genuine but
+unusual ID. The backend OCR is the check that actually rejects. The back photo is not checked.
 
 ---
 
@@ -231,17 +243,19 @@ post verifications to a relative URL.
 
 ## Branding
 
-The flow carries your brand, not Adhere's. Name, description, colour and logo all
-come from the **SDK Config on the dashboard**, so they change without an app
-release. The font is the one exception and is passed by the host.
+The flow carries your brand, not Adhere's. Colour and logo come from the **SDK Config on the
+dashboard**, so they change without an app release, and your name is shown while the session is
+being set up. The font is the one exception and is passed by the host.
 
 | What | Set where | Shows up as |
 |---|---|---|
-| Brand name | Dashboard, SDK Config | The welcome heading |
-| Short description | Dashboard, SDK Config | The welcome subheading |
+| Brand name | Dashboard, SDK Config | The loading screen ("Setting up &lt;name&gt;…") and the logo's accessibility label |
 | Theme colour | Dashboard, SDK Config | Primary buttons, highlights, progress |
 | Logo | Dashboard, SDK Config | The mark on the welcome screen |
 | Font | Your app, at launch | Every screen |
+
+The welcome heading and subheading are fixed SDK copy: "Verify Your Identity", then one of two
+lines keyed off the verification mode.
 
 ### Logo
 
@@ -321,7 +335,7 @@ The scan has a **20 second cap**.
   Reaching the cap **fails** the check. Nothing is uploaded and nothing is billed, and the user is offered **Try Again**. Earlier versions submitted anyway and reported success with no actions completed: if you are on 1.0.2 or below, expect that behaviour.
 </Warning>
 
-Liveness needs a TrueDepth camera and **cannot run on the Simulator**. Test on an iPhone X or later.
+Liveness **cannot run on the Simulator**. Test on a physical device that meets the requirement above.
 
 ---
 
@@ -348,8 +362,8 @@ Pre-submission failures are unaffected and still show the failure screen with **
 ```swift
 SmartComplyFlowView(
     sdk: sdk,
-    onComplete: { result in /* result.status is "passed" */ },
-    onDismiss:  { error in  /* nil means the user simply closed it */ }
+    onComplete: { result in /* branch on result.status: "passed", "failed" or "processing" */ },
+    onDismiss:  { error in  /* always non-nil: errorCode "FLOW_FAILED", message from the failure screen */ }
 )
 ```
 
@@ -377,11 +391,25 @@ public struct SDKConfig {
 | `apiKey` | — | Your Adhere API key (required) |
 | `clientId` | — | Your SDK Config's Client ID (required) |
 | `environment` | `.sandbox` | Set this explicitly — see [Environments](#environments) |
-| `requestTimeout` | `30` | Timeout in seconds for standard API calls, including identity verification |
+| `requestTimeout` | `30` | Timeout in seconds for standard API calls, including identity verification. There is no separate verify budget on iOS. See the note below if you use data mode |
 | `uploadTimeout` | `120` | Timeout in seconds for image and video upload |
 | `maxUploadRetries` | `3` | Total upload attempts, not retries after the first. Only transport failures are retried; an API error is surfaced immediately |
 | `debug` | `false` | Writes verbose network logs to the unified log (`os.Logger`, subsystem `com.smartcomply.sdk`) when `true`. Read them in Console.app — they do not appear in Xcode's console pane |
 | `baseURL` | `nil` | Overrides `environment`'s host. See [A different host](#a-different-host). Added in **1.0.3** |
+
+<Warning>
+  **Raise `requestTimeout` if your flow uses a data-mode ID channel.**
+
+  `onboarding/verify` blocks on a government identity provider and runs on this same 30 second
+  budget. When it times out client-side the server carries on, completes the check and bills for
+  it, so you are charged for a verification your app reported as failed. The user is left on the
+  ID input screen with an error and will usually resubmit, which bills again. Pass
+  `requestTimeout: 90` when a data-mode channel is enabled.
+
+  Unlike Android's `verifyTimeoutMs`, this is not verify-specific. It applies to every non-upload
+  call, including the result poll the SDK runs after submission, so a raised value also lengthens
+  the worst case on the processing screen. It is the only lever 1.0.3 exposes.
+</Warning>
 
 ---
 
@@ -392,7 +420,7 @@ Delivered to your `onComplete` closure when the user completes the flow in-app.
 ```swift
 public struct FlowResult {
     public let entryId: Int                              // verification entry ID
-    public let status: String                            // "passed", or "processing": see below
+    public let status: String                            // "passed", "failed", or "processing": see below
     public let submittedAt: String?                      // ISO 8601 timestamp
     public let verificationResult: VerifyIdentityResponse? // data mode only
     public let idTypeName: String?                       // e.g. "National Identity Number (NIN)"
@@ -429,7 +457,7 @@ public struct FlowResult {
 <Warning>
   `verifiedName` and `idNumber` are **always `nil` on 1.0.1 and earlier**, in both verification
   modes. If you are pinned to one of those versions, read the verified identity from the webhook
-  payload instead and do not build UI that depends on these two properties. Upgrade to 1.0.2.
+  payload instead and do not build UI that depends on these two properties. Upgrade to 1.0.3.
 </Warning>
 
 <Note>
