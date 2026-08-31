@@ -42,14 +42,14 @@ it in your app.
 1. Open your project in Xcode
 2. Go to **File → Add Package Dependencies**
 3. Enter the repository URL: `https://github.com/386konsult/smartcomply-ios-sdk`
-4. Select **Up to Next Major Version** and enter `1.0.2`
+4. Select **Up to Next Major Version** and enter `1.0.3`
 5. Click **Add Package** and select the **SmartComplySDK** library
 
 ### Package.swift
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/386konsult/smartcomply-ios-sdk", from: "1.0.2")
+    .package(url: "https://github.com/386konsult/smartcomply-ios-sdk", from: "1.0.3")
 ],
 targets: [
     .target(
@@ -60,6 +60,15 @@ targets: [
     )
 ]
 ```
+
+<Note>
+  **1.0.3 changes two behaviours.** `FlowResult.status` now holds the real verdict, and the success
+  screen no longer means a pass. Read [FlowResult](#flowresult) before upgrading from 1.0.2 or
+  below. It also adds [Branding](#branding) and a custom backend host.
+
+  iOS and Android are versioned separately. iOS 1.0.3 and Android 1.0.7 carry the same feature set;
+  the numbers differ because the two have always been on their own tracks.
+</Note>
 
 <Note>
   The package URL is `smartcomply-ios-sdk`, which is not the same as the SDK's source repository.
