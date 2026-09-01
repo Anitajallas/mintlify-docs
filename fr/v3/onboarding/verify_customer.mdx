@@ -1,0 +1,250 @@
+---
+title: "Vérifier le client"
+sidebarTitle: "Vérifier le client"
+description: "Exécutez la vérification d'identité et le filtrage AML pour un client en un seul appel."
+openapi: "POST /api/onboarding/verify_customer"
+---
+
+## Endpoint
+
+```
+POST /api/onboarding/verify_customer
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `country` | string | Oui | Pays du client. Pris en charge : `nigeria`, `kenya`, `ghana`, `uganda`, `rwanda` |
+| `identifier` | string | Oui | Numéro d'identité du client (ex: BVN, NIN, ID National) |
+| `identifier_type` | string | Non | Remplace la valeur par défaut du pays. Voir [valeurs prises en charge](/fr/v3/onboarding/introduction#pays-pris-en-charge) |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST https://adhere-api.smartcomply.com/api/onboarding/verify_customer \
+  -H "x-access-token: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "country": "nigeria",
+    "identifier": "12345678901"
+  }'
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/verify_customer",
+    headers={"x-access-token": "YOUR_API_KEY"},
+    json={
+        "country": "nigeria",
+        "identifier": "12345678901",
+    },
+)
+print(response.json())
+```
+
+```javascript Node.js
+const response = await fetch("https://adhere-api.smartcomply.com/api/onboarding/verify_customer", {
+  method: "POST",
+  headers: {
+    "x-access-token": "YOUR_API_KEY",
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    country: "nigeria",
+    identifier: "12345678901",
+  }),
+});
+const data = await response.json();
+```
+</CodeGroup>
+
+## Réponse
+
+Toutes les réponses renvoient HTTP `200`. Utilisez le champ `decision` — pas le statut HTTP — pour déterminer le résultat de l'intégration. Voir le [Guide de décision](/fr/v3/onboarding/introduction#guide-de-décision) pour savoir comment agir sur chaque valeur.
+
+<ResponseField name="status" type="string">
+  Toujours `"success"` sur une réponse `200`.
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Toujours `"Customer onboarding completed"` en cas de succès.
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="champs de données" defaultOpen>
+    <ResponseField name="onboarding_id" type="number">
+      ID unique pour cet enregistrement d'intégration.
+    </ResponseField>
+    <ResponseField name="identity" type="object">
+      Résultat de l'étape de vérification d'identité.
+      <Expandable title="champs d'identité">
+        <ResponseField name="verified" type="boolean">
+          `true` si l'identifiant a été vérifié avec succès auprès de l'autorité émettrice.
+        </ResponseField>
+        <ResponseField name="identifier_type" type="string">
+          Le type de document utilisé, ex: `"BVN"`, `"NIN"`, `"National ID"`.
+        </ResponseField>
+        <ResponseField name="first_name" type="string">
+          Présent quand `verified: true`.
+        </ResponseField>
+        <ResponseField name="last_name" type="string">
+          Présent quand `verified: true`.
+        </ResponseField>
+        <ResponseField name="middle_name" type="string">
+          Présent quand `verified: true` et que le fournisseur renvoie un deuxième prénom.
+        </ResponseField>
+        <ResponseField name="date_of_birth" type="string">
+          Chaîne de date ISO-8601. Présent quand `verified: true`.
+        </ResponseField>
+        <ResponseField name="gender" type="string">
+          Présent quand `verified: true`.
+        </ResponseField>
+        <ResponseField name="phone" type="string">
+          Présent quand `verified: true` et disponible auprès du fournisseur.
+        </ResponseField>
+        <ResponseField name="error" type="string">
+          Message d'erreur du fournisseur de vérification. Présent uniquement quand `verified: false`.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="screening" type="object">
+      Résultats du filtrage AML. Toujours renvoyé sous une forme cohérente, même lorsque le filtrage a été ignoré.
+      <Expandable title="champs de filtrage">
+        <ResponseField name="sanctions" type="array">
+          Correspondances aux sanctions. Chaque entrée contient `entity_name`, `recorded_date`, `country`, `sanction_body`, `sanction_types`, et `other_information`.
+        </ResponseField>
+        <ResponseField name="peps" type="array">
+          Correspondances PEP. Chaque entrée contient `name`, `pep_types`, `gender`, `country`, `source`, et `political_post`.
+        </ResponseField>
+        <ResponseField name="adverse_media" type="array">
+          Actuellement toujours `[]` — sera activé en tant qu'étape configurable dans une future version.
+        </ResponseField>
+        <ResponseField name="risk_level" type="string">
+          `"low"`, `"medium"`, ou `"high"`.
+        </ResponseField>
+        <ResponseField name="note" type="string">
+          Présent uniquement lorsque le filtrage a été ignoré. Explique pourquoi.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="decision" type="string">
+      `"pass"`, `"review"`, ou `"fail"`. Voir le [Guide de décision](/fr/v3/onboarding/introduction#guide-de-décision).
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Pass — identité vérifiée, aucune correspondance
+
+```json
+{
+  "status": "success",
+  "message": "Customer onboarding completed",
+  "data": {
+    "onboarding_id": 1024,
+    "identity": {
+      "verified": true,
+      "identifier_type": "BVN",
+      "first_name": "Amaka",
+      "middle_name": "Chisom",
+      "last_name": "Okafor",
+      "date_of_birth": "1992-04-17",
+      "gender": "Female",
+      "phone": "08031234567"
+    },
+    "screening": {
+      "sanctions": [],
+      "peps": [],
+      "adverse_media": [],
+      "risk_level": "low"
+    },
+    "decision": "pass"
+  }
+}
+```
+
+### Review — identité vérifiée, correspondance PEP trouvée
+
+```json
+{
+  "status": "success",
+  "message": "Customer onboarding completed",
+  "data": {
+    "onboarding_id": 1025,
+    "identity": {
+      "verified": true,
+      "identifier_type": "NIN",
+      "first_name": "Emeka",
+      "last_name": "Nwosu",
+      "date_of_birth": "1985-11-02",
+      "gender": "Male"
+    },
+    "screening": {
+      "sanctions": [],
+      "peps": [
+        {
+          "name": "Emeka Nwosu",
+          "pep_types": ["role.pep", "pep-class-2"],
+          "gender": "male",
+          "source": "OpenSanctions",
+          "country": "Nigeria",
+          "political_post": ["Former State Commissioner"]
+        }
+      ],
+      "adverse_media": [],
+      "risk_level": "medium"
+    },
+    "decision": "review"
+  }
+}
+```
+
+### Fail — vérification d'identité infructueuse
+
+```json
+{
+  "status": "success",
+  "message": "Customer onboarding completed",
+  "data": {
+    "onboarding_id": 1026,
+    "identity": {
+      "verified": false,
+      "identifier_type": "BVN",
+      "error": "Bank Verification Number (BVN) check failed: Invalid BVN provided"
+    },
+    "screening": {
+      "sanctions": [],
+      "peps": [],
+      "adverse_media": [],
+      "risk_level": "low",
+      "note": "AML screening skipped: identity verification did not return a name"
+    },
+    "decision": "fail"
+  }
+}
+```
+
+### Réponses d'erreur
+
+| Statut HTTP | Message | Cause |
+|-------------|---------|-------|
+| `401` | `"Authorization token is missing"` | Aucun en-tête `x-access-token` |
+| `401` | `"Authorization failed"` | Jeton non reconnu ou expiré |
+| `403` | `"Identity Verification suite isn't enabled for this branch"` | Fonctionnalité non activée — contactez le support |
+| `403` | `"Your account hasn't been verified for Identity Verification Suite"` | Compte administrateur en attente de vérification |
+| `400` | `"country is required"` | Champ `country` manquant |
+| `400` | `"identifier is required"` | Champ `identifier` manquant |
+| `400` | `"Unsupported country '…'. Supported: …"` | Valeur `country` invalide |
+| `400` | `"Unsupported identifier_type '…' for …. Supported: …"` | `identifier_type` invalide pour le pays donné |

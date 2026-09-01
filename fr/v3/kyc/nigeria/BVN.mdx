@@ -1,0 +1,124 @@
+---
+title: "Numéro de Vérification Bancaire (BVN)"
+sidebarTitle: "BVN"
+description: "Vérifiez l'identité d'un client à l'aide de son Numéro de Vérification Bancaire à 11 chiffres."
+openapi: "POST /api/onboarding/nigeria_kyc/bvn/"
+---
+
+L'endpoint BVN vérifie le Numéro de Vérification Bancaire d'un client et renvoie ses données personnelles enregistrées depuis la base de données de la Banque Centrale du Nigéria. Utilisez-le pour l'intégration KYC, la confirmation d'identité et la prévention de la fraude.
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/bvn/
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `bvn` | string | Oui | Le Numéro de Vérification Bancaire à 11 chiffres du client |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/bvn/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"bvn": "22000000001"}'
+```
+
+```javascript Node.js
+const response = await fetch(
+  "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/bvn/",
+  {
+    method: "POST",
+    headers: {
+      "x-access-token": "YOUR_SECRET_KEY",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ bvn: "22000000001" }),
+  }
+);
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/bvn/",
+    headers={
+        "x-access-token": "YOUR_SECRET_KEY",
+        "Content-Type": "application/json",
+    },
+    json={"bvn": "22000000001"},
+)
+data = response.json()
+```
+</CodeGroup>
+
+## Réponse
+
+### 200 OK
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `status` | string | `"success"` en cas de vérification réussie |
+| `data.lastName` | string | Nom de famille du client tel qu'enregistré |
+| `data.firstName` | string | Prénom du client tel qu'enregistré |
+| `data.middleName` | string | Deuxième prénom du client |
+| `data.dateOfBirth` | string | Date de naissance au format `YYYY-MM-DD` |
+| `data.phoneNumber1` | string | Numéro de téléphone principal enregistré |
+| `message` | string | Résumé du résultat lisible par l'homme |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "lastName": "OMOLE",
+    "firstName": "ABRAHAM",
+    "middleName": "ISAAC",
+    "dateOfBirth": "1909-09-19",
+    "phoneNumber1": "09011001100"
+  },
+  "message": "Bank Verification Number details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+Renvoyé lorsque le BVN est manquant, malformé ou introuvable dans la base de données.
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+Renvoyé lorsque l'en-tête `x-access-token` est manquant ou invalide.
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```
+
+<Note>
+  Pour une liste complète des codes d'erreur, consultez la référence [Codes d'erreur](/error_codes).
+</Note>

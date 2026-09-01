@@ -1,0 +1,104 @@
+---
+title: "NIN Virtuel (VNIN)"
+sidebarTitle: "VNIN"
+description: "Vérifiez l'identité d'un client à l'aide de son Numéro National d'Identification Virtuel de 16 caractères."
+openapi: "POST /api/onboarding/nigeria_kyc/vnin/"
+---
+
+<Warning>
+  Ce service n'est pas disponible actuellement. Nous travaillons à le restaurer — veuillez consulter à nouveau bientôt.
+</Warning>
+
+L'endpoint VNIN valide un Numéro National d'Identification Virtuel — une version tokenisée du NIN d'un client générée par la NIMC — et renvoie son profil d'identité de base.
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/vnin/
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `vnin` | string | Oui | Le NIN Virtuel de 16 caractères du client (par ex. `AB012345678910YZ`) |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/vnin/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"vnin": "AB012345678910YZ"}'
+```
+
+```python Python
+import requests
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/vnin/",
+    headers={"x-access-token": "YOUR_SECRET_KEY", "Content-Type": "application/json"},
+    json={"vnin": "AB012345678910YZ"},
+)
+```
+</CodeGroup>
+
+## Réponse
+
+### 200 OK
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `data.vnin` | string | Le VNIN qui a été interrogé |
+| `data.firstname` | string | Prénom |
+| `data.middlename` | string | Deuxième prénom |
+| `data.lastname` | string | Nom de famille |
+| `data.gender` | string | `"M"` ou `"F"` |
+| `data.mobile` | string | Numéro de mobile enregistré |
+| `data.photo` | string | Photo du client encodée en base64 |
+| `data.customer` | string | UUID de référence client unique |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "vnin": "AB012345678910YZ",
+    "firstname": "John",
+    "middlename": "Doe",
+    "lastname": "Alamutu",
+    "gender": "M",
+    "mobile": "08012345678",
+    "photo": "<base64-encoded-jpeg>",
+    "customer": "6bb82c41-e15e-4308-b99d-e9640818eca9"
+  },
+  "message": "Virtual National Identification Number details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "VNIN is required"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

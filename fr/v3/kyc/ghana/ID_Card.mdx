@@ -1,0 +1,101 @@
+---
+title: "Carte d'identité Ghana"
+sidebarTitle: "Carte d'identité"
+description: "Vérifiez l'identité d'un client à l'aide de son numéro de Carte d'identité Ghana."
+openapi: "POST /api/onboarding/ghana_kyc/id_card/"
+---
+
+L'endpoint Carte d'identité Ghana valide un numéro de Carte d'identité Ghana et renvoie les détails personnels associés incluant le nom, la date de naissance, l'adresse et la photo.
+
+## Endpoint
+
+```
+POST /api/onboarding/ghana_kyc/id_card/
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `identification_number` | string | Oui | Le numéro de Carte d'identité Ghana du client (format : `GHA-000000000-0`) |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/ghana_kyc/id_card/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"identification_number": "GHA-000000000-0"}'
+```
+</CodeGroup>
+
+## Réponse
+
+### 200 OK
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `data.FullName` | string | Nom complet |
+| `data.FirstName` | string | Prénom |
+| `data.LastName` | string | Nom de famille |
+| `data.OtherNames` | string | Autres noms |
+| `data.DOB` | string | Date de naissance (`YYYY-MM-DD`) |
+| `data.Gender` | string | Genre |
+| `data.PhoneNumber` | string | Numéro de téléphone enregistré |
+| `data.Address` | string | Adresse enregistrée |
+| `data.Country` | string | Pays |
+| `data.IDNumber` | string | Numéro de Carte d'identité Ghana |
+| `data.IssuanceDate` | string | Date de délivrance de la carte |
+| `data.ExpiryDate` | string | Date d'expiration de la carte |
+| `data.Photo` | string | Photo du client encodée en base64 |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "FullName": "JOHN DOE",
+    "FirstName": "JOHN",
+    "LastName": "DOE",
+    "OtherNames": "",
+    "DOB": "1990-01-15",
+    "Gender": "Male",
+    "PhoneNumber": "+233501234567",
+    "Address": "ACCRA",
+    "Country": "GHANA",
+    "IDNumber": "GHA-000000000-0",
+    "IssuanceDate": "2020-01-15",
+    "ExpiryDate": "2030-01-15",
+    "Photo": "<base64-encoded-jpeg>"
+  },
+  "message": "ID Card details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

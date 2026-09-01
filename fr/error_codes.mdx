@@ -1,0 +1,120 @@
+---
+title: "Codes d'erreur"
+description: "Codes de statut HTTP et réponses d'erreur renvoyées par l'API Smartcomply."
+---
+
+L'API Adhere utilise les codes de statut HTTP standard. Les codes dans la plage `2xx` indiquent un succès ; les codes `4xx` indiquent une erreur client ; les codes `5xx` indiquent un problème côté serveur.
+
+## Codes de statut HTTP
+
+| Code | Nom | Description |
+|------|------|-------------|
+| `200` | OK | La requête a réussi et les données sont renvoyées dans le corps de la réponse. |
+| `400` | Bad Request | La requête était mal formée — un paramètre requis est manquant, la valeur est invalide ou le corps de la requête n'est pas un JSON valide. |
+| `401` | Unauthenticated | L'en-tête `x-access-token` est manquant ou la clé est invalide. |
+| `403` | Forbidden | La clé API est valide mais n'a pas la permission d'accéder à cet endpoint. |
+| `402` | Payment Required | Votre solde de portefeuille est trop bas pour effectuer la vérification, ou aucun portefeuille n'est configuré pour la branche. |
+| `404` | Not Found | La ressource demandée n'existe pas. |
+| `409` | Conflict | La ressource est déjà dans l'état demandé — par exemple, une vérification qui a déjà été soumise. |
+| `422` | Unprocessable Entity | La requête était bien formée mais les données ont échoué à la validation (ex: un numéro d'identification qui ne correspond pas au format attendu). |
+| `429` | Too Many Requests | Une limite de débit ou une limite de réessai a été dépassée. Attendez et réessayez. |
+| `500` | Internal Server Error | Une erreur inattendue s'est produite chez Smartcomply. |
+| `502` | Bad Gateway | Un service amont dépendant est temporairement indisponible. |
+| `503` | Service Unavailable | L'API est temporairement hors ligne pour maintenance. |
+| `504` | Gateway Timeout | Le service amont n'a pas répondu à temps. |
+
+## Format de réponse d'erreur
+
+Toutes les réponses d'erreur suivent cette structure :
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Une description de l'erreur lisible par l'homme"
+}
+```
+
+## Scénarios d'erreur courants
+
+<AccordionGroup>
+  <Accordion title="401 — Clé API manquante ou invalide">
+    Assurez-vous que l'en-tête `x-access-token` est présent et contient une clé secrète valide et active. Les clés peuvent être régénérées depuis le tableau de bord Adhere sous **Paramètres → Clés API**.
+
+    ```json
+    {
+      "status": "failed",
+      "message": "Authentication credentials were not provided."
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="400 — Paramètre requis manquant">
+    Vérifiez le corps de la requête par rapport au tableau des paramètres de l'endpoint. Tous les champs requis doivent être présents et non vides.
+
+    ```json
+    {
+      "status": "failed",
+      "data": [],
+      "message": "This field is required."
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="400 — Enregistrement non trouvé">
+    L'identifiant fourni (BVN, NIN, etc.) n'a pas pu être trouvé dans la base de données source. Vérifiez que le numéro est correct et appartient à un enregistrement réel.
+
+    ```json
+    {
+      "status": "failed",
+      "data": [],
+      "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="5xx — Erreurs de serveur">
+    Elles sont rares et généralement transitoires. Implémentez une logique de réessai avec back-off exponentiel dans votre intégration. Si une erreur `5xx` persiste plus de quelques minutes, contactez le [support](mailto:adhere@smartcomply.com).
+  </Accordion>
+</AccordionGroup>
+
+## Réessayer les requêtes
+
+Pour les erreurs `5xx` et les timeouts réseau, réessayez avec un back-off exponentiel :
+
+| Tentative | Attente avant réessai |
+|---------|------------------|
+| 1ère tentative | 1 seconde |
+| 2ème tentative | 2 secondes |
+| 3ème tentative | 4 secondes |
+
+Ne réessayez **pas** les autres erreurs `4xx` — elles indiquent un problème avec la requête elle-même qui doit être corrigé avant de réessayer. Le code `429` est l'exception : attendez et réessayez.
+
+## Codes d'erreur SDK
+
+Les requêtes effectuées par les SDK Web, Android et iOS utilisent une enveloppe de réponse différente du reste de l'API. Elle comporte un `code` lisible par machine et un `request_id` :
+
+```json
+{
+  "status": "error",
+  "code": "SDK_CONFIG_NOT_FOUND",
+  "message": "No active SDK configuration found for this client_id.",
+  "data": { "client_id": "..." },
+  "request_id": "req_a1b2c3d4e5f6"
+}
+```
+
+Citez le `request_id` lorsque vous contactez le support — il identifie la requête exacte dans nos journaux.
+
+| Code | HTTP | Cause | Fix |
+|------|------|-------|-----|
+| `INVALID_API_KEY` | `401` | La clé API est manquante, mal formée, inconnue ou la branche n'est pas activée pour l'intégration | Vérifiez votre clé sous **Paramètres → Clés API** |
+| `SDK_CONFIG_NOT_FOUND` | `404` | `clientId` ne correspond pas à une configuration SDK active | Copiez le Client ID depuis **Paramètres → Intégrations → Configuration SDK**. Ne générez pas un ID par tentative |
+| `VALIDATION_ERROR` | `400` | Un ou plusieurs champs de requête ont échoué à la validation | Lisez `data.errors` pour le champ défaillant et la raison |
+| `INVALID_SESSION` | `401` | Le jeton de session est manquant, mal formé ou expiré (durée de vie de 30 min) | Démarrez une nouvelle session. Votre `apiKey` et `clientId` restent identiques |
+| `RETRY_LIMIT_EXCEEDED` | `429` | Trois tentatives de vérification échouées sur une même session | L'utilisateur doit recommencer avec une nouvelle session |
+| `ALREADY_SUBMITTED` | `409` | Cette vérification a déjà été soumise | Lisez le résultat via le webhook plutôt que de resoumettre |
+| `WALLET_NOT_FOUND` | `402` | Aucun portefeuille n'est configuré pour la branche | Contactez le support |
+| `INSUFFICIENT_BALANCE` | `402` | Le solde du portefeuille est inférieur au coût de la vérification. `data.required_amount` contient le manque | Rechargez votre portefeuille dans le tableau de bord |
+| `SUBMISSION_FAILED` | `500` | La vérification n'a pas pu être enregistrée | Réessayez avec back-off ; si cela persiste, contactez le support |
+| `INTERNAL_ERROR` | `500` | Erreur serveur inattendue | Réessayez avec back-off ; citez le `request_id` si cela persiste |

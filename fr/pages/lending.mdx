@@ -1,0 +1,69 @@
+---
+title: "Prêts et décision de crédit"
+sidebarTitle: "Prêts"
+description: "Comment utiliser Adhere pour vérifier les emprunteurs, extraire l'historique de crédit et détecter les demandes de prêt frauduleuses."
+---
+
+Les décisions de prêt dépendent de deux choses : savoir que l'emprunteur est réel, et savoir qu'il peut rembourser. Adhere vous donne les deux — vérification d'identité, données des bureaux de crédit et score de fraude piloté par l'IA — via une seule API.
+
+## Vérifiez d'abord l'identité de l'emprunteur
+
+Avant d'extraire des données de crédit, confirmez que le demandeur est bien celui qu'il prétend être. Utilisez la vérification BVN, NIN ou d'identité nationale pour faire correspondre les détails soumis avec les dossiers gouvernementaux faisant autorité.
+
+<CardGroup cols={2}>
+  <Card title="Vérification BVN" icon="id-card" href="/fr/v3/kyc/nigeria/BVN">
+    Confirmez le nom, le téléphone et la date de naissance par rapport au registre des numéros de vérification bancaire.
+  </Card>
+  <Card title="Vérification NIN" icon="fingerprint" href="/fr/v3/kyc/nigeria/nin">
+    Vérifiez le numéro d'identification nationale du demandeur avant de traiter sa demande.
+  </Card>
+</CardGroup>
+
+## Extraire son historique de crédit
+
+Adhere se connecte à CRC, First Central et Credit Registry — les principaux bureaux de crédit du Nigeria — afin que vous puissiez récupérer une image complète de l'historique d'emprunt du demandeur avant de prendre une décision.
+
+<CardGroup cols={2}>
+  <Card title="Historique de crédit CRC" icon="chart-bar" href="/fr/v3/credit/individual/CRC_Credit_History">
+    Nombre de prêts, facilités actives, impayés et solde total dû auprès de CRC.
+  </Card>
+  <Card title="Résumé de crédit First Central" icon="chart-bar" href="/fr/v3/credit/individual/First_Central_Credit_Summary">
+    Données de crédit au niveau résumé provenant du bureau de crédit First Central.
+  </Card>
+  <Card title="Rapport complet Credit Registry" icon="file-lines" href="/fr/v3/credit/individual/Credit_Registry_Full_Credit_Report">
+    Rapport de crédit détaillé incluant l'historique des paiements et la répartition par institution.
+  </Card>
+  <Card title="Score de crédit" icon="gauge-high" href="/fr/v3/credit/individual/First_Central_Credit_Score">
+    Score de crédit numérique de First Central ou CRC à intégrer directement dans votre modèle de décision.
+  </Card>
+</CardGroup>
+
+## Exécuter une vérification de fraude de prêt
+
+L'endpoint de vérification de fraude de prêt combine les données de demande soumises avec les informations des bureaux de crédit pour produire un score de risque de fraude (0–100), une évaluation de remboursement et une recommandation — pour les demandeurs individuels et professionnels.
+
+<CardGroup cols={2}>
+  <Card title="Vérification de fraude individuelle" icon="user" href="/fr/v3/loan/individual_fraud_check">
+    Notez une demande individuelle en utilisant les données de revenu, d'emploi, de garantie et d'historique de crédit.
+  </Card>
+  <Card title="Vérification de fraude professionnelle" icon="building" href="/fr/v3/loan/business_fraud_check">
+    Évaluez une demande de prêt professionnel en utilisant l'enregistrement de l'entreprise, les revenus et les données de crédit.
+  </Card>
+</CardGroup>
+
+## Un flux complet de diligence raisonnable pour les prêts
+
+<Steps>
+  <Step title="Vérifier l'identité">
+    Appelez la vérification BVN ou NIN pour confirmer que le nom et la date de naissance du demandeur correspondent à ce qu'il a soumis.
+  </Step>
+  <Step title="Extraire l'historique de crédit">
+    Récupérez un résumé de crédit ou un rapport complet auprès du bureau de votre choix. Vérifiez les impayés, les prêts actifs et l'exposition totale.
+  </Step>
+  <Step title="Exécuter la vérification de fraude">
+    Soumettez la demande complète à l'endpoint de vérification de fraude de prêt. Recevez un score de risque de fraude, des ratios financiers clés et une recommandation en langage clair.
+  </Step>
+  <Step title="Prendre votre décision">
+    Utilisez le score par rapport à votre seuil de risque pour approuver, réviser ou refuser — avec une piste d'audit complète de chaque appel API.
+  </Step>
+</Steps>

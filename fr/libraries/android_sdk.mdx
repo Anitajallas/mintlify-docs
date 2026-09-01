@@ -1,0 +1,529 @@
+---
+title: "SDK Android"
+description: "Intégrez la vérification d'identité et la détection de vivacité SmartComply dans votre application Android."
+---
+
+# SmartComply Android SDK
+
+Le SmartComply Android SDK offre un flux de vérification d'identité entièrement autonome pour les applications Android. Lancez une seule Activity et le SDK gère automatiquement la gestion des sessions, la sélection du pays et du type d'identifiant, la capture de documents, la vérification d'identité et la détection de vivacité.
+
+## Fonctionnalités
+
+- **Lancement en une Activity** — démarrez la vérification avec un Intent et recevez un résultat typé en retour
+- **Deux modes de vérification** — capture photo de document ou saisie de numéro d'identifiant, configurés depuis votre tableau de bord
+- **Capture de document avec guide** — cadre précisément la carte d'identité pour que les images soient toujours nettes et correctement recadrées
+- **Détection de vivacité** — un scan caméra passif (clignement plus mouvement naturel de la tête) s'exécute automatiquement après la vérification d'identité, sans invites pas à pas
+- **Types d'identifiants dynamiques** — les canaux et champs sont récupérés en direct depuis la configuration de votre tableau de bord
+- **Support multi-pays** — affiche automatiquement un sélecteur de pays lorsqu'un seul pays est configuré
+- **Mode sombre et clair** — le thème s'adapte au paramètre système ; surchargez via l'Intent de lancement
+- **Votre marque, pas la nôtre** : nom, description, couleur et logo proviennent du tableau de bord, et la police est transmise par votre app. Voir [Image de marque](#image-de-marque)
+- **N'importe quel hôte backend** : production, staging, ou le vôtre, sans rebuild
+
+---
+
+## Prérequis
+
+- **Android API 24** (Android 7.0) ou ultérieur
+- **Kotlin 2.1** ou ultérieur — le SDK est compilé avec la chaîne d'outils Kotlin 2.1, donc un compilateur consommateur plus ancien le rejette
+- **Java 17** — le SDK cible JVM 17
+- **Jetpack Compose** activé dans votre module
+
+---
+
+## Installation
+
+### 1 — Ajouter Maven Central
+
+Dans `settings.gradle.kts` (déjà présent dans la plupart des projets) :
+
+```kotlin
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+```
+
+### 2 — Ajouter la dépendance
+
+Dans le fichier `build.gradle.kts` de votre app ou module fonctionnel :
+
+```kotlin
+dependencies {
+    implementation("io.github.386konsult:android-sdk:1.0.7")
+}
+```
+
+<Warning>
+**Utilisez la version 1.0.5 ou ultérieure.** Les versions 1.0.3 et 1.0.4 plantent l'app hôte : toutes deux lisent les réponses HTTP sur le thread principal, et 1.0.3 plante de plus lorsque le SDK est fermé depuis un callback UI. Aucune ne peut être retirée de Maven Central, donc fixez délibérément la version.
+</Warning>
+
+<Note>
+  **La version 1.0.7 modifie deux comportements.** `RESULT_STATUS` contient désormais le vrai verdict, et l'écran de succès ne signifie plus une réussite. Lisez [Extras de résultat](#extras-de-résultat) avant de mettre à jour depuis la version 1.0.6 ou antérieure. Elle ajoute également l'[Image de marque](#image-de-marque) et un hôte backend personnalisé, et corrège une caméra de vivacité vierge après avoir ignoré la capture du verso.
+</Note>
+
+### 3 — Activer Compose
+
+```kotlin
+android {
+    buildFeatures {
+        compose = true
+    }
+}
+```
+
+---
+
+## Identifiants
+
+Les deux valeurs proviennent de votre tableau de bord Adhere et sont toutes deux permanentes. Réutilisez la même paire pour chaque vérification.
+
+| Valeur | Où la trouver | Notes |
+|---|---|---|
+| `apiKey` | **Settings → API Keys** | Une chaîne alphanumérique de 64 caractères sans préfixe |
+| `clientId` | **Settings → Integrations → SDK Setup**, puis le menu de la ligne → **Integration → Client ID** | L'UUID de votre SDK Config. Il est émis par Adhere — n'en générez pas un |
+
+<Warning>
+  `clientId` n'est pas une valeur par tentative. Générer votre propre UUID retourne `404 SDK_CONFIG_NOT_FOUND` dès le premier appel, car le serveur le résout par rapport à un enregistrement SDK Config existant.
+</Warning>
+
+---
+
+## Permissions
+
+Le SDK déclare ces permissions automatiquement via la fusion de manifest. Vous n'avez pas besoin de les ajouter manuellement sauf si votre projet utilise une stratégie de fusion de manifest personnalisée :
+
+```xml
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.INTERNET" />
+```
+
+`SmartComplyActivity` demande la permission `CAMERA` au moment de l'exécution avant de démarrer le flux, donc si vous lancez via l'Activity, votre app n'a pas besoin de la demander séparément. Si vous intégrez directement `SmartComplyFlowScreen`, voir [Avancé : Host Activity personnalisé](#avancé-host-activity-personnalisé).
+
+---
+
+## Démarrage rapide
+
+### 1 — Enregistrer le launcher de résultat
+
+Dans votre `Activity` ou `Fragment` :
+
+```kotlin
+import androidx.activity.result.contract.ActivityResultContracts
+import com.smartcomply.sdk.ui.SmartComplyActivity
+
+val verificationLauncher = registerForActivityResult(
+    ActivityResultContracts.StartActivityForResult()
+) { result ->
+    val data = result.data ?: return@registerForActivityResult
+    when (data.getStringExtra(SmartComplyActivity.RESULT_TYPE)) {
+        SmartComplyActivity.TYPE_SUCCESS -> {
+            val entryId    = data.getIntExtra(SmartComplyActivity.RESULT_ENTRY_ID, -1)
+            val status     = data.getStringExtra(SmartComplyActivity.RESULT_STATUS)
+            val idTypeName = data.getStringExtra(SmartComplyActivity.RESULT_ID_TYPE_NAME)
+            // L'utilisateur a terminé sa partie du flux. `status` est "processing" ;
+            // le verdict pass/fail arrive plus tard par webhook.
+        }
+        SmartComplyActivity.TYPE_CANCELLED -> {
+            // l'utilisateur a appuyé sur retour
+        }
+    }
+}
+```
+
+### 2 — Lancer la vérification
+
+```kotlin
+import com.smartcomply.sdk.client.Environment
+
+val intent = SmartComplyActivity.buildIntent(
+    from        = this,
+    apiKey      = "YOUR_API_KEY",     // Settings → API Keys
+    clientId    = "YOUR_CLIENT_ID",   // Settings → Integrations → SDK Setup
+    environment = Environment.PRODUCTION
+)
+verificationLauncher.launch(intent)
+```
+
+### Jetpack Compose
+
+Si vous lancez depuis un composable, utilisez `rememberLauncherForActivityResult` :
+
+```kotlin
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
+import com.smartcomply.sdk.ui.SmartComplyActivity
+import com.smartcomply.sdk.client.Environment
+
+@Composable
+fun StartVerificationButton() {
+    val context = LocalContext.current
+
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val data = result.data ?: return@rememberLauncherForActivityResult
+        when (data.getStringExtra(SmartComplyActivity.RESULT_TYPE)) {
+            SmartComplyActivity.TYPE_SUCCESS   -> { /* gérer la soumission */ }
+            SmartComplyActivity.TYPE_CANCELLED -> { /* l'utilisateur a annulé */ }
+        }
+    }
+
+    Button(onClick = {
+        val intent = SmartComplyActivity.buildIntent(
+            from        = context,
+            apiKey      = "YOUR_API_KEY",
+            clientId    = "YOUR_CLIENT_ID",
+            environment = Environment.PRODUCTION
+        )
+        launcher.launch(intent)
+    }) {
+        Text("Vérifier l'identité")
+    }
+}
+```
+
+---
+
+## Paramètres de buildIntent
+
+```kotlin
+fun buildIntent(
+    from:        Context,
+    apiKey:      String,
+    clientId:    String,
+    darkTheme:   Boolean? = null,                    // null = suivre le système
+    environment: Environment = Environment.PRODUCTION,
+    fontResId:   Int? = null,                        // null = plateforme par défaut
+    baseUrl:     String? = null                      // null = utiliser l'environnement
+): Intent
+```
+
+| Paramètre | Par défaut | Description |
+|---|---|---|
+| `from` | — | Le `Context` appelant |
+| `apiKey` | — | Votre clé API Adhere — la trouvez dans le tableau de bord |
+| `clientId` | — | Le Client ID de votre SDK Config depuis le tableau de bord. Permanent — réutilisez-le pour chaque vérification |
+| `darkTheme` | `null` | `true` force le mode sombre, `false` force le mode clair, `null` suit le paramètre de l'appareil |
+| `environment` | `PRODUCTION` | Voir [Environnements](#environnements) ci-dessous |
+| `fontResId` | `null` | Une ressource polaire de votre propre app, par ex. `R.font.inter`. Voir [Image de marque](#image-de-marque). Ajouté en **1.0.7** |
+| `baseUrl` | `null` | Remplace l'hôte de `environment`. Voir [Un hôte différent](#un-hôte-différent). Ajouté en **1.0.7** |
+
+---
+
+## Environnements
+
+| Valeur | URL de base |
+|---|---|
+| `Environment.PRODUCTION` | `https://adhere-api.smartcomply.com` |
+| `Environment.SANDBOX` | `http://localhost:8000` |
+
+`SANDBOX` cible un serveur exécuté sur le téléphone lui-même, pour le développement backend local. Ce n'est pas un environnement de test hébergé. Utilisez `PRODUCTION` pour tout travail d'intégration.
+
+### Un hôte différent
+
+`Environment` couvre les deux hôtes contre lesquels vous développez. Pour tout autre cas, un déploiement staging ou un build QA qui doit atteindre plus d'un backend sans être reconstruit, surchargez-le. Ajouté en **1.0.7**.
+
+```kotlin
+SmartComplyActivity.buildIntent(
+    from = context, apiKey = "...", clientId = "...",
+    baseUrl = "https://your-staging-host.example.com"
+)
+
+// ou, directement sur SDKConfig
+SDKConfig(apiKey = "...", clientId = "...", baseUrl = "https://your-staging-host.example.com")
+```
+
+Un slash de fin est supprimé, et une valeur vide revient à `environment` plutôt que d'être traitée comme un hôte, donc un build lisant cela depuis un champ vide n'enverra pas les vérifications vers une URL relative.
+
+<Warning>
+  `SANDBOX` est une cible **http://** simple, qu'Android bloque par défaut à partir de l'API 28. Sans une autorisation explicite, le flux meurt à l'écran de chargement avec une erreur réseau qui ressemble à une panne backend. Si vous en avez réellement besoin, limitez l'exception à localhost plutôt que d'utiliser `android:usesCleartextTraffic="true"`, qui autorise le texte en clair pour chaque hôte avec lequel votre app communique.
+
+```xml
+<!-- res/xml/network_security_config.xml -->
+<network-security-config>
+  <domain-config cleartextTrafficPermitted="true">
+    <domain includeSubdomains="false">localhost</domain>
+    <domain includeSubdomains="false">10.0.2.2</domain>
+  </domain-config>
+</network-security-config>
+```
+
+```xml
+<application android:networkSecurityConfig="@xml/network_security_config" ...>
+```
+
+  `PRODUCTION` est en HTTPS et n'a besoin de rien de tout cela.
+</Warning>
+
+<Note>
+  `SmartComplyActivity.buildIntent` utilise `PRODUCTION` par défaut, mais le constructeur `SDKConfig` utilisé par le [flux intégré](#avancé-host-activity-personnalisé) utilise `SANDBOX` par défaut. Définissez `environment` explicitement lorsque vous construisez `SDKConfig` vous-même.
+</Note>
+
+---
+
+## Extras de résultat
+
+Lisez depuis l'`Intent` retourné à votre callback de résultat d'activité.
+
+| Constante | Type | Présent quand |
+|---|---|---|
+| `RESULT_TYPE` | `String` | Toujours — `"success"` ou `"cancelled"` |
+| `RESULT_ENTRY_ID` | `Int` | `TYPE_SUCCESS` — l'ID d'entrée de la vérification |
+| `RESULT_STATUS` | `String` | `TYPE_SUCCESS` : `"passed"`, `"failed"`, ou `"processing"` si le backend n'avait pas résolu à temps |
+| `RESULT_SUBMITTED_AT` | `String` | `TYPE_SUCCESS` — horodatage ISO 8601 |
+| `RESULT_VERIFIED_NAME` | `String` | `TYPE_SUCCESS` : le nom vérifié, lorsque le backend en a retourné un |
+| `RESULT_ID_TYPE_NAME` | `String` | `TYPE_SUCCESS` — par ex. `"National Identity Number (NIN)"`, `"Passport"` |
+| `RESULT_ID_NUMBER` | `String` | `TYPE_SUCCESS` : le numéro d'identifiant, de l'utilisateur en mode données ou de l'OCR en mode document |
+
+<Warning>
+  **Branchez sur `RESULT_STATUS`. Atteindre ce callback n'est pas une réussite.**
+
+  Depuis la **1.0.7**, le SDK interroge le backend pour le résultat final et le place ici, donc `"passed"` signifie réussite et `"failed"` signifie échec. Mais **chaque entrée soumise affiche à l'utilisateur final l'écran de succès**, y compris une entrée en échec. C'est délibéré et a été demandé : les locataires voulaient que leur utilisateur voie une vérification soumise comme acceptée et lise lui-même le vrai verdict. L'écran est neutre-positif ; cette valeur ne l'est pas.
+
+  Donc un résultat `TYPE_SUCCESS` avec `RESULT_STATUS` de `"failed"` est un résultat normal que vous devez gérer. Le code qui traite `TYPE_SUCCESS` comme une réussite admettra des utilisateurs qui ont échoué à la vérification.
+
+  `"processing"` signifie que le backend n'avait pas résolu en environ 15 secondes. L'entrée existe et est facturée, et le résultat arrive sur votre [webhook](/webhooks#identity-verification).
+
+  Avant la 1.0.7, `RESULT_STATUS` était toujours `"processing"` et ne portait aucun verdict, donc le résultat était un accusé de réception de soumission.
+</Warning>
+
+<Note>
+  Le [webhook `liveness.completed`](/webhooks#identity-verification) est l'enregistrement faisant autorité. La valeur ici est le même verdict délivré plus tôt par commodité, et il est absent lorsque le worker est lent ; le webhook arrive toujours.
+</Note>
+
+<Warning>
+  Également modifié en **1.0.7** : appuyer sur retour sur l'écran de succès retourne désormais `TYPE_SUCCESS`, pas `TYPE_CANCELLED`. Auparavant, cela signalait une annulation pour une vérification qui avait réussi et été facturée. Si votre branche `TYPE_CANCELLED` supposait « rien ne s'est passé », c'était déjà incorrect, mais elle sera désormais atteinte moins souvent.
+</Warning>
+
+---
+
+## Flux de vérification
+
+Le SDK défile automatiquement à travers ces écrans.
+
+| Étape | Description |
+|---|---|
+| Chargement | Création de session et récupération de la configuration de marque |
+| Bienvenue | Écran de marque, sélecteur de pays et sélection du type d'identifiant |
+| Permission caméra | Demande la permission caméra au moment de l'exécution, dans les deux modes, avant l'étape de saisie ou de capture d'identifiant |
+| Permission caméra refusée | Écran « Accès caméra requis » avec **Ouvrir les paramètres** et **Retour** |
+| Capture de document (recto) | Vue caméra avec un cadre guide, un déclencheur et **Importer depuis la galerie** |
+| Capture de document (verso) | Affiché lorsque le `requires_back_side` du canal l'indique. C'est le serveur qui décide, pas l'app |
+| Saisie d'identifiant | Champs de formulaire pour la vérification en mode données (BVN, NIN, etc.) |
+| Vivacité | Scan caméra passif : voir [Vivacité](#vivacité) ci-dessous |
+| Traitement | Soumission backend et téléchargement en cours |
+| Succès | Affiché pour chaque entrée soumise. Le verdict est dans `RESULT_STATUS`, pas à l'écran |
+| Échec | Erreurs pré-soumission uniquement : caméra refusée, échec de configuration ou réseau, timeout de vivacité. Propose **Réessayer** |
+
+### Images de document
+
+Les photos de document sont limitées à **5 MB** côté serveur, en JPG ou PNG. Les deux routes, la caméra intégrée au SDK et **Importer depuis la galerie**, sont réduites à 1600px sur le bord long et recompressées avant téléchargement, donc une photo de téléphone en pleine résolution ne provoque plus d'échec avec `File too large. Maximum size is 5MB.`
+
+Avant l'écran de révision, le SDK vérifie que la photo contient un visage et du texte lisible. Un échec est un **avertissement, pas un blocage** : l'utilisateur peut toujours confirmer, car un faux négatif piégerait autrement quelqu'un tenant un document genuine mais inhabituel. C'est la vérification OCR backend qui rejette réellement.
+
+---
+
+## Image de marque
+
+Le flux porte votre marque, pas celle d'Adhere. La couleur, le nom, la description et le logo proviennent tous de la **SDK Config sur le tableau de bord**, donc ils changent sans publication d'app. La police est la seule exception et est transmise par l'hôte.
+
+| Élément | Où le définir | Apparaît comme |
+|---|---|---|
+| Nom de marque | Tableau de bord, SDK Config | Le titre de bienvenue |
+| Description courte | Tableau de bord, SDK Config | Le sous-titre de bienvenue |
+| Couleur du thème | Tableau de bord, SDK Config | Boutons principaux, surbrillances, progression |
+| Logo | Tableau de bord, SDK Config | L'icône sur l'écran de bienvenue |
+| Police | Votre app, au lancement | Chaque écran |
+
+### Logo
+
+Téléversez-le sous **Settings → Integrations → SDK → Brand Details**. PNG, JPEG ou WebP, jusqu'à 512 Ko et 1024x1024 pixels. Nécessite la **1.0.7**.
+
+Il est dessiné seul, sans boîte ni bordure derrière lui, et délimité par la hauteur plutôt que fitted dans un carré pour qu'un logotype reste lisible. Seul le bouclier de secours du SDK se trouve dans un cadre teinté.
+
+Le logo appartient à la **SDK Config, pas à l'entreprise**. Une branche exécutant plusieurs configurations pour différents produits donne à chacune sa propre icône, et une configuration sans logo affiche le bouclier propre du SDK plutôt que de revenir au logo de l'entreprise sur votre page de profil. Si vous voulez la même icône partout, téléversez-la dans chaque configuration.
+
+<Note>
+  Un logo ne retarde ni ne bloque jamais une vérification. Le SDK le récupère après que l'écran de bienvenue est déjà à l'écran, avec un budget de trois secondes, et conserve son propre bouclier si la récupération échoue. Il est également décodé avec une limite de taille, donc une image trop volumineuse ne peut pas épuiser la mémoire sur le téléphone.
+</Note>
+
+<Warning>
+  Le logo est rendu par les **SDKs Android et iOS**. Le [Web SDK](/libraries/smartcomply_sdk) ne l'affiche pas encore, donc une configuration utilisée par les deux portera votre icône sur mobile et l'icône par défaut sur le web.
+</Warning>
+
+### Police
+
+Transmise par votre app, car le SDK ne fournit ni ne télécharge de fichiers polaires : votre chargement, mise en cache et licence restent les vôtres. Nécessite la **1.0.7**.
+
+Via `buildIntent`, avec une ressource polaire :
+
+```kotlin
+val intent = SmartComplyActivity.buildIntent(
+    from      = context,
+    apiKey    = "YOUR_API_KEY",
+    clientId  = "YOUR_CLIENT_ID",
+    fontResId = R.font.inter        // res/font dans votre propre app
+)
+```
+
+Ou, si vous hébergez vous-même `SmartComplyFlowScreen`, avec directement une `FontFamily`, qui est le seul moyen de contrôler chaque graisse :
+
+```kotlin
+SmartComplyFlowScreen(
+    sdk        = sdk,
+    fontFamily = FontFamily(
+        Font(R.font.inter_regular,  FontWeight.Normal),
+        Font(R.font.inter_medium,   FontWeight.Medium),
+        Font(R.font.inter_semibold, FontWeight.SemiBold),
+        Font(R.font.inter_bold,     FontWeight.Bold)
+    ),
+    onComplete = { result -> }
+)
+```
+
+Pointez `fontResId` vers une **famille polaire XML** plutôt qu'un seul fichier polaire et la plateforme résout les vraies graisses par poids sur l'API 28+. Un seul fichier est utilisé pour chaque graisse, ce qui aplatit la hiérarchie typographique du SDK.
+
+<Note>
+  Une ressource polaire qui ne peut pas être chargée, y compris une que R8 a supprimée, revient à la police de la plateforme. Elle ne fait pas échouer la vérification.
+</Note>
+
+---
+
+## Vivacité
+
+Deux actions sont tirées de `BLINK` et `TURN_HEAD` en ordre aléatoire et détectées **passivement**. Les deux sont surveillées à chaque image, aucune n'est nommée à l'utilisateur, et le HUD ne rapporte que combien sont terminées : il n'y a pas de séquence guidée.
+
+| Action | Ce qui la satisfait |
+|---|---|
+| `BLINK` | Fermeture moyenne des yeux sur les deux yeux atteignant 0.22, pendant une image |
+| `TURN_HEAD` | Environ 7.5 degrés de lacet dans chaque direction, maintenus deux images |
+
+Le scan a une **limite de 20 secondes**.
+
+<Warning>
+  Atteindre la limite **échoue** la vérification. Rien n'est téléchargé et rien n'est facturé, et l'utilisateur se voit proposer **Réessayer**. Les versions précédentes soumettaient quand même et signalaient un succès sans aucune action terminée : si vous êtes en version 1.0.6 ou antérieure, attendez-vous à ce comportement.
+</Warning>
+
+### Ce que signifie l'écran de succès
+
+**Rien concernant le verdict.** Chaque entrée soumise l'atteint, que le backend ait fait passer ou échoué la vérification.
+
+L'appel de soumission retourne `processing`, car le backend résout la concordance faciale sur un worker moments plus tard. Le SDK interroge pendant environ 15 secondes et place ce qu'il apprend dans `RESULT_STATUS`, puis affiche l'écran de succès dans tous les cas. Un utilisateur qui a échoué n'est pas informé et ne se voit pas proposer de réessayer.
+
+C'est une décision produit, pas un oubli : les locataires ont demandé que l'utilisateur final voie une vérification soumise comme acceptée, et agisse sur le vrai verdict lui-même depuis le tableau de bord et le webhook. Cela signifie que **vous** devez clore la boucle avec un utilisateur qui a échoué.
+
+Les échecs pré-soumission ne sont pas affectés et affichent toujours l'écran d'échec avec **Réessayer** : caméra refusée, erreur de configuration ou réseau, et atteinte de la limite de vivacité de 20 secondes. Rien n'a été facturé à ce stade et l'utilisateur peut se récupérer sur place.
+
+---
+
+## Configuration du SDK
+
+```kotlin
+data class SDKConfig(
+    val apiKey:             String,
+    val clientId:           String,
+    val environment:        Environment = Environment.SANDBOX,
+    val requestTimeoutMs:   Long        = 30_000L,
+    val verifyTimeoutMs:    Long        = 90_000L,
+    val uploadTimeoutMs:    Long        = 120_000L,
+    val maxUploadRetries:   Int         = 3,
+    val debug:              Boolean     = false
+)
+```
+
+| Paramètre | Par défaut | Description |
+|---|---|---|
+| `apiKey` | — | Votre clé API Adhere (requis) |
+| `clientId` | — | Le Client ID de votre SDK Config (requis) |
+| `environment` | `SANDBOX` | Définissez explicitement — voir [Environnements](#environnements) |
+| `requestTimeoutMs` | `30000` | Timeout en millisecondes pour les appels API standard |
+| `verifyTimeoutMs` | `90000` | Timeout pour `onboarding/verify` uniquement, qui bloque sur un fournisseur d'identité gouvernemental. Avec la valeur par défaut de 30s, le timeout côté client était intermittent pendant que le serveur terminait la vérification et la facturait |
+| `uploadTimeoutMs` | `120000` | Timeout en millisecondes pour le téléchargement d'images et de vidéos |
+| `maxUploadRetries` | `3` | Tentatives de téléchargement automatiques lors de la création d'une vérification de vivacité. La soumission finale n'est pas retentée |
+| `debug` | `false` | Affiche les journaux réseau détaillés dans Logcat lorsque `true` |
+
+---
+
+## Gestion des erreurs
+
+`SmartComplyActivity` gère et affiche tous les états d'erreur à l'intérieur du flux — une clé invalide, une session expirée ou un retry de téléchargement épuisé affichent tous l'écran d'échec propre du SDK avec un bouton **Réessayer**. L'Activity ne retourne un résultat que lorsque l'utilisateur termine le flux ou revient en arrière.
+
+| Scénario | Cause | Résolution |
+|---|---|---|
+| Écran d'échec, clé invalide | `apiKey` est incorrect ou la branche n'est pas activée pour l'intégration | Vérifiez votre clé dans le tableau de bord Adhere |
+| Écran d'échec, aucune configuration trouvée | `clientId` n'est pas une SDK Config active | Copiez le Client ID depuis **Settings → Integrations → SDK Setup**. Ne générez pas d'UUID |
+| Écran d'échec, session expirée | Les jetons de session ont un TTL de 30 minutes | Relancez. Une nouvelle session est créée à chaque lancement ; votre `clientId` ne change jamais |
+| `TYPE_CANCELLED` | L'utilisateur a appuyé sur retour, depuis n'importe quel écran | Réconciliez avec le webhook avant de supposer que l'utilisateur a abandonné le flux |
+
+---
+
+## Avancé : Host Activity personnalisé
+
+Si vous souhaitez intégrer le flux de vérification directement dans votre propre `ComponentActivity` au lieu de lancer un écran séparé, vous pouvez utiliser `SmartComplyFlowScreen` comme composable Compose :
+
+```kotlin
+import com.smartcomply.sdk.SmartComply
+import com.smartcomply.sdk.client.SDKConfig
+import com.smartcomply.sdk.client.Environment
+import com.smartcomply.sdk.ui.SmartComplyFlowScreen
+
+val sdk = SmartComply(
+    SDKConfig(
+        apiKey      = "YOUR_API_KEY",
+        clientId    = "YOUR_CLIENT_ID",
+        environment = Environment.PRODUCTION   // requis : SDKConfig utilise SANDBOX par défaut
+    )
+)
+
+// Dans votre composable :
+SmartComplyFlowScreen(
+    sdk        = sdk,
+    darkTheme  = null,            // null = suivre le paramètre système
+    fontFamily = null,            // null = plateforme par défaut ; voir Image de marque
+    onComplete = { result ->
+        // result.entryId, result.status, result.submittedAt
+    }
+)
+```
+
+<Warning>
+  Votre `Activity` hôte doit être une `ComponentActivity` et doit être au premier plan avec une fenêtre active. Intégrer `SmartComplyFlowScreen` dans un `Dialog` ou une bottom sheet provoquera l'échec de la caméra sur certains appareils.
+</Warning>
+
+<Note>
+  **Vous n'avez pas besoin de demander `CAMERA` vous-même.** Depuis la **1.0.2**, le composable passe par son propre écran de permissions dans les deux modes de vérification, avant l'étape de saisie d'identifiant ou de capture de document, et le saute silencieusement une fois la permission accordée.
+
+  Sur la **1.0.1 et antérieure**, le mode données ne demandait jamais la permission, donc si elle n'avait pas déjà été accordée, la camérique ne s'ouvrait jamais : l'aperçu de vivacité restait noir et le flux se terminait avec `Recording failed: Recording finalized with error code 4`. Si vous êtes fixé sur une version plus ancienne, demandez `CAMERA` vous-même avant d'entrer dans le flux, ou lancez via `SmartComplyActivity`, qui demandait toujours dans les deux modes.
+</Note>
+
+---
+
+## Dépendances
+
+Depuis la **1.0.3**, le SDK ne dépend plus de Ktor. Il utilise directement OkHttp, donc votre propre version de Ktor ne peut pas entrer en conflit avec la nôtre.
+
+<Warning>
+**Sur la version 1.0.2 et antérieure, une app utilisant Ktor 3 plante au lancement :**
+
+```
+java.lang.NoClassDefFoundError: Failed resolution of:
+Lio/ktor/client/plugins/contentnegotiation/ContentNegotiation;
+    at com.smartcomply.sdk.SmartComply.<init>
+```
+
+Ces versions ont été compilées contre Ktor 2.3.12 et l'exportaient, donc Gradle a résolu le conflit vers votre Ktor plus récent et lié notre code contre une version où les classes que nous appelons avaient été supprimées. Il n'y a pas de solution de votre côté. Mettez à jour vers la 1.0.5.
+</Warning>
+
+---
+
+## ProGuard / R8
+
+**Il n'y a rien à faire.** Le SDK fournit les règles ProGuard consommatrices à l'intérieur de l'AAR, donc R8 les applique à votre app automatiquement. Elles conservent les sérialiseurs kotlinx.serialization générés et `SmartComplyActivity` ; OkHttp fournit ses propres règles dans son jar.
+
+<Warning>
+**Sur la version 1.0.1 et antérieure, un build minifié plante au lancement** avec un `NoClassDefFoundError`
+sur une classe Ktor. Ces versions ne fournissaient pas de règles consommatrices. Mettez à jour vers la 1.0.5.
+</Warning>

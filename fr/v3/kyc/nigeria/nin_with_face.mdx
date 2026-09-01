@@ -1,0 +1,115 @@
+---
+title: "NIN avec photo"
+sidebarTitle: "NIN avec photo"
+description: "Vérifiez le NIN d'un client combiné à une image faciale pour une confirmation d'identité renforcée."
+openapi: "POST /api/onboarding/nigeria_kyc/nin_with_face/"
+---
+
+<Warning>
+  Ce service n'est pas disponible actuellement. Nous travaillons à le restaurer — veuillez consulter à nouveau bientôt.
+</Warning>
+
+L'endpoint NIN avec photo vérifie le Numéro National d'Identification d'un client et effectue une comparaison faciale par rapport à une URL de photo fournie. Il renvoie les données complètes du profil NIN ainsi que les résultats de concordance faciale.
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/nin_with_face/
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `identification_number` | string | Oui | Le Numéro National d'Identification à 11 chiffres du client |
+| `image_url` | string | Oui | URL de la photo du client pour la comparaison faciale |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/nin_with_face/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"identification_number": "70123456789", "image_url": "https://example.com/photo.jpg"}'
+```
+
+```python Python
+import requests
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/nin_with_face/",
+    headers={"x-access-token": "YOUR_SECRET_KEY", "Content-Type": "application/json"},
+    json={"identification_number": "70123456789", "image_url": "https://example.com/photo.jpg"},
+)
+```
+</CodeGroup>
+
+## Réponse
+
+### 200 OK
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `data.nin_data` | object | Profil NIN complet (mêmes champs que l'[endpoint NIN](/v3/kyc/nigeria/nin)) |
+| `data.face_data.message` | string | Message du résultat de concordance faciale |
+| `data.face_data.confidence` | number | Pourcentage de confiance de correspondance (0–100) |
+| `data.verification.status` | string | `"VERIFIED"` si l'identité est confirmée |
+| `data.verification.reference` | string | ID de référence de vérification unique |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "nin_data": {
+      "lastName": "UCHE",
+      "firstName": "KARIM",
+      "middleName": "IKENNA",
+      "gender": "male",
+      "dateOfBirth": "2002-11-09",
+      "nin": "90187493033",
+      "telephoneNo": "09088118811",
+      "residenceAddress": "5, ODEYEMI STREET, ANIMASHAUN",
+      "residenceLga": "Ifo",
+      "residenceState": "Ogun",
+      "image": "<base64-encoded-jpeg>"
+    },
+    "face_data": {
+      "message": "Face Match",
+      "confidence": 99.99
+    },
+    "verification": {
+      "status": "VERIFIED",
+      "reference": "8314a5fc-bdb5-40c8-98bd-72aef9f1a868"
+    }
+  },
+  "message": "National Identification Number details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

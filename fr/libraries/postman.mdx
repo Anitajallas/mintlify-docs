@@ -1,0 +1,68 @@
+---
+title: "Collection Postman"
+sidebarTitle: "Collection Postman"
+description: "Importez la collection Postman de l'API Adhere pour tester les endpoints sans écrire de code."
+---
+
+La collection Postman d'Adhere contient chaque endpoint API pré-configuré avec l'URL correcte, les en-têtes et les exemples de corps de requête. C'est le moyen le plus rapide d'explorer l'API et de tester les appels avant d'intégrer.
+
+## Importer la collection
+
+<Steps>
+  <Step title="Ouvrir Postman">
+    Téléchargez et ouvrez [Postman](https://www.postman.com/downloads/) si vous ne l'avez pas encore fait.
+  </Step>
+  <Step title="Importer la collection">
+    Cliquez sur le lien ci-dessous pour ouvrir la collection directement dans Postman :
+
+    **[Ouvrir Adhere API dans Postman →](https://documenter.getpostman.com/view/55164637/2sBXwjxET7)**
+
+    Ou copiez l'URL de la collection et utilisez **File → Import → Link** dans Postman.
+  </Step>
+  <Step title="Configurer votre clé API">
+    Dans Postman, allez dans l'onglet **Variables** de la collection et définissez `x-access-token` avec votre clé API Adhere.
+
+    Votre clé API est disponible dans le [tableau de bord Adhere](https://adhere-app.smartcomply.com).
+  </Step>
+  <Step title="Envoyer une requête">
+    Sélectionnez n'importe quel endpoint de la collection, vérifiez le corps pré-rempli et cliquez sur **Send**.
+  </Step>
+</Steps>
+
+## Structure de la collection
+
+La collection reflète la référence de l'API et est organisée par domaine produit :
+
+| Dossier | Contenu |
+|---------|---------|
+| **KYC Nigéria** | BVN, NIN, VNIN, CAC, Permis de conduire, Passeport, NUBAN, TIN, Carte d'électeur, Téléphone, Adresse |
+| **KYC Kenya** | National ID (basique & avancé), Enregistrement d'entreprise, Alien ID, KRA PIN, Passeport |
+| **KYC Ghana** | Carte d'identité, Carte d'identité avec photo |
+| **KYC Rwanda** | National ID, Passeport |
+| **KYC Ouganda** | National ID |
+| **Biométrie** | Comparaison faciale, Vivacité faciale |
+| **Rapports de crédit** | CRC, First Central, Credit Registry (particulier & entreprise), crédit Kenya |
+| **Fraude & surveillance des transactions** | Surveillance des transactions, fraude par carte, filtrage des transactions, recherche KYC, limites et seuils |
+| **Vérification de fraude de prêt** | Vérifications de fraude pour particuliers et entreprises |
+| **Parcours utilisateur** | Événements de session, état de session, analytiques, vérification de santé |
+
+## Authentification
+
+Toutes les requêtes nécessitent l'en-tête `x-access-token`. Définissez-le une fois au niveau de la collection pour qu'il s'applique automatiquement à toutes les requêtes :
+
+1. Cliquez sur le nom de la collection → **Edit**
+2. Allez dans l'onglet **Variables**
+3. Ajoutez une variable nommée `x-access-token` avec votre clé API comme valeur
+4. Dans l'onglet **Headers** de chaque requête, l'en-tête est déjà défini sur `{{x-access-token}}`
+
+<Note>
+  Ne partagez jamais votre clé API publiquement ou ne la commettez pas dans le contrôle de version. Utilisez les variables d'environnement Postman pour l'éloigner des espaces de travail partagés.
+</Note>
+
+## URL de base
+
+Tous les endpoints de la collection utilisent :
+
+```
+https://adhere-api.smartcomply.com
+```

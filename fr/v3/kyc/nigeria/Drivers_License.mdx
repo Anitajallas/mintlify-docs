@@ -1,0 +1,111 @@
+---
+title: "Permis de conduire"
+sidebarTitle: "Permis de conduire"
+description: "Vérifiez l'identité d'un client à l'aide de son numéro de permis de conduire nigérian."
+openapi: "POST /api/onboarding/nigeria_kyc/driver_license/"
+---
+
+<Warning>
+  Ce service n'est pas disponible actuellement. Nous travaillons à le restaurer — veuillez consulter à nouveau bientôt.
+</Warning>
+
+L'endpoint Permis de conduire récupère les informations d'identité vérifiées depuis la base de données FRSC, incluant le nom, la date de naissance, les dates de validité du permis, l'État de délivrance et une photo.
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/driver_license/
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `license_number` | string | Oui | Le numéro de permis de conduire du client |
+| `first_name` | string | Oui | Prénom tel qu'il apparaît sur le permis |
+| `last_name` | string | Oui | Nom de famille tel qu'il apparaît sur le permis |
+| `date_of_birth` | string | Oui | Date de naissance au format `YYYY-MM-DD` |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/driver_license/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"license_number": "ARR10892UU00", "first_name": "EDIKAN", "last_name": "EFE", "date_of_birth": "1994-08-11"}'
+```
+
+```python Python
+import requests
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/driver_license/",
+    headers={"x-access-token": "YOUR_SECRET_KEY", "Content-Type": "application/json"},
+    json={"license_number": "ARR10892UU00", "first_name": "EDIKAN", "last_name": "EFE", "date_of_birth": "1994-08-11"},
+)
+```
+</CodeGroup>
+
+## Réponse
+
+### 200 OK
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `data.licenseNo` | string | Numéro de permis |
+| `data.lastName` | string | Nom de famille |
+| `data.firstName` | string | Prénom |
+| `data.middleName` | string | Deuxième prénom |
+| `data.gender` | string | Genre |
+| `data.dateOfBirth` | string | Date de naissance |
+| `data.issuedDate` | string | Date de délivrance du permis |
+| `data.expiryDate` | string | Date d'expiration du permis |
+| `data.stateOfIssue` | string | État où le permis a été délivré |
+| `data.image` | string | Photo du permis encodée en base64 |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "licenseNo": "ARR10892UU00",
+    "lastName": "EDIKAN",
+    "firstName": "EFE",
+    "middleName": "MUNACHI",
+    "gender": "male",
+    "issuedDate": "2013-10-28",
+    "expiryDate": "2018-11-28",
+    "stateOfIssue": "OYO",
+    "dateOfBirth": "1994-08-11",
+    "image": "<base64-encoded-jpeg>"
+  },
+  "message": "Driver License details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

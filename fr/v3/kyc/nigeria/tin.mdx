@@ -1,0 +1,108 @@
+---
+title: "TIN entreprise"
+sidebarTitle: "TIN entreprise"
+description: "Vérifiez le Numéro d'Identification Fiscale d'une entreprise nigériane."
+openapi: "POST /api/onboarding/nigeria_kyc/tin/"
+---
+
+<Note>
+  TIN entreprise/commercial uniquement. Les recherches de TIN individuel ne sont prises en charge par aucun fournisseur derrière cet endpoint.
+</Note>
+
+L'endpoint TIN entreprise valide un Numéro d'Identification Fiscale commercial par rapport à la base de données de la FIRS (Federal Inland Revenue Service) et renvoie le nom du contribuable associé, le numéro d'enregistrement CAC, le bureau fiscal et les coordonnées.
+
+<Note>
+  `/api/onboarding/business/company_tin/` est un alias pour ce même endpoint et cette même vérification. Si vous êtes déjà intégré contre celui-ci, aucune modification n'est nécessaire — il continue de fonctionner. Pour les nouvelles intégrations, utilisez `/api/onboarding/nigeria_kyc/tin/` ci-dessus.
+</Note>
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/tin/
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `tax_identification_number` | string | Oui | Le Numéro d'Identification Fiscale de l'entreprise (format : `234123456-0001`, 8-14 chiffres) |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/tin/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"tax_identification_number": "234123456-0001"}'
+```
+
+```python Python
+import requests
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/tin/",
+    headers={"x-access-token": "YOUR_SECRET_KEY", "Content-Type": "application/json"},
+    json={"tax_identification_number": "234123456-0001"},
+)
+```
+</CodeGroup>
+
+## Réponse
+
+### 200 OK
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `data.taxpayer_name` | string | Nom du contribuable enregistré |
+| `data.cac_reg_number` | string | Numéro d'enregistrement CAC (si applicable) |
+| `data.firstin` | string | Premier TIN émis |
+| `data.jittin` | string | TIN de revenus conjoints (si applicable) |
+| `data.tax_office` | string | Bureau fiscal assigné |
+| `data.phone_number` | string | Numéro de téléphone enregistré |
+| `data.email` | string | E-mail enregistré (si disponible) |
+| `data.search` | string | Le terme de recherche utilisé |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "search": "07012345678",
+    "taxpayer_name": "FISAYOMI KAYODE NIG LTD",
+    "cac_reg_number": "RC012345",
+    "firstin": "12345678-0001",
+    "jittin": "N/A",
+    "tax_office": "MSTO ALIMOSHO",
+    "phone_number": "08109110099",
+    "email": ""
+  },
+  "message": "Tax Identification Number details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

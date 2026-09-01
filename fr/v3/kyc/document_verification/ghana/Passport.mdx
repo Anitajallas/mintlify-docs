@@ -1,0 +1,163 @@
+---
+title: "Passeport"
+sidebarTitle: "Passeport"
+description: "Extrayez les détails d'identité d'un passeport ghanéen à l'aide de l'OCR."
+openapi: "POST /api/onboarding/document_verification/ghana/passport"
+---
+
+Vérifiez le passeport ghanéen d'un client en téléversant une photo de la page de données — aucune saisie manuelle du numéro de passeport requise. Extraction OCR plus une concordance faciale requise par rapport à un selfie — pas de vérification de vivacité (pas de vidéo, pas de défi de clignement/mouvement).
+
+<Note>
+  Le passeport est unilatéral — seul `document_front` est nécessaire.
+</Note>
+
+<Note>
+  `selfie_image` est requis — le visage extrait du document est comparé à celui-ci. Il s'agit d'une comparaison d'image fixe (pas de vivacité).
+</Note>
+
+## Endpoint
+
+```
+POST /api/onboarding/document_verification/ghana/passport
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `multipart/form-data` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|--------------|
+| `document_front` | file | Oui | Photo de la page de données du passeport. JPG ou PNG, max 5 Mo |
+| `selfie_image` | file | Oui | Un selfie à comparer avec la photo du visage du document. JPG ou PNG, max 5 Mo |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/document_verification/ghana/passport" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -F "document_front=@/path/to/passport.jpg" \
+  -F "selfie_image=@/path/to/selfie.jpg"
+```
+
+```javascript Node.js
+const formData = new FormData();
+formData.append("document_front", fs.createReadStream("/path/to/passport.jpg"));
+formData.append("selfie_image", fs.createReadStream("/path/to/selfie.jpg"));
+
+const response = await fetch(
+  "https://adhere-api.smartcomply.com/api/onboarding/document_verification/ghana/passport",
+  {
+    method: "POST",
+    headers: { "x-access-token": "YOUR_SECRET_KEY" },
+    body: formData,
+  }
+);
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/document_verification/ghana/passport",
+    headers={"x-access-token": "YOUR_SECRET_KEY"},
+    files={
+        "document_front": open("/path/to/passport.jpg", "rb"),
+        "selfie_image": open("/path/to/selfie.jpg", "rb"),
+    },
+)
+data = response.json()
+```
+</CodeGroup>
+
+## Réponse
+
+### 200 OK
+
+| Champ | Type | Description |
+|-------|------|--------------|
+| `status` | string | `"success"` en cas d'extraction réussie |
+| `data.full_name` | string | Nom complet extrait |
+| `data.first_name` | string | Prénom extrait |
+| `data.last_name` | string | Nom de famille extrait |
+| `data.date_of_birth` | string | Date de naissance au format `YYYY-MM-DD` |
+| `data.gender` | string | Genre extrait |
+| `data.nationality` | string | Nationalité extraite |
+| `data.id_number` | string | Le numéro de passeport |
+| `data.document_type` | string | `"passport"` |
+| `data.expiry_date` | string | Date d'expiration du passeport |
+| `data.is_expired` | boolean | Si `expiry_date` est déjà passée |
+| `data.photo` | string | Photo du visage extraite du document, encodée en base64 |
+| `data.extra_fields` | object | Autres champs lus par l'OCR sur la page de données — `place_of_birth`, `issuing_authority`, `nin` (si intégré), et `mrz_line1`/`mrz_line2` si la zone lisible par machine était lisible, exactement tels qu'imprimés |
+| `data.face_match` | object | Résultat de la comparaison du visage du document avec `selfie_image` — voir ci-dessous |
+| `data.face_match.attempted` | boolean | Si une comparaison a réellement été exécutée |
+| `data.face_match.verified` | boolean \| null | `true`/`false` si la comparaison a été exécutée ; `null` si elle ne l'a pas pu (voir Notes de concordance faciale) |
+| `data.face_match.confidence_percentage` | number | Confiance de correspondance, 0–100 |
+| `data.face_match.selfie_image` | string | URL du selfie téléversé |
+| `message` | string | Résumé du résultat lisible par l'homme |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "valid": true,
+    "first_name": "KWAME",
+    "last_name": "MENSAH",
+    "full_name": "MENSAH KWAME",
+    "date_of_birth": "1992-11-04",
+    "gender": "M",
+    "nationality": "GHANAIAN",
+    "id_number": "G1234567",
+    "document_type": "passport",
+    "expiry_date": "2028-02-20",
+    "is_expired": false,
+    "photo": "/9j/4AAQSkZJRgABAQAAAQABAAD...",
+    "extra_fields": {
+      "place_of_birth": "ACCRA",
+      "issuing_authority": "ACCRA"
+    },
+    "face_match": {
+      "attempted": true,
+      "verified": true,
+      "confidence_percentage": 92.4,
+      "selfie_image": "https://.../selfie.jpg"
+    }
+  },
+  "message": "Document details retrieved successfully"
+}
+```
+
+<Note>
+  **Notes de concordance faciale** — si le service de comparaison lui-même échoue, `attempted` reflète si une comparaison a réellement été exécutée et `verified` revient `null` avec un champ `reason` expliquant pourquoi — c'est différent de `verified: false`, qui signifie que la comparaison a été exécutée et que les visages ne correspondaient pas. Un problème de concordance faciale ne bloque jamais les données du document sous-jacent — le reste de `data` est toujours renvoyé.
+</Note>
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "ID photo is too blurry — please retake in good lighting with a steady hand"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```
+
+<Note>
+  Pour une liste complète des codes d'erreur, consultez la référence [Codes d'erreur](/error_codes).
+</Note>

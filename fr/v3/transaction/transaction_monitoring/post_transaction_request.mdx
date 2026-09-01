@@ -1,0 +1,536 @@
+---
+title: "Soumettre une transaction pour surveillance"
+sidebarTitle: "Soumettre une transaction"
+description: "Soumettez une transaction pour une évaluation de fraude en temps réel. La forme de la charge utile dépend du transaction_type — choisissez votre type ci-dessous."
+---
+
+L'endpoint Soumettre une transaction traite une transaction en temps réel par rapport à vos seuils et limites configurés et renvoie un code d'activité indiquant si la transaction est propre, suspecte ou à haut risque.
+
+La forme de la charge utile dépend de la valeur de `transaction_type` : **Transfert**, **USSD** et **Web** utilisent les détails du compte d'origine et de destination, tandis que **Carte** utilise les détails de la carte et du commerçant. Choisissez votre type ci-dessous.
+
+## Endpoint
+
+```
+POST /api/v1/monitoring/transaction_monitoring/
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps communs
+
+Ces champs sont requis pour chaque `transaction_type`.
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `transaction_id` | string | Oui | Identifiant unique de la transaction |
+| `amount` | number | Oui | Montant de la transaction (p. ex. `99.13` ou `14000000`) |
+| `currency` | string | Oui | Code de devise (p. ex. `NGN`, `USD`) |
+| `transaction_type` | string | Oui | L'un des : `transfer`, `ussd`, `web`, `card` |
+| `account_type` | string | Oui | `individual` ou `corporate` |
+| `customer_details` | object | Oui | Détails du client à l'origine de la transaction |
+| `customer_details.customer_name` | string | Oui | Nom complet du client |
+| `customer_details.customer_email` | string | Oui | Adresse e-mail du client |
+| `customer_details.customer_phone` | string | Non | Numéro de téléphone du client (p. ex. `+2347012345678`) |
+| `customer_details.identifier` | string | Non | Valeur d'identifiant du client — BVN pour le Nigéria, national ID pour le Kenya, carte ghanéenne pour le Ghana, etc. |
+| `customer_details.identifier_type` | string | Non | Clé du type d'identifiant (`bvn`, `national_id`, `ghana_card`, etc.). Requis lorsque `identifier` est fourni |
+| `additional_info` | object | Oui | Contexte supplémentaire pour l'évaluation de la fraude |
+| `additional_info.ip_address` | string | Oui | Adresse IP pendant la transaction |
+| `additional_info.location` | string | Oui | Chaîne de localisation ou lat/lon (p. ex. `"Lagos, Nigeria"` ou `"lat=-30.66,lon=-65.77"`) |
+| `additional_info.transaction_description` | string | Non | Description facultative de la transaction |
+
+### Paramètres spécifiques au type
+
+<Tabs>
+  <Tab title="Transfert">
+    Transfert de compte à compte. En plus des champs communs ci-dessus, vous devez inclure les comptes d'origine et de destination.
+
+    | Paramètre | Type | Requis | Description |
+    |-----------|------|----------|-------------|
+    | `origin_account` | object | Oui | Détails du compte d'origine |
+    | `origin_account.account_number` | string | Oui | Numéro de compte de l'expéditeur |
+    | `origin_account.bank_code` | string | Oui | Code bancaire de l'expéditeur |
+    | `destination_account` | object | Oui | Détails du compte de destination |
+    | `destination_account.account_number` | string | Oui | Numéro de compte du destinataire |
+    | `destination_account.bank_code` | string | Oui | Code bancaire du destinataire |
+    | `run_kyc` | boolean | Non | Exécuter une vérification KYC sur le client. Par défaut `false` |
+
+    #### Exemple
+
+    <CodeGroup>
+    ```bash cURL
+    curl -X POST "https://adhere-api.smartcomply.com/api/v1/monitoring/transaction_monitoring/" \
+      -H "x-access-token: YOUR_SECRET_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "transaction_id": "12345678",
+        "amount": 14000000,
+        "currency": "NGN",
+        "transaction_type": "transfer",
+        "account_type": "individual",
+        "origin_account": {
+          "account_number": "9876543219",
+          "bank_code": "001"
+        },
+        "destination_account": {
+          "account_number": "123456789",
+          "bank_code": "002"
+        },
+        "customer_details": {
+          "customer_name": "Muhammad Ibrahim Isah",
+          "customer_email": "user@example.com",
+          "identifier": "22430372151",
+          "identifier_type": "bvn"
+        },
+        "additional_info": {
+          "ip_address": "192.168.1.1",
+          "location": "Lagos, Nigeria",
+          "transaction_description": "Payment for order #789"
+        },
+        "run_kyc": false
+      }'
+    ```
+
+    ```javascript Node.js
+    const response = await fetch(
+      "https://adhere-api.smartcomply.com/api/v1/monitoring/transaction_monitoring/",
+      {
+        method: "POST",
+        headers: {
+          "x-access-token": "YOUR_SECRET_KEY",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          transaction_id: "12345678",
+          amount: 14000000,
+          currency: "NGN",
+          transaction_type: "transfer",
+          account_type: "individual",
+          origin_account: {
+            account_number: "9876543219",
+            bank_code: "001",
+          },
+          destination_account: {
+            account_number: "123456789",
+            bank_code: "002",
+          },
+          customer_details: {
+            customer_name: "Muhammad Ibrahim Isah",
+            customer_email: "user@example.com",
+            identifier: "22430372151",
+            identifier_type: "bvn",
+          },
+          additional_info: {
+            ip_address: "192.168.1.1",
+            location: "Lagos, Nigeria",
+            transaction_description: "Payment for order #789",
+          },
+          run_kyc: false,
+        }),
+      }
+    );
+    const data = await response.json();
+    ```
+
+    ```python Python
+    import requests
+
+    response = requests.post(
+        "https://adhere-api.smartcomply.com/api/v1/monitoring/transaction_monitoring/",
+        headers={
+            "x-access-token": "YOUR_SECRET_KEY",
+            "Content-Type": "application/json",
+        },
+        json={
+            "transaction_id": "12345678",
+            "amount": 14000000,
+            "currency": "NGN",
+            "transaction_type": "transfer",
+            "account_type": "individual",
+            "origin_account": {
+                "account_number": "9876543219",
+                "bank_code": "001",
+            },
+            "destination_account": {
+                "account_number": "123456789",
+                "bank_code": "002",
+            },
+            "customer_details": {
+                "customer_name": "Muhammad Ibrahim Isah",
+                "customer_email": "user@example.com",
+                "identifier": "22430372151",
+                "identifier_type": "bvn",
+            },
+            "additional_info": {
+                "ip_address": "192.168.1.1",
+                "location": "Lagos, Nigeria",
+                "transaction_description": "Payment for order #789",
+            },
+            "run_kyc": False,
+        },
+    )
+    data = response.json()
+    ```
+    </CodeGroup>
+  </Tab>
+
+  <Tab title="USSD">
+    Même charge utile que **Transfert** mais avec `"transaction_type": "ussd"`. Le corps nécessite toujours `origin_account` et `destination_account`.
+
+    | Paramètre | Type | Requis | Description |
+    |-----------|------|----------|-------------|
+    | `origin_account` | object | Oui | Détails du compte d'origine |
+    | `origin_account.account_number` | string | Oui | Numéro de compte de l'expéditeur |
+    | `origin_account.bank_code` | string | Oui | Code bancaire de l'expéditeur |
+    | `destination_account` | object | Oui | Détails du compte de destination |
+    | `destination_account.account_number` | string | Oui | Numéro de compte du destinataire |
+    | `destination_account.bank_code` | string | Oui | Code bancaire du destinataire |
+    | `run_kyc` | boolean | Non | Exécuter une vérification KYC sur le client. Par défaut `false` |
+
+    #### Exemple
+
+    <CodeGroup>
+    ```bash cURL
+    curl -X POST "https://adhere-api.smartcomply.com/api/v1/monitoring/transaction_monitoring/" \
+      -H "x-access-token: YOUR_SECRET_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "transaction_id": "USSD-90001",
+        "amount": 5000,
+        "currency": "NGN",
+        "transaction_type": "ussd",
+        "account_type": "individual",
+        "origin_account": {
+          "account_number": "9876543219",
+          "bank_code": "001"
+        },
+        "destination_account": {
+          "account_number": "123456789",
+          "bank_code": "002"
+        },
+        "customer_details": {
+          "customer_name": "Aisha Bello",
+          "customer_email": "aisha@example.com",
+          "identifier": "22430372151",
+          "identifier_type": "bvn"
+        },
+        "additional_info": {
+          "ip_address": "192.168.1.1",
+          "location": "Lagos, Nigeria",
+          "transaction_description": "USSD airtime top-up"
+        },
+        "run_kyc": false
+      }'
+    ```
+    </CodeGroup>
+  </Tab>
+
+  <Tab title="Web">
+    Même charge utile que **Transfert** mais avec `"transaction_type": "web"`. Le corps nécessite toujours `origin_account` et `destination_account`.
+
+    | Paramètre | Type | Requis | Description |
+    |-----------|------|----------|-------------|
+    | `origin_account` | object | Oui | Détails du compte d'origine |
+    | `origin_account.account_number` | string | Oui | Numéro de compte de l'expéditeur |
+    | `origin_account.bank_code` | string | Oui | Code bancaire de l'expéditeur |
+    | `destination_account` | object | Oui | Détails du compte de destination |
+    | `destination_account.account_number` | string | Oui | Numéro de compte du destinataire |
+    | `destination_account.bank_code` | string | Oui | Code bancaire du destinataire |
+    | `run_kyc` | boolean | Non | Exécuter une vérification KYC sur le client. Par défaut `false` |
+
+    #### Exemple
+
+    <CodeGroup>
+    ```bash cURL
+    curl -X POST "https://adhere-api.smartcomply.com/api/v1/monitoring/transaction_monitoring/" \
+      -H "x-access-token: YOUR_SECRET_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "transaction_id": "WEB-77410",
+        "amount": 250000,
+        "currency": "NGN",
+        "transaction_type": "web",
+        "account_type": "individual",
+        "origin_account": {
+          "account_number": "9876543219",
+          "bank_code": "001"
+        },
+        "destination_account": {
+          "account_number": "123456789",
+          "bank_code": "002"
+        },
+        "customer_details": {
+          "customer_name": "Tunde Bakare",
+          "customer_email": "tunde@example.com",
+          "identifier": "22430372151",
+          "identifier_type": "bvn"
+        },
+        "additional_info": {
+          "ip_address": "192.168.1.1",
+          "location": "Lagos, Nigeria",
+          "transaction_description": "Web checkout payment"
+        },
+        "run_kyc": false
+      }'
+    ```
+    </CodeGroup>
+  </Tab>
+
+  <Tab title="Carte">
+    En plus des champs communs ci-dessus, vous devez inclure `card_details`. `merchant_details` est facultatif mais recommandé. `origin_account` et `destination_account` ne sont pas requis.
+
+    | Paramètre | Type | Requis | Description |
+    |-----------|------|----------|-------------|
+    | `timestamp` | string | Non | Horodatage de transaction ISO 8601 (p. ex. `2025-08-23T14:30:00Z`) |
+    | `card_details` | object | Oui | Informations spécifiques à la carte |
+    | `card_details.bin` | integer | Oui | Les six premiers chiffres du numéro de carte (BIN) |
+    | `card_details.last4` | integer | Oui | Les quatre derniers chiffres du numéro de carte |
+    | `merchant_details` | object | Non | Informations sur le commerçant |
+    | `merchant_details.merchant_name` | string | Non | Nom du commerçant |
+    | `merchant_details.merchant_location` | string | Non | Localisation du commerçant |
+    | `merchant_details.merchant_mcc` | string | Non | Code de catégorie de commerçant (MCC) |
+    | `run_kyc` | boolean | Non | Exécuter une vérification KYC sur le client. Par défaut `false` |
+
+    #### Exemple
+
+    <CodeGroup>
+    ```bash cURL
+    curl -X POST "https://adhere-api.smartcomply.com/api/v1/monitoring/transaction_monitoring/" \
+      -H "x-access-token: YOUR_SECRET_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "transaction_id": "TXN-CARD-12345678",
+        "amount": 99.13,
+        "currency": "NGN",
+        "transaction_type": "card",
+        "account_type": "corporate",
+        "timestamp": "2025-08-23T14:30:00Z",
+        "card_details": {
+          "bin": 345676,
+          "last4": 9809
+        },
+        "merchant_details": {
+          "merchant_name": "ABC Stores",
+          "merchant_location": "Lagos, Nigeria",
+          "merchant_mcc": "5813"
+        },
+        "customer_details": {
+          "customer_name": "Imagine Dragons",
+          "customer_email": "imaginedragons@gmail.com",
+          "customer_phone": "+2347012345678",
+          "identifier": "98765432109",
+          "identifier_type": "bvn"
+        },
+        "additional_info": {
+          "ip_address": "102.89.1.1",
+          "location": "Lagos, Nigeria",
+          "transaction_description": "Online purchase"
+        },
+        "run_kyc": false
+      }'
+    ```
+
+    ```javascript Node.js
+    const response = await fetch(
+      "https://adhere-api.smartcomply.com/api/v1/monitoring/transaction_monitoring/",
+      {
+        method: "POST",
+        headers: {
+          "x-access-token": "YOUR_SECRET_KEY",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          transaction_id: "TXN-CARD-12345678",
+          amount: 99.13,
+          currency: "NGN",
+          transaction_type: "card",
+          account_type: "corporate",
+          timestamp: "2025-08-23T14:30:00Z",
+          card_details: {
+            bin: 345676,
+            last4: 9809,
+          },
+          merchant_details: {
+            merchant_name: "ABC Stores",
+            merchant_location: "Lagos, Nigeria",
+            merchant_mcc: "5813",
+          },
+          customer_details: {
+            customer_name: "Imagine Dragons",
+            customer_email: "imaginedragons@gmail.com",
+            customer_phone: "+2347012345678",
+            identifier: "98765432109",
+            identifier_type: "bvn",
+          },
+          additional_info: {
+            ip_address: "102.89.1.1",
+            location: "Lagos, Nigeria",
+            transaction_description: "Online purchase",
+          },
+          run_kyc: false,
+        }),
+      }
+    );
+    const data = await response.json();
+    ```
+
+    ```python Python
+    import requests
+
+    response = requests.post(
+        "https://adhere-api.smartcomply.com/api/v1/monitoring/transaction_monitoring/",
+        headers={
+            "x-access-token": "YOUR_SECRET_KEY",
+            "Content-Type": "application/json",
+        },
+        json={
+            "transaction_id": "TXN-CARD-12345678",
+            "amount": 99.13,
+            "currency": "NGN",
+            "transaction_type": "card",
+            "account_type": "corporate",
+            "timestamp": "2025-08-23T15:30:00Z",
+            "card_details": {
+                "bin": 345676,
+                "last4": 9809,
+            },
+            "merchant_details": {
+                "merchant_name": "ABC Stores",
+                "merchant_location": "Lagos, Nigeria",
+                "merchant_mcc": "5813",
+            },
+            "customer_details": {
+                "customer_name": "Imagine Dragons",
+                "customer_email": "imaginedragons@gmail.com",
+                "customer_phone": "+2347012345678",
+                "identifier": "98765432109",
+                "identifier_type": "bvn",
+            },
+            "additional_info": {
+                "ip_address": "102.89.1.1",
+                "location": "Lagos, Nigeria",
+                "transaction_description": "Online purchase",
+            },
+            "run_kyc": False,
+        },
+    )
+    data = response.json()
+    ```
+    </CodeGroup>
+  </Tab>
+</Tabs>
+
+<Note>
+**Recommandé pour toutes les nouvelles intégrations** : transmettez `identifier` et `identifier_type` dans `customer_details`. Cette paire de champs unique prend en charge le BVN (Nigéria), le national ID (Kenya), la carte ghanéenne et d'autres types d'ID par pays.
+
+**Rétrocompatible** : les intégrations qui envoyaient précédemment un champ `bvn` peuvent continuer à le faire. Voir l'[exemple hérité](#legacy-passing-bvn-directly) ci-dessous.
+</Note>
+
+### Hérité : transmettre `bvn` directement
+
+<Warning>
+Le champ `bvn` de niveau supérieur est hérité et ne prend en charge que le BVN (Nigéria). Les nouvelles intégrations, au Nigéria comme à l'étranger, doivent utiliser `customer_details.identifier` + `customer_details.identifier_type` à la place. Le champ hérité reste actif pour la rétrocompatibilité et sera supprimé dans une future version.
+</Warning>
+
+La charge utile suivante utilise le champ `bvn` hérité au lieu de la nouvelle paire `identifier`. Elle fonctionne toujours.
+
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/v1/monitoring/transaction_monitoring/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "transaction_id": "LEGACY-001",
+    "amount": 50000,
+    "currency": "NGN",
+    "transaction_type": "transfer",
+    "account_type": "individual",
+    "origin_account": {
+      "account_number": "9876543219",
+      "bank_code": "001"
+    },
+    "destination_account": {
+      "account_number": "123456789",
+      "bank_code": "002"
+    },
+    "customer_details": {
+      "customer_name": "Legacy Customer",
+      "customer_email": "legacy@example.com",
+      "bvn": "22430372151",
+    },
+    "additional_info": {
+      "ip_address": "192.168.1.1",
+      "location": "Lagos, Nigeria"
+    }
+  }'
+```
+
+## Réponse
+
+La réponse est identique pour toutes les valeurs de `transaction_type`.
+
+### Codes d'activité
+
+**Suspect (à signaler pour examen) :**
+
+| Code | Description |
+|------|-------------|
+| `450` | Transaction suspecte détectée — examen manuel requis |
+| `451` | Transaction à haut risque — fraude potentielle |
+| `452` | Comportement transactionnel inhabituel — anomalie de modèle |
+| `453` | Échec de la vérification de vélocité — trop de transactions en peu de temps |
+| `454` | Incohérence géographique — localisation inhabituelle |
+| `455` | Montant de transaction trop élevé — au-dessus du seuil |
+| `456` | Compte ou entité sur liste noire |
+| `457` | Transactions échouées répétées — tentative de fraude possible |
+
+**Sûr :**
+
+| Code | Description |
+|------|-------------|
+| `200` | Transaction approuvée — aucun problème |
+| `201` | Transaction traitée avec succès |
+| `202` | Transaction en attente d'examen — contrôle de routine |
+| `210` | Transaction de confiance — vérifiée et sûre |
+| `211` | Transaction à faible risque — aucune anomalie détectée |
+| `212` | Transaction récurrente approuvée — modèle déjà autorisé |
+| `220` | Entité sur liste blanche — compte ou entreprise pré-approuvé |
+| `221` | Client connu — transaction conforme à l'historique de l'utilisateur |
+
+### 201 Created
+
+```json
+{
+  "status": "Success",
+  "data": {
+    "activity_code": "450",
+    "status": "suspicious",
+    "comment": ["4 rule(s) triggered"]
+  },
+  "message": "Transaction was successfully processed"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

@@ -1,0 +1,188 @@
+---
+title: "Suivi du parcours utilisateur"
+sidebarTitle: "Parcours utilisateur"
+description: "Suivez et validez les événements de transaction utilisateur en séquence pour détecter un comportement hors ordre ou suspect."
+openapi: "POST /api/v1/journey/event/"
+---
+
+L'API de parcours utilisateur suit les étapes critiques du flux de transaction d'un utilisateur via des points de contrôle définis. Elle valide que les événements attendus se produisent dans le bon ordre et signale un comportement suspect ou hors ordre en temps réel.
+
+## Soumettre un événement
+
+Soumettez un événement de parcours utilisateur pour une évaluation de fraude.
+
+### Endpoint
+
+```
+POST /api/v1/journey/event/
+```
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `user_id` | string | Oui | Identifiant unique de l'utilisateur |
+| `session_id` | string | Oui | Identifiant de la session en cours |
+| `event` | string | Oui | Type d'événement : `LOGIN`, `OTP_VERIFY`, `PAYMENT_INIT`, `PAYMENT_COMPLETE` ou `LOGOUT` |
+| `timestamp` | string | Oui | Date-heure ISO-8601 de l'événement |
+| `device_id` | string | Non | Identifiant de l'appareil |
+| `ip_address` | string | Non | Adresse IP pendant l'événement |
+| `metadata.amount` | number | Non | Montant de la transaction le cas échéant |
+| `metadata.currency` | string | Non | Code de devise |
+
+### 201 Created
+
+```json
+{
+  "status": "Success",
+  "data": {
+    "status": "allow",
+    "risk_score": 0.12,
+    "reason": "Normal login pattern",
+    "session_state": "OTP_VERIFY",
+    "alert_triggered": false
+  },
+  "message": "success"
+}
+```
+
+---
+
+## Obtenir l'état de la session
+
+Récupérez l'état actuel et l'historique des événements d'une session.
+
+### Endpoint
+
+```
+GET /api/v1/journey/session/{session_id}/
+```
+
+### Paramètres de chemin
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `session_id` | string | Oui | Identifiant de la session à récupérer |
+
+### 200 OK
+
+```json
+{
+  "status": "success",
+  "data": {
+    "session_id": "abc-123",
+    "user_id": "user-456",
+    "current_state": "PAYMENT_INIT",
+    "events": [],
+    "start_time": "2025-08-01T10:00:00Z"
+  },
+  "message": "success"
+}
+```
+
+---
+
+## Effacer la session
+
+Supprimez toutes les données stockées pour une session.
+
+### Endpoint
+
+```
+DELETE /api/v1/journey/session/{session_id}/
+```
+
+### Paramètres de chemin
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `session_id` | string | Oui | Identifiant de la session à effacer |
+
+### 204 No Content
+
+```json
+{
+  "message": "Session cleared"
+}
+```
+
+---
+
+## Analytique utilisateur
+
+Récupérez les statistiques de fraude et de risque pour un utilisateur sur toutes les sessions.
+
+### Endpoint
+
+```
+GET /api/v1/journey/analytics/user/{user_id}/
+```
+
+### Paramètres de chemin
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `user_id` | string | Oui | Identifiant de l'utilisateur |
+
+### 200 OK
+
+```json
+{
+  "status": "success",
+  "data": {
+    "user_id": "user-456",
+    "total_events": 42,
+    "average_risk_score": 0.08,
+    "blocked_events": 1,
+    "reviewed_events": 3,
+    "total_sessions": 10,
+    "average_session_risk": 0.07
+  },
+  "message": "Success"
+}
+```
+
+---
+
+## Contrôle de santé
+
+Vérifiez l'état de santé du service et le statut des dépendances.
+
+### Endpoint
+
+```
+GET /api/v1/journey/health/
+```
+
+### 200 OK
+
+```json
+{
+  "status": "healthy",
+  "broker": "connected",
+  "database": "connected",
+  "timestamp": "2025-08-01T10:00:00Z"
+}
+```
+
+---
+
+## Codes d'erreur
+
+| Code | Description |
+|------|-------------|
+| `200` | Succès |
+| `201` | Événement traité avec succès |
+| `400` | Champs manquants, malformés ou invalides |
+| `401` | Échec de l'authentification ou clé API manquante |
+| `403` | Permissions insuffisantes pour cette ressource |
+| `404` | Ressource ou endpoint non trouvé |
+| `429` | Limite de débit dépassée — réessayez après le délai d'attente |
+| `500` | Erreur serveur inattendue |

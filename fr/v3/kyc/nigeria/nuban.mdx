@@ -1,0 +1,125 @@
+---
+title: "Vérification NUBAN"
+sidebarTitle: "NUBAN"
+description: "Résolvez un numéro de compte bancaire nigérian vers son nom de compte enregistré et sa banque."
+openapi: "POST /api/onboarding/nigeria_kyc/nuban/"
+---
+
+L'endpoint NUBAN vérifie un Numéro de Compte Bancaire Uniforme Nigérian (NUBAN) et renvoie le nom de compte et la banque associés. Utilisez-le pour la vérification de la propriété du compte bancaire lors de l'intégration ou des flux de paiement.
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/nuban/
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `account_number` | string | Oui | Le numéro de compte NUBAN à 10 chiffres |
+| `bank_code` | string | Oui | Le code bancaire à 3–6 chiffres (voir la liste ci-dessous) |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/nuban/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"account_number": "0768540312", "bank_code": "035"}'
+```
+
+```python Python
+import requests
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/nuban/",
+    headers={"x-access-token": "YOUR_SECRET_KEY", "Content-Type": "application/json"},
+    json={"account_number": "0768540312", "bank_code": "035"},
+)
+```
+</CodeGroup>
+
+### Référence des codes bancaires
+
+<Accordion title="Voir tous les codes bancaires pris en charge">
+
+| Banque | Code |
+|------|------|
+| Access Bank | `044` |
+| Citibank Nigeria | `023` |
+| ECOBANK | `050` |
+| FCMB | `214` |
+| Fidelity Bank | `070` |
+| First Bank of Nigeria | `011` |
+| GTBank | `058` |
+| Heritage Bank | `030` |
+| JAIZ Bank | `301` |
+| Kuda Microfinance Bank | `50211` |
+| Lotus Bank | `303` |
+| Moniepoint Microfinance Bank | `50563` |
+| Opay | `999992` |
+| Palmpay | `999111` |
+| Polaris Bank | `076` |
+| Providus Bank | `101` |
+| Stanbic IBTC Bank | `221` |
+| Standard Chartered Bank | `068` |
+| Sterling Bank | `232` |
+| TAJBank | `302` |
+| Union Bank of Nigeria | `032` |
+| United Bank For Africa | `033` |
+| Unity Bank | `215` |
+| Wema Bank | `035` |
+| Zenith Bank | `057` |
+
+</Accordion>
+
+## Réponse
+
+### 200 OK
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `data.bank_id` | integer | Identifiant bancaire interne |
+| `data.account_name` | string | Nom du titulaire du compte enregistré |
+| `data.account_number` | string | Numéro de compte interrogé |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "bank_id": 11,
+    "account_name": "STEPHEN BADMUS",
+    "account_number": "0768540312"
+  },
+  "message": "Nuban details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

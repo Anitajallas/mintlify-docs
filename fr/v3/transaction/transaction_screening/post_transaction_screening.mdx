@@ -1,0 +1,241 @@
+---
+title: "Filtrer une transaction"
+sidebarTitle: "Filtrer une transaction"
+description: "Filtrez une transaction par rapport aux listes de sanctions, aux pays à haut risque et aux modèles de mots-clés suspects."
+openapi: "POST /api/v1/monitoring/transaction_screening"
+---
+
+L'endpoint Filtrer une transaction évalue une transaction par rapport à des critères de conformité prédéfinis, notamment les listes de sanctions, les indicateurs de pays à haut risque et les mots-clés suspects. Les transactions correspondant à l'un de ces critères sont signalées pour examen.
+
+## Endpoint
+
+```
+POST /api/v1/monitoring/transaction_screening
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `transactionId` | string | Recommandé | Associe les appels répétés à la même transaction |
+| `transactionType` | string | Facultatif | p. ex., `Transfer`, `Payment` |
+| `amount` | number | **Requis** | Montant de la transaction (p. ex., `10000.00`) |
+| `currency` | string | Facultatif | Code de devise, p. ex., `NGN`, `USD` |
+| `transactionDate` | string | **Requis** | Date-heure ISO-8601, p. ex., `2024-07-06T12:34:56Z` |
+| `sender.name` | string | **Requis** | Nom complet de l'expéditeur — filtré par rapport aux listes de risques |
+| `sender.accountNumber` | string | Facultatif | Numéro de compte de l'expéditeur |
+| `sender.address` | object | Facultatif | Adresse de l'expéditeur pour les contrôles basés sur la localisation |
+| `sender.address.country` | string | Recommandé | Aide à signaler les pays à haut risque |
+| `sender.identification` | object | Facultatif | Détails de l'ID de l'expéditeur |
+| `receiver.name` | string | **Requis** | Nom complet du destinataire — filtré par rapport aux listes de risques |
+| `receiver.accountNumber` | string | Facultatif | Numéro de compte du destinataire |
+| `receiver.address` | object | Facultatif | Adresse du destinataire pour les contrôles basés sur la localisation |
+| `receiver.address.country` | string | Recommandé | Aide à signaler les pays à haut risque |
+| `receiver.identification` | object | Facultatif | Détails de l'ID du destinataire |
+| `details.purpose` | string | Recommandé | Objet de la transaction — utilisé pour le filtrage par mots-clés |
+| `details.reference` | string | Facultatif | Votre référence interne ou numéro de facture |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/v1/monitoring/transaction_screening" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "transactionId": "1234567892",
+    "transactionType": "Transfer",
+    "amount": 10000.00,
+    "currency": "NGN",
+    "transactionDate": "2024-07-06T12:34:56Z",
+    "sender": {
+      "name": "John Doe",
+      "accountNumber": "123456789012",
+      "address": {
+        "street": "123 Main St",
+        "city": "Lagos",
+        "state": "Lagos",
+        "postalCode": "10001",
+        "country": "NIGERIA"
+      },
+      "identification": {
+        "type": "Passport",
+        "number": "A12345678",
+        "country": "NG"
+      }
+    },
+    "receiver": {
+      "name": "Jane Smith",
+      "accountNumber": "987654321098",
+      "address": {
+        "street": "456 Elm St",
+        "city": "Abuja",
+        "state": "FCT",
+        "postalCode": "90001",
+        "country": "NIGERIA"
+      }
+    },
+    "details": {
+      "purpose": "Payment for services",
+      "reference": "INV-2024-001"
+    }
+  }'
+```
+</CodeGroup>
+
+## Réponse
+
+### 201 Created — Signalé
+
+Lorsque la transaction correspond à un critère de filtrage, la réponse inclut les détails complets de la correspondance de sanctions pour l'expéditeur et le destinataire.
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `data.transactionId` | string | Identifiant de la transaction |
+| `data.amount` | number | Montant de la transaction |
+| `data.currency` | string | Code de devise |
+| `data.sender` | object | Détails de l'expéditeur renvoyés en écho |
+| `data.receiver` | object | Détails du destinataire renvoyés en écho |
+| `data.sanction.sender_name` | string | Nom de l'expéditeur filtré |
+| `data.sanction.sender_record` | array | Correspondances de sanctions pour l'expéditeur |
+| `data.sanction.receiver_name` | string | Nom du destinataire filtré |
+| `data.sanction.receiver_record` | array | Correspondances de sanctions pour le destinataire |
+| `data.sanction[].entity_name` | string | Nom de l'entité sanctionnée correspondante |
+| `data.sanction[].entity_type` | string | Type d'entité (p. ex., `Person`) |
+| `data.sanction[].topics` | array | Catégories de sanctions (p. ex., `sanction`, `crime.terror`) |
+| `data.sanction[].match_score` | number | Score de confiance de correspondance (0 à 1) |
+| `data.screeningStatus` | string | Résultat : `"flagged"` ou `"approved"` |
+| `data.sender_risk_level` | string | Niveau de risque de l'expéditeur : `"low"`, `"medium"` ou `"high"` |
+| `data.receiver_risk_level` | string | Niveau de risque du destinataire : `"low"`, `"medium"` ou `"high"` |
+| `data.comments` | string | Raison du résultat de filtrage |
+| `data.additionalActions` | array | Actions de suivi recommandées |
+| `data.additionalActions[].actionType` | string | Type d'action (p. ex., `"Notify Customer"`) |
+| `data.additionalActions[].assignedTo` | string | Équipe ou personne responsable |
+| `data.additionalActions[].notes` | string | Instructions pour l'action |
+| `data.summary` | object | Résumé des résultats de filtrage |
+| `data.summary.verdict` | string | Verdict global du filtrage |
+| `data.summary.sender_risk_level` | string | Niveau de risque de l'expéditeur |
+| `data.summary.receiver_risk_level` | string | Niveau de risque du destinataire |
+| `data.summary.sender_matches` | object | Détails des correspondances de l'expéditeur |
+| `data.summary.sender_matches.matched_status` | boolean | Si l'expéditeur avait des correspondances |
+| `data.summary.sender_matches.highest_match_score` | string | Pourcentage de score de correspondance le plus élevé |
+| `data.summary.sender_matches.sanctions_count` | number | Nombre de correspondances de sanctions |
+| `data.summary.sender_matches.peps_count` | number | Nombre de correspondances PEP |
+| `data.summary.sender_matches.on_blacklist` | boolean | Si l'expéditeur est sur liste noire |
+| `data.summary.receiver_matches` | object | Détails des correspondances du destinataire |
+| `data.summary.receiver_matches.matched_status` | boolean | Si le destinataire avait des correspondances |
+| `data.summary.receiver_matches.highest_match_score` | string | Pourcentage de score de correspondance le plus élevé |
+| `data.summary.receiver_matches.sanctions_count` | number | Nombre de correspondances de sanctions |
+| `data.summary.receiver_matches.peps_count` | number | Nombre de correspondances PEP |
+| `data.summary.receiver_matches.on_blacklist` | boolean | Si le destinataire est sur liste noire |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "transactionId": "1234567892",
+    "transactionType": "Transfer",
+    "amount": 10000.0,
+    "currency": "NGN",
+    "transactionDate": "2024-07-06T12:34:56Z",
+    "sender": {
+      "name": "QUDRATULLAH JAMAL",
+      "accountNumber": "123456789012",
+      "address": {
+        "street": "123 Main St",
+        "city": "Lagos",
+        "state": "Lagos",
+        "country": "NIGERIA"
+      }
+    },
+    "receiver": {
+      "name": "Jane Smith",
+      "accountNumber": "987654321098"
+    },
+    "sanction": {
+      "sender_name": "QUDRATULLAH JAMAL",
+      "sender_record": [
+        {
+          "entity_name": "Maulavi Qudratullah Jamal",
+          "entity_type": "Person",
+          "topics": ["crime.terror", "export.control", "sanction"],
+          "sanction_types": ["crime.terror", "export.control", "sanction"],
+          "match_score": 1.0,
+          "risk_score": "80%",
+          "matched": "False match"
+        }
+      ],
+      "receiver_name": "Jane Smith",
+      "receiver_record": [
+        {
+          "entity_name": "JANE A SMITH",
+          "entity_type": "Person",
+          "topics": ["debarment"],
+          "sanction_types": ["debarment"],
+          "match_score": 0.96,
+          "risk_score": "83%",
+          "matched": "True match"
+        }
+      ]
+    },
+    "screeningStatus": "flagged",
+    "sender_risk_level": "medium",
+    "receiver_risk_level": "high",
+    "comments": "Transaction denied due to high-risk blacklist match, high risk level, or sanctions match.",
+    "additionalActions": [
+      {
+        "actionType": "Notify Customer",
+        "assignedTo": "Customer Service",
+        "notes": "Inform the customer about the transaction denial."
+      }
+    ],
+    "summary": {
+      "verdict": "flagged",
+      "sender_risk_level": "medium",
+      "receiver_risk_level": "high",
+      "sender_matches": {
+        "matched_status": true,
+        "highest_match_score": "100%",
+        "sanctions_count": 0,
+        "peps_count": 1,
+        "on_blacklist": false
+      },
+      "receiver_matches": {
+        "matched_status": true,
+        "highest_match_score": "100%",
+        "sanctions_count": 1,
+        "peps_count": 4,
+        "on_blacklist": false
+      }
+    }
+  }
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

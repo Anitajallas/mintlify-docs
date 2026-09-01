@@ -1,0 +1,106 @@
+---
+title: "Commission des Affaires Sociétaires (CAC)"
+sidebarTitle: "CAC"
+description: "Vérifiez une entreprise nigériane enregistrée à l'aide de son numéro d'enregistrement CAC."
+openapi: "POST /api/onboarding/nigeria_kyc/cac/"
+---
+
+L'endpoint CAC renvoie les détails vérifiés d'une entreprise enregistrée depuis la base de données de la Corporate Affairs Commission, incluant l'adresse, la date d'enregistrement et le nom approuvé.
+
+## Endpoint
+
+```
+POST /api/onboarding/nigeria_kyc/cac/
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `registration_number` | string | Oui | Le numéro d'enregistrement CAC |
+| `company_name` | string | Oui | Nom de l'entreprise enregistré |
+| `company_type` | string | Oui | Type d'entité : `"RC"` (société enregistrée), `"BN"` (nom commercial) ou `"IT"` (fiduciaire incorporé) |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/cac/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"registration_number": "1261103", "company_name": "JOYCE VENTURES", "company_type": "RC"}'
+```
+
+```python Python
+import requests
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/nigeria_kyc/cac/",
+    headers={"x-access-token": "YOUR_SECRET_KEY", "Content-Type": "application/json"},
+    json={"registration_number": "1261103", "company_name": "JOYCE VENTURES", "company_type": "RC"},
+)
+```
+</CodeGroup>
+
+## Réponse
+
+### 200 OK
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `data[].id` | integer | ID d'enregistrement interne |
+| `data[].rcNumber` | string | Numéro d'enregistrement CAC |
+| `data[].approvedName` | string | Nom de l'entreprise approuvé par le gouvernement |
+| `data[].address` | string | Adresse de l'entreprise enregistrée |
+| `data[].city` | string | Ville |
+| `data[].state` | string | État |
+| `data[].lga` | string | Zone de gouvernement local |
+| `data[].email` | string | E-mail de l'entreprise (si disponible) |
+| `data[].registrationDate` | string | Date d'enregistrement CAC |
+
+```json
+{
+  "status": "success",
+  "data": [
+    {
+      "id": 8693434,
+      "lga": "Ibadan North West",
+      "city": "Mokola Ibadan",
+      "email": "joyceventures@gmail.com",
+      "state": "OYO",
+      "address": "Okunmade street, Opposite Veterinary Hospital",
+      "rcNumber": "1261103",
+      "approvedName": "JOYCE VENTURES",
+      "registrationDate": "2023-07-11T08:39:54.898+00:00"
+    }
+  ],
+  "message": "Business Registration details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

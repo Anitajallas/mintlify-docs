@@ -52,246 +52,613 @@
     }
   ],
   "navigation": {
-    "versions": [
+    "languages": [
       {
-        "version": "v3",
-        "groups": [
+        "language": "en",
+        "default": true,
+        "versions": [
           {
-            "group": "API Reference",
-            "pages": [
+            "version": "v3",
+            "groups": [
               {
-                "group": "Get Started",
-                "pages": [
-                  "introduction",
-                  "quickstart",
-                  "authentication",
-                  "error_codes",
-                  "webhooks",
-                  "changelog"
-                ]
-              },
-              {
-                "group": "Common Use Cases",
-                "pages": ["pages/account_verification", "pages/lending"]
-              },
-              {
-                "group": "Libraries & Tools",
-                "pages": [
-                  "libraries/smartcomply_sdk",
-                  "libraries/android_sdk",
-                  "libraries/ios_sdk",
-                  "libraries/postman"
-                ]
-              },
-              {
-                "group": "Biometrics",
-                "pages": [
-                  "v3/biometrics/face_comparism",
-                  "v3/biometrics/face_liveliness"
-                ]
-              },
-              {
-                "group": "Onboarding Suite",
+                "group": "API Reference",
                 "pages": [
                   {
-                    "group": "Customer Onboarding",
+                    "group": "Get Started",
                     "pages": [
-                      "v3/onboarding/introduction",
-                      "v3/onboarding/verify_customer",
-                      "v3/onboarding/get_settings",
-                      "v3/onboarding/update_settings"
+                      "introduction",
+                      "quickstart",
+                      "authentication",
+                      "error_codes",
+                      "webhooks",
+                      "changelog"
                     ]
                   },
                   {
-                    "group": "KYC",
+                    "group": "Common Use Cases",
+                    "pages": [
+                      "pages/account_verification",
+                      "pages/lending"
+                    ]
+                  },
+                  {
+                    "group": "Libraries & Tools",
+                    "pages": [
+                      "libraries/smartcomply_sdk",
+                      "libraries/android_sdk",
+                      "libraries/ios_sdk",
+                      "libraries/flutter_sdk",
+                      "libraries/postman"
+                    ]
+                  },
+                  {
+                    "group": "Biometrics",
+                    "pages": [
+                      "v3/biometrics/face_comparism",
+                      "v3/biometrics/face_liveliness"
+                    ]
+                  },
+                  {
+                    "group": "Onboarding Suite",
                     "pages": [
                       {
-                        "group": "Data Verification",
+                        "group": "Customer Onboarding",
+                        "pages": [
+                          "v3/onboarding/introduction",
+                          "v3/onboarding/verify_customer",
+                          "v3/onboarding/get_settings",
+                          "v3/onboarding/update_settings"
+                        ]
+                      },
+                      {
+                        "group": "KYC",
                         "pages": [
                           {
-                            "group": "Nigeria",
+                            "group": "Data Verification",
                             "pages": [
-                              "v3/kyc/nigeria/BVN",
-                              "v3/kyc/nigeria/BVN_Advanced",
-                              "v3/kyc/nigeria/CAC",
-                              "v3/kyc/nigeria/CAC_Advanced",
-                              "v3/kyc/nigeria/company_tax_id",
-                              "v3/kyc/nigeria/Drivers_License",
-                              "v3/kyc/nigeria/nin",
-                              "v3/kyc/nigeria/nin_with_face",
-                              "v3/kyc/nigeria/nuban",
-                              "v3/kyc/nigeria/nuban_advanced",
-                              "v3/kyc/nigeria/passport_verification",
-                              "v3/kyc/nigeria/Phone_Number_Advanced",
-                              "v3/kyc/nigeria/phone_number_basic",
-                              "v3/kyc/nigeria/tin",
-                              "v3/kyc/nigeria/VNIN",
-                              "v3/kyc/nigeria/Voters_ID"
+                              {
+                                "group": "Nigeria",
+                                "pages": [
+                                  "v3/kyc/nigeria/BVN",
+                                  "v3/kyc/nigeria/BVN_Advanced",
+                                  "v3/kyc/nigeria/CAC",
+                                  "v3/kyc/nigeria/CAC_Advanced",
+                                  "v3/kyc/nigeria/company_tax_id",
+                                  "v3/kyc/nigeria/Drivers_License",
+                                  "v3/kyc/nigeria/nin",
+                                  "v3/kyc/nigeria/nin_with_face",
+                                  "v3/kyc/nigeria/nuban",
+                                  "v3/kyc/nigeria/nuban_advanced",
+                                  "v3/kyc/nigeria/passport_verification",
+                                  "v3/kyc/nigeria/Phone_Number_Advanced",
+                                  "v3/kyc/nigeria/phone_number_basic",
+                                  "v3/kyc/nigeria/tin",
+                                  "v3/kyc/nigeria/VNIN",
+                                  "v3/kyc/nigeria/Voters_ID"
+                                ]
+                              },
+                              {
+                                "group": "Kenya",
+                                "pages": [
+                                  "v3/kyc/kenya/national_id_basic",
+                                  "v3/kyc/kenya/national_id_advance",
+                                  "v3/kyc/kenya/business_registration",
+                                  "v3/kyc/kenya/alien_ID",
+                                  "v3/kyc/kenya/kra_pin",
+                                  "v3/kyc/kenya/Passport_Verification",
+                                  "v3/kyc/kenya/Drivers_License"
+                                ]
+                              },
+                              {
+                                "group": "Ghana",
+                                "pages": [
+                                  "v3/kyc/ghana/ID_Card",
+                                  "v3/kyc/ghana/ID_Card_with_face",
+                                  "v3/kyc/ghana/International_Passport"
+                                ]
+                              },
+                              {
+                                "group": "Cote d'Ivoire",
+                                "pages": [
+                                  "v3/kyc/cote_d_ivoire/National_ID"
+                                ]
+                              },
+                              {
+                                "group": "South Africa",
+                                "pages": [
+                                  "v3/kyc/south_africa/National_ID"
+                                ]
+                              }
                             ]
                           },
                           {
-                            "group": "Kenya",
+                            "group": "Document Verification",
                             "pages": [
-                              "v3/kyc/kenya/national_id_basic",
-                              "v3/kyc/kenya/national_id_advance",
-                              "v3/kyc/kenya/business_registration",
-                              "v3/kyc/kenya/alien_ID",
-                              "v3/kyc/kenya/kra_pin",
-                              "v3/kyc/kenya/Passport_Verification",
-                              "v3/kyc/kenya/Drivers_License"
-                            ]
-                          },
-                          {
-                            "group": "Ghana",
-                            "pages": [
-                              "v3/kyc/ghana/ID_Card",
-                              "v3/kyc/ghana/ID_Card_with_face",
-                              "v3/kyc/ghana/International_Passport"
-                            ]
-                          },
-                          {
-                            "group": "Cote d'Ivoire",
-                            "pages": [
-                              "v3/kyc/cote_d_ivoire/National_ID"
-                            ]
-                          },
-                          {
-                            "group": "South Africa",
-                            "pages": [
-                              "v3/kyc/south_africa/National_ID"
+                              {
+                                "group": "Nigeria",
+                                "pages": [
+                                  "v3/kyc/document_verification/nigeria/National_ID",
+                                  "v3/kyc/document_verification/nigeria/Passport",
+                                  "v3/kyc/document_verification/nigeria/Drivers_License",
+                                  "v3/kyc/document_verification/nigeria/Voters_Card"
+                                ]
+                              },
+                              {
+                                "group": "Kenya",
+                                "pages": [
+                                  "v3/kyc/document_verification/kenya/Kenya_ID",
+                                  "v3/kyc/document_verification/kenya/Passport"
+                                ]
+                              },
+                              {
+                                "group": "Ghana",
+                                "pages": [
+                                  "v3/kyc/document_verification/ghana/Passport"
+                                ]
+                              },
+                              {
+                                "group": "Canada",
+                                "pages": [
+                                  "v3/kyc/document_verification/canada/Passport"
+                                ]
+                              },
+                              {
+                                "group": "USA",
+                                "pages": [
+                                  "v3/kyc/document_verification/usa/Passport"
+                                ]
+                              },
+                              {
+                                "group": "Cote d'Ivoire",
+                                "pages": [
+                                  "v3/kyc/document_verification/cote_d_ivoire/Passport"
+                                ]
+                              },
+                              {
+                                "group": "UK",
+                                "pages": [
+                                  "v3/kyc/document_verification/uk/Passport"
+                                ]
+                              }
                             ]
                           }
                         ]
                       },
                       {
-                        "group": "Document Verification",
+                        "group": "Credit Report",
                         "pages": [
                           {
                             "group": "Nigeria",
                             "pages": [
-                              "v3/kyc/document_verification/nigeria/National_ID",
-                              "v3/kyc/document_verification/nigeria/Passport",
-                              "v3/kyc/document_verification/nigeria/Drivers_License",
-                              "v3/kyc/document_verification/nigeria/Voters_Card"
+                              {
+                                "group": "Business",
+                                "pages": [
+                                  "v3/credit/business/crc-business_credit_history",
+                                  "v3/credit/business/first-central_business_credit_history",
+                                  "v3/credit/business/premium_business_credit_history"
+                                ]
+                              },
+                              {
+                                "group": "Individual",
+                                "pages": [
+                                  "v3/credit/individual/First_Central_Credit_Summary",
+                                  "v3/credit/individual/First_Central_Full_Credit_Report",
+                                  "v3/credit/individual/Credit_Registry_Credit_Summary",
+                                  "v3/credit/individual/Credit_Registry_Full_Credit_Report",
+                                  "v3/credit/individual/Credit_Report_Premium",
+                                  "v3/credit/individual/First_Central_Credit_Score",
+                                  "v3/credit/individual/CRC_Credit_Score",
+                                  "v3/credit/individual/CRC_Credit_History",
+                                  "v3/credit/individual/CRC_full_credit_report",
+                                  "v3/credit/individual/Credt_Registry_History_Advanced"
+                                ]
+                              }
                             ]
                           },
                           {
                             "group": "Kenya",
                             "pages": [
-                              "v3/kyc/document_verification/kenya/Kenya_ID",
-                              "v3/kyc/document_verification/kenya/Passport"
+                              {
+                                "group": "Individual",
+                                "pages": [
+                                  "v3/credit/individual/Kenya_Individual_Credit"
+                                ]
+                              },
+                              {
+                                "group": "Business",
+                                "pages": [
+                                  "v3/credit/business/Kenya_Business_Credit"
+                                ]
+                              }
                             ]
-                          },
-                          {
-                            "group": "Ghana",
-                            "pages": ["v3/kyc/document_verification/ghana/Passport"]
-                          },
-                          {
-                            "group": "Canada",
-                            "pages": ["v3/kyc/document_verification/canada/Passport"]
-                          },
-                          {
-                            "group": "USA",
-                            "pages": ["v3/kyc/document_verification/usa/Passport"]
-                          },
-                          {
-                            "group": "Cote d'Ivoire",
-                            "pages": ["v3/kyc/document_verification/cote_d_ivoire/Passport"]
-                          },
-                          {
-                            "group": "UK",
-                            "pages": ["v3/kyc/document_verification/uk/Passport"]
                           }
                         ]
                       }
                     ]
                   },
                   {
-                    "group": "Credit Report",
+                    "group": "Fraud & Transaction Monitoring",
                     "pages": [
                       {
-                        "group": "Nigeria",
+                        "group": "Transaction Monitoring",
+                        "pages": [
+                          "v3/transaction/transaction_monitoring/transaction_monitoring_overview",
+                          "v3/transaction/transaction_monitoring/post_transaction_request",
+                          "v3/transaction/transaction_monitoring/user_journey"
+                        ]
+                      },
+                      {
+                        "group": "Transaction Screening",
+                        "pages": [
+                          "v3/transaction/transaction_screening/overview",
+                          "v3/transaction/transaction_screening/post_transaction_screening"
+                        ]
+                      },
+                      {
+                        "group": "KYC",
+                        "pages": [
+                          "v3/transaction/kyc/get_all_search_results",
+                          "v3/transaction/kyc/get_entity_kyc_by_id",
+                          "v3/transaction/kyc/post_kyc_check"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "group": "Loan Fraud Check",
+                    "pages": [
+                      "v3/loan/introduction",
+                      "v3/loan/individual_fraud_check",
+                      "v3/loan/business_fraud_check"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "version": "v2",
+            "groups": [
+              {
+                "group": "API Reference",
+                "pages": [
+                  {
+                    "group": "Get Started",
+                    "pages": [
+                      "introduction",
+                      "quickstart",
+                      "authentication",
+                      "error_codes",
+                      "webhooks"
+                    ]
+                  },
+                  {
+                    "group": "Common Use Cases",
+                    "pages": [
+                      "pages/account_verification",
+                      "pages/lending"
+                    ]
+                  },
+                  {
+                    "group": "Libraries",
+                    "pages": [
+                      "libraries/smartcomply_sdk",
+                      "libraries/android_sdk",
+                      "libraries/ios_sdk"
+                    ]
+                  },
+                  {
+                    "group": "Onboarding Suite",
+                    "pages": [
+                      {
+                        "group": "KYC",
                         "pages": [
                           {
-                            "group": "Business",
+                            "group": "Nigeria",
                             "pages": [
-                              "v3/credit/business/crc-business_credit_history",
-                              "v3/credit/business/first-central_business_credit_history",
-                              "v3/credit/business/premium_business_credit_history"
+                              "v2/kyc/nigeria/BVN",
+                              "v2/kyc/nigeria/BVN_Advanced",
+                              "v2/kyc/nigeria/BVN_with_face",
+                              "v2/kyc/nigeria/CAC",
+                              "v2/kyc/nigeria/CAC_Advanced",
+                              "v2/kyc/nigeria/Drivers_License",
+                              "v2/kyc/nigeria/nin",
+                              "v2/kyc/nigeria/nin_with_face",
+                              "v2/kyc/nigeria/nuban",
+                              "v2/kyc/nigeria/nuban_advanced",
+                              "v2/kyc/nigeria/passport_verification",
+                              "v2/kyc/nigeria/Phone_Number_Advanced",
+                              "v2/kyc/nigeria/phone_number_basic",
+                              "v2/kyc/nigeria/tin",
+                              "v2/kyc/nigeria/VNIN",
+                              "v2/kyc/nigeria/Voters_ID"
                             ]
                           },
                           {
-                            "group": "Individual",
+                            "group": "Kenya",
                             "pages": [
-                              "v3/credit/individual/First_Central_Credit_Summary",
-                              "v3/credit/individual/First_Central_Full_Credit_Report",
-                              "v3/credit/individual/Credit_Registry_Credit_Summary",
-                              "v3/credit/individual/Credit_Registry_Full_Credit_Report",
-                              "v3/credit/individual/Credit_Report_Premium",
-                              "v3/credit/individual/First_Central_Credit_Score",
-                              "v3/credit/individual/CRC_Credit_Score",
-                              "v3/credit/individual/CRC_Credit_History",
-                              "v3/credit/individual/CRC_full_credit_report",
-                              "v3/credit/individual/Credt_Registry_History_Advanced"
+                              "v2/kyc/kenya/national_id_basic",
+                              "v2/kyc/kenya/national_id_advance",
+                              "v2/kyc/kenya/business_registration",
+                              "v2/kyc/kenya/alien_ID",
+                              "v2/kyc/kenya/kra_pin",
+                              "v2/kyc/kenya/Passport_Verification"
+                            ]
+                          },
+                          {
+                            "group": "Ghana",
+                            "pages": [
+                              "v2/kyc/ghana/ID_Card",
+                              "v2/kyc/ghana/ID_Card_with_face"
                             ]
                           }
                         ]
                       },
                       {
-                        "group": "Kenya",
+                        "group": "Credit Report",
                         "pages": [
                           {
-                            "group": "Individual",
+                            "group": "Nigeria",
                             "pages": [
-                              "v3/credit/individual/Kenya_Individual_Credit"
+                              {
+                                "group": "Business",
+                                "pages": [
+                                  "v2/credit/business/crc-business_credit_history",
+                                  "v2/credit/business/first-central_business_credit_history",
+                                  "v2/credit/business/premium_business_credit_history"
+                                ]
+                              },
+                              {
+                                "group": "Individual",
+                                "pages": [
+                                  "v2/credit/individual/First_Central_Credit_Summary",
+                                  "v2/credit/individual/First_Central_Full_Credit_Report",
+                                  "v2/credit/individual/Credit_Registry_Credit_Summary",
+                                  "v2/credit/individual/Credit_Registry_Full_Credit_Report",
+                                  "v2/credit/individual/Credit_Report_Premium",
+                                  "v2/credit/individual/First_Central_Credit_Score",
+                                  "v2/credit/individual/CRC_Credit_Score",
+                                  "v2/credit/individual/CRC_Credit_History",
+                                  "v2/credit/individual/CRC_full_credit_report",
+                                  "v2/credit/individual/Credt_Registry_History_Advanced"
+                                ]
+                              }
                             ]
                           },
                           {
-                            "group": "Business",
+                            "group": "Kenya",
                             "pages": [
-                              "v3/credit/business/Kenya_Business_Credit"
+                              {
+                                "group": "Individual",
+                                "pages": [
+                                  "v2/credit/individual/Kenya_Individual_Credit"
+                                ]
+                              },
+                              {
+                                "group": "Business",
+                                "pages": [
+                                  "v2/credit/business/Kenya_Business_Credit"
+                                ]
+                              }
                             ]
                           }
                         ]
                       }
                     ]
-                  }
-                ]
-              },
-              {
-                "group": "Fraud & Transaction Monitoring",
-                "pages": [
+                  },
                   {
-                    "group": "Transaction Monitoring",
+                    "group": "Fraud & Transaction Monitoring",
                     "pages": [
-                      "v3/transaction/transaction_monitoring/transaction_monitoring_overview",
-                      "v3/transaction/transaction_monitoring/post_transaction_request",
-                      "v3/transaction/transaction_monitoring/user_journey"
+                      {
+                        "group": "Card Transaction",
+                        "pages": [
+                          "v2/transaction/card_transaction/card_transaction_overview",
+                          "v2/transaction/card_transaction/post_fraud_request"
+                        ]
+                      },
+                      {
+                        "group": "Transaction Monitoring",
+                        "pages": [
+                          "v2/transaction/transaction_monitoring/transaction_monitoring_overview",
+                          "v2/transaction/transaction_monitoring/post_transaction_request",
+                          "v2/transaction/transaction_monitoring/user_journey"
+                        ]
+                      },
+                      {
+                        "group": "KYC",
+                        "pages": [
+                          "v2/transaction/kyc/get_all_search_results",
+                          "v2/transaction/kyc/get_entity_kyc_by_id",
+                          "v2/transaction/kyc/post_kyc_check"
+                        ]
+                      },
+                      {
+                        "group": "Transaction Screening",
+                        "pages": [
+                          "v2/transaction/transaction_screening/overview",
+                          "v2/transaction/transaction_screening/post_transaction_screening"
+                        ]
+                      }
                     ]
                   },
                   {
-                    "group": "Transaction Screening",
+                    "group": "Loan Fraud Check",
                     "pages": [
-                      "v3/transaction/transaction_screening/overview",
-                      "v3/transaction/transaction_screening/post_transaction_screening"
-                    ]
-                  },
-                  {
-                    "group": "KYC",
-                    "pages": [
-                      "v3/transaction/kyc/get_all_search_results",
-                      "v3/transaction/kyc/get_entity_kyc_by_id",
-                      "v3/transaction/kyc/post_kyc_check"
+                      "v2/loan/introduction",
+                      "v2/loan/individual_fraud_check",
+                      "v2/loan/business_fraud_check"
                     ]
                   }
                 ]
-              },
+              }
+            ]
+          },
+          {
+            "version": "v1",
+            "groups": [
               {
-                "group": "Loan Fraud Check",
+                "group": "API Reference",
                 "pages": [
-                  "v3/loan/introduction",
-                  "v3/loan/individual_fraud_check",
-                  "v3/loan/business_fraud_check"
+                  {
+                    "group": "Get Started",
+                    "pages": [
+                      "introduction",
+                      "quickstart",
+                      "authentication",
+                      "error_codes",
+                      "webhooks"
+                    ]
+                  },
+                  {
+                    "group": "Common Use Cases",
+                    "pages": [
+                      "pages/account_verification",
+                      "pages/lending"
+                    ]
+                  },
+                  {
+                    "group": "Libraries",
+                    "pages": [
+                      "libraries/smartcomply_sdk",
+                      "libraries/android_sdk",
+                      "libraries/ios_sdk"
+                    ]
+                  },
+                  {
+                    "group": "Biometrics",
+                    "pages": [
+                      "v1/biometrics/face_comparism",
+                      "v1/biometrics/face_liveliness"
+                    ]
+                  },
+                  {
+                    "group": "Onboarding Suite",
+                    "pages": [
+                      {
+                        "group": "KYC",
+                        "pages": [
+                          {
+                            "group": "Nigeria",
+                            "pages": [
+                              "v1/kyc/nigeria/Drivers_License",
+                              "v1/kyc/nigeria/passport_verification",
+                              "v1/kyc/nigeria/nuban",
+                              "v1/kyc/nigeria/phone_number_basic",
+                              "v1/kyc/nigeria/Phone_Number_Advanced",
+                              "v1/kyc/nigeria/CAC",
+                              "v1/kyc/nigeria/CAC_Advanced",
+                              "v1/kyc/nigeria/nin",
+                              "v1/kyc/nigeria/nin_with_face",
+                              "v1/kyc/nigeria/VNIN",
+                              "v1/kyc/nigeria/BVN",
+                              "v1/kyc/nigeria/BVN_Advanced",
+                              "v1/kyc/nigeria/tin",
+                              "v1/kyc/nigeria/Voters_ID",
+                              "v1/kyc/nigeria/BVN_with_face"
+                            ]
+                          },
+                          {
+                            "group": "Kenya",
+                            "pages": [
+                              "v1/kyc/kenya/national_id_advance",
+                              "v1/kyc/kenya/national_id_basic",
+                              "v1/kyc/kenya/Passport_Verification"
+                            ]
+                          },
+                          {
+                            "group": "Ghana",
+                            "pages": [
+                              "v1/kyc/ghana/ID_Card"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "group": "Credit Report",
+                        "pages": [
+                          {
+                            "group": "Business",
+                            "pages": [
+                              "v1/credit/business/crc-business_credit_history",
+                              "v1/credit/business/first-central_business_credit_history",
+                              "v1/credit/business/premium_business_credit_history"
+                            ]
+                          },
+                          {
+                            "group": "Individual",
+                            "pages": [
+                              "v1/credit/individual/First_Central_Credit_Summary",
+                              "v1/credit/individual/First_Central_Full_Credit_Report",
+                              "v1/credit/individual/Credit_Registry_Credit_Summary",
+                              "v1/credit/individual/Credit_Registry_Full_Credit_Report",
+                              "v1/credit/individual/Credit_Report_Premium",
+                              "v1/credit/individual/First_Central_Credit_Score",
+                              "v1/credit/individual/CRC_Credit_Score",
+                              "v1/credit/individual/CRC_Credit_History",
+                              "v1/credit/individual/CRC_full_credit_report",
+                              "v1/credit/individual/Credt_Registry_History_Advanced"
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "group": "Fraud & Transaction Monitoring",
+                    "pages": [
+                      {
+                        "group": "Threshold",
+                        "pages": [
+                          "v1/transaction/threshold/Get_Threshold",
+                          "v1/transaction/threshold/Post_Set_Threshold"
+                        ]
+                      },
+                      {
+                        "group": "Limit",
+                        "pages": [
+                          "v1/transaction/limit/Get_Limit",
+                          "v1/transaction/limit/Post_Set_Limit"
+                        ]
+                      },
+                      {
+                        "group": "Card Transaction",
+                        "pages": [
+                          "v1/transaction/card_transaction/card_transaction_overview",
+                          "v1/transaction/card_transaction/post_fraud_request"
+                        ]
+                      },
+                      {
+                        "group": "Transaction Monitoring",
+                        "pages": [
+                          "v1/transaction/transaction_monitoring/transaction_monitoring_overview",
+                          "v1/transaction/transaction_monitoring/post_transaction_request"
+                        ]
+                      },
+                      {
+                        "group": "KYC",
+                        "pages": [
+                          "v1/transaction/kyc/get_all_search_results",
+                          "v1/transaction/kyc/get_entity_kyc_by_id",
+                          "v1/transaction/kyc/post_kyc_check"
+                        ]
+                      },
+                      {
+                        "group": "Transaction Screening",
+                        "pages": [
+                          "v1/transaction/transaction_screening/overview",
+                          "v1/transaction/transaction_screening/post_transaction_screening"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "group": "Loan Fraud Check",
+                    "pages": [
+                      "v1/loan/introduction",
+                      "v1/loan/individual_fraud_check",
+                      "v1/loan/business_fraud_check"
+                    ]
+                  }
                 ]
               }
             ]
@@ -299,330 +666,263 @@
         ]
       },
       {
-        "version": "v2",
-        "groups": [
+        "language": "fr",
+        "versions": [
           {
-            "group": "API Reference",
-            "pages": [
+            "version": "v3",
+            "groups": [
               {
-                "group": "Get Started",
-                "pages": [
-                  "introduction",
-                  "quickstart",
-                  "authentication",
-                  "error_codes",
-                  "webhooks"
-                ]
-              },
-              {
-                "group": "Common Use Cases",
-                "pages": ["pages/account_verification", "pages/lending"]
-              },
-              {
-                "group": "Libraries",
-                "pages": ["libraries/smartcomply_sdk", "libraries/android_sdk", "libraries/ios_sdk"]
-              },
-              {
-                "group": "Onboarding Suite",
+                "group": "Référence API",
                 "pages": [
                   {
-                    "group": "KYC",
+                    "group": "Pour commencer",
                     "pages": [
-                      {
-                        "group": "Nigeria",
-                        "pages": [
-                          "v2/kyc/nigeria/BVN",
-                          "v2/kyc/nigeria/BVN_Advanced",
-                          "v2/kyc/nigeria/BVN_with_face",
-                          "v2/kyc/nigeria/CAC",
-                          "v2/kyc/nigeria/CAC_Advanced",
-                          "v2/kyc/nigeria/Drivers_License",
-                          "v2/kyc/nigeria/nin",
-                          "v2/kyc/nigeria/nin_with_face",
-                          "v2/kyc/nigeria/nuban",
-                          "v2/kyc/nigeria/nuban_advanced",
-                          "v2/kyc/nigeria/passport_verification",
-                          "v2/kyc/nigeria/Phone_Number_Advanced",
-                          "v2/kyc/nigeria/phone_number_basic",
-                          "v2/kyc/nigeria/tin",
-                          "v2/kyc/nigeria/VNIN",
-                          "v2/kyc/nigeria/Voters_ID"
-                        ]
-                      },
-                      {
-                        "group": "Kenya",
-                        "pages": [
-                          "v2/kyc/kenya/national_id_basic",
-                          "v2/kyc/kenya/national_id_advance",
-                          "v2/kyc/kenya/business_registration",
-                          "v2/kyc/kenya/alien_ID",
-                          "v2/kyc/kenya/kra_pin",
-                          "v2/kyc/kenya/Passport_Verification"
-                        ]
-                      },
-                      {
-                        "group": "Ghana",
-                        "pages": [
-                          "v2/kyc/ghana/ID_Card",
-                          "v2/kyc/ghana/ID_Card_with_face"
-                        ]
-                      }
+                      "fr/introduction",
+                      "fr/quickstart",
+                      "fr/authentication",
+                      "fr/error_codes",
+                      "fr/webhooks",
+                      "fr/changelog"
                     ]
                   },
                   {
-                    "group": "Credit Report",
+                    "group": "Cas d'utilisation courants",
+                    "pages": [
+                      "fr/pages/account_verification",
+                      "fr/pages/lending"
+                    ]
+                  },
+                  {
+                    "group": "Bibliothèques et outils",
+                    "pages": [
+                      "fr/libraries/smartcomply_sdk",
+                      "fr/libraries/android_sdk",
+                      "fr/libraries/ios_sdk",
+                      "fr/libraries/flutter_sdk",
+                      "fr/libraries/postman"
+                    ]
+                  },
+                  {
+                    "group": "Biométrie",
+                    "pages": [
+                      "fr/v3/biometrics/face_comparism",
+                      "fr/v3/biometrics/face_liveliness"
+                    ]
+                  },
+                  {
+                    "group": "Suite d'intégration",
                     "pages": [
                       {
-                        "group": "Nigeria",
+                        "group": "Intégration client",
+                        "pages": [
+                          "fr/v3/onboarding/introduction",
+                          "fr/v3/onboarding/verify_customer",
+                          "fr/v3/onboarding/get_settings",
+                          "fr/v3/onboarding/update_settings"
+                        ]
+                      },
+                      {
+                        "group": "KYC",
                         "pages": [
                           {
-                            "group": "Business",
+                            "group": "Vérification des données",
                             "pages": [
-                              "v2/credit/business/crc-business_credit_history",
-                              "v2/credit/business/first-central_business_credit_history",
-                              "v2/credit/business/premium_business_credit_history"
+                              {
+                                "group": "Nigeria",
+                                "pages": [
+                                  "fr/v3/kyc/nigeria/BVN",
+                                  "fr/v3/kyc/nigeria/BVN_Advanced",
+                                  "fr/v3/kyc/nigeria/CAC",
+                                  "fr/v3/kyc/nigeria/CAC_Advanced",
+                                  "fr/v3/kyc/nigeria/company_tax_id",
+                                  "fr/v3/kyc/nigeria/Drivers_License",
+                                  "fr/v3/kyc/nigeria/nin",
+                                  "fr/v3/kyc/nigeria/nin_with_face",
+                                  "fr/v3/kyc/nigeria/nuban",
+                                  "fr/v3/kyc/nigeria/nuban_advanced",
+                                  "fr/v3/kyc/nigeria/passport_verification",
+                                  "fr/v3/kyc/nigeria/Phone_Number_Advanced",
+                                  "fr/v3/kyc/nigeria/phone_number_basic",
+                                  "fr/v3/kyc/nigeria/tin",
+                                  "fr/v3/kyc/nigeria/VNIN",
+                                  "fr/v3/kyc/nigeria/Voters_ID"
+                                ]
+                              },
+                              {
+                                "group": "Kenya",
+                                "pages": [
+                                  "fr/v3/kyc/kenya/national_id_basic",
+                                  "fr/v3/kyc/kenya/national_id_advance",
+                                  "fr/v3/kyc/kenya/business_registration",
+                                  "fr/v3/kyc/kenya/alien_ID",
+                                  "fr/v3/kyc/kenya/kra_pin",
+                                  "fr/v3/kyc/kenya/Passport_Verification",
+                                  "fr/v3/kyc/kenya/Drivers_License"
+                                ]
+                              },
+                              {
+                                "group": "Ghana",
+                                "pages": [
+                                  "fr/v3/kyc/ghana/ID_Card",
+                                  "fr/v3/kyc/ghana/ID_Card_with_face",
+                                  "fr/v3/kyc/ghana/International_Passport"
+                                ]
+                              },
+                              {
+                                "group": "Côte d'Ivoire",
+                                "pages": [
+                                  "fr/v3/kyc/cote_d_ivoire/National_ID"
+                                ]
+                              },
+                              {
+                                "group": "Afrique du Sud",
+                                "pages": [
+                                  "fr/v3/kyc/south_africa/National_ID"
+                                ]
+                              }
                             ]
                           },
                           {
-                            "group": "Individual",
+                            "group": "Vérification de documents",
                             "pages": [
-                              "v2/credit/individual/First_Central_Credit_Summary",
-                              "v2/credit/individual/First_Central_Full_Credit_Report",
-                              "v2/credit/individual/Credit_Registry_Credit_Summary",
-                              "v2/credit/individual/Credit_Registry_Full_Credit_Report",
-                              "v2/credit/individual/Credit_Report_Premium",
-                              "v2/credit/individual/First_Central_Credit_Score",
-                              "v2/credit/individual/CRC_Credit_Score",
-                              "v2/credit/individual/CRC_Credit_History",
-                              "v2/credit/individual/CRC_Full_Credit_Report",
-                              "v2/credit/individual/Credt_Registry_History_Advanced"
+                              {
+                                "group": "Nigeria",
+                                "pages": [
+                                  "fr/v3/kyc/document_verification/nigeria/National_ID",
+                                  "fr/v3/kyc/document_verification/nigeria/Passport",
+                                  "fr/v3/kyc/document_verification/nigeria/Drivers_License",
+                                  "fr/v3/kyc/document_verification/nigeria/Voters_Card"
+                                ]
+                              },
+                              {
+                                "group": "Kenya",
+                                "pages": [
+                                  "fr/v3/kyc/document_verification/kenya/Kenya_ID",
+                                  "fr/v3/kyc/document_verification/kenya/Passport"
+                                ]
+                              },
+                              {
+                                "group": "Ghana",
+                                "pages": [
+                                  "fr/v3/kyc/document_verification/ghana/Passport"
+                                ]
+                              },
+                              {
+                                "group": "Canada",
+                                "pages": [
+                                  "fr/v3/kyc/document_verification/canada/Passport"
+                                ]
+                              },
+                              {
+                                "group": "États-Unis",
+                                "pages": [
+                                  "fr/v3/kyc/document_verification/usa/Passport"
+                                ]
+                              },
+                              {
+                                "group": "Côte d'Ivoire",
+                                "pages": [
+                                  "fr/v3/kyc/document_verification/cote_d_ivoire/Passport"
+                                ]
+                              },
+                              {
+                                "group": "Royaume-Uni",
+                                "pages": [
+                                  "fr/v3/kyc/document_verification/uk/Passport"
+                                ]
+                              }
                             ]
                           }
                         ]
                       },
                       {
-                        "group": "Kenya",
+                        "group": "Rapport de crédit",
                         "pages": [
                           {
-                            "group": "Individual",
+                            "group": "Nigeria",
                             "pages": [
-                              "v2/credit/individual/Kenya_Individual_Credit"
+                              {
+                                "group": "Entreprise",
+                                "pages": [
+                                  "fr/v3/credit/business/crc-business_credit_history",
+                                  "fr/v3/credit/business/first-central_business_credit_history",
+                                  "fr/v3/credit/business/premium_business_credit_history"
+                                ]
+                              },
+                              {
+                                "group": "Individuel",
+                                "pages": [
+                                  "fr/v3/credit/individual/First_Central_Credit_Summary",
+                                  "fr/v3/credit/individual/First_Central_Full_Credit_Report",
+                                  "fr/v3/credit/individual/Credit_Registry_Credit_Summary",
+                                  "fr/v3/credit/individual/Credit_Registry_Full_Credit_Report",
+                                  "fr/v3/credit/individual/Credit_Report_Premium",
+                                  "fr/v3/credit/individual/First_Central_Credit_Score",
+                                  "fr/v3/credit/individual/CRC_Credit_Score",
+                                  "fr/v3/credit/individual/CRC_Credit_History",
+                                  "fr/v3/credit/individual/CRC_full_credit_report",
+                                  "fr/v3/credit/individual/Credt_Registry_History_Advanced"
+                                ]
+                              }
                             ]
                           },
                           {
-                            "group": "Business",
+                            "group": "Kenya",
                             "pages": [
-                              "v2/credit/business/Kenya_Business_Credit"
+                              {
+                                "group": "Individuel",
+                                "pages": [
+                                  "fr/v3/credit/individual/Kenya_Individual_Credit"
+                                ]
+                              },
+                              {
+                                "group": "Entreprise",
+                                "pages": [
+                                  "fr/v3/credit/business/Kenya_Business_Credit"
+                                ]
+                              }
                             ]
                           }
                         ]
                       }
                     ]
-                  }
-                ]
-              },
-              {
-                "group": "Fraud & Transaction Monitoring",
-                "pages": [
-                  {
-                    "group": "Card Transaction",
-                    "pages": [
-                      "v2/transaction/card_transaction/card_transaction_overview",
-                      "v2/transaction/card_transaction/post_fraud_request"
-                    ]
                   },
                   {
-                    "group": "Transaction Monitoring",
-                    "pages": [
-                      "v2/transaction/transaction_monitoring/transaction_monitoring_overview",
-                      "v2/transaction/transaction_monitoring/post_transaction_request",
-                      "v2/transaction/transaction_monitoring/user_journey"
-                    ]
-                  },
-                  {
-                    "group": "KYC",
-                    "pages": [
-                      "v2/transaction/kyc/get_all_search_results",
-                      "v2/transaction/kyc/get_entity_kyc_by_id",
-                      "v2/transaction/kyc/post_kyc_check"
-                    ]
-                  },
-                  {
-                    "group": "Transaction Screening",
-                    "pages": [
-                      "v2/transaction/transaction_screening/overview",
-                      "v2/transaction/transaction_screening/post_transaction_screening"
-                    ]
-                  }
-                ]
-              },
-              {
-                "group": "Loan Fraud Check",
-                "pages": [
-                  "v2/loan/introduction",
-                  "v2/loan/individual_fraud_check",
-                  "v2/loan/business_fraud_check"
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "version": "v1",
-        "groups": [
-          {
-            "group": "API Reference",
-            "pages": [
-              {
-                "group": "Get Started",
-                "pages": [
-                  "introduction",
-                  "quickstart",
-                  "authentication",
-                  "error_codes",
-                  "webhooks"
-                ]
-              },
-              {
-                "group": "Common Use Cases",
-                "pages": ["pages/account_verification", "pages/lending"]
-              },
-              {
-                "group": "Libraries",
-                "pages": ["libraries/smartcomply_sdk", "libraries/android_sdk", "libraries/ios_sdk"]
-              },
-              {
-                "group": "Biometrics",
-                "pages": [
-                  "v1/biometrics/face_comparism",
-                  "v1/biometrics/face_liveliness"
-                ]
-              },
-              {
-                "group": "Onboarding Suite",
-                "pages": [
-                  {
-                    "group": "KYC",
+                    "group": "Fraude et surveillance des transactions",
                     "pages": [
                       {
-                        "group": "Nigeria",
+                        "group": "Surveillance des transactions",
                         "pages": [
-                          "v1/kyc/nigeria/Drivers_License",
-                          "v1/kyc/nigeria/passport_verification",
-                          "v1/kyc/nigeria/nuban",
-                          "v1/kyc/nigeria/phone_number_basic",
-                          "v1/kyc/nigeria/Phone_Number_Advanced",
-                          "v1/kyc/nigeria/CAC",
-                          "v1/kyc/nigeria/CAC_Advanced",
-                          "v1/kyc/nigeria/nin",
-                          "v1/kyc/nigeria/nin_with_face",
-                          "v1/kyc/nigeria/VNIN",
-                          "v1/kyc/nigeria/BVN",
-                          "v1/kyc/nigeria/BVN_Advanced",
-                          "v1/kyc/nigeria/tin",
-                          "v1/kyc/nigeria/Voters_ID",
-                          "v1/kyc/nigeria/BVN_with_face"
+                          "fr/v3/transaction/transaction_monitoring/transaction_monitoring_overview",
+                          "fr/v3/transaction/transaction_monitoring/post_transaction_request",
+                          "fr/v3/transaction/transaction_monitoring/user_journey"
                         ]
                       },
                       {
-                        "group": "Kenya",
+                        "group": "Filtrage des transactions",
                         "pages": [
-                          "v1/kyc/kenya/national_id_advance",
-                          "v1/kyc/kenya/national_id_basic",
-                          "v1/kyc/kenya/Passport_Verification"
+                          "fr/v3/transaction/transaction_screening/overview",
+                          "fr/v3/transaction/transaction_screening/post_transaction_screening"
                         ]
                       },
                       {
-                        "group": "Ghana",
-                        "pages": ["v1/kyc/ghana/ID_Card"]
+                        "group": "KYC",
+                        "pages": [
+                          "fr/v3/transaction/kyc/get_all_search_results",
+                          "fr/v3/transaction/kyc/get_entity_kyc_by_id",
+                          "fr/v3/transaction/kyc/post_kyc_check"
+                        ]
                       }
                     ]
                   },
                   {
-                    "group": "Credit Report",
+                    "group": "Vérification de fraude de prêt",
                     "pages": [
-                      {
-                        "group": "Business",
-                        "pages": [
-                          "v1/credit/business/crc-business_credit_history",
-                          "v1/credit/business/first-central_business_credit_history",
-                          "v1/credit/business/premium_business_credit_history"
-                        ]
-                      },
-                      {
-                        "group": "Individual",
-                        "pages": [
-                          "v1/credit/individual/First_Central_Credit_Summary",
-                          "v1/credit/individual/First_Central_Full_Credit_Report",
-                          "v1/credit/individual/Credit_Registry_Credit_Summary",
-                          "v1/credit/individual/Credit_Registry_Full_Credit_Report",
-                          "v1/credit/individual/Credit_Report_Premium",
-                          "v1/credit/individual/First_Central_Credit_Score",
-                          "v1/credit/individual/CRC_Credit_Score",
-                          "v1/credit/individual/CRC_Credit_History",
-                          "v1/credit/individual/CRC_Full_Credit_Report",
-                          "v1/credit/individual/Credt_Registry_History_Advanced"
-                        ]
-                      }
+                      "fr/v3/loan/introduction",
+                      "fr/v3/loan/individual_fraud_check",
+                      "fr/v3/loan/business_fraud_check"
                     ]
                   }
-                ]
-              },
-              {
-                "group": "Fraud & Transaction Monitoring",
-                "pages": [
-                  {
-                    "group": "Threshold",
-                    "pages": [
-                      "v1/transaction/threshold/Get_Threshold",
-                      "v1/transaction/threshold/Post_Set_Threshold"
-                    ]
-                  },
-                  {
-                    "group": "Limit",
-                    "pages": [
-                      "v1/transaction/limit/Get_Limit",
-                      "v1/transaction/limit/Post_Set_Limit"
-                    ]
-                  },
-                  {
-                    "group": "Card Transaction",
-                    "pages": [
-                      "v1/transaction/card_transaction/card_transaction_overview",
-                      "v1/transaction/card_transaction/post_fraud_request"
-                    ]
-                  },
-                  {
-                    "group": "Transaction Monitoring",
-                    "pages": [
-                      "v1/transaction/transaction_monitoring/transaction_monitoring_overview",
-                      "v1/transaction/transaction_monitoring/post_transaction_request"
-                    ]
-                  },
-                  {
-                    "group": "KYC",
-                    "pages": [
-                      "v1/transaction/kyc/get_all_search_results",
-                      "v1/transaction/kyc/get_entity_kyc_by_id",
-                      "v1/transaction/kyc/post_kyc_check"
-                    ]
-                  },
-                  {
-                    "group": "Transaction Screening",
-                    "pages": [
-                      "v1/transaction/transaction_screening/overview",
-                      "v1/transaction/transaction_screening/post_transaction_screening"
-                    ]
-                  }
-                ]
-              },
-              {
-                "group": "Loan Fraud Check",
-                "pages": [
-                  "v1/loan/introduction",
-                  "v1/loan/individual_fraud_check",
-                  "v1/loan/business_fraud_check"
                 ]
               }
             ]

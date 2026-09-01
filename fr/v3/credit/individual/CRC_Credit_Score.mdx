@@ -1,0 +1,100 @@
+---
+title: "Score de crédit CRC"
+sidebarTitle: "Score de crédit CRC"
+description: "Récupérez le score de crédit FICO d'un individu auprès du bureau CRC à l'aide de son BVN."
+openapi: "POST /api/onboarding/individual/credit_scores_crc/"
+---
+
+L'endpoint Score de crédit CRC renvoie le score de crédit FICO d'un individu auprès du bureau CRC, accompagné d'une notation, des facteurs contributifs et d'un résumé de prêt.
+
+## Endpoint
+
+```
+POST /api/onboarding/individual/credit_scores_crc/
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `bvn` | string | Oui | Le numéro d'identification bancaire à 11 chiffres de l'individu |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/individual/credit_scores_crc/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"bvn": "22244545518"}'
+```
+</CodeGroup>
+
+## Réponse
+
+### 200 OK
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `data.name` | string | Nom complet |
+| `data.score.totalNoOfDelinquentFacilities` | number | Nombre de facilités en impayé |
+| `data.score.hasLoans` | string | Si l'individu a des prêts actifs (`"YES"` ou `"NO"`) |
+| `data.score.ficoScore.score` | number | Score de crédit FICO numérique |
+| `data.score.ficoScore.rating` | string | Notation de crédit (p. ex. `"GOOD"`, `"FAIR"`, `"POOR"`) |
+| `data.score.ficoScore.reasons` | string | Facteurs influençant le score |
+| `data.score.lastReportedDate` | string | Date du dernier rapport du bureau |
+| `data.score.crcReportOrderNumber` | string | Numéro de commande du rapport CRC |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "_id": "64f600608aaf9386c646de32",
+    "bvn": "22244545518",
+    "name": "ADELEKE EMMANUEL AYORINDE",
+    "gender": "Male",
+    "dateOfBirth": "29/12/1994",
+    "score": {
+      "totalNoOfDelinquentFacilities": 0,
+      "hasLoans": "YES",
+      "ficoScore": {
+        "score": 717,
+        "rating": "GOOD",
+        "reasons": "Applicant is young relative to other applicants scored. The length of time accounts have been established is short."
+      },
+      "lastReportedDate": "30-SEP-2023",
+      "crcReportOrderNumber": "W-0097887747/2023"
+    },
+    "searchedDate": "2023-11-23T14:25:54.210Z"
+  },
+  "message": "Credit Scores individual CRC report details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Missing required fields"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```

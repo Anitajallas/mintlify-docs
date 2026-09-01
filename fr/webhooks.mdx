@@ -1,0 +1,427 @@
+---
+title: 'Webhooks'
+description: 'Apprenez à recevoir et à vérifier les notifications webhook d''Adhere.'
+---
+
+<Info>
+  **En bref :** Les webhooks vous permettent de mettre en place un système de notification pour recevoir des mises à jour sur certaines requêtes effectuées vers l'API Adhere.
+</Info>
+
+Adhere utilise des webhooks pour notifier votre application lorsque des événements spécifiques se produisent. Cela vous permet de construire des flux de travail automatisés et d'intégrer étroitement Adhere à votre système.
+
+## Pourquoi utiliser des Webhooks ?
+
+Généralement, lorsque vous faites une requête vers un endpoint API, vous vous attendez à une réponse quasi immédiate. Cependant, certaines requêtes peuvent prendre du temps à traiter. Afin d'éviter une erreur de timeout, une réponse en attente est renvoyée. Puisque vos enregistrements doivent être mis à jour avec l'état final de la requête, vous devez soit :
+
+1.  **Polling (Interrogation)** : Faire une requête de mise à jour à intervalles réguliers.
+2.  **Webhooks** : Écouter les événements en utilisant une URL de webhook.
+
+<Tip>
+  Nous recommandons l'utilisation des webhooks plutôt que le polling. Les webhooks sont plus efficaces, réduisent la charge réseau et garantissent que votre système est mis à jour immédiatement lorsqu'un événement se produit.
+</Tip>
+
+## Configuration et intégration
+
+Pour commencer à recevoir des notifications webhook, suivez ces étapes pour configurer votre environnement :
+
+<Steps>
+  <Step title="Configurer l'URL du Webhook">
+    Fournissez l'endpoint sur votre serveur où Adhere enverra les requêtes `POST`. Il doit s'agir d'une URL accessible publiquement.
+  </Step>
+  <Step title="Définir une clé de hachage">
+    Une clé secrète utilisée pour signer la charge utile (payload) du webhook. Vous devez la garder sécurisée et l'utiliser pour vérifier que les requêtes proviennent bien d'Adhere.
+  </Step>
+  <Step title="Enregistrer la configuration">
+    Enregistrez vos paramètres dans le tableau de bord Adhere sous la section **Intégrations**.
+  </Step>
+</Steps>
+
+<Note>
+  Il existe deux canaux de webhook indépendants, chacun avec sa propre URL et sa propre clé secrète de signature :
+
+  - **Événements de module** (surveillance des transactions, KYC) sont envoyés à l'URL définie sous **Intégrations**, et sont signés avec la **Clé de hachage** que vous y avez définie.
+  - **Vérification d'identité** (`liveness.completed`, envoyé pour chaque exécution du SDK Web, Android et iOS) est envoyé à l'URL de webhook définie dans votre **Configuration SDK**, et est signé avec le secret webhook spécifique à cette configuration. Il est généré pour vous, pas défini par vous.
+
+  Les deux utilisent le même en-tête `X-Adhere-Signature` et le même schéma HMAC-SHA256 décrit ci-dessous.
+</Note>
+
+## Sécurité et vérification
+
+Toutes les requêtes webhook d'Adhere incluent un en-tête `X-Adhere-Signature` sous la forme `sha256=<signature>`, où la signature est le condensé HMAC-SHA256 en **hexadécimal minuscule** du corps de la requête.
+
+### Vérification des signatures
+
+Pour vous assurer qu'une requête webhook provient réellement d'Adhere, vous devez vérifier la signature avant de traiter la charge utile.
+
+<Warning>
+  Calculez le HMAC sur les **octets bruts du corps de la requête**, tels qu'ils sont reçus. Adhere signe une sérialisation JSON compacte sans espace blanc entre les séparateurs ; re-sérialiser une charge utile analysée produira des octets différents et la signature ne correspondra jamais.
+</Warning>
+
+<Note>
+  Pour `liveness.completed`, la clé de signature est le secret webhook de votre configuration SDK **sans les tirets** — une chaîne hexadécimale de 32 caractères, et non la forme UUID avec tirets. Les exemples ci-dessous les suppriment pour vous.
+</Note>
+
+### Obtenir le secret webhook de votre configuration SDK
+
+Le secret est généré pour vous lorsque la configuration SDK est créée. Récupérez-le depuis le tableau de bord Adhere : allez dans **Settings → Integrations → SDK**, ouvrez le menu sur la ligne de votre config et choisissez **Integration**. Le secret y est affiché avec votre ID de config, avec un bouton pour le copier.
+
+Traitement comme un mot de passe. Toute personne possédant celui-ci peut forger un webhook validement signé portant de fausses résultats de vérification, stockez-le de la même façon que vous stockez toute autre credential serveur et ne l'embarquez jamais dans du code client.
+
+Le secret est généré pour vous lors de la création de la configuration SDK et est délibérément absent de la lecture de configuration ordinaire, car quiconque le possède peut forger un webhook valablement signé. Récupérez-le explicitement :
+
+```bash
+curl https://adhere-api.smartcomply.com/v1/sdk-config/<config-id>/webhook-secret/ \
+  -H "Authorization: Token <votre-token-dashboard>"
+```
+
+```json
+{
+  "status": "Success",
+  "data": {
+    "client_id": "3e44115c-ccba-4460-92fc-0539d74beb7d",
+    "webhook_secret": "…",
+    "signature_header": "x-adhere-signature",
+    "algorithm": "sha256"
+  }
+}
+```
+
+Seul l'**administrateur du compte** peut appeler ceci, pas un employé avec le rôle admin, ni le propriétaire d'un compte différent. Chaque appel est journalisé.
+
+Pour faire pivoter le secret, faites un `POST` sur la même URL. La nouvelle valeur prend effet immédiatement ; déployez-la donc avant que votre prochaine vérification ne soit terminée, sinon les signatures échoueront pendant l'intervalle.
+
+```bash
+curl -X POST https://adhere-api.smartcomply.com/v1/sdk-config/<config-id>/webhook-secret/ \
+  -H "Authorization: Token <votre-token-dashboard>"
+```
+
+<CodeGroup>
+```python Python
+import hmac
+import hashlib
+from flask import request, abort
+
+def verify_webhook(request, hash_key):
+    sig_header = request.headers.get("X-Adhere-Signature")
+    if not sig_header:
+        abort(401, "Signature manquante")
+
+    # Le format de l'en-tête est "sha256=<hex digest>"
+    _, _, received_sig = sig_header.partition("=")
+
+    # Calculez le condensé HMAC SHA256 du corps de la requête brute
+    raw_body = request.get_data()
+    expected_sig = hmac.new(
+        hash_key.replace("-", "").encode("utf-8"),
+        raw_body,
+        hashlib.sha256
+    ).hexdigest()
+
+    if not hmac.compare_digest(received_sig, expected_sig):
+        abort(401, "Signature invalide")
+```
+
+```javascript Node.js
+const crypto = require('crypto');
+
+// `req.rawBody` doit être le corps non analysé. Avec Express :
+//   app.use(express.json({ verify: (req, res, buf) => { req.rawBody = buf; } }));
+function verifyWebhook(req, hashKey) {
+  const signature = req.headers['x-adhere-signature'];
+  if (!signature) {
+    throw new Error('Signature manquante');
+  }
+
+  const receivedSig = signature.replace(/^sha256=/, '');
+  const expected = crypto
+    .createHmac('sha256', hashKey.replace(/-/g, ''))
+    .update(req.rawBody)
+    .digest('hex');
+
+  const valid =
+    receivedSig.length === expected.length &&
+    crypto.timingSafeEqual(Buffer.from(receivedSig, 'hex'), Buffer.from(expected, 'hex'));
+
+  if (!valid) {
+    throw new Error('Signature invalide');
+  }
+}
+```
+
+```php PHP
+function verify_webhook($request_body, $hash_key, $received_sig) {
+    $received_sig = preg_replace('/^sha256=/', '', $received_sig);
+    $expected_sig = hash_hmac('sha256', $request_body, str_replace('-', '', $hash_key));
+
+    if (!hash_equals($expected_sig, $received_sig)) {
+        http_response_code(401);
+        exit("Signature invalide");
+    }
+}
+```
+
+```go Go
+import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
+	"io"
+	"net/http"
+	"strings"
+)
+
+func verifyWebhook(w http.ResponseWriter, r *http.Request, hashKey string) bool {
+	sigHeader := r.Header.Get("X-Adhere-Signature")
+	if sigHeader == "" {
+		return false
+	}
+
+	// Le format de l'en-tête est "sha256=<hex digest>"
+	parts := strings.SplitN(sigHeader, "=", 2)
+	if len(parts) != 2 {
+		return false
+	}
+	receivedSig := parts[1]
+
+	body, _ := io.ReadAll(r.Body)
+	h := hmac.New(sha256.New, []byte(strings.ReplaceAll(hashKey, "-", "")))
+	h.Write(body)
+	expectedSig := hex.EncodeToString(h.Sum(nil))
+
+	return hmac.Equal([]byte(receivedSig), []byte(expectedSig))
+}
+```
+
+```csharp .NET
+using System.Security.Cryptography;
+using System.Text;
+
+public bool VerifyWebhook(string requestBody, string hashKey, string receivedSig)
+{
+    receivedSig = receivedSig.StartsWith("sha256=") ? receivedSig.Substring(7) : receivedSig;
+
+    var keyBytes = Encoding.UTF8.GetBytes(hashKey.Replace("-", ""));
+    var bodyBytes = Encoding.UTF8.GetBytes(requestBody);
+
+    using (var hmac = new HMACSHA256(keyBytes))
+    {
+        var hashBytes = hmac.ComputeHash(bodyBytes);
+        var expectedSig = Convert.ToHexString(hashBytes).ToLowerInvariant();
+
+        return CryptographicOperations.FixedTimeEquals(
+            Encoding.UTF8.GetBytes(expectedSig),
+            Encoding.UTF8.GetBytes(receivedSig));
+    }
+}
+```
+</CodeGroup>
+
+<Warning>
+  Vérifiez toujours l'en-tête `X-Adhere-Signature` pour empêcher les requêtes non autorisées d'interagir avec votre serveur.
+</Warning>
+
+## Structure de la charge utile de l'événement
+
+Les événements de module suivent une structure JSON cohérente :
+
+| Paramètre | Type | Description |
+| :--- | :--- | :--- |
+| `success` | boolean | Indique si l'événement a été traité avec succès. |
+| `module` | string | Le module Adhere qui a déclenché l'événement (ex: `transaction_monitoring`, `kyc`). |
+| `event` | string | Le type d'événement spécifique. |
+| `data` | object | Les données réelles de la charge utile (ex: détails de transaction, résultats KYC). |
+
+La [Vérification d'identité](#identity-verification) n'utilise pas cette enveloppe. Sa charge utile est plate, avec les champs de vérification au niveau supérieur.
+
+## Événements pris en charge
+
+### Surveillance des transactions
+*   **Module** : `transaction_monitoring`
+*   **Événements** :
+    *   `suspicious_transaction` : Déclenché lorsqu'une transaction est traitée et jugée suspecte.
+
+        ```json
+        {
+          "data": {
+            "id": 23,
+            "is_internal_blacklisted": false,
+            "is_blacklisted_by": null,
+            "case_id": "#8N2ZI6",
+            "case_sla": "2025-08-23T09:39:31.551479Z",
+            "case_status": "open",
+            "transaction_id": "9201634916397893719",
+            "amount": 12345.0,
+            "currency": "EUR",
+            "transaction_type": "card",
+            "account_type": "individual",
+            "customer_name": "David Seaman",
+            "customer_email": "davidseaman@example.com",
+            "customer_ip_address": "192.168.0.8",
+            "customer_location": "Yaba, LG",
+            "origin_account_no": "4321567809",
+            "origin_bank_code": "327",
+            "transaction_description": "Paiement pour commande #78901",
+            "destination_account_no": "0123456789",
+            "destination_bank_code": "723",
+            "merchant_name": null,
+            "merchant_location": null,
+            "status": "suspicious",
+            "card_bin": null,
+            "card_last4": null,
+            "bvn": "7890123456",
+            "fraud_percent": null,
+            "tag": [
+              "1 règle(s) déclenchée(s)"
+            ],
+            "sender_blacklisted": false,
+            "receiver_blacklisted": false,
+            "rules_flagged": [
+              "Toute transaction par un individu qui dépasse un montant {a}"
+            ],
+            "additional_info": {},
+            "date_created": "2025-08-20T09:39:31.425545Z",
+            "date_updated": "2026-01-16T13:46:07.388489Z",
+            "branch": 2
+          },
+          "event": "suspicious_transaction",
+          "module": "transaction_monitoring",
+          "success": true
+        }
+        ```
+
+### Vérification d'identité
+
+*   **Envoyé par** : chaque vérification SDK Web, Android et iOS
+*   **Délivré à** : l'URL de webhook sur votre **Configuration SDK** (pas l'URL Intégrations)
+*   **Événements** :
+    *   `liveness.completed` : déclenché une fois par vérification, après que la correspondance faciale et, pour les exécutions de documents, l'OCR soient terminés.
+
+Cette charge utile est **plate** — il n'y a pas d'enveloppe `success` / `module` / `data`.
+
+```json
+POST https://votre-serveur.com/webhook
+Content-Type: application/json
+X-Adhere-Signature: sha256=<hmac-sha256-hex>
+
+{
+  "event": "liveness.completed",
+  "verification_id": 42,
+  "verification_type": "data_verification",
+  "status": "passed",
+  "failure_reason": null,
+  "timestamp": "2026-08-08T10:15:00.000Z",
+  "subject": {
+    "identifier": "12345678901",
+    "identifier_type": "National Identity Number (NIN)",
+    "country": "nigeria"
+  },
+  "biometrics": {
+    "liveness_verified": true,
+    "face_match": {
+      "attempted": true,
+      "verified": true,
+      "confidence_percentage": 70.0,
+      "decision": "MATCH"
+    },
+    "selfie_url": "https://.../autoshot.jpg",
+    "face_analysis": {
+      "gender": "Female",
+      "dominant_emotion": "neutral",
+      "face_quality": {
+        "face_detected": true,
+        "face_confidence": 0.98,
+        "blur_score": 142.3,
+        "is_blurry": false
+      }
+    }
+  },
+  "activity": {
+    "session_id": "da7623bd-9158-4b56-a9e4-4bccf3c0133f",
+    "started_at": "2026-08-08T10:12:00.000Z",
+    "submitted_at": "2026-08-08T10:14:30.000Z",
+    "completed_at": "2026-08-08T10:15:00.000Z",
+    "duration_seconds": 180
+  },
+  "request_context": {
+    "ip": { "address": "102.67.1.66", "city": "Lagos", "country_code": "NG" },
+    "device": { "user_agent": "Mozilla/5.0 ...", "type": "desktop", "os": "Windows" }
+  },
+  "customer_profile": {
+    "first_name": "AMARA",
+    "last_name": "OKAFOR",
+    "other_name": null,
+    "date_of_birth": "01-Jan-1997",
+    "age": 29,
+    "gender": "Female",
+    "id_number": "12345678901",
+    "serial_number": null,
+    "occupation": null,
+    "place_of_birth": null,
+    "place_of_live": "...",
+    "date_of_issue": null,
+    "photo_url": null
+  }
+}
+```
+
+`verification_type` est `data_verification` ou `document_verification`. Pour une exécution de **document**, la même forme de niveau supérieur s'applique, avec un bloc `document` (champs OCR plus une correspondance faciale document-à-selfie) à la place de `customer_profile` :
+
+```json
+"document": {
+  "status": "verified",
+  "document_type": "passport",
+  "is_expired": false,
+  "first_name": "AMARA",
+  "last_name": "OKAFOR",
+  "date_of_birth": "1997-01-01",
+  "age": 29,
+  "gender": "Female",
+  "nationality": "NGA",
+  "document_number": "A12345678",
+  "expiry_date": "2030-06-15",
+  "issue_date": "2020-06-15",
+  "issuing_authority": "...",
+  "document_url": "https://.../document.jpg",
+  "document_back_url": null,
+  "face_match": {
+    "attempted": true,
+    "verified": true,
+    "confidence_percentage": 55.0,
+    "reason": null,
+    "selfie_url": "https://.../autoshot.jpg",
+    "document_face_url": "https://.../document_face.jpg"
+  }
+}
+```
+
+<Note>
+  `document` transporte également `place_of_birth`, `place_of_issue`, `address`, `district`, `division`, `location`, `sub_location`, `serial_number`, et `barcode_number` — `null` sauf si le type de document spécifique porte ce champ. `face_match.reason` est rempli avec une explication conviviale lorsque `verified` est `false` ou que la correspondance a été ignorée.
+</Note>
+
+<Note>
+  `face_match.decision` (`"MATCH"`, `"NO_MATCH"`, ou `"REJECTED"`) est ce dont `verified` est réellement dérivé — lisez `decision` plutôt que de comparer `confidence_percentage` par rapport à un seuil qui vous est propre, car notre seuil de correspondance interne ne fait pas partie de cette charge utile et peut changer avec le temps. `"REJECTED"` signifie que la détection de vivacité/anti-spoofing a échoué avant qu'une comparaison ne soit effectuée, donc `confidence_percentage` peut être absent ou `0` à côté de `verified: false` pour une raison sans rapport avec la ressemblance faciale.
+</Note>
+
+<Warning>
+  `status: "passed"` signifie **que la vérification est allée jusqu'au bout — pas que la personne correspondait**. Une inadéquation faciale, un score de confiance faible ou un document expiré rapportera toujours `status: "passed"`, le résultat réel étant enregistré dans `biometrics.face_match.verified` (et `document.is_expired` pour la vérification de document). `status: "failed"` est réservé aux cas où la vérification elle-même n'a pas pu s'exécuter : erreur de service, pas de selfie capturé, ou rejet de base de données gouvernementale. Ne conditionnez jamais l'accès sur le seul `status` — vérifiez toujours `face_match.verified`.
+</Warning>
+
+`verification_id` correspond au `entryId` renvoyé par le rappel de fin du SDK.
+
+## Tester localement
+
+Avant de déployer en production, nous recommandons de tester votre implémentation webhook localement.
+
+1.  **Utilisez ngrok** : Utilisez [ngrok](https://ngrok.com/) pour créer un tunnel sécurisé vers votre serveur local.
+2.  **Configurer l'URL Webhook** : Mettez à jour votre tableau de bord Adhere avec l'URL ngrok (ex: `https://votre-sous-domaine.ngrok-free.app/webhooks`).
+3.  **Inspecter les requêtes** : Utilisez le tableau de bord ngrok ou [Webhook.site](https://webhook.site/) pour inspecter les charges utiles et les en-têtes envoyés par Adhere.
+
+## Meilleures pratiques
+
+*   **Accuser réception immédiatement** : Votre serveur doit renvoyer une réponse `200 OK` aussi rapidement que possible. Le traitement lourd doit être géré de manière asynchrone à l'aide d'une file d'attente de tâches.
+*   **Gérer les réessais** : Adhere réessaiera les livraisons de webhook échouées (réponses non-2xx) jusqu'à 3 fois, avec un back-off exponentiel plafonné à 10 minutes.
+*   **Utiliser l'idempotence** : Assurez-vous que votre système peut gérer plusieurs fois le même webhook en toute sécurité. Il n'y a pas d'ID de livraison séparé — dédupliquez sur l'identifiant de ressource dans la charge utile (`verification_id` pour `liveness.completed`, `data.id` pour les événements de module).
+
+<Note>
+  Si votre serveur ne renvoie pas de réponse 2xx, Adhere considérera la livraison comme ayant échoué et tentera de réessayer.
+</Note>

@@ -1,0 +1,488 @@
+---
+title: "SDK iOS"
+description: "Intégrez la vérification d'identité et la détection de vivacité SmartComply dans votre app iOS avec une seule vue SwiftUI prête à l'emploi."
+---
+
+# SmartComply iOS SDK
+
+Le SmartComply iOS SDK est une bibliothèque native Swift qui offre un flux de vérification d'identité entièrement autonome pour les applications iOS. Intégrez une seule vue SwiftUI et le SDK gère automatiquement la gestion des sessions, la sélection du pays et du type d'identifiant, la capture de documents, la vérification d'identité et la détection de vivacité.
+
+## Fonctionnalités
+
+- **Vue SwiftUI prête à l'emploi** — `SmartComplyFlowView` gère le flux complet de vérification sans code UI requis
+- **Deux modes de vérification** — capture photo de document ou saisie de numéro d'identifiant, configurés depuis votre tableau de bord
+- **Capture de document avec guide** — recadre exactement ce qui se trouve à l'intérieur du cadre de la carte d'identité pour que l'image envoyée au backend soit toujours nette
+- **Détection de vivacité** — un scan facial passif (clignement plus mouvement naturel de la tête) s'exécute automatiquement après la vérification d'identité, sans invites pas à pas
+- **Types d'identifiants dynamiques** — les canaux et champs sont récupérés en direct depuis la configuration de votre tableau de bord
+- **Support multi-pays** — affiche automatiquement un sélecteur de pays lorsqu'un seul pays est configuré
+- **Mode sombre et clair** — le thème s'adapte au schéma de couleurs système ; surchargez avec `preferredColorScheme`
+- **Retry automatique de téléchargement** — les échecs de téléchargement transitoires sont retentés en interne
+- **Votre marque, pas la nôtre** — le nom, la description, la couleur et le logo proviennent du tableau de bord, et la police est transmise par votre app. Voir [Image de marque](#image-de-marque)
+- **N'importe quel hôte backend** — production, préproduction, ou le vôtre, sans reconstruction
+
+---
+
+## Prérequis
+
+- **iOS 16.0** ou ultérieur
+- **Xcode 16** ou ultérieur. L'interface de module de l'XCFramework fourni nomme `SwiftUICore` dans les signatures publiques, un module qui apparaît pour la première fois dans le SDK iOS 18, donc Xcode 15 ne peut pas le compiler
+- **Un appareil physique compatible ARKit face tracking.** La vivacité dépend de `ARFaceTrackingConfiguration.isSupported`, qui couvre les iPhone X et ultérieurs ainsi que les appareils A12 et ultérieurs sans caméra TrueDepth. La vivacité ne peut pas s'exécuter dans le Simulateur
+
+---
+
+## Installation
+
+Le SDK est distribué via Swift Package Manager en tant qu'**XCFramework** précompilé. Le package que vous ajoutez contient le manifest Swift Package ; Xcode télécharge le binaire automatiquement et l'intègre dans votre app.
+
+### Xcode (recommandé)
+
+1. Ouvrez votre projet dans Xcode
+2. Allez dans **File → Add Package Dependencies**
+3. Entrez l'URL du dépôt : `https://github.com/386konsult/smartcomply-ios-sdk`
+4. Sélectionnez **Up to Next Major Version** et entrez `1.0.3`
+5. Cliquez sur **Add Package** et sélectionnez la bibliothèque **SmartComplySDK**
+
+### Package.swift
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/386konsult/smartcomply-ios-sdk", from: "1.0.3")
+],
+targets: [
+    .target(
+        name: "YourApp",
+        dependencies: [
+            .product(name: "SmartComplySDK", package: "smartcomply-ios-sdk")
+        ]
+    )
+]
+```
+
+<Note>
+  **La 1.0.3 modifie deux comportements.** `FlowResult.status` contient désormais le vrai verdict, et l'écran de succès ne signifie plus une réussite. Lisez [FlowResult](#flowresult) avant de passer de la 1.0.2 ou d'une version antérieure. Elle ajoute aussi l'[Image de marque](#image-de-marque) et un hôte backend personnalisé.
+
+  iOS et Android sont versionnés séparément. iOS 1.0.3 et Android 1.0.7 portent le même ensemble de fonctionnalités ; les numéros diffèrent parce que les deux ont toujours suivi leurs propres versions.
+</Note>
+
+<Note>
+  L'URL du package est `smartcomply-ios-sdk`, qui n'est pas la même que le dépôt source du SDK. Il fournit à la fois les tranches appareil et simulateur, donc la même dépendance construit pour un appareil physique et le Simulateur sans configuration supplémentaire.
+</Note>
+
+---
+
+## Configuration de la plateforme
+
+Ajoutez la clé suivante au `Info.plist` de votre app :
+
+```xml
+<key>NSCameraUsageDescription</key>
+<string>L'accès à la caméra est requis pour photographier votre document d'identité et terminer la vérification de vivacité.</string>
+```
+
+C'est la seule clé de description d'utilisation dont le SDK a besoin. Il n'enregistre pas d'audio, et le contrôle **Importer depuis la bibliothèque** utilise `PHPickerViewController`, qui s'exécute en dehors du processus et ne nécessite pas de clé de bibliothèque photo.
+
+---
+
+## Identifiants
+
+Les deux valeurs proviennent de votre tableau de bord Adhere et sont toutes deux permanentes. Réutilisez la même paire pour chaque vérification.
+
+| Valeur | Où la trouver | Notes |
+|---|---|---|
+| `apiKey` | **Settings → API Keys** | Une chaîne alphanumérique de 64 caractères sans préfixe |
+| `clientId` | **Settings → Integrations → SDK Setup**, puis le menu de la ligne → **Integration → Client ID** | L'UUID de votre SDK Config. Il est émis par Adhere — n'en générez pas un |
+
+<Warning>
+  `clientId` n'est pas une valeur par tentative. Générer votre propre UUID retourne `404 SDK_CONFIG_NOT_FOUND` dès le premier appel, car le serveur le résout par rapport à un enregistrement SDK Config existant.
+</Warning>
+
+---
+
+## Démarrage rapide
+
+### 1. Créer l'instance du SDK
+
+Créez une instance `SmartComply` une fois, par exemple dans votre vue model ou point d'entrée de l'app.
+
+```swift
+import SmartComplySDK
+
+let sdk = SmartComply(
+    config: SDKConfig(
+        apiKey:      "YOUR_API_KEY",
+        clientId:    "YOUR_CLIENT_ID",
+        environment: .production
+    )
+)
+```
+
+<Warning>
+  Passez toujours `environment` explicitement. `SDKConfig` utilise `.sandbox` par défaut, qui pointe vers `http://localhost:8000` — voir [Environnements](#environnements).
+</Warning>
+
+### 2. Présenter la vue de flux
+
+Intégrez `SmartComplyFlowView` n'importe où dans votre hiérarchie SwiftUI. Le SDK se charge automatiquement lorsque la vue apparaît.
+
+```swift
+import SmartComplySDK
+
+struct ContentView: View {
+    @State private var showVerification = false
+    let sdk = SmartComply(
+        config: SDKConfig(
+            apiKey:      "YOUR_API_KEY",
+            clientId:    "YOUR_CLIENT_ID",
+            environment: .production
+        )
+    )
+
+    var body: some View {
+        Button("Vérifier l'identité") {
+            showVerification = true
+        }
+        .fullScreenCover(isPresented: $showVerification) {
+            SmartComplyFlowView(sdk: sdk) { result in
+                showVerification = false
+                print("Entry ID:", result.entryId)
+                print("Status:", result.status)   // "passed", "failed", ou "processing"
+            }
+        }
+    }
+}
+```
+
+Le SDK gère automatiquement le flux complet. Les étapes exactes dépendent du mode de vérification configuré dans votre tableau de bord :
+
+**Mode document** (capture photo) :
+1. Crée une session sécurisée
+2. Affiche un écran de bienvenue avec votre logo et les cartes de type d'identifiant
+3. Affiche un sélecteur de pays si plusieurs pays sont configurés
+4. L'utilisateur photographie le recto de son identité dans le cadre guide
+5. Photographie le verso, lorsque le `requires_back_side` du tableau de bord pour ce type d'identifiant est `required` ou `optional`. Sur `optional`, l'écran de capture affiche aussi un contrôle **Ce document n'a pas de verso** ; y toucher passe directement au scan de vivacité et l'entrée est soumise sans image du verso. Quand le backend n'envoie aucune valeur, le SDK retombe sur la correspondance du nom du type d'identifiant avec national, driver, resident et voter
+6. Exécute le scan de vivacité passif
+7. Retourne un `FlowResult` à votre handler de complétion
+
+**Mode données** (saisie de numéro d'identifiant) :
+1. Crée une session sécurisée
+2. Affiche un écran de bienvenue avec sélection du type d'identifiant
+3. Affiche un sélecteur de pays si plusieurs pays sont configurés
+4. L'utilisateur saisit son numéro d'identifiant et les champs requis
+5. L'identité est vérifiée par rapport à la base de données nationale
+6. Exécute le scan de vivacité passif
+7. Retourne un `FlowResult` à votre handler de complétion
+
+### Images de document
+
+Les photos de document sont plafonnées à **5 Mo** côté serveur. Les deux voies, la caméra intégrée au SDK et **Importer depuis la bibliothèque**, sont réduites à 1280 px sur le bord long et ré-encodées en JPEG à une qualité de 0,72 avant l'envoi, généralement de 150 à 350 Ko, donc une photo de résolution complète depuis un téléphone ne dépasse pas la limite de taille.
+
+Avant l'écran de revue, le SDK vérifie que la photo **recto** montre un visage et un texte lisible : il faut un visage et au moins trois régions de texte. Un échec est un **avertissement, pas un blocage**. L'utilisateur peut quand même confirmer, car un faux négatif piégerait sinon une personne tenant une identité authentique mais inhabituelle. L'OCR backend est la vérification qui rejette réellement. La photo du verso n'est pas vérifiée.
+
+---
+
+## Environnements
+
+| Valeur | URL de base |
+|---|---|
+| `.production` | `https://adhere-api.smartcomply.com` |
+| `.sandbox` | `http://localhost:8000` |
+
+`.sandbox` cible un serveur exécuté sur l'appareil lui-même, pour le développement backend local. Ce n'est pas un environnement de test hébergé. Utilisez `.production` pour tout travail d'intégration.
+
+<Warning>
+  `.sandbox` est une cible **http://** simple, qu'App Transport Security bloque par défaut. Sans une autorisation explicite, le flux meurt à l'écran de chargement avec une erreur ATS qui ressemble à une panne backend. Si vous en avez réellement besoin, limitez l'exception à localhost plutôt que d'utiliser `NSAllowsArbitraryLoads`, qui affaiblit chaque connexion que votre app établit.
+
+```xml
+<key>NSAppTransportSecurity</key>
+<dict>
+  <key>NSExceptionDomains</key>
+  <dict>
+    <key>localhost</key>
+    <dict><key>NSExceptionAllowsInsecureHTTPLoads</key><true/></dict>
+  </dict>
+</dict>
+```
+
+  `.production` est en HTTPS et n'a besoin de rien de tout cela.
+</Warning>
+
+### Un hôte différent
+
+`SDKEnvironment` couvre les deux hôtes contre lesquels vous compilez, et l'un d'eux est
+en boucle sur l'appareil. Pour tout le reste — un déploiement de préproduction ou un build
+QA qui doit atteindre plus d'un backend sans être reconstruit —, remplacez-le. Ajouté
+en **1.0.3**.
+
+```swift
+let config = SDKConfig(
+    apiKey: "...",
+    clientId: "...",
+    baseURL: "https://your-staging-host.example.com"
+)
+```
+
+Une barre oblique finale est supprimée, et une valeur vide retombe sur `environment` plutôt
+que d'être traitée comme un hôte, donc un build qui lit cela depuis un champ vide n'envoie
+pas de vérifications vers une URL relative.
+
+---
+
+## Image de marque
+
+Le flux porte votre marque, pas celle d'Adhere. La couleur et le logo proviennent de la **SDK Config sur le tableau de bord**, donc ils changent sans publication d'app, et votre nom s'affiche pendant la préparation de la session. La police est la seule exception et est transmise par l'hôte.
+
+| Ce qui | Où le définir | Apparaît comme |
+|---|---|---|
+| Nom de marque | Tableau de bord, SDK Config | L'écran de chargement (« Préparation de &lt;nom&gt;… ») et le libellé d'accessibilité du logo |
+| Couleur du thème | Tableau de bord, SDK Config | Boutons principaux, surbrillances, progression |
+| Logo | Tableau de bord, SDK Config | La marque sur l'écran de bienvenue |
+| Police | Votre app, au lancement | Chaque écran |
+
+Le titre et le sous-titre de bienvenue sont du contenu SDK fixe : « Verify Your Identity », puis une ligne parmi deux selon le mode de vérification.
+
+### Logo
+
+Téléchargez-le sous **Settings → Integrations → SDK → Brand Details**. PNG, JPEG ou
+WebP, jusqu'à 512 Ko et 1024x1024 pixels. Requiert la **1.0.3**.
+
+Il est dessiné seul, sans boîte ni bordure derrière lui, et contraint par la hauteur
+plutôt que d'être recadré en carré pour qu'un wordmark reste lisible. Seul le bouclier
+de repli du SDK s'affiche dans un cadre teinté.
+
+Le logo appartient à la **SDK Config, pas à l'entreprise**. Une branche exploitant plusieurs
+configs pour différents produits donne à chacune sa propre marque, et une config sans logo
+affiche le bouclier du SDK plutôt que de retomber sur le logo de l'entreprise sur votre page
+de profil. Si vous voulez la même marque partout, téléchargez-la dans chaque config.
+
+<Note>
+  Un logo ne retarde ni ne bloque jamais une vérification. Le SDK le récupère après que
+  l'écran de bienvenue est déjà affiché, avec un budget de trois secondes, et conserve son
+  propre bouclier si la récupération échoue. Il est aussi décodé sous un plafond de pixels,
+  donc une image surdimensionnée ne peut pas épuiser la mémoire de l'appareil.
+</Note>
+
+<Warning>
+  Le logo est rendu par les **SDK iOS et Android**. Le [Web SDK](/fr/libraries/smartcomply_sdk)
+  ne l'affiche pas encore, donc une config utilisée par les deux portera votre marque sur mobile
+  et la valeur par défaut sur le web.
+</Warning>
+
+### Police
+
+Transmise par votre app, car le SDK n'embarque ni ne télécharge de fichiers de police : votre
+chargement, mise en cache et licence restent les vôtres. Requiert la **1.0.3**.
+
+Une graisse répertoriée sous `UIAppFonts`, ou enregistrée à l'exécution, est disponible
+à l'échelle du processus, donc le SDK n'a besoin que de son nom PostScript.
+
+```swift
+SmartComplyFlowView(
+    sdk: sdk,
+    fontFamily: SDKFontFamily(
+        regular:  "Inter-Regular",
+        medium:   "Inter-Medium",
+        semibold: "Inter-SemiBold",
+        bold:     "Inter-Bold"
+    ),
+    onComplete: { result in }
+)
+```
+
+Les noms sont **par graisse** car `Font.custom(_:size:)` sélectionne une graisse par nom et
+ne prend pas d'argument de poids, donc un seul nom rendrait chaque écran en une seule
+graisse. Seul `regular` est requis ; tout ce qui est omis retombe sur le nom le plus proche
+que vous avez fourni.
+
+<Note>
+  Un nom non enregistré journalise un avertissement sous le sous-système `com.smartcomply.sdk`
+  et retombe sur la police système plutôt que de rendre vide. Dynamic Type s'applique de toute façon.
+</Note>
+
+---
+
+## Vivacité
+
+Deux actions sont tirées de `.blink` et `.turnHead` en ordre aléatoire et détectées **passivement**. Les deux sont surveillées à chaque image, aucune n'est nommée à l'utilisateur, et le HUD ne rapporte que combien sont terminées : il n'y a pas de séquence guidée.
+
+| Action | Ce qui la satisfait |
+|---|---|
+| `.blink` | Fermeture moyenne des yeux sur les deux yeux atteignant 0.22, pendant une image |
+| `.turnHead` | Environ 7.5 degrés de lacet dans chaque direction, maintenus deux images |
+
+Le lacet de la tête est mesuré par rapport au téléphone, pas par rapport au monde, et les images pendant lesquelles l'appareil lui-même tourne ne sont pas créditées : tourner le téléphone ne satisfait pas le défi.
+
+Le scan a une **limite de 20 secondes**.
+
+<Warning>
+  Atteindre la limite **échoue** la vérification. Rien n'est téléchargé et rien n'est facturé, et l'utilisateur se voit proposer **Réessayer**. Les versions précédentes soumettaient quand même et signalaient un succès sans aucune action terminée : si vous êtes en version 1.0.2 ou antérieure, attendez-vous à ce comportement.
+</Warning>
+
+La vivacité nécessite une caméra TrueDepth et **ne peut pas s'exécuter sur le Simulateur**. Testez sur un iPhone X ou ultérieur.
+
+---
+
+## Accessibilité
+
+Depuis la **1.0.3**, le flux respecte le paramètre de taille de texte de l'utilisateur (Settings → Accessibility → Display & Text Size → Larger Text). Les versions précédentes utilisaient des tailles de points fixes partout, donc le paramètre n'avait aucun effet sur aucun écran.
+
+La mise à l'échelle est limitée à `.accessibility1`. L'ovale guide, le cadre du document et les boutons sont dimensionnés pour s'adapter à leur contenu, et les tailles d'accessibilité au-dessus de cette limite les débordent : la borne maintient tout en dessous utilisable plutôt que de fournir des mises en page qui cassent en haut de la plage.
+
+### Ce que signifie « Vérification terminée »
+
+**Rien à voir avec le verdict.** Chaque entrée soumise atteint cet écran, que le backend ait réussi ou échoué la vérification.
+
+L'appel de soumission retourne `processing`, car le backend résout la concordance faciale sur un worker moments plus tard. Le SDK interroge pendant environ 15 secondes et met ce qu'il apprend dans `FlowResult.status`, puis affiche l'écran de succès dans les deux cas. Un utilisateur qui a échoué n'en est pas informé et ne se voit pas proposer de nouvelle tentative.
+
+C'est une décision produit, pas un oubli : les clients ont demandé que l'utilisateur final voie une vérification soumise comme acceptée, et qu'ils agissent eux-mêmes sur le vrai verdict depuis le tableau de bord et le webhook. Cela signifie que **vous** devez boucler la boucle avec un utilisateur qui a échoué.
+
+Les échecs avant soumission sont inchangés et affichent toujours l'écran d'échec avec **Réessayer** : une caméra refusée, une erreur de configuration ou de réseau, et l'atteinte de la limite de 20 secondes de vivacité. Rien n'a été facturé à ce stade et l'utilisateur peut se rétablir sur place.
+
+### Savoir que l'utilisateur a abandonné
+
+`onComplete` ne se déclenche que sur une vérification. Passez le `onDismiss` optionnel pour savoir que le flux s'est terminé sans vérification : l'utilisateur a fermé l'écran d'échec, ou une erreur n'a laissé rien à retenter. Le passer ajoute également un contrôle **Fermer** à l'écran d'échec, qui autrement ne propose que **Réessayer**.
+
+```swift
+SmartComplyFlowView(
+    sdk: sdk,
+    onComplete: { result in /* croiser result.status : "passed", "failed" ou "processing" */ },
+    onDismiss:  { error in  /* toujours non-nil : errorCode "FLOW_FAILED", message de l'écran d'échec */ }
+)
+```
+
+---
+
+## Configuration du SDK
+
+```swift
+public struct SDKConfig {
+    public init(
+        apiKey: String,
+        clientId: String,
+        environment: SDKEnvironment = .sandbox,
+        requestTimeout: TimeInterval = 30,       // secondes
+        uploadTimeout: TimeInterval  = 120,      // secondes
+        maxUploadRetries: Int = 3,
+        debug: Bool = false,
+        baseURL: String? = nil
+    )
+}
+```
+
+| Paramètre | Par défaut | Description |
+|---|---|---|
+| `apiKey` | — | Votre clé API Adhere (requis) |
+| `clientId` | — | Le Client ID de votre SDK Config (requis) |
+| `environment` | `.sandbox` | Définissez explicitement — voir [Environnements](#environnements) |
+| `requestTimeout` | `30` | Timeout en secondes pour les appels API standard, y compris la vérification d'identité. Il n'y a pas de budget de vérification séparé sur iOS. Voir la note ci-dessous si vous utilisez le mode données |
+| `uploadTimeout` | `120` | Timeout en secondes pour le téléchargement d'images et de vidéos |
+| `maxUploadRetries` | `3` | Nombre total de tentatives de téléchargement, pas les retries après la première. Seuls les échecs de transport sont retentés ; une erreur API est signalée immédiatement |
+| `debug` | `false` | Écrit les journaux réseau détaillés dans le journal unifié (`os.Logger`, sous-système `com.smartcomply.sdk`) lorsque `true`. Lisez-les dans Console.app — ils n'apparaissent pas dans le panneau console de Xcode |
+| `baseURL` | `nil` | Remplace l'hôte de `environment`. Voir [Un hôte différent](#un-hôte-différent). Ajouté en **1.0.3** |
+
+<Warning>
+  **Augmentez `requestTimeout` si votre flux utilise un canal d'identifiants en mode données.**
+
+  `onboarding/verify` bloque sur un fournisseur d'identité gouvernemental et tourne sur ce même budget
+  de 30 secondes. Quand il expire côté client, le serveur continue, termine la vérification et la
+  facture, donc vous êtes débité pour une vérification que votre app a signalée comme échouée.
+  L'utilisateur reste sur l'écran de saisie d'identifiant avec une erreur et ressoumet généralement,
+  ce qui facture à nouveau. Passez `requestTimeout: 90` lorsqu'un canal de mode données est activé.
+
+  Contrairement au `verifyTimeoutMs` d'Android, ce n'est pas spécifique à la vérification. Cela
+  s'applique à chaque appel hors téléchargement, y compris l'interrogation de résultat que le SDK
+  exécute après la soumission, donc une valeur augmentée allonge aussi le pire cas sur l'écran de
+  traitement. C'est le seul levier qu'expose la 1.0.3.
+</Warning>
+
+---
+
+## FlowResult
+
+Délivré à votre closure `onComplete` lorsque l'utilisateur termine le flux dans l'app.
+
+```swift
+public struct FlowResult {
+    public let entryId: Int                              // ID d'entrée de vérification
+    public let status: String                            // "passed", "failed" ou "processing" : voir ci-dessous
+    public let submittedAt: String?                      // horodatage ISO 8601
+    public let verificationResult: VerifyIdentityResponse? // mode données uniquement
+    public let idTypeName: String?                       // par ex. "National Identity Number (NIN)"
+    public let verifiedName: String?                     // voir la note ci-dessous
+    public let idNumber: String?                         // voir la note ci-dessous
+}
+```
+
+<Warning>
+  **Croisez `status`. Atteindre `onComplete` n'est pas une réussite.**
+
+  Depuis la **1.0.3**, le SDK interroge le backend pour le résultat terminal et le place ici, donc `"passed"`
+  signifie réussi et `"failed"` signifie échoué. Mais **chaque entrée soumise montre à l'utilisateur final l'écran de
+  succès**, y compris une entrée échouée. C'est délibéré et demandé : les clients voulaient que leur utilisateur
+  voie une vérification soumise comme acceptée et qu'ils lisent eux-mêmes le vrai verdict. L'écran est
+  neutre-positif ; cette valeur ne l'est pas.
+
+  Donc `onComplete` qui se déclenche avec un `status` de `"failed"` est un résultat normal que vous devez gérer. Un code qui
+  traite `onComplete` comme une réussite admettra des utilisateurs qui ont échoué la vérification.
+
+  `"processing"` signifie que le backend n'a pas résolu en environ 15 secondes. L'entrée existe et est
+  facturée, et le résultat arrive sur votre [webhook](/fr/webhooks#identity-verification).
+
+  Sur la 1.0.2 et antérieure, `status` était toujours `"processing"` et ne portait aucun verdict, donc le
+  résultat était un reçu de soumission.
+</Warning>
+
+<Note>
+  `verifiedName` et `idNumber` sont renseignés depuis l'interrogation ainsi que depuis la soumission, depuis la **1.0.3**.
+  En mode document, ils n'apparaissaient auparavant que lorsque l'OCR finissait avant que l'utilisateur
+  termine la vivacité, donc savoir si un utilisateur voyait son propre nom relevait du timing.
+</Note>
+
+<Warning>
+  `verifiedName` et `idNumber` sont **toujours `nil` sur la 1.0.1 et antérieure**, dans les deux modes de vérification. Si vous êtes fixé sur l'une de ces versions, lisez l'identité vérifiée depuis le payload du webhook à la place et ne construisez pas d'UI qui dépend de ces deux propriétés. Mettez à jour vers la 1.0.3.
+</Warning>
+
+<Note>
+  **Depuis la 1.0.2, les deux sont remplis.** En vérification de document, ils proviennent de l'OCR du document capturé ; en vérification de données, ils proviennent de la réponse du fournisseur d'identité. `verifiedName` est le nom complet lorsque le fournisseur en envoie un, sinon il est composé à partir des champs de prénom, deuxième prénom et nom de famille.
+
+  Ils ne sont toujours aussi bons que la soumission qui les a produits, donc traitez-les comme un reçu de ce qui a été lu, pas comme un verdict. Le webhook reste la source de vérité pour le résultat final.
+</Note>
+
+<Note>
+  **Le webhook est toujours le système d'enregistrement.** Le statut d'une entrée passe par `pending`, `processing`, puis `passed`, `failed` ou `expired`, et le statut final, les champs extraits et toute raison d'échec sont délivrés à l'URL du webhook configurée sur votre SDK Config. Voir [Webhooks](/webhooks#identity-verification) pour le payload complet.
+
+  Ce qui a changé en 1.0.3, c'est que `onComplete` ne se déclenche plus *avant* ce verdict. Il attend que le backend atteigne un statut terminal, donc `status` est en accord avec ce que le webhook dira. Réconciliez à partir du webhook pour tout ce que vous persistez : un processus qui n'a pas résolu en environ 15 secondes retourne toujours `"processing"`.
+</Note>
+
+---
+
+## Gestion des erreurs
+
+`SmartComplyFlowView` gère et affiche les états d'erreur automatiquement. Pour l'API headless, toutes les méthodes du SDK lancent des erreurs en cas d'échec :
+
+```swift
+do {
+    _ = try await sdk.createSession()
+} catch let error as SDKError {
+    print("Erreur API \(error.statusCode) [\(error.errorCode ?? "-")] :", error.message)
+} catch {
+    print("Erreur réseau :", error.localizedDescription)
+}
+```
+
+`SDKError` expose `message: String`, `statusCode: Int` et `errorCode: String?`. `AuthError`, `NetworkError` et `AlreadySubmittedError` sont tous des sous-classes, donc un seul `catch let error as SDKError` couvre tous les cas.
+
+<Note>
+  **Depuis la 1.0.3, l'erreur porte le propre code du backend.** `errorCode` était auparavant codé en dur à `AUTH_ERROR` pour chaque 401 et 403, donc `SDK_CONFIG_NOT_FOUND`, une session expirée et une clé invalide étaient indiscernables et la logique hôte basée sur le code ne pouvait pas fonctionner. Les échecs de validation signalaient également uniquement le générique `"One or more fields failed validation."` ; la raison par champ est désormais exposée.
+
+  `AlreadySubmittedError` est levé lorsqu'un retry de téléchargement est rejeté comme doublon, ce qui signifie que la tentative initiale a atteint le serveur et que l'entrée existe et a été facturée : la réponse a simplement été perdue au retour. Le flux intégré le traite comme tel et lit le résultat plutôt que de signaler un échec. Gérez-le de la même manière si vous pilotez les modules vous-même.
+</Note>
+
+| Scénario | Cause | Résolution |
+|---|---|---|
+| `401`, `errorCode` du backend | Clé API invalide ou manquante. Sur la 1.0.2 et antérieure, chaque échec d'authentification signalait `AUTH_ERROR` quelle que soit la cause ; depuis la 1.0.3, le propre code du backend est transmis, et `AUTH_ERROR` n'est que le repli | Vérifiez votre clé dans le tableau de bord Adhere |
+| `errorCode` `MISSING_API_KEY` / `MISSING_CLIENT_ID` | Un identifiant vide ou contenant uniquement des espaces. Sur la 1.0.2 et antérieure, c'était un `precondition()` qui **terminait l'app hôte**, incatchable et actif dans les builds Release | Lancé depuis le premier appel qui nécessite des identifiants : catch-le comme n'importe quel autre `SDKError` |
+| `404`, `errorCode` `SDK_CONFIG_NOT_FOUND` | `clientId` n'est pas une SDK Config active | Copiez le Client ID depuis **Settings → Integrations → SDK Setup**. Ne générez pas d'UUID |
+| Session expirée | Les jetons de session vivent 30 minutes | Présentez le flux à nouveau. Une nouvelle session est créée à chaque fois ; votre `clientId` ne change jamais |
+| Permission caméra refusée | L'utilisateur a refusé l'accès à la caméra | La vue de flux affiche automatiquement un lien profond vers les Paramètres |
+| Échec de téléchargement après les retries | Instabilité réseau | `maxUploadRetries` épuisé — l'écran d'échec propose un retry |
+| Identité introuvable | Numéro d'identifiant introuvable ou détails non concordants (mode données) | L'utilisateur voit la raison et est invité à ressaisir |

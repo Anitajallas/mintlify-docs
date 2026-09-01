@@ -1,0 +1,97 @@
+---
+title: "Carte d'identité Ghana avancée"
+sidebarTitle: "Carte d'identité avancée"
+description: "Vérifiez l'identité d'un client à l'aide de son numéro de Carte d'identité Ghana accompagné d'une photo selfie."
+openapi: "POST /api/onboarding/ghana_kyc/id_card_with_face/"
+---
+
+L'endpoint Carte d'identité Ghana avancée vérifie l'identité d'un client en faisant correspondre son numéro de Carte d'identité Ghana avec une photo selfie soumise. Renvoie les détails personnels vérifiés et la photo de l'inscrit sur dossier.
+
+## Endpoint
+
+```
+POST /api/onboarding/ghana_kyc/id_card_with_face/
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `application/json` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|-------------|
+| `identification_number` | string | Oui | Le numéro de Carte d'identité Ghana du client (format : `GHA-000000000-0`) |
+| `selfie_image` | string | Oui | Image selfie encodée en base64 pour la concordance faciale |
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/ghana_kyc/id_card_with_face/" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "identification_number": "GHA-000000000-0",
+    "selfie_image": "<base64-encoded-jpeg>"
+  }'
+```
+</CodeGroup>
+
+## Réponse
+
+### 200 OK
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `data.FullName` | string | Nom complet |
+| `data.FirstName` | string | Prénom |
+| `data.LastName` | string | Nom de famille |
+| `data.DOB` | string | Date de naissance |
+| `data.Gender` | string | Genre |
+| `data.Address` | string | Adresse enregistrée |
+| `data.Photo` | string | Photo du client encodée en base64 |
+| `data.FaceMatchStatus` | string | Statut de concordance faciale (`"MATCH"` ou `"NO_MATCH"`) |
+| `data.FaceMatchConfidence` | number | Score de confiance de correspondance (0–100) |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "FullName": "JOHN DOE",
+    "FirstName": "JOHN",
+    "LastName": "DOE",
+    "DOB": "1990-01-15",
+    "Gender": "Male",
+    "Address": "ACCRA",
+    "Photo": "<base64-encoded-jpeg>",
+    "FaceMatchStatus": "MATCH",
+    "FaceMatchConfidence": 99.5
+  },
+  "message": "ID Card and Face Match details retrieved successfully"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```
