@@ -51,7 +51,7 @@ In your app or feature module `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("io.github.386konsult:android-sdk:1.0.7")
+    implementation("io.github.386konsult:android-sdk:1.1.0")
 }
 ```
 
@@ -62,11 +62,19 @@ Neither can be withdrawn from Maven Central, so pin deliberately.
 </Warning>
 
 <Note>
-  **1.0.7 changes two behaviours.** `RESULT_STATUS` now holds the real verdict, and
-  the success screen no longer means a pass. Read [Result Extras](#result-extras)
-  before upgrading from 1.0.6 or below. It also adds [Branding](#branding) and a
-  custom backend host, and fixes a blank liveness camera after skipping the
-  back-side capture.
+  **1.1.0 changes how documents are captured.** The camera step now takes a
+  photograph rather than a still of the viewfinder, so it binds a second CameraX
+  use case in your process, uploads an image roughly five times larger in pixels,
+  and takes a moment on the shutter where it used to be instant. Read
+  [Document images](#document-images) before you upgrade, and re-test your
+  document flow. It also fixes a genuine ID being rejected with "No face
+  detected" and a first run on a device that has never used ML Kit.
+</Note>
+
+<Note>
+  **1.0.7 changed two behaviours** and they still apply. `RESULT_STATUS` holds the
+  real verdict, and the success screen does not mean a pass. Read
+  [Result Extras](#result-extras) before upgrading from 1.0.6 or below.
 </Note>
 
 ### 3 — Enable Compose
@@ -106,6 +114,14 @@ The SDK declares these permissions automatically via manifest merge. You do not 
 ```
 
 `SmartComplyActivity` requests the `CAMERA` permission at runtime before it starts the flow, so if you launch through the Activity your app does not need to request it separately. If you embed `SmartComplyFlowScreen` directly, see [Advanced: Custom Host Activity](#advanced-custom-host-activity).
+
+From **1.1.0** one `meta-data` entry merges in as well:
+
+```xml
+<meta-data android:name="com.google.mlkit.vision.DEPENDENCIES" android:value="face" />
+```
+
+It asks Play Services to fetch the face detection model when your app installs. Without it the model is fetched the first time a detector runs, and that first call fails: the document check reported it as "Could not verify image. Please retake." no matter how many times the user retook, and liveness ignored every action the user performed until it timed out. If your build strips unknown `meta-data`, keep this one.
 
 ---
 
@@ -350,9 +366,23 @@ The SDK steps through these screens automatically.
 
 ### Document images
 
-Document photos are capped at **5 MB** server-side, in JPG or PNG. The two routes are treated differently: an in-SDK camera capture is cropped to the guide box and re-encoded at JPEG quality 85, while an **Upload from gallery** pick is downscaled to 1600px on the long edge and re-encoded, so a full-resolution phone photo no longer fails with `File too large. Maximum size is 5MB.`
+Document photos are capped at **5 MB** server-side, in JPG or PNG. Both routes are held to 1600px on the long edge and re-encoded at JPEG quality 85, so a full-resolution phone photo does not fail with `File too large. Maximum size is 5MB.`
+
+<Warning>
+**From 1.1.0 the camera route produces a real photograph.** Up to 1.0.7 it read the viewfinder and cropped that, which on a 1080p screen is roughly 700 real pixels across the card. It now binds a CameraX `ImageCapture` alongside the preview, tied to the preview's field of view so the guide box crops the same rectangle out of both, and only that rectangle is decoded so a 12MP frame never becomes a 48 MB bitmap.
+
+Three things follow, and all three are worth re-testing before you ship 1.1.0:
+
+- Your app binds `Preview` + `ImageCapture` where it bound only `Preview`. This is well inside the three use cases every CameraX device guarantees.
+- A front capture goes from about 918x578 to about 1586x999. If anything downstream of you was sized around the old output, it will see something different.
+- The shutter is no longer instant and shows a progress indicator while the still is taken. UI tests that tapped the shutter and immediately asserted on the review screen need to wait.
+</Warning>
+
+A gallery pick is also rotated to match its EXIF orientation from 1.1.0. Before that it was uploaded as decoded, so a normal phone photo reached the backend sideways.
 
 Before the review screen the SDK checks the **front** photo contains a face. A failure is a **warning, not a block**: the user can still confirm, because a false negative would otherwise trap someone holding a genuine but unusual ID. The backend OCR is the check that actually rejects. The back photo is not checked.
+
+From 1.1.0 that check runs ML Kit's accurate model. The fast one it used before does not find the portrait on a laser-engraved card, so genuine IDs of that kind, Kenya's Maisha Namba among them, were told "No face detected".
 
 ---
 
