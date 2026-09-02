@@ -51,7 +51,7 @@ In your app or feature module `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("io.github.386konsult:android-sdk:1.1.0")
+    implementation("io.github.386konsult:android-sdk:1.1.1")
 }
 ```
 
@@ -60,6 +60,13 @@ dependencies {
 the main thread, and 1.0.3 additionally crashes when the SDK is closed from a UI callback.
 Neither can be withdrawn from Maven Central, so pin deliberately.
 </Warning>
+
+<Note>
+  **Take 1.1.1, not 1.1.0.** In 1.1.0 every liveness selfie uploads rotated 90
+  degrees, so a verification that passes can still report "Face Detected: No" in
+  the dashboard's Biometrics panel. 1.1.1 is that one fix and changes nothing
+  else.
+</Note>
 
 <Note>
   **1.1.0 changes how documents are captured.** The camera step now takes a
@@ -482,6 +489,10 @@ Two actions are drawn from `BLINK` and `TURN_HEAD` in random order and detected 
 | `TURN_HEAD` | About 7.5 degrees of yaw in either direction, held two frames |
 
 The scan has a **20 second cap**.
+
+<Warning>
+**Upgrade past 1.1.0 for the liveness stills.** Up to and including 1.1.0 the autoshot and snapshot uploaded in the camera's sensor orientation, rotated 90 degrees from upright, because the rotation arrives as metadata and was not applied. On-device detection was never affected, so the challenges always worked, but the backend was handed a sideways face: a passing verification could report **Face Detected: No** with no face confidence. Fixed in **1.1.1**, where the rotation is baked into the pixels. If you read the autoshot or snapshot yourself, from 1.1.1 they are upright, 480x640 rather than 640x480 on a portrait capture, and carry no EXIF orientation tag. The liveness `.mp4` was never affected.
+</Warning>
 
 <Warning>
   Reaching the cap **fails** the check. Nothing is uploaded and nothing is billed, and the user is offered **Try Again**. Earlier versions submitted anyway and reported success with no actions completed: if you are on 1.0.6 or below, expect that behaviour.
