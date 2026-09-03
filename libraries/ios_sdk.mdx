@@ -42,14 +42,14 @@ it in your app.
 1. Open your project in Xcode
 2. Go to **File → Add Package Dependencies**
 3. Enter the repository URL: `https://github.com/386konsult/smartcomply-ios-sdk`
-4. Select **Up to Next Major Version** and enter `1.0.3`
+4. Select **Up to Next Major Version** and enter `1.0.4`
 5. Click **Add Package** and select the **SmartComplySDK** library
 
 ### Package.swift
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/386konsult/smartcomply-ios-sdk", from: "1.0.3")
+    .package(url: "https://github.com/386konsult/smartcomply-ios-sdk", from: "1.0.4")
 ],
 targets: [
     .target(
@@ -62,12 +62,19 @@ targets: [
 ```
 
 <Note>
+  **Take 1.0.4, not 1.0.3.** Up to 1.0.3 the front check required a face, and
+  rejected genuine IDs whose portrait is engraved rather than printed, Kenya's
+  Maisha Namba card among them, with "No face detected". 1.0.4 judges the front
+  on text instead. See [Document images](#document-images).
+</Note>
+
+<Note>
   **1.0.3 changes two behaviours.** `FlowResult.status` now holds the real verdict, and the success
   screen no longer means a pass. Read [FlowResult](#flowresult) before upgrading from 1.0.2 or
   below. It also adds [Branding](#branding) and a custom backend host.
 
-  iOS and Android are versioned separately. iOS 1.0.3 and Android 1.0.7 carry the same feature set;
-  the numbers differ because the two have always been on their own tracks.
+  iOS and Android are versioned separately and the numbers have never lined up, because the two
+  have always been on their own tracks.
 </Note>
 
 <Note>
@@ -187,10 +194,16 @@ Document photos are capped at **5 MB** server-side. Both routes, the in-SDK came
 quality 0.72 before upload, typically 150 to 350 KB, so a full-resolution phone photo does not
 fail the size limit.
 
-Before the review screen the SDK checks the **front** photo shows a face and legible text: it
-needs a face and at least three text regions. A failure is a **warning, not a block**. The user
-can still confirm, because a false negative would otherwise trap someone holding a genuine but
-unusual ID. The backend OCR is the check that actually rejects. The back photo is not checked.
+Before the review screen the SDK checks the **front** photo looks like a document: from **1.0.4**
+that means at least three regions of text. A failure is a **warning, not a block**. The user can
+still confirm, because a false negative would otherwise trap someone holding a genuine but unusual
+ID. The backend OCR is the check that actually rejects. The back photo is not checked.
+
+<Warning>
+**Up to 1.0.3 this check also required a face, and got it wrong on some genuine IDs.** Cards that engrave the portrait into polycarbonate rather than printing it, Kenya's Maisha Namba card among them, are monochrome and low contrast under a security pattern, and Vision does not find a face on them at any detector revision. Holders of those cards were told "No face detected" on a perfectly good capture. From 1.0.4 the face is not required.
+
+**This is one of the few places the two SDKs deliberately differ.** Android still requires a face, because ML Kit's accurate model does find these portraits. iOS requires text, because Vision does not. Neither is a bug to be reconciled: each platform uses the check its own detector can actually support, and both remain advisory with the backend OCR as the real gate.
+</Warning>
 
 ---
 
