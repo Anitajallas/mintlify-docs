@@ -51,7 +51,7 @@ In your app or feature module `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("io.github.386konsult:android-sdk:1.1.1")
+    implementation("io.github.386konsult:android-sdk:1.1.2")
 }
 ```
 
@@ -62,10 +62,20 @@ Neither can be withdrawn from Maven Central, so pin deliberately.
 </Warning>
 
 <Note>
-  **Take 1.1.1, not 1.1.0.** In 1.1.0 every liveness selfie uploads rotated 90
-  degrees, so a verification that passes can still report "Face Detected: No" in
-  the dashboard's Biometrics panel. 1.1.1 is that one fix and changes nothing
-  else.
+  **1.1.2 changes when the liveness selfie is taken.** Up to 1.1.1 it fired on a
+  fixed timer half a second after the camera opened, before anything had looked
+  for a face, so the autoshot on the dashboard was routinely of nobody, of a
+  ceiling, or of half a face. It now waits for a frame with a whole face in it.
+  That adds up to 2.5 seconds to the start of the check for a user who is slow to
+  get into frame, and nothing at all for one who is already there. Read
+  [Liveness](#liveness) before you upgrade.
+</Note>
+
+<Note>
+  **Take 1.1.1 or later, not 1.1.0.** In 1.1.0 every liveness selfie uploads
+  rotated 90 degrees, so a verification that passes can still report "Face
+  Detected: No" in the dashboard's Biometrics panel. 1.1.1 is that one fix and
+  changes nothing else.
 </Note>
 
 <Note>
@@ -489,6 +499,39 @@ Two actions are drawn from `BLINK` and `TURN_HEAD` in random order and detected 
 | `TURN_HEAD` | About 7.5 degrees of yaw in either direction, held two frames |
 
 The scan has a **20 second cap**.
+
+### When the autoshot is taken
+
+Two stills leave the device. The **autoshot** is taken before the scan starts and
+uploaded with the entry; the **snapshot** is taken once both actions are done and
+uploaded with the video. Both come off the analysis stream, so neither is a
+composed photograph: 720px on the long edge at JPEG quality 72.
+
+**From 1.1.2 the autoshot waits for a face.** Up to 1.1.1 it fired on a fixed
+`delay(500)` after the camera bound, and nothing had looked for a face by then,
+because detection did not start until recording did. The one frame of the session
+that became the selfie was the only frame no detector had ever seen, so clients
+reported autoshots of nobody, of ceilings, and of half a face.
+
+It now runs face detection from the first frame and holds the shot until three
+consecutive frames show a face that is wholly inside the frame with an 8% margin,
+spans at least 18% of the frame width, and is within 30 degrees of facing the
+camera. What changes for you:
+
+- **Timing.** A 400ms settle, then up to 2.5 seconds waiting. On a TECNO KI7 a
+  user already in frame cleared it in about 1 second. A user who never presents a
+  face waits the full 2.5 seconds and then gets the old behaviour, so the fallback
+  is never a worse image than 1.1.1 produced, only a later one.
+- **The challenge window is unaffected.** The wait sits before `liveness.create`,
+  so the 20 second cap still starts with a full 20 seconds.
+- **The HUD.** "Position your face in the oval" now shows during that wait, where
+  earlier versions went straight from camera-ready to detecting.
+
+The margin check is the part doing the work. ML Kit reports a face running off the
+side of the frame as readily as one in the middle, and a chin cut off at the edge
+is what the backend cannot find a face in: measured on device, a selfie with the
+face box bottom at 0.97 of the frame height came back **Face Detected: No**, and
+one at 0.90 came back detected at 0.95 confidence.
 
 <Warning>
 **Upgrade past 1.1.0 for the liveness stills.** Up to and including 1.1.0 the autoshot and snapshot uploaded in the camera's sensor orientation, rotated 90 degrees from upright, because the rotation arrives as metadata and was not applied. On-device detection was never affected, so the challenges always worked, but the backend was handed a sideways face: a passing verification could report **Face Detected: No** with no face confidence. Fixed in **1.1.1**, where the rotation is baked into the pixels. If you read the autoshot or snapshot yourself, from 1.1.1 they are upright, 480x640 rather than 640x480 on a portrait capture, and carry no EXIF orientation tag. The liveness `.mp4` was never affected.
