@@ -42,14 +42,14 @@ it in your app.
 1. Open your project in Xcode
 2. Go to **File → Add Package Dependencies**
 3. Enter the repository URL: `https://github.com/386konsult/smartcomply-ios-sdk`
-4. Select **Up to Next Major Version** and enter `1.0.4`
+4. Select **Up to Next Major Version** and enter `1.1.0`
 5. Click **Add Package** and select the **SmartComplySDK** library
 
 ### Package.swift
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/386konsult/smartcomply-ios-sdk", from: "1.0.4")
+    .package(url: "https://github.com/386konsult/smartcomply-ios-sdk", from: "1.1.0")
 ],
 targets: [
     .target(
@@ -60,6 +60,15 @@ targets: [
     )
 ]
 ```
+
+<Note>
+  **1.1.0 reworks the liveness screen and changes when the selfie is taken.**
+  Verification now happens in place, on a frozen blurred preview, instead of
+  cutting to a separate progress screen. The guide is a circle rather than an
+  oval. And the autoshot waits for a properly framed face rather than firing on a
+  timer, which adds up to 2.5 seconds for a user slow to get into frame and
+  nothing for one already there. Read [Liveness](#liveness) before you upgrade.
+</Note>
 
 <Note>
   **Take 1.0.4, not 1.0.3.** Up to 1.0.3 the front check required a face, and
@@ -344,6 +353,47 @@ Head yaw is measured against the phone, not against the world, and frames during
 
 The scan has a **20 second cap**.
 
+### The screen, from 1.1.0
+
+The guide is a **circle** rather than an oval, and verification happens **in
+place**. Earlier versions cut to a separate progress screen the moment the
+capture was submitted, so the result poll began by throwing away the thing the
+user was looking at. The preview now freezes on its last frame, blurs, and the
+guide is replaced by a dotted ring while the poll runs underneath; the checkmark
+lands in the same circle.
+
+ARKit is paused as soon as the preview freezes. Nothing past `.uploading` reads
+another frame, so the camera indicator no longer stays lit for the whole poll.
+`LivenessOrchestrator.stopCamera()` is public if you drive the orchestrator
+yourself.
+
+### When the autoshot is taken
+
+Two stills leave the device. The **autoshot** is taken before the scan and
+uploaded with the entry; the **snapshot** is taken once both actions are done and
+uploaded with the video.
+
+**From 1.1.0 the autoshot waits for a properly framed face.** Up to 1.0.4 it
+fired 500ms after the session started, whatever ARKit happened to be pointed at,
+so the selfie on the dashboard was routinely of a ceiling. It now holds the shot
+until three consecutive frames put the face inside the guide, projecting the face
+anchor into the preview with `ARFrame.camera.projectPoint` and checking it
+against the same circle the user is being asked to fill.
+
+- **Timing.** A 300ms settle, then up to 2.5 seconds waiting. On an iPhone 13 Pro
+  a user moving into the guide cleared it in under half a second. A user who never
+  frames themselves waits the full 2.5 seconds and then gets the old behaviour, so
+  the fallback is never a worse image, only a later one.
+- **Presence alone is not the bar, and this is the part worth knowing.** ARKit
+  will happily track a face in the corner of the frame. Measured on device, a
+  selfie taken that way scored **25.6% against the ID photo and was reported as a
+  mismatch**; the same person framed in the guide scored 67%. Bad framing does not
+  just look wrong on the dashboard, it fails legitimate users.
+- **The HUD.** A face that is tracked but outside the guide now reads "Move your
+  face into the frame". Earlier versions fell through to "Almost there, keep
+  going…", which told a user whose face was off the bottom of the screen that they
+  were making progress.
+
 <Warning>
   Reaching the cap **fails** the check. Nothing is uploaded and nothing is billed, and the user is offered **Try Again**. Earlier versions submitted anyway and reported success with no actions completed: if you are on 1.0.2 or below, expect that behaviour.
 </Warning>
@@ -356,7 +406,7 @@ Liveness **cannot run on the Simulator**. Test on a physical device that meets t
 
 From **1.0.3** the flow honours the user's text size setting (Settings → Accessibility → Display & Text Size → Larger Text). Earlier versions used fixed point sizes throughout, so the setting had no effect on any screen.
 
-Scaling is capped at `.accessibility1`. The oval guide, the document frame and the buttons are sized to fit their content, and the accessibility sizes above that cap overflow them: the bound keeps everything below it usable rather than shipping layouts that break at the top of the range.
+Scaling is capped at `.accessibility1`. The liveness guide, the document frame and the buttons are sized to fit their content, and the accessibility sizes above that cap overflow them: the bound keeps everything below it usable rather than shipping layouts that break at the top of the range.
 
 ### What "Verification Complete" means
 
