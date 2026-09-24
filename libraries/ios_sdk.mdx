@@ -12,6 +12,7 @@ The SmartComply iOS SDK is a native Swift library that delivers a fully self-con
 - **Drop-in SwiftUI view** — `SmartComplyFlowView` manages the entire verification flow with no UI code required
 - **Two verification modes** — document photo capture or ID number data entry, configured from your Dashboard
 - **Guide-box document capture** — crops exactly what falls inside the ID card frame so the image sent to the backend is always clean
+- **ID checked before the selfie**: the backend reads the ID and checks it against the government registry first, so a cropped or misread ID is retaken on the spot. See [Document check](#document-check)
 - **Liveness detection** — a passive face scan (blink plus natural head movement) runs automatically after identity verification, with no step-by-step prompts
 - **Dynamic ID types** — channels and fields are fetched live from your Dashboard configuration
 - **Multi-country support** — renders a country picker automatically when more than one country is configured
@@ -42,14 +43,14 @@ it in your app.
 1. Open your project in Xcode
 2. Go to **File → Add Package Dependencies**
 3. Enter the repository URL: `https://github.com/386konsult/smartcomply-ios-sdk`
-4. Select **Up to Next Major Version** and enter `1.1.0`
+4. Select **Up to Next Major Version** and enter `1.2.0`
 5. Click **Add Package** and select the **SmartComplySDK** library
 
 ### Package.swift
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/386konsult/smartcomply-ios-sdk", from: "1.1.0")
+    .package(url: "https://github.com/386konsult/smartcomply-ios-sdk", from: "1.2.0")
 ],
 targets: [
     .target(
@@ -62,12 +63,23 @@ targets: [
 ```
 
 <Note>
+  **1.2.0 checks the ID before the selfie, and holds the selfie until the whole face
+  is in the circle.** The ID now goes up on its own and the backend reads it and
+  checks it against the government registry before the liveness camera opens, so a
+  cropped or misread ID is turned back with a retake screen instead of failing after
+  the whole flow. The selfie and the scan then wait until the user's whole face is
+  inside the circle, with no timeout. `onDismiss` has two new causes. Read
+  [Document check](#document-check) and [Liveness](#liveness) before you upgrade.
+</Note>
+
+<Note>
   **1.1.0 reworks the liveness screen and changes when the selfie is taken.**
   Verification now happens in place, on a frozen blurred preview, instead of
   cutting to a separate progress screen. The guide is a circle rather than an
   oval. And the autoshot waits for a properly framed face rather than firing on a
   timer, which adds up to 2.5 seconds for a user slow to get into frame and
-  nothing for one already there. Read [Liveness](#liveness) before you upgrade.
+  nothing for one already there. 1.2.0 removes that 2.5 second limit; see
+  [Liveness](#liveness).
 </Note>
 
 <Note>
@@ -82,8 +94,8 @@ targets: [
   screen no longer means a pass. Read [FlowResult](#flowresult) before upgrading from 1.0.2 or
   below. It also adds [Branding](#branding) and a custom backend host.
 
-  iOS and Android are versioned separately and the numbers have never lined up, because the two
-  have always been on their own tracks.
+  iOS and Android are versioned separately. Up to 1.1.x the numbers never lined up; 1.2.0 ships
+  the same changes on both under the same number.
 </Note>
 
 <Note>
@@ -181,20 +193,47 @@ The SDK manages the entire flow automatically. The exact steps depend on the ver
 **Document mode** (photo capture):
 1. Creates a secure session
 2. Displays a welcome screen with your logo and ID type cards
-3. Shows a country picker if multiple countries are configured
+3. Shows a country picker if multiple countries are configured. From 1.2.0 **Continue** stays disabled until a country is picked
 4. User photographs the front of their ID inside the guide box
-5. Photographs the back, when the Dashboard's `requires_back_side` for that ID type is `required` or `optional`. On `optional` the capture screen also shows a **This ID has no back side** control; tapping it goes straight to the liveness scan and the entry is submitted with no back image. When the backend sends no value at all, the SDK falls back to matching the ID type's name against national, driver, resident and voter
-6. Runs the passive liveness scan
-7. Returns a `FlowResult` to your completion handler
+5. Photographs the back, when the Dashboard's `requires_back_side` for that ID type is `required` or `optional`. On `optional` the capture screen also shows a **This ID has no back side** control; tapping it goes straight to the document check with no back image. When the backend sends no value at all, the SDK falls back to matching the ID type's name against national, driver, resident and voter
+6. From 1.2.0, uploads the ID on its own and waits for the backend to read it and check it against the registry. A rejected ID gets a retake screen; an accepted one shows **Are these your details?** See [Document check](#document-check)
+7. Runs the passive liveness scan on the same entry
+8. Returns a `FlowResult` to your completion handler
 
 **Data mode** (ID number entry):
 1. Creates a secure session
 2. Displays a welcome screen with ID type selection
-3. Shows a country picker if multiple countries are configured
+3. Shows a country picker if multiple countries are configured. From 1.2.0 **Continue** stays disabled until a country is picked
 4. User enters their ID number and any required fields
 5. Identity is verified against the national database
 6. Runs the passive liveness scan
 7. Returns a `FlowResult` to your completion handler
+
+### Document check
+
+From **1.2.0** the ID is checked before the liveness camera opens. Up to 1.1.0 it went up
+with the selfie once the scan had started, so a cropped or misread ID was only rejected
+after the whole flow, and **Try Again** threw away both photos.
+
+After the last photo the SDK uploads the ID on its own, polls for the result for up to 90
+seconds, and shows the user one of these:
+
+| Screen | When | Action |
+|---|---|---|
+| Are these your details? | The ID was read and, where a registry exists for it, matched | **Yes, continue** to liveness |
+| We couldn't confirm your details | The registry did not match the number or name, or could not be reached | **Re-upload ID** |
+| We couldn't read your ID | The photo could not be read | **Retake photo** |
+| Your ID has expired | The document is past its expiry date | **Use a different ID** |
+| We can't check this ID yet | No registry exists for this document type, so retaking cannot help | **Choose a different ID** |
+| We couldn't finish your verification | The session has failed three document checks and gone to manual review | **Close** |
+
+The message on the rejection screens is the backend's own. A retake reuses the same entry,
+and liveness then submits to that entry rather than creating a new one. A rejected ID is
+not billed. **End session** and **Close** call `onDismiss` with `errorCode`
+`"DOCUMENT_REJECTED"` or `"MANUAL_REVIEW_REQUIRED"`; without an `onDismiss`, **End session**
+returns the user to choosing a document.
+
+Data mode is unchanged: it has no document to check.
 
 ### Document images
 
@@ -206,7 +245,8 @@ fail the size limit.
 Before the review screen the SDK checks the **front** photo looks like a document: from **1.0.4**
 that means at least three regions of text. A failure is a **warning, not a block**. The user can
 still confirm, because a false negative would otherwise trap someone holding a genuine but unusual
-ID. The backend OCR is the check that actually rejects. The back photo is not checked.
+ID. The backend is the check that actually rejects, and from 1.2.0 it does so before the selfie:
+see [Document check](#document-check). The back photo is not checked on the device.
 
 <Warning>
 **Up to 1.0.3 this check also required a face, and got it wrong on some genuine IDs.** Cards that engrave the portrait into polycarbonate rather than printing it, Kenya's Maisha Namba card among them, are monochrome and low contrast under a security pattern, and Vision does not find a face on them at any detector revision. Holders of those cards were told "No face detected" on a perfectly good capture. From 1.0.4 the face is not required.
@@ -369,30 +409,30 @@ yourself.
 
 ### When the autoshot is taken
 
-Two stills leave the device. The **autoshot** is taken before the scan and
-uploaded with the entry; the **snapshot** is taken once both actions are done and
-uploaded with the video.
+Two stills leave the device. The **autoshot** is taken before the scan and the **snapshot**
+once both actions are done. From 1.2.0, in document mode the autoshot goes up with the video,
+because the entry already exists from the document check; in data mode it goes up with the
+entry as before.
 
-**From 1.1.0 the autoshot waits for a properly framed face.** Up to 1.0.4 it
-fired 500ms after the session started, whatever ARKit happened to be pointed at,
-so the selfie on the dashboard was routinely of a ceiling. It now holds the shot
-until three consecutive frames put the face inside the guide, projecting the face
-anchor into the preview with `ARFrame.camera.projectPoint` and checking it
-against the same circle the user is being asked to fill.
+**From 1.2.0 nothing starts until the whole face is inside the circle.** After a 300ms settle
+the SDK holds the autoshot until three consecutive frames put the face inside the circle the
+user is looking at, and there is no timeout. Recording and the 20 second cap start only then.
+Up to 1.1.0 the check looked at the centre of the face alone, so a face with its chin well
+below the circle passed, and after 2.5 seconds it took whatever ARKit saw.
 
-- **Timing.** A 300ms settle, then up to 2.5 seconds waiting. On an iPhone 13 Pro
-  a user moving into the guide cleared it in under half a second. A user who never
-  frames themselves waits the full 2.5 seconds and then gets the old behaviour, so
-  the fallback is never a worse image, only a later one.
-- **Presence alone is not the bar, and this is the part worth knowing.** ARKit
-  will happily track a face in the corner of the frame. Measured on device, a
-  selfie taken that way scored **25.6% against the ID photo and was reported as a
-  mismatch**; the same person framed in the guide scored 67%. Bad framing does not
-  just look wrong on the dashboard, it fails legitimate users.
-- **The HUD.** A face that is tracked but outside the guide now reads "Move your
-  face into the frame". Earlier versions fell through to "Almost there, keep
-  going…", which told a user whose face was off the bottom of the screen that they
-  were making progress.
+- **"Whole face" is ARKit's face mesh.** The ellipse around the mesh, forehead to chin and
+  cheek to cheek, is projected into the preview with `ARFrame.camera.projectPoint` and must
+  sit entirely inside the circle. On an iPhone 13 Pro the projected outline traced the face.
+- **The prompt says what is wrong.** "Position your face in the frame" when there is no face,
+  "Move back a little" when the face is centred but too big to fit, and "Fit your whole face
+  inside the circle" when it is off to one side or too low. It stays up until the face is in.
+- **During the scan an action only counts while the face is in the circle.** If the face is
+  out for more than half a second the prompt comes back and nothing is credited until it
+  returns. The grace keeps a head turn, which swings the face across the edge, from flashing
+  the prompt.
+- **Framing is not cosmetic.** Measured on device, a selfie with the face in the corner of the
+  frame scored **25.6% against the ID photo and was reported as a mismatch**; the same person
+  framed in the guide scored 67%.
 
 <Warning>
   Reaching the cap **fails** the check. Nothing is uploaded and nothing is billed, and the user is offered **Try Again**. Earlier versions submitted anyway and reported success with no actions completed: if you are on 1.0.2 or below, expect that behaviour.
@@ -416,17 +456,17 @@ The submit call returns `processing`, because the backend resolves face matching
 
 This is a product decision, not an oversight: tenants asked for the end user to see a submitted verification as accepted, and to act on the real verdict themselves from the dashboard and the webhook. It means **you** have to close the loop with a user who failed.
 
-Pre-submission failures are unaffected and still show the failure screen with **Try Again**: a denied camera, a configuration or network error, and reaching the 20 second liveness cap. Nothing has been billed at that point and the user can recover on the spot.
+Pre-submission failures are unaffected and still show their own screens: a denied camera, a configuration or network error, reaching the 20 second liveness cap, and from 1.2.0 a rejected ID. Nothing has been billed at that point and the user can recover on the spot.
 
 ### Knowing the user gave up
 
-`onComplete` only fires on a verification. Pass the optional `onDismiss` to learn that the flow ended without one: the user closed the failure screen, or an error left nothing to retry. Passing it also adds a **Close** control to the failure screen, which otherwise offers only **Try Again**.
+`onComplete` only fires on a verification. Pass the optional `onDismiss` to learn that the flow ended without one: the user closed the failure screen, an error left nothing to retry, or from 1.2.0 the user ended the session on a rejected ID. Passing it also adds a **Close** control to the failure screen, which otherwise offers only **Try Again**.
 
 ```swift
 SmartComplyFlowView(
     sdk: sdk,
     onComplete: { result in /* branch on result.status: "passed", "failed" or "processing" */ },
-    onDismiss:  { error in  /* always non-nil: errorCode "FLOW_FAILED", message from the failure screen */ }
+    onDismiss:  { error in  /* always non-nil: errorCode "FLOW_FAILED", "DOCUMENT_REJECTED" or "MANUAL_REVIEW_REQUIRED" */ }
 )
 ```
 
@@ -584,4 +624,5 @@ do {
 | Session expired | Session tokens live 30 minutes | Present the flow again. A new session is created each time; your `clientId` never changes |
 | Camera permission denied | User denied camera access | The flow view shows a Settings deep-link automatically |
 | Upload failed after retries | Network instability | `maxUploadRetries` exhausted — the failure screen offers a retry |
+| ID rejected before the selfie | From 1.2.0, document mode: the registry did not match, the photo could not be read, the ID has expired, or no registry exists for it | The user is shown the backend's reason and a retake. `onDismiss` gets `DOCUMENT_REJECTED` if they end the session |
 | Identity not found | ID number not found or details mismatched (data mode) | User is shown the reason and prompted to re-enter |
