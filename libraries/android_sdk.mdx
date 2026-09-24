@@ -12,6 +12,7 @@ The SmartComply Android SDK delivers a fully self-contained identity verificatio
 - **Single-Activity launch** — start verification with one Intent and receive a typed result back
 - **Two verification modes** — document photo capture or ID number data entry, configured from your Dashboard
 - **Guide-box document capture** — frames the ID card precisely so images are always clean and correctly cropped
+- **ID checked before the selfie**: the backend reads the ID and checks it against the government registry first, so a cropped or misread ID is retaken on the spot. See [Document check](#document-check)
 - **Liveness detection** — a passive camera scan (blink plus natural head movement) runs automatically after identity verification, with no step-by-step prompts
 - **Dynamic ID types** — channels and fields are fetched live from your Dashboard configuration
 - **Multi-country support** — renders a country picker automatically when more than one country is configured
@@ -51,7 +52,7 @@ In your app or feature module `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("io.github.386konsult:android-sdk:1.1.2")
+    implementation("io.github.386konsult:android-sdk:1.2.0")
 }
 ```
 
@@ -62,13 +63,24 @@ Neither can be withdrawn from Maven Central, so pin deliberately.
 </Warning>
 
 <Note>
+  **1.2.0 checks the ID before the selfie, and holds the selfie until the face is
+  in the oval.** The ID now goes up on its own and the backend reads it and checks
+  it against the government registry before the liveness camera opens, so a
+  cropped or misread ID is turned back with a retake screen instead of failing
+  after the whole flow. The selfie and the scan then wait until the user's whole
+  face is inside the oval, with no timeout. Two new ways to end the flow return
+  `TYPE_FAILURE`. Read [Document check](#document-check) and [Liveness](#liveness)
+  before you upgrade.
+</Note>
+
+<Note>
   **1.1.2 changes when the liveness selfie is taken.** Up to 1.1.1 it fired on a
   fixed timer half a second after the camera opened, before anything had looked
   for a face, so the autoshot on the dashboard was routinely of nobody, of a
   ceiling, or of half a face. It now waits for a frame with a whole face in it.
   That adds up to 2.5 seconds to the start of the check for a user who is slow to
-  get into frame, and nothing at all for one who is already there. Read
-  [Liveness](#liveness) before you upgrade.
+  get into frame, and nothing at all for one who is already there. 1.2.0 removes
+  that 2.5 second limit; see [Liveness](#liveness).
 </Note>
 
 <Note>
@@ -325,13 +337,17 @@ Read from the `Intent` returned to your activity result callback.
 | `RESULT_VERIFIED_NAME` | `String` | `TYPE_SUCCESS`: the verified name, when the backend returned one |
 | `RESULT_ID_TYPE_NAME` | `String` | `TYPE_SUCCESS` — e.g. `"National Identity Number (NIN)"`, `"Passport"` |
 | `RESULT_ID_NUMBER` | `String` | `TYPE_SUCCESS`: the ID number, from the user in data mode or from OCR in document mode |
-| `RESULT_ERROR_MSG` | `String` | `TYPE_FAILURE` only: why the launch was rejected, e.g. `"SmartComply: apiKey is required"` |
+| `RESULT_ERROR_MSG` | `String` | `TYPE_FAILURE` only: why the flow ended without a verification, e.g. `"SmartComply: apiKey is required"`, or from 1.2.0 the backend's reason for rejecting the ID |
 
 <Note>
   From **1.0.7** the Activity returns `TYPE_FAILURE` when `apiKey` or `clientId` is blank, which
   is the usual sign of an unset `BuildConfig` field or a missing CI value. That result carries no
-  other extras. Before 1.0.7 the same input crashed the host app, so no released version returned
-  `TYPE_FAILURE` for anything else.
+  other extras. Before 1.0.7 the same input crashed the host app.
+
+  From **1.2.0** `TYPE_FAILURE` is also returned when the user taps **End session** on a rejected
+  ID, with the backend's reason in `RESULT_ERROR_MSG`, and when they tap **Close** after the session
+  has used its three document attempts, with `"Verification sent to manual review"`. See
+  [Document check](#document-check).
 </Note>
 
 <Note>
@@ -370,16 +386,44 @@ The SDK steps through these screens automatically.
 | Step | Description |
 |---|---|
 | Loading | Session creation and brand config fetch |
-| Welcome | Brand splash, country picker, and ID type selection |
+| Welcome | Brand splash, country picker, and ID type selection. From 1.2.0 **Continue** stays disabled until a country is picked when more than one is configured |
 | Camera Permission | Requested in `onCreate`, before the Loading screen, on the `SmartComplyActivity` path. On the embedded `SmartComplyFlowScreen` path it is requested in both modes, before the ID-input or capture step |
 | Camera Permission Denied | Embedded `SmartComplyFlowScreen` path only: "Camera Access Required" screen with **Open Settings** and **Go Back**. On the `SmartComplyActivity` path a denial returns `TYPE_CANCELLED` instead and this screen is never shown |
 | Document Capture (front) | Camera view with a guide box, a shutter, and **Upload from gallery** |
-| Document Capture (back) | Shown when the channel's `requires_back_side` is `required` or `optional`. The server decides, not the app. On `optional` the screen also shows a **This ID has no back side** control, which skips straight to liveness |
+| Document Capture (back) | Shown when the channel's `requires_back_side` is `required` or `optional`. The server decides, not the app. On `optional` the screen also shows a **This ID has no back side** control, which skips straight to the document check |
+| Document check | From 1.2.0. "Reading your document" while the backend reads the ID and checks it against the registry. See [Document check](#document-check) |
+| Confirm details | The name, ID number, expiry and photo read from the ID. **Yes, continue** opens liveness; **No, retake my ID** goes back to the camera |
+| Document rejected | The backend's reason, with a retake or a different ID, and **End session** |
 | ID Input | Form fields for data-mode verification (BVN, NIN, etc.) |
 | Liveness | Passive camera scan: see [Liveness](#liveness) below |
 | Processing | Upload and backend submission in progress |
 | Success | Shown for every submitted entry. The verdict is in `RESULT_STATUS`, not on the screen |
 | Failure | Pre-submission errors only: config or network failure, liveness timeout. Offers **Try Again** |
+
+### Document check
+
+From **1.2.0** the ID is checked before the liveness camera opens. Up to 1.1.2 it went up
+with the selfie once the scan had started, so a cropped or misread ID was only rejected
+after the whole flow, and **Try Again** threw away both photos.
+
+After the last photo the SDK uploads the ID on its own, polls for the result for up to 90
+seconds, and shows the user one of these:
+
+| Screen | When | Action |
+|---|---|---|
+| Are these your details? | The ID was read and, where a registry exists for it, matched | **Yes, continue** to liveness |
+| We couldn't confirm your details | The registry did not match the number or name, or could not be reached | **Re-upload ID** |
+| We couldn't read your ID | The photo could not be read | **Retake photo** |
+| Your ID has expired | The document is past its expiry date | **Use a different ID** |
+| We can't check this ID yet | No registry exists for this document type, so retaking cannot help | **Choose a different ID** |
+| We couldn't finish your verification | The session has failed three document checks and gone to manual review | **Close** |
+
+The message on the rejection screens is the backend's own. A retake reuses the same entry,
+and liveness then submits to that entry rather than creating a new one. A rejected ID is
+not billed. **End session** and **Close** return `TYPE_FAILURE` with the reason in
+`RESULT_ERROR_MSG`.
+
+Data mode is unchanged: it has no document to check.
 
 ### Document images
 
@@ -397,7 +441,7 @@ Three things follow, and all three are worth re-testing before you ship 1.1.0:
 
 A gallery pick is also rotated to match its EXIF orientation from 1.1.0. Before that it was uploaded as decoded, so a normal phone photo reached the backend sideways.
 
-Before the review screen the SDK checks the **front** photo contains a face. A failure is a **warning, not a block**: the user can still confirm, because a false negative would otherwise trap someone holding a genuine but unusual ID. The backend OCR is the check that actually rejects. The back photo is not checked.
+Before the review screen the SDK checks the **front** photo contains a face. A failure is a **warning, not a block**: the user can still confirm, because a false negative would otherwise trap someone holding a genuine but unusual ID. The backend is the check that actually rejects, and from 1.2.0 it does so before the selfie: see [Document check](#document-check). The back photo is not checked on the device.
 
 From 1.1.0 that check runs ML Kit's accurate model. The fast one it used before does not find the portrait on a laser-engraved card, so genuine IDs of that kind, Kenya's Maisha Namba among them, were told "No face detected".
 
@@ -502,36 +546,32 @@ The scan has a **20 second cap**.
 
 ### When the autoshot is taken
 
-Two stills leave the device. The **autoshot** is taken before the scan starts and
-uploaded with the entry; the **snapshot** is taken once both actions are done and
-uploaded with the video. Both come off the analysis stream, so neither is a
-composed photograph: 720px on the long edge at JPEG quality 72.
+Two stills leave the device. The **autoshot** is taken before the scan starts and the
+**snapshot** once both actions are done. Both come off the analysis stream, so neither is a
+composed photograph: 720px on the long edge at JPEG quality 72. From 1.2.0, in document
+mode the autoshot goes up with the video, because the entry already exists from the
+document check. In data mode it goes up with `liveness.create` as before.
 
-**From 1.1.2 the autoshot waits for a face.** Up to 1.1.1 it fired on a fixed
-`delay(500)` after the camera bound, and nothing had looked for a face by then,
-because detection did not start until recording did. The one frame of the session
-that became the selfie was the only frame no detector had ever seen, so clients
-reported autoshots of nobody, of ceilings, and of half a face.
+**From 1.2.0 nothing starts until the whole face is inside the oval.** After a 400ms settle
+the SDK holds the autoshot until three consecutive frames show the face inside the oval the
+user is looking at, and there is no timeout. Up to 1.1.2 it gave up after 2.5 seconds and
+took whatever frame it had, which is how a selfie of nobody could still be uploaded, and up
+to 1.1.1 it fired on a fixed timer without looking for a face at all.
 
-It now runs face detection from the first frame and holds the shot until three
-consecutive frames show a face that is wholly inside the frame with an 8% margin,
-spans at least 18% of the frame width, and is within 30 degrees of facing the
-camera. What changes for you:
-
-- **Timing.** A 400ms settle, then up to 2.5 seconds waiting. On a TECNO KI7 a
-  user already in frame cleared it in about 1 second. A user who never presents a
-  face waits the full 2.5 seconds and then gets the old behaviour, so the fallback
-  is never a worse image than 1.1.1 produced, only a later one.
-- **The challenge window is unaffected.** The wait sits before `liveness.create`,
-  so the 20 second cap still starts with a full 20 seconds.
-- **The HUD.** "Position your face in the oval" now shows during that wait, where
-  earlier versions went straight from camera-ready to detecting.
-
-The margin check is the part doing the work. ML Kit reports a face running off the
-side of the frame as readily as one in the middle, and a chin cut off at the edge
-is what the backend cannot find a face in: measured on device, a selfie with the
-face box bottom at 0.97 of the frame height came back **Face Detected: No**, and
-one at 0.90 came back detected at 0.95 confidence.
+- **The prompt says what is wrong.** "Position your face in the oval" when there is no face,
+  "Move back a little" when the face is centred but too big to fit, and "Fit your whole face
+  inside the oval" when it is off to one side or too low. It stays up until the face is in.
+- **During the scan an action only counts while the face is in the oval.** If the face is out
+  for more than about half a second the prompt comes back and nothing is credited until it
+  returns. The grace keeps a head turn, which swings the face across the edge, from flashing
+  the prompt.
+- **The 20 second cap starts after the autoshot**, so a user who takes a while to get into
+  position still has the full window.
+- **How the oval is judged.** ML Kit's face box is mapped onto the preview as it is displayed,
+  and the face is taken as 80% of the box because the box runs wider than the face: on a
+  TECNO KI7, a face comfortably inside the oval measured a box about 1.1 times its width. The
+  face must also be wholly inside the camera frame with an 8% margin, at least 18% of the frame
+  width, and within 30 degrees of facing the camera.
 
 <Warning>
 **Upgrade past 1.1.0 for the liveness stills.** Up to and including 1.1.0 the autoshot and snapshot uploaded in the camera's sensor orientation, rotated 90 degrees from upright, because the rotation arrives as metadata and was not applied. On-device detection was never affected, so the challenges always worked, but the backend was handed a sideways face: a passing verification could report **Face Detected: No** with no face confidence. Fixed in **1.1.1**, where the rotation is baked into the pixels. If you read the autoshot or snapshot yourself, from 1.1.1 they are upright, 480x640 rather than 640x480 on a portrait capture, and carry no EXIF orientation tag. The liveness `.mp4` was never affected.
@@ -549,7 +589,7 @@ The submit call returns `processing`, because the backend resolves face matching
 
 This is a product decision, not an oversight: tenants asked for the end user to see a submitted verification as accepted, and to act on the real verdict themselves from the dashboard and the webhook. It means **you** have to close the loop with a user who failed.
 
-Pre-submission failures are unaffected and still show the failure screen with **Try Again**: a denied camera, a configuration or network error, and reaching the 20 second liveness cap. Nothing has been billed at that point and the user can recover on the spot.
+Pre-submission failures are unaffected and still show their own screens: a denied camera, a configuration or network error, reaching the 20 second liveness cap, and from 1.2.0 a rejected ID. Nothing has been billed at that point and the user can recover on the spot.
 
 ---
 
@@ -593,6 +633,7 @@ data class SDKConfig(
 | Failure screen, no configuration found | `clientId` is not an active SDK Config | Copy the Client ID from **Settings → Integrations → SDK Setup**. Do not generate a UUID |
 | Failure screen, session expired | Session tokens have a 30-minute TTL | Relaunch. A new session is created on each launch; your `clientId` never changes |
 | `TYPE_CANCELLED` | User pressed back, or denied the camera permission prompt on launch | Reconcile against the webhook before assuming the user abandoned the flow |
+| `TYPE_FAILURE` after a rejected ID | From 1.2.0: the user tapped **End session** on a rejected ID, or **Close** after three failed document checks | Read `RESULT_ERROR_MSG`. The entry is failed or in manual review, and nothing was billed |
 | `TYPE_FAILURE` | `apiKey` or `clientId` was blank at launch, so the flow never started | Read `RESULT_ERROR_MSG`. Check the value is actually reaching `buildIntent`; a blank string is not the same as a wrong key, which shows the failure screen instead |
 
 ---
