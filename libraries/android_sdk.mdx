@@ -52,7 +52,7 @@ In your app or feature module `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("io.github.386konsult:android-sdk:1.2.0")
+    implementation("io.github.386konsult:android-sdk:1.2.1")
 }
 ```
 
@@ -61,6 +61,15 @@ dependencies {
 the main thread, and 1.0.3 additionally crashes when the SDK is closed from a UI callback.
 Neither can be withdrawn from Maven Central, so pin deliberately.
 </Warning>
+
+<Note>
+  **Take 1.2.1 or later, not 1.2.0.** Up to 1.2.0, on some phones the autoshot and
+  snapshot upload as a solid green image with vertical stripes instead of the user's
+  face. It depends on how the phone's camera lays out its frames, so it shows on some
+  models and never on others. Liveness and the face match are unaffected, because
+  both read the frame correctly; only the stills on the dashboard are wrong. 1.2.1 is
+  that one fix and changes nothing else.
+</Note>
 
 <Note>
   **1.2.0 checks the ID before the selfie, and holds the selfie until the face is
@@ -548,9 +557,10 @@ The scan has a **20 second cap**.
 
 Two stills leave the device. The **autoshot** is taken before the scan starts and the
 **snapshot** once both actions are done. Both come off the analysis stream, so neither is a
-composed photograph: 720px on the long edge at JPEG quality 72. From 1.2.0, in document
-mode the autoshot goes up with the video, because the entry already exists from the
-document check. In data mode it goes up with `liveness.create` as before.
+composed photograph: 720px on the long edge at JPEG quality 72. Up to 1.2.0 some phones
+uploaded both as a green, striped image; see the 1.2.1 note under Add the dependency.
+From 1.2.0, in document mode the autoshot goes up with the video, because the entry
+already exists from the document check. In data mode it goes up with `liveness.create` as before.
 
 **From 1.2.0 nothing starts until the whole face is inside the oval.** After a 400ms settle
 the SDK holds the autoshot until three consecutive frames show the face inside the oval the
