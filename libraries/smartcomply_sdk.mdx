@@ -114,6 +114,7 @@ SmartComplyFlow.open({
 | `onComplete` | function | No | Callback fired when verification completes successfully |
 | `onError` | function | No | Callback fired on error |
 | `onClose` | function | No | Callback fired when the widget is closed |
+| `resumeToken` | string | No | Reopens a failed verification at the step that failed. See [Resuming a failed verification](#resuming-a-failed-verification) |
 
 <Warning>
   `sandbox` is not currently available — use `"production"` for all integration and testing today. This section will be updated once sandbox is back.
@@ -213,6 +214,52 @@ const handleVerify = () => {
 </body>
 </html>
 ```
+
+---
+
+## Resuming a failed verification
+
+When a verification fails, your team can click **Resubmit** on it in the Adhere Dashboard. That issues a single-use **resume token**, valid for 24 hours. Open the widget with it and the customer redoes only the step that failed, on the same verification, instead of starting again. Use `smartcomply-web-sdk@1.0.93` or later.
+
+<Steps>
+  <Step title="Receive the token on your backend">
+    It arrives in the [`liveness.resubmit_requested` webhook](/webhooks#resubmit-requested). Without a webhook URL on your SDK Config, it is shown in the Resubmit dialog for your team to copy.
+  </Step>
+  <Step title="Send the customer a link">
+    Adhere does not build a link around the token. Put it in a link to your own page, sent through your own channel: email, SMS or your app.
+  </Step>
+  <Step title="Open the widget with it">
+    The SDK does not read the page URL itself, so pass the token through:
+
+    ```javascript
+    const token = new URLSearchParams(window.location.search).get("resume");
+
+    SmartComplyFlow.open({
+      apiKey: "your_api_key_here",
+      clientId: "your_client_id_here",
+      environment: "production",
+      resumeToken: token,
+      onComplete: (result) => { /* as for any run */ },
+    });
+    ```
+  </Step>
+</Steps>
+
+| The verification failed at | The customer sees |
+|---|---|
+| The document | Document capture, on the same country and ID type, with no Welcome screen |
+| Liveness, or a data verification's face match | The liveness step only. Their ID is already on file |
+| Anything else | The Welcome screen. The token still reopens the original verification |
+
+The result arrives the normal way: a `liveness.completed` webhook with the same `verification_id` as the original.
+
+A token that has already been used, or was replaced by a newer Resubmit, shows **Link No Longer Valid** and asks the customer to request a new link. A token past its 24 hours fails when the session loads, and shows **Session Expired**. Either way, issue a new one.
+
+**The attempt limit carries over.** Three failed attempts per verification, counted across the original session and the resume. A verification that has used them cannot be resubmitted; it goes to manual review instead.
+
+<Warning>
+  **The token is a credential.** Whoever holds it can continue that customer's verification until it is used or expires. Send it only through a channel the customer alone can read, keep it out of analytics and logs, and do not leave it in the address bar longer than you need: read it, then remove it from the URL with `history.replaceState`.
+</Warning>
 
 ---
 

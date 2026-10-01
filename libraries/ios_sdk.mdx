@@ -20,6 +20,7 @@ The SmartComply iOS SDK is a native Swift library that delivers a fully self-con
 - **Automatic upload retry** — transient upload failures are retried internally
 - **Your brand, not ours**: name, description, colour and logo come from the Dashboard, and the font is passed by your app. See [Branding](#branding)
 - **Any backend host**: production, staging, or your own, without a rebuild
+- **Resubmit**: a failed verification can be reopened from the Dashboard, and the customer redoes only the step that failed. See [Resuming a failed verification](#resuming-a-failed-verification)
 
 ---
 
@@ -43,14 +44,14 @@ it in your app.
 1. Open your project in Xcode
 2. Go to **File → Add Package Dependencies**
 3. Enter the repository URL: `https://github.com/386konsult/smartcomply-ios-sdk`
-4. Select **Up to Next Major Version** and enter `1.2.0`
+4. Select **Up to Next Major Version** and enter `1.3.0`
 5. Click **Add Package** and select the **SmartComplySDK** library
 
 ### Package.swift
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/386konsult/smartcomply-ios-sdk", from: "1.2.0")
+    .package(url: "https://github.com/386konsult/smartcomply-ios-sdk", from: "1.3.0")
 ],
 targets: [
     .target(
@@ -61,6 +62,14 @@ targets: [
     )
 ]
 ```
+
+<Note>
+  **1.3.0 adds Resubmit.** Pass the resume token from a Dashboard **Resubmit** to
+  `SmartComplyFlowView` and the customer redoes only the step that failed. It changes
+  nothing for a flow presented without one. A dead token ends in `onDismiss` with
+  `errorCode` `"RESUME_LINK_INVALID"`. See
+  [Resuming a failed verification](#resuming-a-failed-verification).
+</Note>
 
 <Note>
   **1.2.0 checks the ID before the selfie, and holds the selfie until the whole face
@@ -94,9 +103,9 @@ targets: [
   screen no longer means a pass. Read [FlowResult](#flowresult) before upgrading from 1.0.2 or
   below. It also adds [Branding](#branding) and a custom backend host.
 
-  iOS and Android are versioned separately. Up to 1.1.x the numbers never lined up; 1.2.0 ships
-  the same changes on both under the same number. Android 1.2.1 is an Android-only fix with no
-  iOS counterpart.
+  iOS and Android are versioned separately. Up to 1.1.x the numbers never lined up; 1.2.0 and
+  1.3.0 ship the same changes on both under the same number. Android 1.2.1 is an Android-only fix
+  with no iOS counterpart.
 </Note>
 
 <Note>
@@ -254,6 +263,65 @@ see [Document check](#document-check). The back photo is not checked on the devi
 
 **This is one of the few places the two SDKs deliberately differ.** Android still requires a face, because ML Kit's accurate model does find these portraits. iOS requires text, because Vision does not. Neither is a bug to be reconciled: each platform uses the check its own detector can actually support, and both remain advisory with the backend OCR as the real gate.
 </Warning>
+
+---
+
+## Resuming a failed verification
+
+From **1.3.0**. When a verification fails, your team can click **Resubmit** on it in the
+Adhere Dashboard. That issues a single-use **resume token**, valid for 24 hours. Present the
+flow with it and the customer redoes only the step that failed, on the same verification,
+instead of starting again.
+
+<Steps>
+  <Step title="Receive the token on your backend">
+    It arrives in the [`liveness.resubmit_requested` webhook](/webhooks#resubmit-requested).
+    Without a webhook URL on your SDK Config, it is shown in the Resubmit dialog for your
+    team to copy.
+  </Step>
+  <Step title="Get it to the customer's app">
+    Getting it onto the phone is up to you; see the warning below.
+  </Step>
+  <Step title="Present the flow with it">
+    ```swift
+    SmartComplyFlowView(
+        sdk: sdk,
+        resumeToken: token,
+        onComplete: { result in /* branch on result.status, as for any run */ },
+        onDismiss:  { error in
+            if error?.errorCode == "RESUME_LINK_INVALID" { /* issue a new token */ }
+        }
+    )
+    ```
+  </Step>
+</Steps>
+
+| The verification failed at | The customer sees |
+|---|---|
+| The document | Document capture, on the same country and ID type, with no Welcome screen |
+| Liveness, or a data verification's face match | The selfie and liveness scan only. Their ID is already on file |
+| Anything else | The Welcome screen. The token still reopens the original verification |
+
+The result comes back exactly as for any other run: `onComplete` with `result.status`, and a
+`liveness.completed` webhook with the same `verification_id` as the original.
+
+**A token that is expired, already used, or replaced by a newer Resubmit** shows a "Link No
+Longer Valid" screen. Its **Close** calls `onDismiss` with `errorCode` `"RESUME_LINK_INVALID"`;
+without an `onDismiss` the screen has no Close button. Issue a new token rather than presenting
+the flow without one, which would start an unrelated verification.
+
+**The attempt limit carries over.** Three failed attempts per verification, counted across the
+original session and the resume. A verification that has used them cannot be resubmitted; it
+goes to manual review instead. A customer who reaches the limit during the resume sees the same
+**We couldn't finish your verification** screen as in [Document check](#document-check).
+
+<Warning>
+  **The token is a credential.** Whoever holds it can continue that customer's verification until it is used or expires. The best route is an in-app fetch: after the customer signs in, your app asks your own backend whether a resubmit is pending, then presents the flow. A push notification can prompt this without carrying the token. Universal Links are fine too, since only your verified app receives them. Avoid custom URL schemes such as `myapp://resume?token=...`: any app can register the same scheme and receive the link.
+</Warning>
+
+Driving the modules yourself, call `try sdk.resumeSession(token)` in place of
+`createSession()`, then `try await sdk.resumeInfo()` to learn which step to open. Do not call
+`createSession()` after it: a new session replaces the token and the resume is silently lost.
 
 ---
 
@@ -467,7 +535,7 @@ Pre-submission failures are unaffected and still show their own screens: a denie
 SmartComplyFlowView(
     sdk: sdk,
     onComplete: { result in /* branch on result.status: "passed", "failed" or "processing" */ },
-    onDismiss:  { error in  /* always non-nil: errorCode "FLOW_FAILED", "DOCUMENT_REJECTED" or "MANUAL_REVIEW_REQUIRED" */ }
+    onDismiss:  { error in  /* always non-nil: errorCode "FLOW_FAILED", "DOCUMENT_REJECTED", "MANUAL_REVIEW_REQUIRED" or, from 1.3.0, "RESUME_LINK_INVALID" */ }
 )
 ```
 
@@ -627,3 +695,5 @@ do {
 | Upload failed after retries | Network instability | `maxUploadRetries` exhausted — the failure screen offers a retry |
 | ID rejected before the selfie | From 1.2.0, document mode: the registry did not match, the photo could not be read, the ID has expired, or no registry exists for it | The user is shown the backend's reason and a retake. `onDismiss` gets `DOCUMENT_REJECTED` if they end the session |
 | Identity not found | ID number not found or details mismatched (data mode) | User is shown the reason and prompted to re-enter |
+| `onDismiss` with `RESUME_LINK_INVALID` | From 1.3.0: the resume token is expired, already used, or was replaced by a newer Resubmit | Issue a new token from the Dashboard. See [Resuming a failed verification](#resuming-a-failed-verification) |
+| `errorCode` `MISSING_RESUME_TOKEN` | From 1.3.0: `resumeSession(_:)` was given a blank token | Check the token actually reaches the call. Surrounding whitespace is trimmed, so only an empty value fails |
