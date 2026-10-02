@@ -40,7 +40,7 @@ To start receiving webhook notifications, follow these steps to configure your e
   There are two independent webhook channels, each with its own URL and its own signing secret:
 
   - **Module events** (transaction monitoring, KYC) go to the URL set under **Integrations**, and are signed with the **Hash Key** you set there.
-  - **Identity verification** (`liveness.completed`, sent for every Web, Android and iOS SDK run) goes to the webhook URL set on your **SDK Config**, and is signed with that config's own webhook secret. It is generated for you, not set by you.
+  - **Identity verification** (`liveness.completed`, sent for every Web, Android and iOS SDK run, and `liveness.resubmit_requested`) goes to the webhook URL set on your **SDK Config**, and is signed with that config's own webhook secret. It is generated for you, not set by you.
 
   Both use the same `X-Adhere-Signature` header and the same HMAC-SHA256 scheme described below.
 </Note>
@@ -58,7 +58,7 @@ To ensure that a webhook request is genuinely from Adhere, you should verify the
 </Warning>
 
 <Note>
-  For `liveness.completed`, the signing key is your SDK Config's webhook secret **with the dashes removed** — a 32-character hex string, not the dashed UUID form. The examples below strip them for you.
+  For `liveness.completed` and `liveness.resubmit_requested`, the signing key is your SDK Config's webhook secret **with the dashes removed**: a 32-character hex string, not the dashed UUID form. The examples below strip them for you.
 </Note>
 
 ### Getting your SDK Config's webhook secret
@@ -272,6 +272,7 @@ Module events follow a consistent JSON structure:
 *   **Delivered to**: the webhook URL on your **SDK Config** (not the Integrations URL)
 *   **Events**:
     *   `liveness.completed`: fired once per verification, after face matching and, for document runs, OCR have finished.
+    *   `liveness.resubmit_requested`: fired when your team clicks **Resubmit** on a failed verification. Carries the resume token. See [Resubmit requested](#resubmit-requested).
 
 This payload is **flat** — there is no `success` / `module` / `data` wrapper.
 
@@ -384,6 +385,50 @@ X-Adhere-Signature: sha256=<hmac-sha256-hex>
 </Warning>
 
 `verification_id` matches the `entryId` returned by the SDK's completion callback.
+
+### Resubmit requested
+
+When a verification fails, your team can click **Resubmit** on it in the Adhere Dashboard. That issues a single-use **resume token** and sends it here, so your backend can pass it to the customer's app without anyone copying it out of the dashboard. Hand the token to the SDK and the customer redoes only the step that failed. See the [Web](/libraries/smartcomply_sdk#resuming-a-failed-verification), [Android](/libraries/android_sdk#resuming-a-failed-verification) and [iOS](/libraries/ios_sdk#resuming-a-failed-verification) guides.
+
+Same delivery, signature and retries as `liveness.completed`, and the same flat shape:
+
+```json
+{
+  "event": "liveness.resubmit_requested",
+  "verification_id": 131,
+  "verification_type": "document_verification",
+  "status": "awaiting_resubmit",
+  "failure_stage": "document",
+  "failure_reason": "We couldn't confirm your details because the ID number does not match government records.",
+  "resume_token": "8f3e2c1a-4b7d-4e9a-9f1c-2d6a8e5b3c47",
+  "resume_expires_at": "2026-09-25T05:20:00+00:00",
+  "timestamp": "2026-09-24T05:20:01+00:00",
+  "subject": {
+    "identifier": "12345678901",
+    "identifier_type": "National Identity Number (NIN)",
+    "country": "nigeria"
+  },
+  "activity": {
+    "session_id": "da7623bd-9158-4b56-a9e4-4bccf3c0133f"
+  }
+}
+```
+
+| Field | Description |
+|---|---|
+| `verification_id` | The verification being reopened. The `liveness.completed` that follows the customer's retry carries the same ID |
+| `failure_stage` | `document`, `liveness` or `data_match`: the step the customer will redo. `null` when the failure was outside those steps |
+| `resume_token` | Single-use. Pass it to the SDK as is |
+| `resume_expires_at` | 24 hours after the Resubmit click. After that the token no longer works and a new one has to be issued |
+| `activity.session_id` | The customer's **original** session, so you can match this to the `liveness.completed` you already received for it |
+
+<Warning>
+  The resume token is a credential: whoever holds it can continue that customer's verification until it is used or expires. Keep it on your servers and get it to the customer's app over a channel only they can read. See the SDK guides for the options.
+</Warning>
+
+<Note>
+  Clicking **Resubmit** again issues a new token and retires the previous one. If the previous one's webhook has not been sent yet, it is skipped. A verification that has already used its three attempts cannot be resubmitted; it goes to manual review instead. If your SDK Config has no webhook URL, nothing is sent: the token is shown in the Resubmit dialog in the dashboard, with a copy button, and your team passes it on.
+</Note>
 
 ## Testing Locally
 
