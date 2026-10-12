@@ -12,6 +12,7 @@ The SmartComply iOS SDK is a native Swift library that delivers a fully self-con
 - **Drop-in SwiftUI view** — `SmartComplyFlowView` manages the entire verification flow with no UI code required
 - **Two verification modes** — document photo capture or ID number data entry, configured from your Dashboard
 - **Guide-box document capture** — crops exactly what falls inside the ID card frame so the image sent to the backend is always clean
+- **ID photo checked on the phone**: for the Kenyan national ID and passports, the code at the bottom of the document is read on the device before upload, so a cut-off or blurred photo is retaken before it costs a check. See [Checking the photo on the phone](#checking-the-photo-on-the-phone)
 - **ID checked before the selfie**: the backend reads the ID and checks it against the government registry first, so a cropped or misread ID is retaken on the spot. See [Document check](#document-check)
 - **Liveness detection** — a passive face scan (blink plus natural head movement) runs automatically after identity verification, with no step-by-step prompts
 - **Dynamic ID types** — channels and fields are fetched live from your Dashboard configuration
@@ -44,14 +45,14 @@ it in your app.
 1. Open your project in Xcode
 2. Go to **File → Add Package Dependencies**
 3. Enter the repository URL: `https://github.com/386konsult/smartcomply-ios-sdk`
-4. Select **Up to Next Major Version** and enter `1.3.0`
+4. Select **Up to Next Major Version** and enter `1.4.0`
 5. Click **Add Package** and select the **SmartComplySDK** library
 
 ### Package.swift
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/386konsult/smartcomply-ios-sdk", from: "1.3.0")
+    .package(url: "https://github.com/386konsult/smartcomply-ios-sdk", from: "1.4.0")
 ],
 targets: [
     .target(
@@ -62,6 +63,14 @@ targets: [
     )
 ]
 ```
+
+<Note>
+  **1.4.0 checks the ID photo on the phone.** For a Kenyan national ID (back) and a
+  passport, the review screen reads the code at the bottom of the document with Apple's
+  Vision framework before upload and asks for a retake if it is cut off or unclear. The
+  SDK still has no third-party dependencies. See
+  [Checking the photo on the phone](#checking-the-photo-on-the-phone).
+</Note>
 
 <Note>
   **1.3.0 adds Resubmit.** Pass the resume token from a Dashboard **Resubmit** to
@@ -103,8 +112,8 @@ targets: [
   screen no longer means a pass. Read [FlowResult](#flowresult) before upgrading from 1.0.2 or
   below. It also adds [Branding](#branding) and a custom backend host.
 
-  iOS and Android are versioned separately. Up to 1.1.x the numbers never lined up; 1.2.0 and
-  1.3.0 ship the same changes on both under the same number. Android 1.2.1 is an Android-only fix
+  iOS and Android are versioned separately. Up to 1.1.x the numbers never lined up; 1.2.0,
+  1.3.0 and 1.4.0 ship the same changes on both under the same number. Android 1.2.1 is an Android-only fix
   with no iOS counterpart.
 </Note>
 
@@ -245,6 +254,38 @@ returns the user to choosing a document.
 
 Data mode is unchanged: it has no document to check.
 
+### Checking the photo on the phone
+
+From **1.4.0**, before a photo is uploaded, the SDK reads the machine readable zone (the
+two or three lines of letters, numbers and `<` at the bottom of the document) on the
+phone with Vision and checks every line is there and every check digit adds up. A
+cut-off, blurred or covered photo is caught in under a second, instead of after the
+backend has read it.
+
+| Document | Photo checked |
+|---|---|
+| Kenya, national ID | The back |
+| Passport, any country | The photo page |
+| Anything else | Not checked, unchanged from 1.3.0 |
+
+What the user sees on the review screen:
+
+| Result | Screen |
+|---|---|
+| Checking | "Checking your photo" for under a second. **Use this photo** waits |
+| Pass | The usual review screen |
+| Fail, first and second time | A message and **Retake photo** only. Nothing is uploaded and no attempt is used |
+| Fail, third time onwards | The same message, with **Use this photo anyway** under **Retake photo**. It uploads the photo and the backend checks it as before |
+
+The message says the document is cut off or unclear, or, when no code is found at all,
+that the user may have photographed the wrong side. VoiceOver announces it.
+
+The check never blocks a photo it cannot judge. If Vision cannot run, the check takes
+longer than 5 seconds, or the card is a different Kenyan ID (the Maisha Namba), the photo
+goes through exactly as in 1.3.0 and the backend checks it. A photo picked from the
+library is checked too, including one taken sideways. Nothing read from the code is sent
+anywhere or logged.
+
 ### Document images
 
 Document photos are capped at **5 MB** server-side. Both routes, the in-SDK camera and
@@ -256,7 +297,8 @@ Before the review screen the SDK checks the **front** photo looks like a documen
 that means at least three regions of text. A failure is a **warning, not a block**. The user can
 still confirm, because a false negative would otherwise trap someone holding a genuine but unusual
 ID. The backend is the check that actually rejects, and from 1.2.0 it does so before the selfie:
-see [Document check](#document-check). The back photo is not checked on the device.
+see [Document check](#document-check). From 1.4.0 the back of a Kenyan ID and a passport photo
+page are also checked on the device: see [Checking the photo on the phone](#checking-the-photo-on-the-phone).
 
 <Warning>
 **Up to 1.0.3 this check also required a face, and got it wrong on some genuine IDs.** Cards that engrave the portrait into polycarbonate rather than printing it, Kenya's Maisha Namba card among them, are monochrome and low contrast under a security pattern, and Vision does not find a face on them at any detector revision. Holders of those cards were told "No face detected" on a perfectly good capture. From 1.0.4 the face is not required.
