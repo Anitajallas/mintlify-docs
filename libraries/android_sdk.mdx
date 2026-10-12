@@ -12,7 +12,7 @@ The SmartComply Android SDK delivers a fully self-contained identity verificatio
 - **Single-Activity launch** — start verification with one Intent and receive a typed result back
 - **Two verification modes** — document photo capture or ID number data entry, configured from your Dashboard
 - **Guide-box document capture** — frames the ID card precisely so images are always clean and correctly cropped
-- **ID photo checked on the phone**: for the Kenyan national ID and passports, the code at the bottom of the document is read on the device before upload, so a cut-off or blurred photo is retaken before it costs a check. See [Checking the photo on the phone](#checking-the-photo-on-the-phone)
+- **ID photo checked on the phone**: for passports and the older Kenyan national ID, with every other document checked by the backend as before, the code at the bottom of the document is read on the device before upload, so a cut-off or blurred photo is retaken before it costs a check. See [Checking the photo on the phone](#checking-the-photo-on-the-phone)
 - **ID checked before the selfie**: the backend reads the ID and checks it against the government registry first, so a cropped or misread ID is retaken on the spot. See [Document check](#document-check)
 - **Liveness detection** — a passive camera scan (blink plus natural head movement) runs automatically after identity verification, with no step-by-step prompts
 - **Dynamic ID types** — channels and fields are fetched live from your Dashboard configuration
@@ -466,9 +466,13 @@ or covered photo is caught in under a second, instead of after the backend has r
 
 | Document | Photo checked |
 |---|---|
-| Kenya, national ID | The back |
+| Kenya, national ID (the older card) | The back |
 | Passport, any country | The photo page |
-| Anything else | Not checked, unchanged from 1.3.0 |
+| Every other document | Not checked on the phone. It works exactly as in 1.3.0: the photo is uploaded and the backend checks it |
+
+This is an extra check in front of the backend, not a limit on which documents are
+supported. Every document type your Dashboard offers still works on both SDKs. More
+documents will get the check on the phone as their code formats are confirmed.
 
 What the user sees on the review screen:
 
