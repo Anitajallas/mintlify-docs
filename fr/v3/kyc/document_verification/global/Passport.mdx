@@ -7,8 +7,6 @@ openapi: "POST /api/onboarding/document_verification/passport"
 
 Vérifiez le passeport d'un client, quel que soit son pays, en envoyant une photo de la page de données. Nous lisons les informations, confirmons le pays qui a délivré le passeport et comparons le visage du passeport avec un selfie.
 
-Consultez [Pays pris en charge](/fr/supported_countries) pour tous les pays dont vous pouvez vérifier les passeports.
-
 <Note>
   Le passeport n'a qu'une face. Seul `document_front` est nécessaire.
 </Note>
@@ -16,6 +14,10 @@ Consultez [Pays pris en charge](/fr/supported_countries) pour tous les pays dont
 <Note>
   `country` est facultatif. Envoyez-le lorsque vous connaissez le pays qui a délivré le passeport. Sans lui, nous détectons le pays à partir du passeport.
 </Note>
+
+## Pays pris en charge
+
+Vous pouvez vérifier un passeport de n'importe quel pays, notamment le Nigeria, le Kenya, le Ghana, la Côte d'Ivoire, le Canada, les États-Unis, le Royaume-Uni, l'Afrique du Sud, l'Australie, le Burundi, la Chine, le Congo, l'Éthiopie, la Gambie, l'Inde, l'Indonésie, le Japon, l'Ouganda, le Rwanda, la Sierra Leone, la Somalie, le Soudan du Sud, la Tanzanie, le Togo, le Zimbabwe et d'autres pays.
 
 ## Endpoint
 
