@@ -1,11 +1,11 @@
 ---
 title: "CAC Certificate"
 sidebarTitle: "CAC Certificate"
-description: "Extract business registration details from a CAC Certificate of Incorporation using OCR."
+description: "Extract business registration details from a CAC Certificate of Incorporation."
 openapi: "POST /api/onboarding/document_verification/nigeria/cac_certificate"
 ---
 
-Verify a business's CAC Certificate of Incorporation by uploading a photo — no manual RC number entry required. OCR extraction only. This document doesn't carry a face photo, so `data.photo` is omitted from the response entirely — face match isn't available for this document type; a `selfie_image` submitted alongside it is accepted but ignored (`face_match.attempted: false`).
+Verify a business's CAC Certificate of Incorporation by uploading a photo — no manual RC number entry required. We read the details from the document. This document doesn't carry a face photo, so `data.photo` is omitted from the response entirely — face match isn't available for this document type; a `selfie_image` submitted alongside it is accepted but ignored (`face_match.attempted: false`).
 
 <Note>
   Only `document_front` is needed for this document.
@@ -87,7 +87,7 @@ data = response.json()
 | `data.address` | string | Registered business address |
 | `data.id_number` | string | RC/BN registration number |
 | `data.document_type` | string | `"cac_certificate"` |
-| `data.document_country` | string | The country that issued the document, as an ISO 3166-1 alpha-2 code: `"NG"` |
+| `data.document_country` | string | The country that issued the document, as a two-letter country code: `"NG"` |
 | `data.extra_fields` | object | Other fields printed on the certificate — see below |
 | `message` | string | Human-readable result summary |
 

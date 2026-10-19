@@ -1,11 +1,11 @@
 ---
 title: "Passport"
 sidebarTitle: "Passport"
-description: "Extract identity details from a UK passport using OCR."
+description: "Extract identity details from a UK passport."
 openapi: "POST /api/onboarding/document_verification/uk/passport"
 ---
 
-Verify a customer's UK passport by uploading a photo of the data page — no manual passport number entry required. OCR extraction plus a required face match against a selfie — no liveness check (no video, no blink/motion challenge).
+Verify a customer's UK passport by uploading a photo of the data page — no manual passport number entry required. We read the details and compare the face on the document with a selfie. No liveness check is needed.
 
 <Note>
   Passport is single-sided — only `document_front` is needed.
@@ -101,17 +101,17 @@ data = response.json()
 | `data.nationality` | string | Extracted nationality |
 | `data.id_number` | string | The passport number |
 | `data.document_type` | string | `"passport"` |
-| `data.document_country` | string | The country that issued the passport, as an ISO 3166-1 alpha-2 code: `"GB"` |
+| `data.document_country` | string | The country that issued the passport, as a two-letter country code: `"GB"` |
 | `data.expiry_date` | string | Passport expiry date |
 | `data.is_expired` | boolean | Always `false` on a 200. An expired document fails the check (see [Expired documents](#expired-documents)) |
 | `data.photo` | string | Base64-encoded face photo extracted from the document |
-| `data.extra_fields` | object | Other fields OCR read from the data page — `place_of_birth`, `issuing_authority`, and `mrz_line1`/`mrz_line2` if the machine-readable zone was legible, exactly as printed |
+| `data.extra_fields` | object | Other details read from the data page — `place_of_birth`, `issuing_authority`, and `mrz_line1`/`mrz_line2` if the machine-readable zone was legible, exactly as printed |
 | `data.face_match` | object | Result of comparing the document's face against `selfie_image` — see below |
 | `data.face_match.attempted` | boolean | Whether a comparison was actually run |
 | `data.face_match.verified` | boolean \| null | `true`/`false` if the comparison ran; `null` if it couldn't (see Face Match Notes) |
 | `data.face_match.decision` | string | `"MATCH"` or `"NO_MATCH"` |
 | `data.face_match.confidence_percentage` | number | Match confidence, 0–100 |
-| `data.face_match.compare_mode` | string | `"COMPARISON_NO_LIVENESS"`: the two photos are compared; no liveness check is run on the selfie |
+| `data.face_match.compare_mode` | string | `"COMPARISON_NO_LIVENESS"` means the two photos were compared without a liveness check |
 | `data.face_match.selfie_image` | string | URL of the uploaded selfie |
 | `message` | string | Human-readable result summary |
 

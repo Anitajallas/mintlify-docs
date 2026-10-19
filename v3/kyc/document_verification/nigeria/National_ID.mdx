@@ -1,11 +1,11 @@
 ---
 title: "National ID"
 sidebarTitle: "National ID"
-description: "Extract identity details from a Nigerian NIN slip or card using OCR."
+description: "Extract identity details from a Nigerian NIN slip or card."
 openapi: "POST /api/onboarding/document_verification/nigeria/national_id"
 ---
 
-Verify a customer's Nigerian National Identification Number slip or card by uploading a photo — no manual NIN entry required. OCR extraction plus a required face match against a selfie — no liveness check (no video, no blink/motion challenge).
+Verify a customer's Nigerian National Identification Number slip or card by uploading a photo — no manual NIN entry required. We read the details and compare the face on the document with a selfie. No liveness check is needed.
 
 <Note>
   This is a two-sided document — supply both `document_front` and `document_back` for the most complete extraction.
@@ -104,7 +104,7 @@ data = response.json()
 | `data.gender` | string | Extracted gender |
 | `data.id_number` | string | The NIN printed on the document |
 | `data.document_type` | string | `"national_id"` |
-| `data.document_country` | string | The country that issued the document, as an ISO 3166-1 alpha-2 code: `"NG"` |
+| `data.document_country` | string | The country that issued the document, as a two-letter country code: `"NG"` |
 | `data.photo` | string | Base64-encoded face photo extracted from the document |
 | `data.extra_fields` | object | Present if the card is the older two-sided format — see below |
 | `data.face_match` | object | Result of comparing the document's face against `selfie_image` — see below |
@@ -112,7 +112,7 @@ data = response.json()
 | `data.face_match.verified` | boolean \| null | `true`/`false` if the comparison ran; `null` if it couldn't (see Face Match Notes) |
 | `data.face_match.decision` | string | `"MATCH"` or `"NO_MATCH"` |
 | `data.face_match.confidence_percentage` | number | Match confidence, 0–100 |
-| `data.face_match.compare_mode` | string | `"COMPARISON_NO_LIVENESS"`: the two photos are compared; no liveness check is run on the selfie |
+| `data.face_match.compare_mode` | string | `"COMPARISON_NO_LIVENESS"` means the two photos were compared without a liveness check |
 | `data.face_match.selfie_image` | string | URL of the uploaded selfie |
 | `message` | string | Human-readable result summary |
 
@@ -153,7 +153,7 @@ data = response.json()
 
 ### 400 Bad Request
 
-Returned for invalid input, or when the document fails OCR's own quality checks (blurry, wrong document type, glare, etc.).
+Returned for invalid input, or when the document photo fails our quality checks (blurry, wrong document type, glare, etc.).
 
 ```json
 {

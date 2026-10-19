@@ -87,7 +87,6 @@
                       "libraries/smartcomply_sdk",
                       "libraries/android_sdk",
                       "libraries/ios_sdk",
-                      "libraries/flutter_sdk",
                       "libraries/postman"
                     ]
                   },
@@ -704,7 +703,6 @@
                       "fr/libraries/smartcomply_sdk",
                       "fr/libraries/android_sdk",
                       "fr/libraries/ios_sdk",
-                      "fr/libraries/flutter_sdk",
                       "fr/libraries/postman"
                     ]
                   },

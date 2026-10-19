@@ -380,7 +380,7 @@ run();
 
 ## Receiving Results (Webhook)
 
-The backend delivers exactly one `liveness.completed` webhook per verification, to the URL configured in your SDK Config, once face matching (and OCR / government DB check, depending on the flow) has finished.
+The backend delivers exactly one `liveness.completed` webhook per verification, to the URL configured in your SDK Config, once face matching (and the document or government database check, depending on the flow) has finished.
 
 <Note>
   This is the SDK's own webhook — configured per SDK Config and specific to `liveness.completed`. It's separate from the platform-wide webhook system described in [Webhooks](/webhooks) (transaction monitoring, general KYC module events, `{success, module, event, data}` shape). Both currently sign with HMAC-SHA256 and a `sha256=`-prefixed header, hex-encoded — verify against the raw request body either way.
@@ -454,7 +454,7 @@ X-Adhere-Signature: sha256=<hmac-sha256-hex>
 }
 ```
 
-For **document verification**, the same top-level shape applies, with `verification_type: "document_verification"` and a `document` block (OCR fields + document-to-selfie face match) instead of `customer_profile`:
+For **document verification**, the same top-level shape applies, with `verification_type: "document_verification"` and a `document` block (the details read from the document, plus the face match against the selfie) instead of `customer_profile`:
 
 ```json
 "document": {
@@ -490,7 +490,7 @@ For **document verification**, the same top-level shape applies, with `verificat
 
 | Field | Description |
 |-------|-------------|
-| `document.country` | The country that issued the document, as an ISO 3166-1 alpha-2 code, for example `"RW"` |
+| `document.country` | The country that issued the document, as a two-letter country code, for example `"RW"` |
 | `document.passport_check_problems` | Passports only. Passports carry check digits in the two machine-readable lines at the bottom of the data page; this lists the fields whose check digit doesn't add up. An empty list means everything checks out. See below |
 | `document.face_match.compare_mode` | `"LIVENESS"` when the customer's face scan was checked for liveness, then compared. `"COMPARISON_NO_LIVENESS"` when a selfie was compared without a liveness check (see `selfie_source`) |
 | `document.face_match.selfie_source` | `"sdk"` for the customer's own capture. `"reviewer"` when your team replaced the selfie during manual review; that selfie is compared without a liveness check |

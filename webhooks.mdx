@@ -271,7 +271,7 @@ Module events follow a consistent JSON structure:
 *   **Sent by**: every Web, Android and iOS SDK verification
 *   **Delivered to**: the webhook URL on your **SDK Config** (not the Integrations URL)
 *   **Events**:
-    *   `liveness.completed`: fired once per verification, after face matching and, for document runs, OCR have finished.
+    *   `liveness.completed`: fired once per verification, after face matching and, for document checks, reading the document have finished.
     *   `liveness.resubmit_requested`: fired when your team clicks **Resubmit** on a failed verification. Carries the resume token. See [Resubmit requested](#resubmit-requested).
 
 This payload is **flat** — there is no `success` / `module` / `data` wrapper.
@@ -342,7 +342,7 @@ X-Adhere-Signature: sha256=<hmac-sha256-hex>
 }
 ```
 
-`verification_type` is `data_verification` or `document_verification`. For a **document** run the same top-level shape applies, with a `document` block (OCR fields plus a document-to-selfie face match) in place of `customer_profile`:
+`verification_type` is `data_verification` or `document_verification`. For a **document** run the same top-level shape applies, with a `document` block (the details read from the document, plus the face match against the selfie) in place of `customer_profile`:
 
 ```json
 "document": {
@@ -378,7 +378,7 @@ X-Adhere-Signature: sha256=<hmac-sha256-hex>
 
 | Field | Description |
 |-------|-------------|
-| `document.country` | The country that issued the document, as an ISO 3166-1 alpha-2 code, for example `"RW"` |
+| `document.country` | The country that issued the document, as a two-letter country code, for example `"RW"` |
 | `document.passport_check_problems` | Passports only. The fields whose check digit in the passport's machine-readable lines doesn't add up; `[]` when everything checks out. A fraud and accuracy signal that doesn't fail the verification on its own. See [Passport check problems](/libraries/smartcomply_sdk#passport-check-problems) for each value |
 | `document.face_match.compare_mode` | `"LIVENESS"` when the customer's face scan was checked for liveness, then compared. `"COMPARISON_NO_LIVENESS"` when a selfie was compared without a liveness check (see `selfie_source`) |
 | `document.face_match.selfie_source` | `"sdk"` for the customer's own capture. `"reviewer"` when your team replaced the selfie during manual review; that selfie is compared without a liveness check |

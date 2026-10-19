@@ -1,11 +1,11 @@
 ---
 title: "Passeport"
 sidebarTitle: "Passeport"
-description: "Vérifiez un passeport de n'importe quel pays par OCR."
+description: "Vérifiez un passeport de n'importe quel pays."
 openapi: "POST /api/onboarding/document_verification/passport"
 ---
 
-Vérifiez le passeport d'un client, quel que soit son pays, en envoyant une photo de la page de données. Nous lisons les informations par OCR, confirmons le pays qui a délivré le passeport et comparons le visage du passeport avec un selfie.
+Vérifiez le passeport d'un client, quel que soit son pays, en envoyant une photo de la page de données. Nous lisons les informations, confirmons le pays qui a délivré le passeport et comparons le visage du passeport avec un selfie.
 
 <Note>
   Le passeport n'a qu'une face. Seul `document_front` est nécessaire.
@@ -36,7 +36,7 @@ POST /api/onboarding/document_verification/passport
 |-----------|------|----------|--------------|
 | `document_front` | file | Oui | Photo ou scan de la page de données du passeport. JPG, PNG ou PDF d'une page, max 10 Mo |
 | `selfie_image` | file | Oui | Un selfie à comparer avec le visage du passeport. JPG ou PNG, max 5 Mo |
-| `country` | string | Non | Le pays qui a délivré le passeport, en code ISO 3166-1 alpha-2, par exemple `RW`. Laissez-le vide pour qu'il soit détecté |
+| `country` | string | Non | Le pays qui a délivré le passeport, en code pays à deux lettres, par exemple `RW`. Laissez-le vide pour qu'il soit détecté |
 
 <Tip>
   Un document numérisé peut être envoyé sous forme de PDF d'une page, par exemple `-F "document_front=@/path/to/scan.pdf"`.
@@ -101,7 +101,7 @@ data = response.json()
 | `data.nationality` | string | Nationalité extraite |
 | `data.id_number` | string | Le numéro de passeport |
 | `data.document_type` | string | `"passport"` |
-| `data.document_country` | string | Le pays qui a délivré le passeport, en code ISO 3166-1 alpha-2, par exemple `"RW"` |
+| `data.document_country` | string | Le pays qui a délivré le passeport, en code pays à deux lettres, par exemple `"RW"` |
 | `data.expiry_date` | string | Date d'expiration du passeport |
 | `data.is_expired` | boolean | Toujours `false` sur une réponse 200. Un passeport expiré fait échouer la vérification (voir Passeports expirés ci-dessous) |
 | `data.photo` | string | Photo du visage extraite du passeport, encodée en Base64 |
@@ -111,7 +111,7 @@ data = response.json()
 | `data.face_match.verified` | boolean \| null | `true` ou `false` si la comparaison a eu lieu ; `null` si elle n'a pas pu avoir lieu |
 | `data.face_match.decision` | string | `"MATCH"` ou `"NO_MATCH"` |
 | `data.face_match.confidence_percentage` | number | Confiance de correspondance, de 0 à 100 |
-| `data.face_match.compare_mode` | string | `"COMPARISON_NO_LIVENESS"` : les deux photos sont comparées ; aucun contrôle de vivacité n'est effectué sur le selfie |
+| `data.face_match.compare_mode` | string | `"COMPARISON_NO_LIVENESS"` signifie que les deux photos ont été comparées sans contrôle de vivacité |
 | `data.face_match.selfie_image` | string | URL du selfie envoyé |
 | `message` | string | Résumé lisible du résultat |
 

@@ -1,11 +1,11 @@
 ---
 title: "Carte d'électeur"
 sidebarTitle: "Carte d'électeur"
-description: "Extrayez les détails d'identité d'une Carte d'Électeur Permanente (PVC) nigériane à l'aide de l'OCR."
+description: "Extrayez les détails d'identité d'une Carte d'Électeur Permanente (PVC) nigériane."
 openapi: "POST /api/onboarding/document_verification/nigeria/voters_card"
 ---
 
-Vérifiez la Carte d'Électeur Permanente (PVC) nigériane d'un client en téléversant une photo — aucune saisie manuelle de l'ID d'électeur requise. Extraction OCR plus une concordance faciale requise par rapport à un selfie — pas de vérification de vivacité (pas de vidéo, pas de défi de clignement/mouvement).
+Vérifiez la Carte d'Électeur Permanente (PVC) nigériane d'un client en téléversant une photo — aucune saisie manuelle de l'ID d'électeur requise. Nous lisons les informations et comparons le visage du document avec un selfie. Aucun contrôle de vivacité n'est nécessaire.
 
 <Note>
   Il s'agit d'un document recto-verso — fournissez à la fois `document_front` et `document_back` pour l'extraction la plus complète.
@@ -102,7 +102,7 @@ data = response.json()
 | `data.id_number` | string | Le Numéro d'Identification de l'Électeur (VIN) |
 | `data.serial_number` | string | Le numéro de série de la carte |
 | `data.document_type` | string | `"voters_card"` |
-| `data.document_country` | string | Le pays qui a délivré le document, en code ISO 3166-1 alpha-2 : `"NG"` |
+| `data.document_country` | string | Le pays qui a délivré le document, en code pays à deux lettres : `"NG"` |
 | `data.photo` | string | Photo du visage extraite du document, encodée en base64 |
 | `data.extra_fields` | object | Autres champs imprimés sur la carte — voir ci-dessous |
 | `data.face_match` | object | Résultat de la comparaison du visage du document avec `selfie_image` — voir ci-dessous |
@@ -110,7 +110,7 @@ data = response.json()
 | `data.face_match.verified` | boolean \| null | `true`/`false` si la comparaison a été exécutée ; `null` si elle ne l'a pas pu (voir Notes de concordance faciale) |
 | `data.face_match.decision` | string | `"MATCH"` ou `"NO_MATCH"` |
 | `data.face_match.confidence_percentage` | number | Confiance de correspondance, 0–100 |
-| `data.face_match.compare_mode` | string | `"COMPARISON_NO_LIVENESS"` : les deux photos sont comparées ; aucun contrôle de vivacité n'est effectué sur le selfie |
+| `data.face_match.compare_mode` | string | `"COMPARISON_NO_LIVENESS"` signifie que les deux photos ont été comparées sans contrôle de vivacité |
 | `data.face_match.selfie_image` | string | URL du selfie téléversé |
 | `message` | string | Résumé du résultat lisible par l'homme |
 

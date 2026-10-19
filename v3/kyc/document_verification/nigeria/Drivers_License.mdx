@@ -1,11 +1,11 @@
 ---
 title: "Driver's License"
 sidebarTitle: "Driver's License"
-description: "Extract identity details from a Nigerian driver's license using OCR."
+description: "Extract identity details from a Nigerian driver's license."
 openapi: "POST /api/onboarding/document_verification/nigeria/drivers_license"
 ---
 
-Verify a customer's Nigerian driver's license by uploading a photo — no manual license number entry required. OCR extraction plus a required face match against a selfie — no liveness check (no video, no blink/motion challenge).
+Verify a customer's Nigerian driver's license by uploading a photo — no manual license number entry required. We read the details and compare the face on the document with a selfie. No liveness check is needed.
 
 <Note>
   This is a two-sided document — supply both `document_front` and `document_back` for the most complete extraction.
@@ -100,7 +100,7 @@ data = response.json()
 | `data.gender` | string | Extracted gender |
 | `data.id_number` | string | The driver's license number |
 | `data.document_type` | string | `"drivers_license"` |
-| `data.document_country` | string | The country that issued the document, as an ISO 3166-1 alpha-2 code: `"NG"` |
+| `data.document_country` | string | The country that issued the document, as a two-letter country code: `"NG"` |
 | `data.expiry_date` | string | License expiry date |
 | `data.is_expired` | boolean | Always `false` on a 200. An expired document fails the check (see [Expired documents](#expired-documents)) |
 | `data.photo` | string | Base64-encoded face photo extracted from the document |
@@ -110,7 +110,7 @@ data = response.json()
 | `data.face_match.verified` | boolean \| null | `true`/`false` if the comparison ran; `null` if it couldn't (see Face Match Notes) |
 | `data.face_match.decision` | string | `"MATCH"` or `"NO_MATCH"` |
 | `data.face_match.confidence_percentage` | number | Match confidence, 0–100 |
-| `data.face_match.compare_mode` | string | `"COMPARISON_NO_LIVENESS"`: the two photos are compared; no liveness check is run on the selfie |
+| `data.face_match.compare_mode` | string | `"COMPARISON_NO_LIVENESS"` means the two photos were compared without a liveness check |
 | `data.face_match.selfie_image` | string | URL of the uploaded selfie |
 | `message` | string | Human-readable result summary |
 

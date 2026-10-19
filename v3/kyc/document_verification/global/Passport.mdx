@@ -1,11 +1,11 @@
 ---
 title: "Passport"
 sidebarTitle: "Passport"
-description: "Verify a passport from any country using OCR."
+description: "Verify a passport from any country."
 openapi: "POST /api/onboarding/document_verification/passport"
 ---
 
-Verify a customer's passport from any country by uploading a photo of the data page. We read the details with OCR, confirm which country issued the passport, and compare the face on the passport with a selfie.
+Verify a customer's passport from any country by uploading a photo of the data page. We read the details, confirm which country issued the passport, and compare the face on the passport with a selfie.
 
 <Note>
   Passport is single-sided. Only `document_front` is needed.
@@ -36,7 +36,7 @@ POST /api/onboarding/document_verification/passport
 |-----------|------|----------|--------------|
 | `document_front` | file | Yes | Photo or scan of the passport data page. JPG, PNG or single-page PDF, max 10MB |
 | `selfie_image` | file | Yes | A selfie to compare against the face on the passport. JPG or PNG, max 5MB |
-| `country` | string | No | The country that issued the passport, as an ISO 3166-1 alpha-2 code, for example `RW`. Leave it out to have it detected |
+| `country` | string | No | The country that issued the passport, as a two-letter country code, for example `RW`. Leave it out to have it detected |
 
 <Tip>
   A scanned document can be uploaded as a single-page PDF, for example `-F "document_front=@/path/to/scan.pdf"`.
@@ -101,7 +101,7 @@ data = response.json()
 | `data.nationality` | string | Extracted nationality |
 | `data.id_number` | string | The passport number |
 | `data.document_type` | string | `"passport"` |
-| `data.document_country` | string | The country that issued the passport, as an ISO 3166-1 alpha-2 code, for example `"RW"` |
+| `data.document_country` | string | The country that issued the passport, as a two-letter country code, for example `"RW"` |
 | `data.expiry_date` | string | Passport expiry date |
 | `data.is_expired` | boolean | Always `false` on a 200. An expired passport fails the check (see [Expired passports](#expired-passports)) |
 | `data.photo` | string | Base64-encoded face photo extracted from the passport |
@@ -111,7 +111,7 @@ data = response.json()
 | `data.face_match.verified` | boolean \| null | `true` or `false` if the comparison ran; `null` if it couldn't run |
 | `data.face_match.decision` | string | `"MATCH"` or `"NO_MATCH"` |
 | `data.face_match.confidence_percentage` | number | Match confidence, 0 to 100 |
-| `data.face_match.compare_mode` | string | `"COMPARISON_NO_LIVENESS"`: the two photos are compared; no liveness check is run on the selfie |
+| `data.face_match.compare_mode` | string | `"COMPARISON_NO_LIVENESS"` means the two photos were compared without a liveness check |
 | `data.face_match.selfie_image` | string | URL of the uploaded selfie |
 | `message` | string | Human-readable result summary |
 

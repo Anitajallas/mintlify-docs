@@ -1,11 +1,11 @@
 ---
 title: "National ID kényan"
 sidebarTitle: "National ID"
-description: "Extrayez les détails d'identité d'une carte de national ID kényane à l'aide de l'OCR."
+description: "Extrayez les détails d'identité d'une carte de national ID kényane."
 openapi: "POST /api/onboarding/document_verification/kenya/kenya_id"
 ---
 
-Vérifiez la carte de national ID kényane d'un client en téléversant une photo — aucune saisie manuelle de l'ID requise. Extraction OCR plus une concordance faciale requise par rapport à un selfie — pas de vérification de vivacité (pas de vidéo, pas de défi de clignement/mouvement).
+Vérifiez la carte de national ID kényane d'un client en téléversant une photo — aucune saisie manuelle de l'ID requise. Nous lisons les informations et comparons le visage du document avec un selfie. Aucun contrôle de vivacité n'est nécessaire.
 
 <Note>
   Il s'agit d'un document recto-verso — fournissez à la fois `document_front` et `document_back` pour l'extraction la plus complète. Le Kenya a deux générations de cartes d'identité en circulation : l'ancien design plastifié et le nouveau « Maisha Card ». Les champs spécifiques à la Maisha Card (`serial_number`, `place_of_issue`, date d'expiration) reviendront vides sur une carte plus ancienne — c'est attendu, pas une erreur.
@@ -100,7 +100,7 @@ data = response.json()
 | `data.gender` | string | Genre extrait |
 | `data.id_number` | string | Le numéro d'identité |
 | `data.document_type` | string | `"kenya_id"` |
-| `data.document_country` | string | Le pays qui a délivré le document, en code ISO 3166-1 alpha-2 : `"KE"` |
+| `data.document_country` | string | Le pays qui a délivré le document, en code pays à deux lettres : `"KE"` |
 | `data.expiry_date` | string | Date d'expiration de la Maisha Card — présente uniquement sur les cartes de troisième génération |
 | `data.issue_date` | string | Date de délivrance |
 | `data.place_of_issue` | string | Présent uniquement sur les IDs « Maisha Card » de troisième génération |
@@ -112,7 +112,7 @@ data = response.json()
 | `data.face_match.verified` | boolean \| null | `true`/`false` si la comparaison a été exécutée ; `null` si elle ne l'a pas pu (voir Notes de concordance faciale) |
 | `data.face_match.decision` | string | `"MATCH"` ou `"NO_MATCH"` |
 | `data.face_match.confidence_percentage` | number | Confiance de correspondance, 0–100 |
-| `data.face_match.compare_mode` | string | `"COMPARISON_NO_LIVENESS"` : les deux photos sont comparées ; aucun contrôle de vivacité n'est effectué sur le selfie |
+| `data.face_match.compare_mode` | string | `"COMPARISON_NO_LIVENESS"` signifie que les deux photos ont été comparées sans contrôle de vivacité |
 | `data.face_match.selfie_image` | string | URL du selfie téléversé |
 | `message` | string | Résumé du résultat lisible par l'homme |
 

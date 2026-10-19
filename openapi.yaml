@@ -79,7 +79,7 @@ components:
                     type: string
                     description: >
                       Passports only. The country that issued the passport, as
-                      an ISO 3166-1 alpha-2 code, for example RW.
+                      an two-letter country code, for example RW.
                   expiry_date: { type: string }
                   issue_date: { type: string }
                   is_expired:
@@ -97,7 +97,7 @@ components:
                   extra_fields:
                     type: object
                     description:
-                      Every other field OCR read from the document that doesn't
+                      Every other field read from the document that doesn't
                       have its own dedicated field above. Varies by
                       document_type and country.
                   face_match:
@@ -2016,7 +2016,7 @@ paths:
       summary: Document Verification (generic)
       operationId: documentVerification
       description: >
-        Extract identity details from a photo of a document using OCR, plus a
+        Extract identity details from a photo of a document, plus a
         required face match against a selfie (still-image comparison only — no
         liveness, no video, no blink/motion challenge) for every document_type
         except cac_certificate and utility_bill. Fallback for the number-lookup
@@ -2059,8 +2059,7 @@ paths:
                   type: string
                   description: >
                     Country the document was issued in. For passport it is
-                    optional and may be any country, as an ISO 3166-1 alpha-2
-                    code such as RW; leave it out to have it detected. For every
+                    optional and may be any country, as an two-letter country code such as RW; leave it out to have it detected. For every
                     other document_type it is required: nigeria, kenya, ghana,
                     canada, usa, "cote d'ivoire" or uk.
                   example: "nigeria"
@@ -2098,7 +2097,7 @@ paths:
       summary: Document Verification — Global Passport
       operationId: documentVerificationGlobalPassport
       description: >
-        Verify a passport from any country using OCR, plus a required face
+        Verify a passport from any country, plus a required face
         match against a selfie. Send country when you know which country
         issued the passport; leave it out and the country is detected from
         the passport. The issuing country is returned as document_country.
@@ -2127,7 +2126,7 @@ paths:
                   example: RW
                   description: >
                     Optional. The country that issued the passport, as an
-                    ISO 3166-1 alpha-2 code. Leave it out to have it detected.
+                    two-letter country code. Leave it out to have it detected.
       responses:
         "200": { $ref: "#/components/responses/DocumentVerificationSuccess" }
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -2139,8 +2138,7 @@ paths:
       summary: Document Verification — Nigeria National ID
       operationId: documentVerificationNigeriaNationalId
       description: >
-        Extract identity details from a Nigerian NIN slip or National ID card
-        using OCR, plus a required face match against a selfie. document_type
+        Extract identity details from a Nigerian NIN slip or National ID card, plus a required face match against a selfie. document_type
         and country are fixed by this URL — no need to send them in the request
         body.
       requestBody:
@@ -2179,8 +2177,7 @@ paths:
       summary: Document Verification — Nigeria Passport
       operationId: documentVerificationNigeriaPassport
       description: >
-        Extract identity details from a Nigerian international passport using
-        OCR, plus a required face match against a selfie. document_type and
+        Extract identity details from a Nigerian international passport, plus a required face match against a selfie. document_type and
         country are fixed by this URL — no need to send them in the request
         body.
       requestBody:
@@ -2213,7 +2210,7 @@ paths:
       summary: Document Verification — Nigeria Driver's License
       operationId: documentVerificationNigeriaDriversLicense
       description: >
-        Extract identity details from a Nigerian driver's license using OCR,
+        Extract identity details from a Nigerian driver's license,
         plus a required face match against a selfie. document_type and country
         are fixed by this URL — no need to send them in the request body.
       requestBody:
@@ -2253,8 +2250,7 @@ paths:
       summary: Document Verification — Nigeria Voter's Card
       operationId: documentVerificationNigeriaVotersCard
       description: >
-        Extract identity details from a Nigerian Permanent Voter's Card (PVC)
-        using OCR, plus a required face match against a selfie. document_type
+        Extract identity details from a Nigerian Permanent Voter's Card (PVC), plus a required face match against a selfie. document_type
         and country are fixed by this URL — no need to send them in the request
         body.
       requestBody:
@@ -2293,7 +2289,7 @@ paths:
       summary: Document Verification — Nigeria CAC Certificate
       operationId: documentVerificationNigeriaCacCertificate
       description: >
-        Extract company details from a Nigerian CAC certificate using OCR. No
+        Extract company details from a Nigerian CAC certificate. No
         face match — CAC certificates don't carry a photo, so selfie_image is
         not applicable. document_type and country are fixed by this URL — no
         need to send them in the request body.
@@ -2325,7 +2321,7 @@ paths:
       summary: Document Verification — Nigeria Utility Bill
       operationId: documentVerificationNigeriaUtilityBill
       description: >
-        Extract address details from a Nigerian utility bill using OCR. No face
+        Extract address details from a Nigerian utility bill. No face
         match — utility bills don't carry a photo, so selfie_image is not
         applicable. document_type and country are fixed by this URL — no need to
         send them in the request body.
@@ -2357,7 +2353,7 @@ paths:
       operationId: documentVerificationKenyaId
       description: >
         Extract identity details from a Kenyan ID card (older laminated design
-        or newer Maisha Card) using OCR, plus a required face match against a
+        or newer Maisha Card), plus a required face match against a
         selfie. Fields specific to the Maisha Card (serial_number,
         place_of_issue, expiry date) come back empty on an older card — that's
         expected, not an error. document_type and country are fixed by this URL
@@ -2398,7 +2394,7 @@ paths:
       summary: Document Verification — Kenya Passport
       operationId: documentVerificationKenyaPassport
       description: >
-        Extract identity details from a Kenyan passport using OCR, plus a
+        Extract identity details from a Kenyan passport, plus a
         required face match against a selfie. document_type and country are
         fixed by this URL — no need to send them in the request body.
       requestBody:
@@ -2431,7 +2427,7 @@ paths:
       summary: Document Verification — Ghana Passport
       operationId: documentVerificationGhanaPassport
       description: >
-        Extract identity details from a Ghanaian passport using OCR, plus a
+        Extract identity details from a Ghanaian passport, plus a
         required face match against a selfie. document_type and country are
         fixed by this URL — no need to send them in the request body.
       requestBody:
@@ -2464,7 +2460,7 @@ paths:
       summary: Document Verification — Canada Passport
       operationId: documentVerificationCanadaPassport
       description: >
-        Extract identity details from a Canadian passport using OCR, plus a
+        Extract identity details from a Canadian passport, plus a
         required face match against a selfie. document_type and country are
         fixed by this URL — no need to send them in the request body.
       requestBody:
@@ -2497,7 +2493,7 @@ paths:
       summary: Document Verification — USA Passport
       operationId: documentVerificationUsaPassport
       description: >
-        Extract identity details from a US passport using OCR, plus a required
+        Extract identity details from a US passport, plus a required
         face match against a selfie. document_type and country are fixed by this
         URL — no need to send them in the request body.
       requestBody:
@@ -2530,7 +2526,7 @@ paths:
       summary: Document Verification — Cote d'Ivoire Passport
       operationId: documentVerificationCoteDIvoirePassport
       description: >
-        Extract identity details from a Cote d'Ivoire passport using OCR, plus a
+        Extract identity details from a Cote d'Ivoire passport, plus a
         required face match against a selfie. document_type and country are
         fixed by this URL — no need to send them in the request body.
       requestBody:
@@ -2563,7 +2559,7 @@ paths:
       summary: Document Verification — UK Passport
       operationId: documentVerificationUkPassport
       description: >
-        Extract identity details from a UK passport using OCR, plus a required
+        Extract identity details from a UK passport, plus a required
         face match against a selfie. document_type and country are fixed by this
         URL — no need to send them in the request body. UK document verification
         currently supports passports only.

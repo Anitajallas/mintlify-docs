@@ -333,7 +333,7 @@ run();
 
 ## Réception des résultats (Webhook)
 
-Le backend délivre exactement un webhook `liveness.completed` par vérification, vers l'URL configurée dans votre SDK Config, une fois la concordance faciale (et le OCR / la vérification BD gouvernementale, selon le flux) terminée.
+Le backend délivre exactement un webhook `liveness.completed` par vérification, vers l'URL configurée dans votre SDK Config, une fois la concordance faciale (et la vérification du document ou de la base de données gouvernementale, selon le flux) terminée.
 
 <Note>
   C'est le propre webhook du SDK — configuré par SDK Config et spécifique à `liveness.completed`. Il est séparé du système de webhook global décrit dans [Webhooks](/webhooks) (surveillance des transactions, événements généraux du module KYC, forme `{success, module, event, data}`). Les deux signent actuellement avec HMAC-SHA256 et un en-tête préfixé `sha256=`, encodé en hexadécimal — vérifiez par rapport au corps brut de la requête dans les deux cas.
@@ -407,7 +407,7 @@ X-Adhere-Signature: sha256=<hmac-sha256-hex>
 }
 ```
 
-Pour la **vérification de document**, la même forme de niveau supérieur s'applique, avec `verification_type: "document_verification"` et un bloc `document` (champs OCR + concordance faciale document-selfie) au lieu de `customer_profile` :
+Pour la **vérification de document**, la même forme de niveau supérieur s'applique, avec `verification_type: "document_verification"` et un bloc `document` (les informations lues sur le document, plus la concordance faciale avec le selfie) au lieu de `customer_profile` :
 
 ```json
 "document": {
@@ -443,7 +443,7 @@ Pour la **vérification de document**, la même forme de niveau supérieur s'app
 
 | Champ | Description |
 |-------|-------------|
-| `document.country` | Le pays qui a délivré le document, en code ISO 3166-1 alpha-2, par exemple `"RW"` |
+| `document.country` | Le pays qui a délivré le document, en code pays à deux lettres, par exemple `"RW"` |
 | `document.passport_check_problems` | Passeports uniquement. Les champs dont le chiffre de contrôle, dans les lignes de lecture automatique du passeport, ne correspond pas ; `[]` lorsque tout est correct. Voir ci-dessous |
 | `document.face_match.compare_mode` | `"LIVENESS"` lorsque le scan du visage du client a été contrôlé pour la vivacité, puis comparé. `"COMPARISON_NO_LIVENESS"` lorsqu'un selfie a été comparé sans contrôle de vivacité (voir `selfie_source`) |
 | `document.face_match.selfie_source` | `"sdk"` pour la capture du client. `"reviewer"` lorsque votre équipe a remplacé le selfie lors d'une revue manuelle ; ce selfie est comparé sans contrôle de vivacité |
