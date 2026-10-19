@@ -67,6 +67,7 @@
                     "group": "Get Started",
                     "pages": [
                       "introduction",
+                      "supported_countries",
                       "quickstart",
                       "authentication",
                       "error_codes",
@@ -683,6 +684,7 @@
                     "group": "Pour commencer",
                     "pages": [
                       "fr/introduction",
+                      "fr/supported_countries",
                       "fr/quickstart",
                       "fr/authentication",
                       "fr/error_codes",
