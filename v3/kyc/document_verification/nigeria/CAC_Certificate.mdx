@@ -1,11 +1,11 @@
 ---
 title: "CAC Certificate"
 sidebarTitle: "CAC Certificate"
-description: "Extract business registration details from a CAC Certificate of Incorporation using OCR."
+description: "Extract business registration details from a CAC Certificate of Incorporation."
 openapi: "POST /api/onboarding/document_verification/nigeria/cac_certificate"
 ---
 
-Verify a business's CAC Certificate of Incorporation by uploading a photo — no manual RC number entry required. OCR extraction only. This document doesn't carry a face photo, so `data.photo` is omitted from the response entirely — face match isn't available for this document type; a `selfie_image` submitted alongside it is accepted but ignored (`face_match.attempted: false`).
+Verify a business's CAC Certificate of Incorporation by uploading a photo — no manual RC number entry required. We read the details from the document. This document doesn't carry a face photo, so `data.photo` is omitted from the response entirely — face match isn't available for this document type; a `selfie_image` submitted alongside it is accepted but ignored (`face_match.attempted: false`).
 
 <Note>
   Only `document_front` is needed for this document.
@@ -34,7 +34,11 @@ POST /api/onboarding/document_verification/nigeria/cac_certificate
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|--------------|
-| `document_front` | file | Yes | Photo of the CAC certificate. JPG or PNG, max 5MB |
+| `document_front` | file | Yes | Photo of the CAC certificate. JPG, PNG or single-page PDF, max 10MB |
+
+<Tip>
+  A scanned document can be uploaded as a single-page PDF, for example `-F "document_front=@/path/to/scan.pdf"`.
+</Tip>
 
 ### Example
 
@@ -83,6 +87,7 @@ data = response.json()
 | `data.address` | string | Registered business address |
 | `data.id_number` | string | RC/BN registration number |
 | `data.document_type` | string | `"cac_certificate"` |
+| `data.document_country` | string | The country that issued the document, as a two-letter country code: `"NG"` |
 | `data.extra_fields` | object | Other fields printed on the certificate — see below |
 | `message` | string | Human-readable result summary |
 
@@ -99,6 +104,7 @@ data = response.json()
     "address": "12 CORPORATE DRIVE, VICTORIA ISLAND, LAGOS",
     "id_number": "RC012345",
     "document_type": "cac_certificate",
+    "document_country": "NG",
     "extra_fields": {
       "business_type": "LIMITED LIABILITY COMPANY",
       "date_of_incorporation": "2015-06-10",

@@ -15,7 +15,9 @@ Le SDK monte un widget prêt à l'emploi par-dessus votre application, gérant l
 - **Support CDN & npm** — Installez via npm/yarn ou chargez directement depuis un CDN sans étape de build.
 - **Routage dynamique** — Adapte automatiquement les exigences de documents et de vérification depuis la configuration de votre tableau de bord.
 - **Sessions à usage unique** — `clientId` est votre clé d'intégration permanente (depuis votre SDK Config) et est réutilisée pour chaque session. Chaque appel `createSession()` émet un jeton de session frais et à usage unique — ce jeton, pas le `clientId`, est délimité à une seule vérification.
-- **Identité multi-pays** — Prend en charge les canaux de données et de documents pour le Nigéria (BVN, NIN, passeports, permis de conduire, cartes d'électeur, etc.), le Ghana, le Kenya, l'Afrique du Sud et la Côte d'Ivoire, avec une vérification de passeport générique disponible pour d'autres pays et des vérifications de vivacité/concordance faciale indépendantes du pays — les canaux exacts dépendent de ce qui est activé dans votre tableau de bord.
+- **Identité multi-pays** — Prend en charge les canaux de données et de documents pour le Nigéria (BVN, NIN, passeports, permis de conduire, cartes d'électeur, etc.), le Ghana, le Kenya, l'Afrique du Sud et la Côte d'Ivoire, ainsi que des vérifications de vivacité/concordance faciale indépendantes du pays — les canaux exacts dépendent de ce qui est activé dans votre tableau de bord.
+- **Passeport global** — Vérifiez les passeports de n'importe quel pays. Vous choisissez les pays proposés par chaque configuration SDK, et les clients choisissent le leur dans une liste avec recherche. Voir [Passeport global](#passeport-global).
+- **Documents PDF** — Les clients peuvent envoyer un document sous forme de photo ou de PDF d'une page, jusqu'à 10 Mo.
 - **Capture de document recto-verso** — Le recto est toujours requis ; le verso est requis, optionnel ou non proposé selon le type de document (par ex. le NIN est verso-optionnel, car pas chaque document physique NIN a un verso utilisable).
 - **Vivacité indéduite du matériel** — Utilise la webcam native et l'API MediaRecorder pour une compatibilité interplateforme. Un seul scan passif (clignement + mouvement naturel de la tête) — sans étapes explicites pas à pas.
 
@@ -216,6 +218,26 @@ const handleVerify = () => {
 
 ---
 
+## Passeport global
+
+Vérifiez les passeports de n'importe quel pays, pas seulement ceux des pays disposant de leur propre canal passeport. Nécessite `smartcomply-web-sdk@1.0.101` ou une version ultérieure.
+
+1. Dans le tableau de bord Adhere, ouvrez votre configuration SDK et ajoutez le canal Passeport global.
+2. Choisissez les pays dont cette configuration doit accepter les passeports.
+3. Les clients choisissent leur pays dans une liste avec recherche dans le widget, puis scannent ou envoient leur passeport.
+
+Le widget n'affiche que les pays que vous avez choisis. Un passeport d'un autre pays que celui choisi par le client est refusé, et le client est invité à envoyer un passeport de ce pays.
+
+<Note>
+  Les documents peuvent être capturés avec la caméra ou envoyés en JPG, PNG ou PDF d'une page, jusqu'à 10 Mo. Cela s'applique à tous les types de documents, pas seulement aux passeports.
+</Note>
+
+<Note>
+  Un document **expiré** fait échouer la vérification avec `failure_reason: "Document has expired."`. Les informations lues sur le document sont tout de même incluses dans le résultat.
+</Note>
+
+---
+
 ## API Headless (avancé)
 
 Pour un contrôle total de l'UI, utilisez directement la classe `SmartComply` sans la modale.
@@ -311,7 +333,7 @@ run();
 
 ## Réception des résultats (Webhook)
 
-Le backend délivre exactement un webhook `liveness.completed` par vérification, vers l'URL configurée dans votre SDK Config, une fois la concordance faciale (et le OCR / la vérification BD gouvernementale, selon le flux) terminée.
+Le backend délivre exactement un webhook `liveness.completed` par vérification, vers l'URL configurée dans votre SDK Config, une fois la concordance faciale (et la vérification du document ou de la base de données gouvernementale, selon le flux) terminée.
 
 <Note>
   C'est le propre webhook du SDK — configuré par SDK Config et spécifique à `liveness.completed`. Il est séparé du système de webhook global décrit dans [Webhooks](/webhooks) (surveillance des transactions, événements généraux du module KYC, forme `{success, module, event, data}`). Les deux signent actuellement avec HMAC-SHA256 et un en-tête préfixé `sha256=`, encodé en hexadécimal — vérifiez par rapport au corps brut de la requête dans les deux cas.
@@ -385,12 +407,14 @@ X-Adhere-Signature: sha256=<hmac-sha256-hex>
 }
 ```
 
-Pour la **vérification de document**, la même forme de niveau supérieur s'applique, avec `verification_type: "document_verification"` et un bloc `document` (champs OCR + concordance faciale document-selfie) au lieu de `customer_profile` :
+Pour la **vérification de document**, la même forme de niveau supérieur s'applique, avec `verification_type: "document_verification"` et un bloc `document` (les informations lues sur le document, plus la concordance faciale avec le selfie) au lieu de `customer_profile` :
 
 ```json
 "document": {
   "status": "verified",
   "document_type": "passport",
+  "country": "NG",
+  "passport_check_problems": [],
   "is_expired": false,
   "first_name": "AMARA",
   "last_name": "OKAFOR",
@@ -409,10 +433,37 @@ Pour la **vérification de document**, la même forme de niveau supérieur s'app
     "verified": true,
     "confidence_percentage": 55.0,
     "reason": null,
+    "compare_mode": "LIVENESS",
+    "selfie_source": "sdk",
     "selfie_url": "https://.../autoshot.jpg",
     "document_face_url": "https://.../document_face.jpg"
   }
 }
+```
+
+| Champ | Description |
+|-------|-------------|
+| `document.country` | Le pays qui a délivré le document, en code pays à deux lettres, par exemple `"RW"` |
+| `document.passport_check_problems` | Passeports uniquement. Les champs dont le chiffre de contrôle, dans les lignes de lecture automatique du passeport, ne correspond pas ; `[]` lorsque tout est correct. Voir ci-dessous |
+| `document.face_match.compare_mode` | `"LIVENESS"` lorsque le scan du visage du client a été contrôlé pour la vivacité, puis comparé. `"COMPARISON_NO_LIVENESS"` lorsqu'un selfie a été comparé sans contrôle de vivacité (voir `selfie_source`) |
+| `document.face_match.selfie_source` | `"sdk"` pour la capture du client. `"reviewer"` lorsque votre équipe a remplacé le selfie lors d'une revue manuelle ; ce selfie est comparé sans contrôle de vivacité |
+
+### Problèmes de contrôle du passeport
+
+`passport_check_problems` est un signal de fraude et de précision. Il ne fait pas échouer la vérification à lui seul ; utilisez-le pour décider si un passeport mérite un examen plus attentif.
+
+| Valeur | Signification |
+|-------|---------|
+| `[]` | Tous les chiffres de contrôle sont corrects |
+| `document_number` | Le numéro de passeport a peut-être été mal lu ou modifié |
+| `date_of_birth` | La date de naissance a peut-être été mal lue ou modifiée |
+| `expiry_date` | La date d'expiration a peut-être été mal lue ou modifiée |
+| `personal_number` | Le numéro personnel facultatif a peut-être été mal lu ou modifié |
+| `composite` | Le contrôle global de la ligne ne correspond pas |
+| `mrz_unreadable` | Les lignes de lecture automatique n'ont pas pu être lues en entier, donc rien n'a pu être contrôlé |
+
+```json
+"passport_check_problems": ["expiry_date", "composite"]
 ```
 
 <Note>
@@ -424,7 +475,7 @@ Pour la **vérification de document**, la même forme de niveau supérieur s'app
 </Note>
 
 <Warning>
-  `status: "passed"` signifie **que la vérification s'est exécutée jusqu'au bout — pas que la personne correspond**. Une non-concordance faciale, un score de confiance faible ou un document expiré signale toujours `status: "passed"` avec le résultat réel enregistré dans `biometrics.face_match.verified` (et `document.is_expired` pour la vérification de document). `status: "failed"` est réservé aux cas où la vérification elle-même n'a pas pu s'exécuter (erreur de service, aucun selfie capturé, rejet de la BD gouvernementale). Ne conditionnez jamais l'accès uniquement à `status` — vérifiez toujours `face_match.verified`.
+  `status: "passed"` signifie que toutes les vérifications ont réussi : le visage correspond et, pour la vérification de document, le document a été lu et n'est pas expiré. Une non-concordance faciale, un échec du contrôle de vivacité ou un document expiré renvoie `status: "failed"`, avec la raison dans `failure_reason`, par exemple `"Document has expired."`. Votre équipe peut toujours examiner une vérification échouée dans le tableau de bord Adhere.
 </Warning>
 
 `verification_id` correspond au `entryId` reçu par votre callback `onComplete`.

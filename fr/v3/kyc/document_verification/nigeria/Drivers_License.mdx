@@ -1,11 +1,11 @@
 ---
 title: "Permis de conduire"
 sidebarTitle: "Permis de conduire"
-description: "Extrayez les détails d'identité d'un permis de conduire nigérian à l'aide de l'OCR."
+description: "Extrayez les détails d'identité d'un permis de conduire nigérian."
 openapi: "POST /api/onboarding/document_verification/nigeria/drivers_license"
 ---
 
-Vérifiez le permis de conduire nigérian d'un client en téléversant une photo — aucune saisie manuelle du numéro de permis requise. Extraction OCR plus une concordance faciale requise par rapport à un selfie — pas de vérification de vivacité (pas de vidéo, pas de défi de clignement/mouvement).
+Vérifiez le permis de conduire nigérian d'un client en téléversant une photo — aucune saisie manuelle du numéro de permis requise. Nous lisons les informations et comparons le visage du document avec un selfie. Aucun contrôle de vivacité n'est nécessaire.
 
 <Note>
   Il s'agit d'un document recto-verso — fournissez à la fois `document_front` et `document_back` pour l'extraction la plus complète.
@@ -34,9 +34,13 @@ POST /api/onboarding/document_verification/nigeria/drivers_license
 
 | Paramètre | Type | Requis | Description |
 |-----------|------|----------|--------------|
-| `document_front` | file | Oui | Recto du permis de conduire. JPG ou PNG, max 5 Mo |
-| `document_back` | file | Non | Verso du permis de conduire. JPG ou PNG, max 5 Mo |
+| `document_front` | file | Oui | Recto du permis de conduire. JPG, PNG ou PDF d'une page, max 10 Mo |
+| `document_back` | file | Non | Verso du permis de conduire. JPG, PNG ou PDF d'une page, max 10 Mo |
 | `selfie_image` | file | Oui | Un selfie à comparer avec la photo du visage du document. JPG ou PNG, max 5 Mo |
+
+<Tip>
+  Un document numérisé peut être envoyé sous forme de PDF d'une page, par exemple `-F "document_front=@/path/to/scan.pdf"`.
+</Tip>
 
 ### Exemple
 
@@ -96,14 +100,17 @@ data = response.json()
 | `data.gender` | string | Genre extrait |
 | `data.id_number` | string | Le numéro de permis de conduire |
 | `data.document_type` | string | `"drivers_license"` |
+| `data.document_country` | string | Le pays qui a délivré le document, en code pays à deux lettres : `"NG"` |
 | `data.expiry_date` | string | Date d'expiration du permis |
-| `data.is_expired` | boolean | Si `expiry_date` est déjà passée |
+| `data.is_expired` | boolean | Toujours `false` sur une réponse 200. Un document expiré fait échouer la vérification (voir Documents expirés ci-dessous) |
 | `data.photo` | string | Photo du visage extraite du document, encodée en base64 |
 | `data.extra_fields` | object | Chaque autre champ imprimé par le permis — voir ci-dessous |
 | `data.face_match` | object | Résultat de la comparaison du visage du document avec `selfie_image` — voir ci-dessous |
 | `data.face_match.attempted` | boolean | Si une comparaison a réellement été exécutée |
 | `data.face_match.verified` | boolean \| null | `true`/`false` si la comparaison a été exécutée ; `null` si elle ne l'a pas pu (voir Notes de concordance faciale) |
+| `data.face_match.decision` | string | `"MATCH"` ou `"NO_MATCH"` |
 | `data.face_match.confidence_percentage` | number | Confiance de correspondance, 0–100 |
+| `data.face_match.compare_mode` | string | `"COMPARISON_NO_LIVENESS"` signifie que les deux photos ont été comparées sans contrôle de vivacité |
 | `data.face_match.selfie_image` | string | URL du selfie téléversé |
 | `message` | string | Résumé du résultat lisible par l'homme |
 
@@ -120,6 +127,7 @@ data = response.json()
     "address": "STATE HOUSE",
     "id_number": "JTC0977DD",
     "document_type": "drivers_license",
+    "document_country": "NG",
     "expiry_date": "2030-11-20",
     "is_expired": false,
     "photo": "/9j/4AAQSkZJRgABAQAAAQABAAD...",
@@ -141,7 +149,9 @@ data = response.json()
     "face_match": {
       "attempted": true,
       "verified": true,
+      "decision": "MATCH",
       "confidence_percentage": 92.4,
+      "compare_mode": "COMPARISON_NO_LIVENESS",
       "selfie_image": "https://.../selfie.jpg"
     }
   },
@@ -164,6 +174,23 @@ data = response.json()
   "status": "failed",
   "data": [],
   "message": "ID photo is too blurry — please retake in good lighting with a steady hand"
+}
+```
+
+### Documents expirés
+
+Un document expiré fait échouer la vérification. Les informations lues sont tout de même renvoyées dans `data`, avec `is_expired: true` :
+
+```json
+{
+  "status": "failed",
+  "data": {
+    "document_type": "drivers_license",
+    "document_country": "NG",
+    "expiry_date": "2021-08-15",
+    "is_expired": true
+  },
+  "message": "Document Verification - Driver's License check failed: Document has expired."
 }
 ```
 

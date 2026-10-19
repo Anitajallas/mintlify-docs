@@ -1,11 +1,11 @@
 ---
 title: "Passport"
 sidebarTitle: "Passport"
-description: "Extract identity details from a Canadian passport using OCR."
+description: "Extract identity details from a Canadian passport."
 openapi: "POST /api/onboarding/document_verification/canada/passport"
 ---
 
-Verify a customer's Canadian passport by uploading a photo of the data page — no manual passport number entry required. OCR extraction plus a required face match against a selfie — no liveness check (no video, no blink/motion challenge).
+Verify a customer's Canadian passport by uploading a photo of the data page — no manual passport number entry required. We read the details and compare the face on the document with a selfie. No liveness check is needed.
 
 <Note>
   Passport is single-sided — only `document_front` is needed.
@@ -34,8 +34,12 @@ POST /api/onboarding/document_verification/canada/passport
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|--------------|
-| `document_front` | file | Yes | Photo of the passport data page. JPG or PNG, max 5MB |
+| `document_front` | file | Yes | Photo of the passport data page. JPG, PNG or single-page PDF, max 10MB |
 | `selfie_image` | file | Yes | A selfie to compare against the document's face photo. JPG or PNG, max 5MB |
+
+<Tip>
+  A scanned document can be uploaded as a single-page PDF, for example `-F "document_front=@/path/to/scan.pdf"`.
+</Tip>
 
 ### Example
 
@@ -93,14 +97,17 @@ data = response.json()
 | `data.nationality` | string | Extracted nationality |
 | `data.id_number` | string | The passport number |
 | `data.document_type` | string | `"passport"` |
+| `data.document_country` | string | The country that issued the passport, as a two-letter country code: `"CA"` |
 | `data.expiry_date` | string | Passport expiry date |
-| `data.is_expired` | boolean | Whether `expiry_date` has already passed |
+| `data.is_expired` | boolean | Always `false` on a 200. An expired document fails the check (see [Expired documents](#expired-documents)) |
 | `data.photo` | string | Base64-encoded face photo extracted from the document |
-| `data.extra_fields` | object | Other fields OCR read from the data page — `place_of_birth`, `issuing_authority`, `nin` (if embedded), and `mrz_line1`/`mrz_line2` if the machine-readable zone was legible, exactly as printed |
+| `data.extra_fields` | object | Other details read from the data page — `place_of_birth`, `issuing_authority`, `nin` (if embedded), and `mrz_line1`/`mrz_line2` if the machine-readable zone was legible, exactly as printed |
 | `data.face_match` | object | Result of comparing the document's face against `selfie_image` — see below |
 | `data.face_match.attempted` | boolean | Whether a comparison was actually run |
 | `data.face_match.verified` | boolean \| null | `true`/`false` if the comparison ran; `null` if it couldn't (see Face Match Notes) |
+| `data.face_match.decision` | string | `"MATCH"` or `"NO_MATCH"` |
 | `data.face_match.confidence_percentage` | number | Match confidence, 0–100 |
+| `data.face_match.compare_mode` | string | `"COMPARISON_NO_LIVENESS"` means the two photos were compared without a liveness check |
 | `data.face_match.selfie_image` | string | URL of the uploaded selfie |
 | `message` | string | Human-readable result summary |
 
@@ -117,6 +124,7 @@ data = response.json()
     "nationality": "CANADIAN",
     "id_number": "GA123456",
     "document_type": "passport",
+    "document_country": "CA",
     "expiry_date": "2027-09-30",
     "is_expired": false,
     "photo": "/9j/4AAQSkZJRgABAQAAAQABAAD...",
@@ -127,7 +135,9 @@ data = response.json()
     "face_match": {
       "attempted": true,
       "verified": true,
+      "decision": "MATCH",
       "confidence_percentage": 92.4,
+      "compare_mode": "COMPARISON_NO_LIVENESS",
       "selfie_image": "https://.../selfie.jpg"
     }
   },
@@ -146,6 +156,23 @@ data = response.json()
   "status": "failed",
   "data": [],
   "message": "ID photo is too blurry — please retake in good lighting with a steady hand"
+}
+```
+
+### Expired documents
+
+An expired passport fails the check. The extracted details are still returned in `data`, with `is_expired: true`:
+
+```json
+{
+  "status": "failed",
+  "data": {
+    "document_type": "passport",
+    "document_country": "CA",
+    "expiry_date": "2021-08-15",
+    "is_expired": true
+  },
+  "message": "Document Verification - Passport check failed: Document has expired."
 }
 ```
 

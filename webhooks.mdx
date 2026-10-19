@@ -271,7 +271,7 @@ Module events follow a consistent JSON structure:
 *   **Sent by**: every Web, Android and iOS SDK verification
 *   **Delivered to**: the webhook URL on your **SDK Config** (not the Integrations URL)
 *   **Events**:
-    *   `liveness.completed`: fired once per verification, after face matching and, for document runs, OCR have finished.
+    *   `liveness.completed`: fired once per verification, after face matching and, for document checks, reading the document have finished.
     *   `liveness.resubmit_requested`: fired when your team clicks **Resubmit** on a failed verification. Carries the resume token. See [Resubmit requested](#resubmit-requested).
 
 This payload is **flat** — there is no `success` / `module` / `data` wrapper.
@@ -342,12 +342,14 @@ X-Adhere-Signature: sha256=<hmac-sha256-hex>
 }
 ```
 
-`verification_type` is `data_verification` or `document_verification`. For a **document** run the same top-level shape applies, with a `document` block (OCR fields plus a document-to-selfie face match) in place of `customer_profile`:
+`verification_type` is `data_verification` or `document_verification`. For a **document** run the same top-level shape applies, with a `document` block (the details read from the document, plus the face match against the selfie) in place of `customer_profile`:
 
 ```json
 "document": {
   "status": "verified",
   "document_type": "passport",
+  "country": "NG",
+  "passport_check_problems": [],
   "is_expired": false,
   "first_name": "AMARA",
   "last_name": "OKAFOR",
@@ -366,11 +368,20 @@ X-Adhere-Signature: sha256=<hmac-sha256-hex>
     "verified": true,
     "confidence_percentage": 55.0,
     "reason": null,
+    "compare_mode": "LIVENESS",
+    "selfie_source": "sdk",
     "selfie_url": "https://.../autoshot.jpg",
     "document_face_url": "https://.../document_face.jpg"
   }
 }
 ```
+
+| Field | Description |
+|-------|-------------|
+| `document.country` | The country that issued the document, as a two-letter country code, for example `"RW"` |
+| `document.passport_check_problems` | Passports only. The fields whose check digit in the passport's machine-readable lines doesn't add up; `[]` when everything checks out. A fraud and accuracy signal that doesn't fail the verification on its own. See [Passport check problems](/libraries/smartcomply_sdk#passport-check-problems) for each value |
+| `document.face_match.compare_mode` | `"LIVENESS"` when the customer's face scan was checked for liveness, then compared. `"COMPARISON_NO_LIVENESS"` when a selfie was compared without a liveness check (see `selfie_source`) |
+| `document.face_match.selfie_source` | `"sdk"` for the customer's own capture. `"reviewer"` when your team replaced the selfie during manual review; that selfie is compared without a liveness check |
 
 <Note>
   `document` also carries `place_of_birth`, `place_of_issue`, `address`, `district`, `division`, `location`, `sub_location`, `serial_number`, and `barcode_number` — `null` unless the specific document type carries that field. `face_match.reason` is populated with a user-facing explanation when `verified` is `false` or the match was skipped.
@@ -381,7 +392,7 @@ X-Adhere-Signature: sha256=<hmac-sha256-hex>
 </Note>
 
 <Warning>
-  `status: "passed"` means **the check ran to completion — not that the person matched**. A face mismatch, a low confidence score, or an expired document still reports `status: "passed"`, with the real outcome recorded in `biometrics.face_match.verified` (and `document.is_expired` for document verification). `status: "failed"` is reserved for cases where the check itself could not run: a service error, no selfie captured, or a government database rejection. Never gate access on `status` alone — always check `face_match.verified`.
+  `status: "passed"` means every check passed: the face matched and, for document verification, the document was read and hasn't expired. A face mismatch, a failed liveness check, or an expired document reports `status: "failed"`, with the reason in `failure_reason`, for example `"Document has expired."`. Your team can still review a failed verification in the Adhere Dashboard.
 </Warning>
 
 `verification_id` matches the `entryId` returned by the SDK's completion callback.

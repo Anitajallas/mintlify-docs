@@ -87,7 +87,6 @@
                       "libraries/smartcomply_sdk",
                       "libraries/android_sdk",
                       "libraries/ios_sdk",
-                      "libraries/flutter_sdk",
                       "libraries/postman"
                     ]
                   },
@@ -174,6 +173,12 @@
                           {
                             "group": "Document Verification",
                             "pages": [
+                              {
+                                "group": "Global",
+                                "pages": [
+                                  "v3/kyc/document_verification/global/Passport"
+                                ]
+                              },
                               {
                                 "group": "Nigeria",
                                 "pages": [
@@ -698,7 +703,6 @@
                       "fr/libraries/smartcomply_sdk",
                       "fr/libraries/android_sdk",
                       "fr/libraries/ios_sdk",
-                      "fr/libraries/flutter_sdk",
                       "fr/libraries/postman"
                     ]
                   },
@@ -785,6 +789,12 @@
                           {
                             "group": "Vérification de documents",
                             "pages": [
+                              {
+                                "group": "Global",
+                                "pages": [
+                                  "fr/v3/kyc/document_verification/global/Passport"
+                                ]
+                              },
                               {
                                 "group": "Nigeria",
                                 "pages": [

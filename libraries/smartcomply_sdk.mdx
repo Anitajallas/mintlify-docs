@@ -15,7 +15,9 @@ The SDK mounts a drop-in widget over your application, handling document capture
 - **CDN & npm Support** — Install via npm/yarn or load directly from a CDN with zero build steps.
 - **Dynamic Routing** — Automatically adapts document and verification requirements from your dashboard configuration.
 - **Single-Use Sessions** — `clientId` is your permanent integration key (from your SDK Config) and is reused for every session. Each `createSession()` call issues a fresh, single-use session token — that token, not the `clientId`, is what's scoped to one verification.
-- **Multi-Country Identity** — Supports data and document channels across Nigeria (BVN, NIN, passports, driver's licenses, voter's cards, and more), Ghana, Kenya, South Africa, and Cote d'Ivoire, with generic passport verification available for other countries and country-agnostic liveness/face-match checks — exact channels depend on what's enabled in your dashboard.
+- **Multi-Country Identity** — Supports data and document channels across Nigeria (BVN, NIN, passports, driver's licenses, voter's cards, and more), Ghana, Kenya, South Africa, and Cote d'Ivoire, plus country-agnostic liveness/face-match checks — exact channels depend on what's enabled in your dashboard.
+- **Global Passport** — Verify passports from any country. You choose which countries each SDK setup offers, and customers pick theirs from a searchable list. See [Global Passport](#global-passport).
+- **PDF Documents** — Customers can upload a document as a photo or a single-page PDF, up to 10 MB.
 - **Two-Sided Document Capture** — Front is always required; back is required, optional, or not offered depending on the document type (e.g. NIN is optional-back, since not every physical NIN document has a usable reverse side).
 - **Hardware Agnostic Liveness** — Uses native webcam and MediaRecorder API for cross-platform compatibility. A single passive scan (blink + natural head movement) — no discrete step-by-step prompts.
 
@@ -217,6 +219,26 @@ const handleVerify = () => {
 
 ---
 
+## Global Passport
+
+Verify passports from any country, not only the countries that have their own passport channel. Requires `smartcomply-web-sdk@1.0.101` or later.
+
+1. In the Adhere Dashboard, open your SDK setup and add the Global Passport channel.
+2. Choose the countries this setup should accept passports from.
+3. Customers pick their country from a searchable list in the widget, then scan or upload their passport.
+
+The widget only shows the countries you chose. A passport from a different country than the one the customer picked is refused, and the customer is asked to upload a passport from that country.
+
+<Note>
+  Documents can be captured with the camera or uploaded as a JPG, PNG, or single-page PDF, up to 10 MB. This applies to every document type, not only passports.
+</Note>
+
+<Note>
+  An **expired** document fails the verification with `failure_reason: "Document has expired."`. The details read from the document are still included in the result.
+</Note>
+
+---
+
 ## Resuming a failed verification
 
 When a verification fails, your team can click **Resubmit** on it in the Adhere Dashboard. That issues a single-use **resume token**, valid for 24 hours. Open the widget with it and the customer redoes only the step that failed, on the same verification, instead of starting again. Use `smartcomply-web-sdk@1.0.93` or later.
@@ -358,7 +380,7 @@ run();
 
 ## Receiving Results (Webhook)
 
-The backend delivers exactly one `liveness.completed` webhook per verification, to the URL configured in your SDK Config, once face matching (and OCR / government DB check, depending on the flow) has finished.
+The backend delivers exactly one `liveness.completed` webhook per verification, to the URL configured in your SDK Config, once face matching (and the document or government database check, depending on the flow) has finished.
 
 <Note>
   This is the SDK's own webhook — configured per SDK Config and specific to `liveness.completed`. It's separate from the platform-wide webhook system described in [Webhooks](/webhooks) (transaction monitoring, general KYC module events, `{success, module, event, data}` shape). Both currently sign with HMAC-SHA256 and a `sha256=`-prefixed header, hex-encoded — verify against the raw request body either way.
@@ -432,12 +454,14 @@ X-Adhere-Signature: sha256=<hmac-sha256-hex>
 }
 ```
 
-For **document verification**, the same top-level shape applies, with `verification_type: "document_verification"` and a `document` block (OCR fields + document-to-selfie face match) instead of `customer_profile`:
+For **document verification**, the same top-level shape applies, with `verification_type: "document_verification"` and a `document` block (the details read from the document, plus the face match against the selfie) instead of `customer_profile`:
 
 ```json
 "document": {
   "status": "verified",
   "document_type": "passport",
+  "country": "NG",
+  "passport_check_problems": [],
   "is_expired": false,
   "first_name": "AMARA",
   "last_name": "OKAFOR",
@@ -456,10 +480,37 @@ For **document verification**, the same top-level shape applies, with `verificat
     "verified": true,
     "confidence_percentage": 55.0,
     "reason": null,
+    "compare_mode": "LIVENESS",
+    "selfie_source": "sdk",
     "selfie_url": "https://.../autoshot.jpg",
     "document_face_url": "https://.../document_face.jpg"
   }
 }
+```
+
+| Field | Description |
+|-------|-------------|
+| `document.country` | The country that issued the document, as a two-letter country code, for example `"RW"` |
+| `document.passport_check_problems` | Passports only. Passports carry check digits in the two machine-readable lines at the bottom of the data page; this lists the fields whose check digit doesn't add up. An empty list means everything checks out. See below |
+| `document.face_match.compare_mode` | `"LIVENESS"` when the customer's face scan was checked for liveness, then compared. `"COMPARISON_NO_LIVENESS"` when a selfie was compared without a liveness check (see `selfie_source`) |
+| `document.face_match.selfie_source` | `"sdk"` for the customer's own capture. `"reviewer"` when your team replaced the selfie during manual review; that selfie is compared without a liveness check |
+
+### Passport check problems
+
+`passport_check_problems` is a fraud and accuracy signal. It doesn't fail the verification on its own; use it to decide whether a passport needs a closer look.
+
+| Value | Meaning |
+|-------|---------|
+| `[]` | All check digits are correct |
+| `document_number` | The passport number may have been misread or altered |
+| `date_of_birth` | The date of birth may have been misread or altered |
+| `expiry_date` | The expiry date may have been misread or altered |
+| `personal_number` | The optional personal number may have been misread or altered |
+| `composite` | The overall check across the line doesn't add up |
+| `mrz_unreadable` | The machine-readable lines couldn't be read in full, so nothing could be checked |
+
+```json
+"passport_check_problems": ["expiry_date", "composite"]
 ```
 
 <Note>
@@ -471,7 +522,7 @@ For **document verification**, the same top-level shape applies, with `verificat
 </Note>
 
 <Warning>
-  `status: "passed"` means **the check ran to completion — not that the person matched**. A face mismatch, low confidence score, or expired document still reports `status: "passed"`, with the real outcome recorded in `biometrics.face_match.verified` (and `document.is_expired` for document verification). `status: "failed"` is reserved for cases where the check itself couldn't run (service error, no selfie captured, government DB rejection). Never gate access on `status` alone — always check `face_match.verified`.
+  `status: "passed"` means every check passed: the face matched and, for document verification, the document was read and hasn't expired. A face mismatch, a failed liveness check, or an expired document reports `status: "failed"`, with the reason in `failure_reason`. Your team can still review a failed verification in the Adhere Dashboard.
 </Warning>
 
 `verification_id` matches the `entryId` your `onComplete` callback received.

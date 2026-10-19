@@ -1,11 +1,11 @@
 ---
 title: "Kenya National ID"
 sidebarTitle: "National ID"
-description: "Extract identity details from a Kenyan national ID card using OCR."
+description: "Extract identity details from a Kenyan national ID card."
 openapi: "POST /api/onboarding/document_verification/kenya/kenya_id"
 ---
 
-Verify a customer's Kenyan national ID card by uploading a photo — no manual ID entry required. OCR extraction plus a required face match against a selfie — no liveness check (no video, no blink/motion challenge).
+Verify a customer's Kenyan national ID card by uploading a photo — no manual ID entry required. We read the details and compare the face on the document with a selfie. No liveness check is needed.
 
 <Note>
   This is a two-sided document — supply both `document_front` and `document_back` for the most complete extraction. Kenya has two ID card generations in circulation: the older laminated design and the newer "Maisha Card." Fields specific to the Maisha Card (`serial_number`, `place_of_issue`, expiry date) will come back empty on an older card — that's expected, not an error.
@@ -34,9 +34,13 @@ POST /api/onboarding/document_verification/kenya/kenya_id
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|--------------|
-| `document_front` | file | Yes | Front of the ID card. JPG or PNG, max 5MB |
-| `document_back` | file | No | Back of the ID card. JPG or PNG, max 5MB |
+| `document_front` | file | Yes | Front of the ID card. JPG, PNG or single-page PDF, max 10MB |
+| `document_back` | file | No | Back of the ID card. JPG, PNG or single-page PDF, max 10MB |
 | `selfie_image` | file | Yes | A selfie to compare against the document's face photo. JPG or PNG, max 5MB |
+
+<Tip>
+  A scanned document can be uploaded as a single-page PDF, for example `-F "document_front=@/path/to/scan.pdf"`.
+</Tip>
 
 ### Example
 
@@ -96,6 +100,7 @@ data = response.json()
 | `data.gender` | string | Extracted gender |
 | `data.id_number` | string | The ID number |
 | `data.document_type` | string | `"kenya_id"` |
+| `data.document_country` | string | The country that issued the document, as a two-letter country code: `"KE"` |
 | `data.expiry_date` | string | Maisha Card expiry date — only present on third-generation cards |
 | `data.issue_date` | string | Date of issue |
 | `data.place_of_issue` | string | Only present on third-generation "Maisha Card" IDs |
@@ -105,7 +110,9 @@ data = response.json()
 | `data.face_match` | object | Result of comparing the document's face against `selfie_image` — see below |
 | `data.face_match.attempted` | boolean | Whether a comparison was actually run |
 | `data.face_match.verified` | boolean \| null | `true`/`false` if the comparison ran; `null` if it couldn't (see Face Match Notes) |
+| `data.face_match.decision` | string | `"MATCH"` or `"NO_MATCH"` |
 | `data.face_match.confidence_percentage` | number | Match confidence, 0–100 |
+| `data.face_match.compare_mode` | string | `"COMPARISON_NO_LIVENESS"` means the two photos were compared without a liveness check |
 | `data.face_match.selfie_image` | string | URL of the uploaded selfie |
 | `message` | string | Human-readable result summary |
 
@@ -120,6 +127,7 @@ data = response.json()
     "date_of_birth": "1995-03-10",
     "id_number": "34567890",
     "document_type": "kenya_id",
+    "document_country": "KE",
     "issue_date": "2019-05-14",
     "place_of_issue": "NAIROBI",
     "serial_number": "123456789",
@@ -138,7 +146,9 @@ data = response.json()
     "face_match": {
       "attempted": true,
       "verified": true,
+      "decision": "MATCH",
       "confidence_percentage": 92.4,
+      "compare_mode": "COMPARISON_NO_LIVENESS",
       "selfie_image": "https://.../selfie.jpg"
     }
   },
