@@ -34,7 +34,11 @@ POST /api/onboarding/document_verification/nigeria/utility_bill
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|--------------|
-| `document_front` | file | Yes | Photo of the utility bill. JPG or PNG, max 5MB |
+| `document_front` | file | Yes | Photo of the utility bill. JPG, PNG or single-page PDF, max 10MB |
+
+<Tip>
+  A scanned document can be uploaded as a single-page PDF, for example `-F "document_front=@/path/to/scan.pdf"`.
+</Tip>
 
 ### Example
 
@@ -83,6 +87,7 @@ data = response.json()
 | `data.address` | string | Extracted billing address |
 | `data.id_number` | string | Account number printed on the bill |
 | `data.document_type` | string | `"utility_bill"` |
+| `data.document_country` | string | The country that issued the document, as an ISO 3166-1 alpha-2 code: `"NG"` |
 | `data.extra_fields` | object | Other fields printed on the bill — see below |
 | `message` | string | Human-readable result summary |
 
@@ -99,6 +104,7 @@ data = response.json()
     "address": "12 Adeola Odeku Street, Victoria Island, Lagos",
     "id_number": "1234567890",
     "document_type": "utility_bill",
+    "document_country": "NG",
     "extra_fields": {
       "issuer_name": "IKEJA ELECTRIC",
       "billing_period": "July 2026"

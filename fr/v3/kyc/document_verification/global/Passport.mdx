@@ -1,0 +1,226 @@
+---
+title: "Passeport"
+sidebarTitle: "Passeport"
+description: "Vérifiez un passeport de n'importe quel pays par OCR."
+openapi: "POST /api/onboarding/document_verification/passport"
+---
+
+Vérifiez le passeport d'un client, quel que soit son pays, en envoyant une photo de la page de données. Nous lisons les informations par OCR, confirmons le pays qui a délivré le passeport et comparons le visage du passeport avec un selfie.
+
+<Note>
+  Le passeport n'a qu'une face. Seul `document_front` est nécessaire.
+</Note>
+
+<Note>
+  `country` est facultatif. Envoyez-le lorsque vous connaissez le pays qui a délivré le passeport. Sans lui, nous détectons le pays à partir du passeport.
+</Note>
+
+## Endpoint
+
+```
+POST /api/onboarding/document_verification/passport
+```
+
+## Requête
+
+### En-têtes
+
+| En-tête | Valeur | Requis |
+|--------|-------|----------|
+| `x-access-token` | Votre clé secrète API | Oui |
+| `Content-Type` | `multipart/form-data` | Oui |
+
+### Paramètres de corps
+
+| Paramètre | Type | Requis | Description |
+|-----------|------|----------|--------------|
+| `document_front` | file | Oui | Photo ou scan de la page de données du passeport. JPG, PNG ou PDF d'une page, max 10 Mo |
+| `selfie_image` | file | Oui | Un selfie à comparer avec le visage du passeport. JPG ou PNG, max 5 Mo |
+| `country` | string | Non | Le pays qui a délivré le passeport, en code ISO 3166-1 alpha-2, par exemple `RW`. Laissez-le vide pour qu'il soit détecté |
+
+<Tip>
+  Un document numérisé peut être envoyé sous forme de PDF d'une page, par exemple `-F "document_front=@/path/to/scan.pdf"`.
+</Tip>
+
+### Exemple
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://adhere-api.smartcomply.com/api/onboarding/document_verification/passport" \
+  -H "x-access-token: YOUR_SECRET_KEY" \
+  -F "document_front=@/path/to/passport.jpg" \
+  -F "selfie_image=@/path/to/selfie.jpg" \
+  -F "country=RW"
+```
+
+```javascript Node.js
+const formData = new FormData();
+formData.append("document_front", fs.createReadStream("/path/to/passport.pdf"));
+formData.append("selfie_image", fs.createReadStream("/path/to/selfie.jpg"));
+formData.append("country", "RW"); // facultatif
+
+const response = await fetch(
+  "https://adhere-api.smartcomply.com/api/onboarding/document_verification/passport",
+  {
+    method: "POST",
+    headers: { "x-access-token": "YOUR_SECRET_KEY" },
+    body: formData,
+  }
+);
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://adhere-api.smartcomply.com/api/onboarding/document_verification/passport",
+    headers={"x-access-token": "YOUR_SECRET_KEY"},
+    data={"country": "RW"},  # facultatif
+    files={
+        "document_front": open("/path/to/passport.jpg", "rb"),
+        "selfie_image": open("/path/to/selfie.jpg", "rb"),
+    },
+)
+data = response.json()
+```
+</CodeGroup>
+
+## Réponse
+
+### 200 OK
+
+| Champ | Type | Description |
+|-------|------|--------------|
+| `status` | string | `"success"` si l'extraction a réussi |
+| `data.full_name` | string | Nom complet extrait |
+| `data.first_name` | string | Prénom extrait |
+| `data.last_name` | string | Nom de famille extrait |
+| `data.date_of_birth` | string | Date de naissance au format `YYYY-MM-DD` |
+| `data.gender` | string | Genre extrait |
+| `data.nationality` | string | Nationalité extraite |
+| `data.id_number` | string | Le numéro de passeport |
+| `data.document_type` | string | `"passport"` |
+| `data.document_country` | string | Le pays qui a délivré le passeport, en code ISO 3166-1 alpha-2, par exemple `"RW"` |
+| `data.expiry_date` | string | Date d'expiration du passeport |
+| `data.is_expired` | boolean | Toujours `false` sur une réponse 200. Un passeport expiré fait échouer la vérification (voir Passeports expirés ci-dessous) |
+| `data.photo` | string | Photo du visage extraite du passeport, encodée en Base64 |
+| `data.extra_fields` | object | Autres champs lus sur la page de données, comme `place_of_birth`, `place_of_issue`, `issuing_authority`, et `mrz_line1`/`mrz_line2` lorsque la zone de lecture automatique est lisible |
+| `data.face_match` | object | Résultat de la comparaison entre le visage du passeport et `selfie_image` |
+| `data.face_match.attempted` | boolean | Indique si une comparaison a été effectuée |
+| `data.face_match.verified` | boolean \| null | `true` ou `false` si la comparaison a eu lieu ; `null` si elle n'a pas pu avoir lieu |
+| `data.face_match.decision` | string | `"MATCH"` ou `"NO_MATCH"` |
+| `data.face_match.confidence_percentage` | number | Confiance de correspondance, de 0 à 100 |
+| `data.face_match.compare_mode` | string | `"COMPARISON_NO_LIVENESS"` : les deux photos sont comparées ; aucun contrôle de vivacité n'est effectué sur le selfie |
+| `data.face_match.selfie_image` | string | URL du selfie envoyé |
+| `message` | string | Résumé lisible du résultat |
+
+```json
+{
+  "status": "success",
+  "data": {
+    "valid": true,
+    "first_name": "Nassra Nassor",
+    "last_name": "Ngarango",
+    "full_name": "Nassra Nassor Ngarango",
+    "date_of_birth": "1990-05-20",
+    "gender": "F",
+    "nationality": "TANZANIAN",
+    "id_number": "TAE661142",
+    "document_type": "passport",
+    "document_country": "TZ",
+    "expiry_date": "2033-11-08",
+    "is_expired": false,
+    "photo": "/9j/4AAQSkZJRgABAQAAAQABAAD...",
+    "extra_fields": {
+      "place_of_birth": "KINONDONI",
+      "place_of_issue": "PCO, DAR ES SALAAM",
+      "issuing_authority": "PCO, DAR ES SALAAM",
+      "mrz_line1": "P<TZANGARANGO<<NASSRA<NASSOR<<<<<<<<<<<<<<<<",
+      "mrz_line2": "TAE6611429TZA9005204F3311086<<<<<<<<<<<<<<06"
+    },
+    "face_match": {
+      "attempted": true,
+      "verified": true,
+      "decision": "MATCH",
+      "confidence_percentage": 92.4,
+      "compare_mode": "COMPARISON_NO_LIVENESS",
+      "selfie_image": "https://.../selfie.jpg"
+    }
+  },
+  "message": "Document details retrieved successfully"
+}
+```
+
+<Note>
+  **Comparaison faciale :** `verified: false` avec `decision: "NO_MATCH"` signifie que la comparaison a eu lieu et que les visages ne correspondent pas. `verified: null` avec un `reason` signifie que la comparaison n'a pas pu avoir lieu, par exemple parce qu'aucun visage n'a été trouvé sur le selfie. Un problème de comparaison faciale ne bloque jamais les données du passeport : le reste de `data` est tout de même renvoyé.
+</Note>
+
+### 400 Bad Request
+
+Le passeport n'a pas été délivré par le `country` envoyé :
+
+```json
+{
+  "status": "failed",
+  "data": {
+    "error_code": "VERIFICATION_FAILED"
+  },
+  "message": "Document Verification - Passport check failed: This document wasn't issued by the country you chose. Please upload a document from that country"
+}
+```
+
+Les passeports de ce pays ne peuvent pas être vérifiés :
+
+```json
+{
+  "status": "failed",
+  "data": [],
+  "message": "Passports from this country can't be verified."
+}
+```
+
+La photo ne peut pas être lue, par exemple parce qu'une partie du passeport est coupée :
+
+```json
+{
+  "status": "failed",
+  "data": {
+    "error_code": "VERIFICATION_FAILED"
+  },
+  "message": "Document Verification - Passport check failed: Part of the document is cut off in the photo. Please retake with all edges and corners fully visible."
+}
+```
+
+### Passeports expirés
+
+Un passeport expiré fait échouer la vérification. Les informations lues sont tout de même renvoyées dans `data`, avec `is_expired: true` :
+
+```json
+{
+  "status": "failed",
+  "data": {
+    "first_name": "Nassra Nassor",
+    "last_name": "Ngarango",
+    "id_number": "TAE661142",
+    "document_type": "passport",
+    "document_country": "TZ",
+    "expiry_date": "2021-11-08",
+    "is_expired": true
+  },
+  "message": "Document Verification - Passport check failed: Document has expired."
+}
+```
+
+### 401 Unauthorized
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication credentials were not provided."
+}
+```
+
+<Note>
+  Pour la liste complète des codes d'erreur, consultez la référence [Codes d'erreur](/error_codes).
+</Note>

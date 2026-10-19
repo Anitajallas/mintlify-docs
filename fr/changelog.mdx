@@ -4,6 +4,22 @@ sidebarTitle: "Quoi de neuf"
 description: "Notes de version et mises à jour pour l'API Adhere."
 ---
 
+## Octobre 2026 — Passeport global et documents PDF
+
+### Nouveautés
+
+- **Passeport global** — Vérifiez les passeports de n'importe quel pays avec [`POST /api/onboarding/document_verification/passport`](/fr/v3/kyc/document_verification/global/Passport). Envoyez `country` lorsque vous le connaissez, ou laissez-le vide et nous le détectons. Dans le Web SDK, choisissez les pays acceptés par chaque configuration SDK ; les clients choisissent le leur dans une liste avec recherche.
+- **Documents PDF** — Les envois de documents acceptent le JPG, le PNG ou un PDF d'une page, jusqu'à 10 Mo, sur tous les endpoints de vérification de document et dans le Web SDK. Les selfies restent en JPG ou PNG, jusqu'à 5 Mo.
+
+### Changements
+
+- **Les documents expirés font échouer la vérification.** L'API renvoie `400` avec `"Document has expired."` et inclut tout de même les informations lues sur le document. Dans le Web SDK, la vérification échoue avec `failure_reason: "Document has expired."`.
+- **Nouveaux champs de résultat :** `document_country` et `face_match.decision` / `face_match.compare_mode` dans les réponses de vérification de document ; `country`, `passport_check_problems`, `face_match.compare_mode` et `face_match.selfie_source` dans le résultat du Web SDK et le bloc `document` du webhook.
+- **Comparaison faciale des documents sans vivacité :** les vérifications de document dans l'application et par API comparent la photo du document avec le selfie, sans contrôle de vivacité sur le selfie (`compare_mode: "COMPARISON_NO_LIVENESS"`). Les vérifications du Web SDK contrôlent toujours la vivacité sur le scan du visage du client.
+- **Web SDK 1.0.101** est requis pour le passeport global et l'envoi de PDF.
+
+---
+
 ## Mai 2025 — Lancement de la v3
 
 **Adhere v3** est désormais la version principale de l'API. La v3 apporte une structure d'endpoint plus propre, des données de réponse plus riches et une couverture géographique étendue.

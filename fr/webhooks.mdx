@@ -370,6 +370,8 @@ X-Adhere-Signature: sha256=<hmac-sha256-hex>
 "document": {
   "status": "verified",
   "document_type": "passport",
+  "country": "NG",
+  "passport_check_problems": [],
   "is_expired": false,
   "first_name": "AMARA",
   "last_name": "OKAFOR",
@@ -388,11 +390,20 @@ X-Adhere-Signature: sha256=<hmac-sha256-hex>
     "verified": true,
     "confidence_percentage": 55.0,
     "reason": null,
+    "compare_mode": "LIVENESS",
+    "selfie_source": "sdk",
     "selfie_url": "https://.../autoshot.jpg",
     "document_face_url": "https://.../document_face.jpg"
   }
 }
 ```
+
+| Champ | Description |
+|-------|-------------|
+| `document.country` | Le pays qui a délivré le document, en code ISO 3166-1 alpha-2, par exemple `"RW"` |
+| `document.passport_check_problems` | Passeports uniquement. Les champs dont le chiffre de contrôle, dans les lignes de lecture automatique du passeport, ne correspond pas ; `[]` lorsque tout est correct. Un signal de fraude et de précision qui ne fait pas échouer la vérification à lui seul. Voir [Problèmes de contrôle du passeport](/fr/libraries/smartcomply_sdk#problèmes-de-contrôle-du-passeport) pour chaque valeur |
+| `document.face_match.compare_mode` | `"LIVENESS"` lorsque le scan du visage du client a été contrôlé pour la vivacité, puis comparé. `"COMPARISON_NO_LIVENESS"` lorsqu'un selfie a été comparé sans contrôle de vivacité (voir `selfie_source`) |
+| `document.face_match.selfie_source` | `"sdk"` pour la capture du client. `"reviewer"` lorsque votre équipe a remplacé le selfie lors d'une revue manuelle ; ce selfie est comparé sans contrôle de vivacité |
 
 <Note>
   `document` transporte également `place_of_birth`, `place_of_issue`, `address`, `district`, `division`, `location`, `sub_location`, `serial_number`, et `barcode_number` — `null` sauf si le type de document spécifique porte ce champ. `face_match.reason` est rempli avec une explication conviviale lorsque `verified` est `false` ou que la correspondance a été ignorée.
@@ -403,7 +414,7 @@ X-Adhere-Signature: sha256=<hmac-sha256-hex>
 </Note>
 
 <Warning>
-  `status: "passed"` signifie **que la vérification est allée jusqu'au bout — pas que la personne correspondait**. Une inadéquation faciale, un score de confiance faible ou un document expiré rapportera toujours `status: "passed"`, le résultat réel étant enregistré dans `biometrics.face_match.verified` (et `document.is_expired` pour la vérification de document). `status: "failed"` est réservé aux cas où la vérification elle-même n'a pas pu s'exécuter : erreur de service, pas de selfie capturé, ou rejet de base de données gouvernementale. Ne conditionnez jamais l'accès sur le seul `status` — vérifiez toujours `face_match.verified`.
+  `status: "passed"` signifie que toutes les vérifications ont réussi : le visage correspond et, pour la vérification de document, le document a été lu et n'est pas expiré. Une non-concordance faciale, un échec du contrôle de vivacité ou un document expiré renvoie `status: "failed"`, avec la raison dans `failure_reason`, par exemple `"Document has expired."`. Votre équipe peut toujours examiner une vérification échouée dans le tableau de bord Adhere.
 </Warning>
 
 `verification_id` correspond au `entryId` renvoyé par le rappel de fin du SDK.

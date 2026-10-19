@@ -175,6 +175,12 @@
                             "group": "Document Verification",
                             "pages": [
                               {
+                                "group": "Global",
+                                "pages": [
+                                  "v3/kyc/document_verification/global/Passport"
+                                ]
+                              },
+                              {
                                 "group": "Nigeria",
                                 "pages": [
                                   "v3/kyc/document_verification/nigeria/National_ID",
@@ -785,6 +791,12 @@
                           {
                             "group": "Vérification de documents",
                             "pages": [
+                              {
+                                "group": "Global",
+                                "pages": [
+                                  "fr/v3/kyc/document_verification/global/Passport"
+                                ]
+                              },
                               {
                                 "group": "Nigeria",
                                 "pages": [

@@ -4,6 +4,22 @@ sidebarTitle: "What's New"
 description: "Release notes and updates for the Adhere API."
 ---
 
+## October 2026 — Global Passport and PDF documents
+
+### New
+
+- **Global Passport** — Verify passports from any country with [`POST /api/onboarding/document_verification/passport`](/v3/kyc/document_verification/global/Passport). Send `country` when you know it, or leave it out and we detect it. In the Web SDK, choose which countries each SDK setup accepts; customers pick theirs from a searchable list.
+- **PDF documents** — Document uploads accept JPG, PNG, or a single-page PDF, up to 10 MB, on every document verification endpoint and in the Web SDK. Selfies stay JPG or PNG, up to 5 MB.
+
+### Changes
+
+- **Expired documents fail the check.** The API returns `400` with `"Document has expired."` and still includes the details read from the document. In the Web SDK, the verification fails with `failure_reason: "Document has expired."`.
+- **New result fields:** `document_country` and `face_match.decision` / `face_match.compare_mode` in document verification responses; `country`, `passport_check_problems`, `face_match.compare_mode` and `face_match.selfie_source` in the Web SDK result and webhook `document` block.
+- **Document face match without liveness:** in-app and API document checks compare the document photo with the selfie, with no liveness check on the selfie (`compare_mode: "COMPARISON_NO_LIVENESS"`). Web SDK checks still run liveness on the customer's face scan.
+- **Web SDK 1.0.101** is required for the Global Passport and PDF uploads.
+
+---
+
 ## May 2025 — v3 Launch
 
 **Adhere v3** is now the primary API version. v3 brings a cleaner endpoint structure, richer response data, and expanded country coverage.

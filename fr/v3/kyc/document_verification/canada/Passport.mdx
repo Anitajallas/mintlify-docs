@@ -34,8 +34,12 @@ POST /api/onboarding/document_verification/canada/passport
 
 | Paramètre | Type | Requis | Description |
 |-----------|------|----------|--------------|
-| `document_front` | file | Oui | Photo de la page de données du passeport. JPG ou PNG, max 5 Mo |
+| `document_front` | file | Oui | Photo de la page de données du passeport. JPG, PNG ou PDF d'une page, max 10 Mo |
 | `selfie_image` | file | Oui | Un selfie à comparer avec la photo du visage du document. JPG ou PNG, max 5 Mo |
+
+<Tip>
+  Un document numérisé peut être envoyé sous forme de PDF d'une page, par exemple `-F "document_front=@/path/to/scan.pdf"`.
+</Tip>
 
 ### Exemple
 
@@ -93,14 +97,17 @@ data = response.json()
 | `data.nationality` | string | Nationalité extraite |
 | `data.id_number` | string | Le numéro de passeport |
 | `data.document_type` | string | `"passport"` |
+| `data.document_country` | string | Le pays qui a délivré le passeport, en code ISO 3166-1 alpha-2 : `"CA"` |
 | `data.expiry_date` | string | Date d'expiration du passeport |
-| `data.is_expired` | boolean | Si `expiry_date` est déjà passée |
+| `data.is_expired` | boolean | Toujours `false` sur une réponse 200. Un document expiré fait échouer la vérification (voir Documents expirés ci-dessous) |
 | `data.photo` | string | Photo du visage extraite du document, encodée en base64 |
 | `data.extra_fields` | object | Autres champs lus par l'OCR sur la page de données — `place_of_birth`, `issuing_authority`, `nin` (si intégré), et `mrz_line1`/`mrz_line2` si la zone lisible par machine était lisible, exactement tels qu'imprimés |
 | `data.face_match` | object | Résultat de la comparaison du visage du document avec `selfie_image` — voir ci-dessous |
 | `data.face_match.attempted` | boolean | Si une comparaison a réellement été exécutée |
 | `data.face_match.verified` | boolean \| null | `true`/`false` si la comparaison a été exécutée ; `null` si elle ne l'a pas pu (voir Notes de concordance faciale) |
+| `data.face_match.decision` | string | `"MATCH"` ou `"NO_MATCH"` |
 | `data.face_match.confidence_percentage` | number | Confiance de correspondance, 0–100 |
+| `data.face_match.compare_mode` | string | `"COMPARISON_NO_LIVENESS"` : les deux photos sont comparées ; aucun contrôle de vivacité n'est effectué sur le selfie |
 | `data.face_match.selfie_image` | string | URL du selfie téléversé |
 | `message` | string | Résumé du résultat lisible par l'homme |
 
@@ -117,6 +124,7 @@ data = response.json()
     "nationality": "CANADIAN",
     "id_number": "GA123456",
     "document_type": "passport",
+    "document_country": "CA",
     "expiry_date": "2027-09-30",
     "is_expired": false,
     "photo": "/9j/4AAQSkZJRgABAQAAAQABAAD...",
@@ -127,7 +135,9 @@ data = response.json()
     "face_match": {
       "attempted": true,
       "verified": true,
+      "decision": "MATCH",
       "confidence_percentage": 92.4,
+      "compare_mode": "COMPARISON_NO_LIVENESS",
       "selfie_image": "https://.../selfie.jpg"
     }
   },
@@ -146,6 +156,23 @@ data = response.json()
   "status": "failed",
   "data": [],
   "message": "ID photo is too blurry — please retake in good lighting with a steady hand"
+}
+```
+
+### Documents expirés
+
+Un passeport expiré fait échouer la vérification. Les informations lues sont tout de même renvoyées dans `data`, avec `is_expired: true` :
+
+```json
+{
+  "status": "failed",
+  "data": {
+    "document_type": "passport",
+    "document_country": "CA",
+    "expiry_date": "2021-08-15",
+    "is_expired": true
+  },
+  "message": "Document Verification - Passport check failed: Document has expired."
 }
 ```
 

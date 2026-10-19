@@ -34,13 +34,17 @@ POST /api/onboarding/document_verification/nigeria/national_id
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|--------------|
-| `document_front` | file | Yes | Front of the NIN slip/card. JPG or PNG, max 5MB |
-| `document_back` | file | No | Back of the NIN card. JPG or PNG, max 5MB |
+| `document_front` | file | Yes | Front of the NIN slip/card. JPG, PNG or single-page PDF, max 10MB |
+| `document_back` | file | No | Back of the NIN card. JPG, PNG or single-page PDF, max 10MB |
 | `selfie_image` | file | Yes | A selfie to compare against the document's face photo. JPG or PNG, max 5MB |
 
 <Note>
   `document_type` and `country` are not needed — this endpoint is already scoped to Nigerian National ID.
 </Note>
+
+<Tip>
+  A scanned document can be uploaded as a single-page PDF, for example `-F "document_front=@/path/to/scan.pdf"`.
+</Tip>
 
 ### Example
 
@@ -100,12 +104,15 @@ data = response.json()
 | `data.gender` | string | Extracted gender |
 | `data.id_number` | string | The NIN printed on the document |
 | `data.document_type` | string | `"national_id"` |
+| `data.document_country` | string | The country that issued the document, as an ISO 3166-1 alpha-2 code: `"NG"` |
 | `data.photo` | string | Base64-encoded face photo extracted from the document |
 | `data.extra_fields` | object | Present if the card is the older two-sided format — see below |
 | `data.face_match` | object | Result of comparing the document's face against `selfie_image` — see below |
 | `data.face_match.attempted` | boolean | Whether a comparison was actually run |
 | `data.face_match.verified` | boolean \| null | `true`/`false` if the comparison ran; `null` if it couldn't (see Face Match Notes) |
+| `data.face_match.decision` | string | `"MATCH"` or `"NO_MATCH"` |
 | `data.face_match.confidence_percentage` | number | Match confidence, 0–100 |
+| `data.face_match.compare_mode` | string | `"COMPARISON_NO_LIVENESS"`: the two photos are compared; no liveness check is run on the selfie |
 | `data.face_match.selfie_image` | string | URL of the uploaded selfie |
 | `message` | string | Human-readable result summary |
 
@@ -121,11 +128,14 @@ data = response.json()
     "gender": "M",
     "id_number": "12345678901",
     "document_type": "national_id",
+    "document_country": "NG",
     "photo": "/9j/4AAQSkZJRgABAQAAAQABAAD...",
     "face_match": {
       "attempted": true,
       "verified": true,
+      "decision": "MATCH",
       "confidence_percentage": 92.4,
+      "compare_mode": "COMPARISON_NO_LIVENESS",
       "selfie_image": "https://.../selfie.jpg"
     }
   },

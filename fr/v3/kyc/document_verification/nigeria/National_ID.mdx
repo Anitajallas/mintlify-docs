@@ -34,13 +34,17 @@ POST /api/onboarding/document_verification/nigeria/national_id
 
 | Paramètre | Type | Requis | Description |
 |-----------|------|----------|--------------|
-| `document_front` | file | Oui | Recto du slip/carte NIN. JPG ou PNG, max 5 Mo |
-| `document_back` | file | Non | Verso de la carte NIN. JPG ou PNG, max 5 Mo |
+| `document_front` | file | Oui | Recto du slip/carte NIN. JPG, PNG ou PDF d'une page, max 10 Mo |
+| `document_back` | file | Non | Verso de la carte NIN. JPG, PNG ou PDF d'une page, max 10 Mo |
 | `selfie_image` | file | Oui | Un selfie à comparer avec la photo du visage du document. JPG ou PNG, max 5 Mo |
 
 <Note>
   `document_type` et `country` ne sont pas nécessaires — cet endpoint est déjà délimité au National ID nigérian.
 </Note>
+
+<Tip>
+  Un document numérisé peut être envoyé sous forme de PDF d'une page, par exemple `-F "document_front=@/path/to/scan.pdf"`.
+</Tip>
 
 ### Exemple
 
@@ -100,12 +104,15 @@ data = response.json()
 | `data.gender` | string | Genre extrait |
 | `data.id_number` | string | Le NIN imprimé sur le document |
 | `data.document_type` | string | `"national_id"` |
+| `data.document_country` | string | Le pays qui a délivré le document, en code ISO 3166-1 alpha-2 : `"NG"` |
 | `data.photo` | string | Photo du visage extraite du document, encodée en base64 |
 | `data.extra_fields` | object | Présent si la carte est au format recto-verso plus ancien — voir ci-dessous |
 | `data.face_match` | object | Résultat de la comparaison du visage du document avec `selfie_image` — voir ci-dessous |
 | `data.face_match.attempted` | boolean | Si une comparaison a réellement été exécutée |
 | `data.face_match.verified` | boolean \| null | `true`/`false` si la comparaison a été exécutée ; `null` si elle ne l'a pas pu (voir Notes de concordance faciale) |
+| `data.face_match.decision` | string | `"MATCH"` ou `"NO_MATCH"` |
 | `data.face_match.confidence_percentage` | number | Confiance de correspondance, 0–100 |
+| `data.face_match.compare_mode` | string | `"COMPARISON_NO_LIVENESS"` : les deux photos sont comparées ; aucun contrôle de vivacité n'est effectué sur le selfie |
 | `data.face_match.selfie_image` | string | URL du selfie téléversé |
 | `message` | string | Résumé du résultat lisible par l'homme |
 
@@ -121,11 +128,14 @@ data = response.json()
     "gender": "M",
     "id_number": "12345678901",
     "document_type": "national_id",
+    "document_country": "NG",
     "photo": "/9j/4AAQSkZJRgABAQAAAQABAAD...",
     "face_match": {
       "attempted": true,
       "verified": true,
+      "decision": "MATCH",
       "confidence_percentage": 92.4,
+      "compare_mode": "COMPARISON_NO_LIVENESS",
       "selfie_image": "https://.../selfie.jpg"
     }
   },

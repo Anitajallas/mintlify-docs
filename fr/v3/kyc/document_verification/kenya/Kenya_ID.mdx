@@ -34,9 +34,13 @@ POST /api/onboarding/document_verification/kenya/kenya_id
 
 | Paramètre | Type | Requis | Description |
 |-----------|------|----------|--------------|
-| `document_front` | file | Oui | Recto de la carte d'identité. JPG ou PNG, max 5 Mo |
-| `document_back` | file | Non | Verso de la carte d'identité. JPG ou PNG, max 5 Mo |
+| `document_front` | file | Oui | Recto de la carte d'identité. JPG, PNG ou PDF d'une page, max 10 Mo |
+| `document_back` | file | Non | Verso de la carte d'identité. JPG, PNG ou PDF d'une page, max 10 Mo |
 | `selfie_image` | file | Oui | Un selfie à comparer avec la photo du visage du document. JPG ou PNG, max 5 Mo |
+
+<Tip>
+  Un document numérisé peut être envoyé sous forme de PDF d'une page, par exemple `-F "document_front=@/path/to/scan.pdf"`.
+</Tip>
 
 ### Exemple
 
@@ -96,6 +100,7 @@ data = response.json()
 | `data.gender` | string | Genre extrait |
 | `data.id_number` | string | Le numéro d'identité |
 | `data.document_type` | string | `"kenya_id"` |
+| `data.document_country` | string | Le pays qui a délivré le document, en code ISO 3166-1 alpha-2 : `"KE"` |
 | `data.expiry_date` | string | Date d'expiration de la Maisha Card — présente uniquement sur les cartes de troisième génération |
 | `data.issue_date` | string | Date de délivrance |
 | `data.place_of_issue` | string | Présent uniquement sur les IDs « Maisha Card » de troisième génération |
@@ -105,7 +110,9 @@ data = response.json()
 | `data.face_match` | object | Résultat de la comparaison du visage du document avec `selfie_image` — voir ci-dessous |
 | `data.face_match.attempted` | boolean | Si une comparaison a réellement été exécutée |
 | `data.face_match.verified` | boolean \| null | `true`/`false` si la comparaison a été exécutée ; `null` si elle ne l'a pas pu (voir Notes de concordance faciale) |
+| `data.face_match.decision` | string | `"MATCH"` ou `"NO_MATCH"` |
 | `data.face_match.confidence_percentage` | number | Confiance de correspondance, 0–100 |
+| `data.face_match.compare_mode` | string | `"COMPARISON_NO_LIVENESS"` : les deux photos sont comparées ; aucun contrôle de vivacité n'est effectué sur le selfie |
 | `data.face_match.selfie_image` | string | URL du selfie téléversé |
 | `message` | string | Résumé du résultat lisible par l'homme |
 
@@ -120,6 +127,7 @@ data = response.json()
     "date_of_birth": "1995-03-10",
     "id_number": "34567890",
     "document_type": "kenya_id",
+    "document_country": "KE",
     "issue_date": "2019-05-14",
     "place_of_issue": "NAIROBI",
     "serial_number": "123456789",
@@ -138,7 +146,9 @@ data = response.json()
     "face_match": {
       "attempted": true,
       "verified": true,
+      "decision": "MATCH",
       "confidence_percentage": 92.4,
+      "compare_mode": "COMPARISON_NO_LIVENESS",
       "selfie_image": "https://.../selfie.jpg"
     }
   },

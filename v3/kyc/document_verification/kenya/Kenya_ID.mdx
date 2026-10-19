@@ -34,9 +34,13 @@ POST /api/onboarding/document_verification/kenya/kenya_id
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|--------------|
-| `document_front` | file | Yes | Front of the ID card. JPG or PNG, max 5MB |
-| `document_back` | file | No | Back of the ID card. JPG or PNG, max 5MB |
+| `document_front` | file | Yes | Front of the ID card. JPG, PNG or single-page PDF, max 10MB |
+| `document_back` | file | No | Back of the ID card. JPG, PNG or single-page PDF, max 10MB |
 | `selfie_image` | file | Yes | A selfie to compare against the document's face photo. JPG or PNG, max 5MB |
+
+<Tip>
+  A scanned document can be uploaded as a single-page PDF, for example `-F "document_front=@/path/to/scan.pdf"`.
+</Tip>
 
 ### Example
 
@@ -96,6 +100,7 @@ data = response.json()
 | `data.gender` | string | Extracted gender |
 | `data.id_number` | string | The ID number |
 | `data.document_type` | string | `"kenya_id"` |
+| `data.document_country` | string | The country that issued the document, as an ISO 3166-1 alpha-2 code: `"KE"` |
 | `data.expiry_date` | string | Maisha Card expiry date — only present on third-generation cards |
 | `data.issue_date` | string | Date of issue |
 | `data.place_of_issue` | string | Only present on third-generation "Maisha Card" IDs |
@@ -105,7 +110,9 @@ data = response.json()
 | `data.face_match` | object | Result of comparing the document's face against `selfie_image` — see below |
 | `data.face_match.attempted` | boolean | Whether a comparison was actually run |
 | `data.face_match.verified` | boolean \| null | `true`/`false` if the comparison ran; `null` if it couldn't (see Face Match Notes) |
+| `data.face_match.decision` | string | `"MATCH"` or `"NO_MATCH"` |
 | `data.face_match.confidence_percentage` | number | Match confidence, 0–100 |
+| `data.face_match.compare_mode` | string | `"COMPARISON_NO_LIVENESS"`: the two photos are compared; no liveness check is run on the selfie |
 | `data.face_match.selfie_image` | string | URL of the uploaded selfie |
 | `message` | string | Human-readable result summary |
 
@@ -120,6 +127,7 @@ data = response.json()
     "date_of_birth": "1995-03-10",
     "id_number": "34567890",
     "document_type": "kenya_id",
+    "document_country": "KE",
     "issue_date": "2019-05-14",
     "place_of_issue": "NAIROBI",
     "serial_number": "123456789",
@@ -138,7 +146,9 @@ data = response.json()
     "face_match": {
       "attempted": true,
       "verified": true,
+      "decision": "MATCH",
       "confidence_percentage": 92.4,
+      "compare_mode": "COMPARISON_NO_LIVENESS",
       "selfie_image": "https://.../selfie.jpg"
     }
   },
