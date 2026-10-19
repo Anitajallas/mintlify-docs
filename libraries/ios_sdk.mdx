@@ -46,14 +46,14 @@ it in your app.
 1. Open your project in Xcode
 2. Go to **File → Add Package Dependencies**
 3. Enter the repository URL: `https://github.com/386konsult/smartcomply-ios-sdk`
-4. Select **Up to Next Major Version** and enter `1.6.0`
+4. Select **Up to Next Major Version** and enter `1.6.1`
 5. Click **Add Package** and select the **SmartComplySDK** library
 
 ### Package.swift
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/386konsult/smartcomply-ios-sdk", from: "1.6.0")
+    .package(url: "https://github.com/386konsult/smartcomply-ios-sdk", from: "1.6.1")
 ],
 targets: [
     .target(
@@ -66,7 +66,8 @@ targets: [
 ```
 
 <Note>
-  **1.6.0 adds a Choose your document step.** After Welcome the user picks the issuing
+  **1.6.1 adds a Choose your document step.** iOS 1.6.0 was published without these changes
+  and is the same as 1.5.0, so use 1.6.1. After Welcome the user picks the issuing
   country, then the document, from the countries and documents on your SDK Config.
   Documents go up as given, up to 10 MB, with location and other personal metadata
   removed. An expired document now reaches liveness with a warning and ends `"failed"`.
@@ -133,8 +134,8 @@ targets: [
   below. It also adds [Branding](#branding) and a custom backend host.
 
   iOS and Android are versioned separately. Up to 1.1.x the numbers never lined up; 1.2.0,
-  1.3.0, 1.4.0, 1.5.0 and 1.6.0 ship the same changes on both under the same number. Android 1.2.1 is an Android-only fix
-  with no iOS counterpart.
+  1.3.0, 1.4.0 and 1.5.0 ship the same changes on both under the same number. Android 1.6.0 matches iOS 1.6.1.
+  Android 1.2.1 is an Android-only fix with no iOS counterpart.
 </Note>
 
 <Note>
@@ -232,7 +233,7 @@ The SDK manages the entire flow automatically. The exact steps depend on the ver
 **Document mode** (photo capture):
 1. Creates a secure session
 2. Displays a welcome screen with your logo. Up to 1.5.0 it also held the ID type cards
-3. From 1.6.0, **Choose your document**: the issuing country, then the document. See [Choose your document](#choose-your-document). Up to 1.5.0 a country picker on the welcome screen, shown when multiple countries are configured
+3. From 1.6.1, **Choose your document**: the issuing country, then the document. See [Choose your document](#choose-your-document). Up to 1.5.0 a country picker on the welcome screen, shown when multiple countries are configured
 4. User photographs the front of their ID inside the guide box. From 1.5.0, **Upload from library** offers a photo from the library or a JPG, PNG or one-page PDF from Files. See [Uploading a PDF](#uploading-a-pdf)
 5. Photographs the back, when the Dashboard's `requires_back_side` for that ID type is `required` or `optional`. On `optional` the capture screen also shows a **This ID has no back side** control; tapping it goes straight to the document check with no back image. When the backend sends no value at all, the SDK falls back to matching the ID type's name against national, driver, resident and voter
 6. From 1.2.0, uploads the ID on its own and waits for the backend to read it and check it against the registry. A rejected ID gets a retake screen; an accepted one shows **Are these your details?** See [Document check](#document-check)
@@ -242,7 +243,7 @@ The SDK manages the entire flow automatically. The exact steps depend on the ver
 **Data mode** (ID number entry):
 1. Creates a secure session
 2. Displays a welcome screen with ID type selection
-3. Shows a country picker if multiple countries are configured. From 1.2.0 **Continue** stays disabled until a country is picked. From 1.6.0 it is an **Issuing country** row that opens the same list as [Choose your document](#choose-your-document)
+3. Shows a country picker if multiple countries are configured. From 1.2.0 **Continue** stays disabled until a country is picked. From 1.6.1 it is an **Issuing country** row that opens the same list as [Choose your document](#choose-your-document)
 4. User enters their ID number and any required fields
 5. Identity is verified against the national database
 6. Runs the passive liveness scan
@@ -250,7 +251,7 @@ The SDK manages the entire flow automatically. The exact steps depend on the ver
 
 ### Choose your document
 
-From **1.6.0**, in document mode, **Continue** on the welcome screen opens **Choose your
+From **1.6.1**, in document mode, **Continue** on the welcome screen opens **Choose your
 document**: the **Issuing country** row, then the documents offered for that country, each
 with "Photo page" or "Front and back" under its name. Tapping a document opens the camera.
 
@@ -287,7 +288,7 @@ seconds, and shows the user one of these:
 | Are these your details? | The ID was read and, where a registry exists for it, matched | **Yes, continue** to liveness |
 | We couldn't confirm your details | The registry did not match the number or name, or could not be reached | **Re-upload ID** |
 | We couldn't read your ID | The photo could not be read | **Retake photo** |
-| Your ID has expired | The document is past its expiry date. From 1.6.0 shown only when the backend rejects the document outright; see below | **Use a different ID** |
+| Your ID has expired | The document is past its expiry date. From 1.6.1 shown only when the backend rejects the document outright; see below | **Use a different ID** |
 | We can't check this ID yet | No registry exists for this document type, so retaking cannot help | **Choose a different ID** |
 | We couldn't finish your verification | The session has failed three document checks and gone to manual review | **Close** |
 
@@ -297,7 +298,7 @@ not billed. **End session** and **Close** call `onDismiss` with `errorCode`
 `"DOCUMENT_REJECTED"` or `"MANUAL_REVIEW_REQUIRED"`; without an `onDismiss`, **End session**
 returns the user to choosing a document.
 
-From **1.6.0** an expired document is not stopped here. When the backend reads it and lets
+From **1.6.1** an expired document is not stopped here. When the backend reads it and lets
 it through, **Are these your details?** shows the expiry date marked "Expired" and this
 warning, which VoiceOver announces: "This document has expired. You can continue, but a
 check with an expired document won't be approved. Use a valid document if you have one."
@@ -351,7 +352,7 @@ From **1.5.0** the code is read more reliably, on photos and PDFs alike:
 
 The same check runs on page 1 of a PDF. See [Uploading a PDF](#uploading-a-pdf).
 
-From **1.6.0** it refuses fewer clear passports as cut off. Passports from more countries
+From **1.6.1** it refuses fewer clear passports as cut off. Passports from more countries
 are read correctly when the text reader drops or misreads the `<` fillers, joins the two
 lines into one, or misses a line with a full personal number. Every repair must still pass
 the check digits, so a passport that really is cut off still fails.
@@ -364,7 +365,7 @@ choices:
 | Choice | Subtitle | What it opens |
 |---|---|---|
 | **Photo library** | "A photo of your ID" | The photo picker, as before |
-| **Files** | "A photo or a one-page PDF, up to 5 MB", and "up to 10 MB" from 1.6.0 | The system file picker, limited to JPG, PNG and PDF. From 1.6.0 it also offers HEIC, HEIF and WebP images |
+| **Files** | "A photo or a one-page PDF, up to 5 MB", and "up to 10 MB" from 1.6.1 | The system file picker, limited to JPG, PNG and PDF. From 1.6.1 it also offers HEIC, HEIF and WebP images |
 
 A photo picked from Files goes through exactly the same review and checks as a photo from
 the library. A PDF gets its own screen, **Check your file**, which shows page 1, the file
@@ -380,8 +381,8 @@ sees the message and **Retake or choose another**, and VoiceOver announces it:
 | Problem | Message |
 |---|---|
 | Not a JPG, PNG or PDF | "This file type isn't supported. Upload a JPG, PNG or PDF." |
-| A PDF over 5 MB. From 1.6.0, any file over 10 MB, photo or PDF | "This file is X.X MB. Upload a file of 5 MB or less." From 1.6.0 the limit in the message is 10 MB |
-| From 1.6.0, a HEIC or WebP image the phone cannot open | "We couldn't open this file. Try another file." |
+| A PDF over 5 MB. From 1.6.1, any file over 10 MB, photo or PDF | "This file is X.X MB. Upload a file of 5 MB or less." From 1.6.1 the limit in the message is 10 MB |
+| From 1.6.1, a HEIC or WebP image the phone cannot open | "We couldn't open this file. Try another file." |
 | A locked or password-protected PDF, or a file that is not really a PDF | "We couldn't open this PDF. Try another file." |
 | A PDF with more than one page | "This PDF has N pages. Upload a PDF with just the page that shows your passport." The last word is "ID" for any other document |
 
@@ -399,7 +400,7 @@ is read with Vision, both part of iOS.
 
 ### Document images
 
-From **1.6.0** documents go up as given. The limit is **10 MB** for the front and the back
+From **1.6.1** documents go up as given. The limit is **10 MB** for the front and the back
 alike, and a file over it is refused on the phone with its size. See
 [Uploading a PDF](#uploading-a-pdf).
 
@@ -765,13 +766,13 @@ public struct FlowResult {
     public let idTypeName: String?                       // e.g. "National Identity Number (NIN)"
     public let verifiedName: String?                     // see the note below
     public let idNumber: String?                         // see the note below
-    public let documentCountry: String?                  // from 1.6.0: ISO 3166-1 alpha-2, e.g. "KE"
-    public let passportCheckProblems: [String]           // from 1.6.0: [] when clean or not reported
+    public let documentCountry: String?                  // from 1.6.1: ISO 3166-1 alpha-2, e.g. "KE"
+    public let passportCheckProblems: [String]           // from 1.6.1: [] when clean or not reported
 }
 ```
 
 <Note>
-  **The 1.6.0 fields are empty for now.** `documentCountry` is the document's issuing
+  **The 1.6.1 fields are empty for now.** `documentCountry` is the document's issuing
   country and `passportCheckProblems` lists the passport fields whose check digit doesn't
   add up; see [Passport check problems](/libraries/smartcomply_sdk#passport-check-problems)
   for each value. Both are read from the result poll, which does not send them to the
