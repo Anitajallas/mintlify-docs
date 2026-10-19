@@ -401,7 +401,7 @@ X-Adhere-Signature: sha256=<hmac-sha256-hex>
 | Champ | Description |
 |-------|-------------|
 | `document.country` | Le pays qui a délivré le document, en code ISO 3166-1 alpha-2, par exemple `"RW"` |
-| `document.passport_check_problems` | Passeports uniquement. Les champs dont le chiffre de contrôle, dans les lignes de lecture automatique du passeport, ne correspond pas ; `[]` lorsque tout est correct. Un signal de fraude et de précision qui ne fait pas échouer la vérification à lui seul. Voir [Problèmes de contrôle du passeport](/fr/libraries/smartcomply_sdk#problèmes-de-contrôle-du-passeport) pour chaque valeur |
+| `document.passport_check_problems` | Passeports uniquement. Les champs dont le chiffre de contrôle, dans les lignes de lecture automatique du passeport, ne correspond pas ; `[]` lorsque tout est correct. Un signal de fraude et de précision qui ne fait pas échouer la vérification à lui seul. Voir la section « Problèmes de contrôle du passeport » de la page [Web SDK](/fr/libraries/smartcomply_sdk) pour chaque valeur |
 | `document.face_match.compare_mode` | `"LIVENESS"` lorsque le scan du visage du client a été contrôlé pour la vivacité, puis comparé. `"COMPARISON_NO_LIVENESS"` lorsqu'un selfie a été comparé sans contrôle de vivacité (voir `selfie_source`) |
 | `document.face_match.selfie_source` | `"sdk"` pour la capture du client. `"reviewer"` lorsque votre équipe a remplacé le selfie lors d'une revue manuelle ; ce selfie est comparé sans contrôle de vivacité |
 
