@@ -13,11 +13,11 @@ The SmartComply Android SDK delivers a fully self-contained identity verificatio
 - **Two verification modes** — document photo capture or ID number data entry, configured from your Dashboard
 - **Guide-box document capture** — frames the ID card precisely so images are always clean and correctly cropped
 - **ID photo checked on the phone**: for passports and the older Kenyan national ID, with every other document checked by the backend as before, the code at the bottom of the document is read on the device before upload, so a cut-off or blurred photo is retaken before it costs a check. See [Checking the photo on the phone](#checking-the-photo-on-the-phone)
-- **Upload a photo or a PDF**: the user can pick a photo from the gallery, or a JPG, PNG or one-page PDF from Files. See [Uploading a PDF](#uploading-a-pdf)
+- **Upload a photo or a PDF**: the user can pick a photo from the gallery, or a photo or one-page PDF from Files. See [Uploading a PDF](#uploading-a-pdf)
 - **ID checked before the selfie**: the backend reads the ID and checks it against the government registry first, so a cropped or misread ID is retaken on the spot. See [Document check](#document-check)
 - **Liveness detection** — a passive camera scan (blink plus natural head movement) runs automatically after identity verification, with no step-by-step prompts
 - **Dynamic ID types** — channels and fields are fetched live from your Dashboard configuration
-- **Multi-country support** — renders a country picker automatically when more than one country is configured
+- **Choose your document**: the user picks the issuing country from an A to Z list, searchable from 7 countries, then the document. Countries and documents come from your Dashboard. See [Choose your document](#choose-your-document)
 - **Dark and light mode** — theme adapts to the system setting; override via the launch intent
 - **Your brand, not ours**: colour and logo come from the Dashboard, your name appears while the session is being set up, and the font is passed by your app. See [Branding](#branding)
 - **Any backend host**: production, staging, or your own, without a rebuild
@@ -55,9 +55,20 @@ In your app or feature module `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("io.github.386konsult:android-sdk:1.5.0")
+    implementation("io.github.386konsult:android-sdk:1.6.0")
 }
 ```
+
+<Note>
+  **1.6.0 adds a Choose your document step.** After Welcome the user picks the issuing
+  country, then the document, from the countries and documents on your SDK Config.
+  Documents go up as given, up to 10 MB, with location and other personal metadata
+  removed. An expired document now reaches liveness with a warning and ends `"failed"`.
+  The result gains two extras, `RESULT_DOCUMENT_COUNTRY` and
+  `RESULT_PASSPORT_CHECK_PROBLEMS`. No code changes are needed and there are no new
+  dependencies. See [Choose your document](#choose-your-document),
+  [Document images](#document-images) and [Result Extras](#result-extras).
+</Note>
 
 <Note>
   **1.5.0 accepts a PDF of the ID.** **Upload from gallery** now opens a sheet with two
@@ -375,6 +386,8 @@ Read from the `Intent` returned to your activity result callback.
 | `RESULT_VERIFIED_NAME` | `String` | `TYPE_SUCCESS`: the verified name, when the backend returned one |
 | `RESULT_ID_TYPE_NAME` | `String` | `TYPE_SUCCESS` — e.g. `"National Identity Number (NIN)"`, `"Passport"` |
 | `RESULT_ID_NUMBER` | `String` | `TYPE_SUCCESS`: the ID number, from the user in data mode or from OCR in document mode |
+| `RESULT_DOCUMENT_COUNTRY` | `String` | `TYPE_SUCCESS`, from 1.6.0: the document's issuing country as an ISO 3166-1 alpha-2 code, e.g. `"KE"`, when the backend reports it |
+| `RESULT_PASSPORT_CHECK_PROBLEMS` | `ArrayList<String>` | `TYPE_SUCCESS`, from 1.6.0: the passport fields whose check digit doesn't add up. Empty when clean or not reported. See [Passport check problems](/libraries/smartcomply_sdk#passport-check-problems) for each value |
 | `RESULT_ERROR_MSG` | `String` | `TYPE_FAILURE` only: why the flow ended without a verification, e.g. `"SmartComply: apiKey is required"`, or from 1.2.0 the backend's reason for rejecting the ID |
 | `RESULT_ERROR_CODE` | `String` | Some `TYPE_FAILURE` results, from 1.3.0. Today only `ERROR_RESUME_LINK_INVALID`: the resume token is expired, already used, or was never a resume token |
 
@@ -387,6 +400,24 @@ Read from the `Intent` returned to your activity result callback.
   ID, with the backend's reason in `RESULT_ERROR_MSG`, and when they tap **Close** after the session
   has used its three document attempts, with `"Verification sent to manual review"`. See
   [Document check](#document-check).
+</Note>
+
+<Note>
+  **The 1.6.0 extras are empty for now.** They are read from the backend's response to the
+  liveness submit, which does not send `country` or `passport_check_problems` to the mobile
+  SDKs yet. Until it does, `RESULT_DOCUMENT_COUNTRY` is absent and
+  `RESULT_PASSPORT_CHECK_PROBLEMS` is an empty list. Read both from the
+  [webhook](/webhooks#identity-verification) in the meantime. A passport check problem is a
+  warning, not a verdict: branch on `RESULT_STATUS`.
+
+  ```kotlin
+  val country  = data.getStringExtra(SmartComplyActivity.RESULT_DOCUMENT_COUNTRY)
+  val problems = data.getStringArrayListExtra(SmartComplyActivity.RESULT_PASSPORT_CHECK_PROBLEMS).orEmpty()
+  ```
+
+  On the [embedded flow](#advanced-custom-host-activity) the same values are
+  `FlowResult.documentCountry` (`String?`) and `FlowResult.passportCheckProblems`
+  (`List<String>`).
 </Note>
 
 <Note>
@@ -425,15 +456,17 @@ The SDK steps through these screens automatically.
 | Step | Description |
 |---|---|
 | Loading | Session creation and brand config fetch |
-| Welcome | Brand splash, country picker, and ID type selection. From 1.2.0 **Continue** stays disabled until a country is picked when more than one is configured |
+| Welcome | Brand splash and **Continue**. Up to 1.5.0 it also held the country picker and ID type selection. From 1.6.0 document mode chooses both on the next screen; data mode shows an **Issuing country** row here when more than one country is configured, and **Continue** waits until one is picked |
+| Choose your document | From 1.6.0, document mode. The issuing country, then the documents offered for it. See [Choose your document](#choose-your-document) |
+| Issuing country | From 1.6.0. The A to Z country list, opened from the country row |
 | Camera Permission | Requested in `onCreate`, before the Loading screen, on the `SmartComplyActivity` path. On the embedded `SmartComplyFlowScreen` path it is requested in both modes, before the ID-input or capture step |
 | Camera Permission Denied | Embedded `SmartComplyFlowScreen` path only: "Camera Access Required" screen with **Open Settings** and **Go Back**. On the `SmartComplyActivity` path a denial returns `TYPE_CANCELLED` instead and this screen is never shown |
-| Document Capture (front) | Camera view with a guide box, a shutter, and **Upload from gallery**. From 1.5.0 that opens the **Upload your ID** sheet: **Photo library** or **Files**. See [Uploading a PDF](#uploading-a-pdf) |
+| Document Capture (front) | Camera view with a guide box, a shutter, and **Upload from gallery**. From 1.5.0 that opens the **Upload your ID** sheet: **Photo library** or **Files**. See [Uploading a PDF](#uploading-a-pdf). From 1.6.0 system back goes back one step: it closes the sheet, leaves the review for the camera, or returns from the camera to the previous screen. Up to 1.5.0 it closed the flow with `TYPE_CANCELLED` |
 | Document Capture (back) | Shown when the channel's `requires_back_side` is `required` or `optional`. The server decides, not the app. On `optional` the screen also shows a **This ID has no back side** control, which skips straight to the document check |
 | Photo review | **Use this photo** or **Retake**. From 1.4.0, for a Kenyan ID back or a passport, the photo is checked on the phone first. See [Checking the photo on the phone](#checking-the-photo-on-the-phone) |
 | Check your file | From 1.5.0, a PDF picked from Files: page 1, the file name, size and page count, with **Use this file** and **Retake or choose another**. See [Uploading a PDF](#uploading-a-pdf) |
 | Document check | From 1.2.0. "Reading your document" while the backend reads the ID and checks it against the registry. See [Document check](#document-check) |
-| Confirm details | The name, ID number, expiry and photo read from the ID. **Yes, continue** opens liveness; **No, retake my ID** goes back to the camera |
+| Confirm details | The name, ID number, expiry and photo read from the ID. **Yes, continue** opens liveness; **No, retake my ID** goes back to the camera. From 1.6.0 an expired document shows a warning here. See [Document check](#document-check) |
 | Document rejected | The backend's reason, with a retake or a different ID, and **End session** |
 | ID Input | Form fields for data-mode verification (BVN, NIN, etc.) |
 | Liveness | Passive camera scan: see [Liveness](#liveness) below |
@@ -441,6 +474,31 @@ The SDK steps through these screens automatically.
 | Success | Shown for every submitted entry. The verdict is in `RESULT_STATUS`, not on the screen |
 | Failure | Pre-submission errors only: config or network failure, liveness timeout. Offers **Try Again** |
 | Link No Longer Valid | From 1.3.0, a resumed launch whose token is expired, used or replaced. **Close** returns `TYPE_FAILURE`. See [Resuming a failed verification](#resuming-a-failed-verification) |
+
+### Choose your document
+
+From **1.6.0**, in document mode, **Continue** on Welcome opens **Choose your document**:
+the **Issuing country** row, then the documents offered for that country, each with
+"Photo page" or "Front and back" under its name. Tapping a document opens the camera.
+
+| Countries on your SDK Config | What the user sees |
+|---|---|
+| One | The country is already filled in and cannot be changed. The documents are listed straight away |
+| Two to six | Tapping the country row opens an A to Z list |
+| Seven or more | The same list with a **Search countries** field |
+
+Search ignores case and accents, so "cote" finds Côte d'Ivoire. When nothing matches, the
+user is told to check the spelling or try the English name, and that only the countries
+this service accepts are listed.
+
+The countries and documents come from your SDK Config on the Dashboard, so they change
+without an app release. The verification is created with the country's ISO code as the
+Dashboard sends it, so a newly enabled country works without an SDK update. A tenant with
+no countries configured goes from Welcome straight to the camera, as before.
+
+**Choose a different ID** on a rejected document and back from the camera return to this
+screen. Data mode has no document step: when more than one country is configured, it shows
+the same country row and list on Welcome.
 
 ### Document check
 
@@ -456,7 +514,7 @@ seconds, and shows the user one of these:
 | Are these your details? | The ID was read and, where a registry exists for it, matched | **Yes, continue** to liveness |
 | We couldn't confirm your details | The registry did not match the number or name, or could not be reached | **Re-upload ID** |
 | We couldn't read your ID | The photo could not be read | **Retake photo** |
-| Your ID has expired | The document is past its expiry date | **Use a different ID** |
+| Your ID has expired | The document is past its expiry date. From 1.6.0 shown only when the backend rejects the document outright; see below | **Use a different ID** |
 | We can't check this ID yet | No registry exists for this document type, so retaking cannot help | **Choose a different ID** |
 | We couldn't finish your verification | The session has failed three document checks and gone to manual review | **Close** |
 
@@ -464,6 +522,13 @@ The message on the rejection screens is the backend's own. A retake reuses the s
 and liveness then submits to that entry rather than creating a new one. A rejected ID is
 not billed. **End session** and **Close** return `TYPE_FAILURE` with the reason in
 `RESULT_ERROR_MSG`.
+
+From **1.6.0** an expired document is not stopped here. When the backend reads it and lets
+it through, **Are these your details?** shows the expiry date marked "Expired" and this
+warning: "This document has expired. You can continue, but a check with an expired document
+won't be approved. Use a valid document if you have one." The user can continue to liveness
+or retake with another document. A verification that goes on with an expired document ends
+with `RESULT_STATUS` `"failed"`.
 
 Data mode is unchanged: it has no document to check.
 
@@ -510,6 +575,11 @@ From **1.5.0** the code is read more reliably, on photos and PDFs alike:
 
 The same check runs on page 1 of a PDF. See [Uploading a PDF](#uploading-a-pdf).
 
+From **1.6.0** it refuses fewer clear passports as cut off. Passports from more countries
+are read correctly when the text reader drops or misreads the `<` fillers, joins the two
+lines into one, or misses a line with a full personal number. Every repair must still pass
+the check digits, so a passport that really is cut off still fails.
+
 ### Uploading a PDF
 
 From **1.5.0**, **Upload from gallery** opens a sheet titled **Upload your ID** with two
@@ -518,7 +588,7 @@ choices:
 | Choice | Subtitle | What it opens |
 |---|---|---|
 | **Photo library** | "A photo of your ID" | The photo picker, as before |
-| **Files** | "A photo or a one-page PDF, up to 5 MB" | The system file picker, limited to JPG, PNG and PDF |
+| **Files** | "A photo or a one-page PDF, up to 5 MB", and "up to 10 MB" from 1.6.0 | The system file picker, limited to JPG, PNG and PDF. From 1.6.0 it also offers HEIC, HEIF, WebP, GIF and BMP images |
 
 A photo picked from Files goes through exactly the same review and checks as a photo from
 the gallery. A PDF gets its own screen, **Check your file**, which shows page 1, the file
@@ -534,7 +604,8 @@ sees the message and **Retake or choose another**:
 | Problem | Message |
 |---|---|
 | Not a JPG, PNG or PDF | "This file type isn't supported. Upload a JPG, PNG or PDF." |
-| A PDF over 5 MB | "This file is X.X MB. Upload a file of 5 MB or less." |
+| A PDF over 5 MB. From 1.6.0, any file over 10 MB, photo or PDF | "This file is X.X MB. Upload a file of 5 MB or less." From 1.6.0 the limit in the message is 10 MB |
+| From 1.6.0, a HEIC or WebP image the phone cannot open | "We couldn't open this file. Try another file." |
 | A locked or password-protected PDF, or a file that is not really a PDF | "We couldn't open this PDF. Try another file." |
 | A PDF with more than one page | "This PDF has N pages. Upload a PDF with just the page that shows your passport." The last word is "ID" for any other document |
 
@@ -552,11 +623,23 @@ and the **Files** choice uses the system file picker, so no new permission is ne
 
 ### Document images
 
-Document photos are capped at **5 MB** server-side, in JPG or PNG. Both routes are held to 1600px on the long edge and re-encoded at JPEG quality 85, so a full-resolution phone photo does not fail with `File too large. Maximum size is 5MB.`
-
-From 1.5.0 a photo picked from Files is downscaled the same way. A PDF is not: it goes up
-as picked, which is why the SDK refuses one over 5 MB on the phone. See
+From **1.6.0** documents go up as given. The limit is **10 MB** for the front and the back
+alike, and a file over it is refused on the phone with its size. See
 [Uploading a PDF](#uploading-a-pdf).
+
+| Source | What is uploaded |
+|---|---|
+| Camera | The guide-box crop at the camera's full resolution, encoded once as JPEG. It is no longer downscaled |
+| JPG or PNG, from Photo library or Files | The picked file's own image data, with GPS location and other personal metadata removed. The orientation is kept. A PNG goes up as `image/png`, named `document.png` or `document_back.png` |
+| HEIC, WebP or another image format | Converted once to JPEG, upright, at most 4096px on the long edge |
+| PDF | Unchanged, as in 1.5.0 |
+
+Photo library and Files are handled the same way.
+
+Up to 1.5.0 document photos were capped at **5 MB** server-side, in JPG or PNG. Both routes
+were held to 1600px on the long edge and re-encoded at JPEG quality 85, and in 1.5.0 a photo
+picked from Files was downscaled the same way. A PDF went up as picked and was refused on
+the phone over 5 MB.
 
 <Warning>
 **From 1.1.0 the camera route produces a real photograph.** Up to 1.0.7 it read the viewfinder and cropped that, which on a 1080p screen is roughly 700 real pixels across the card. It now binds a CameraX `ImageCapture` alongside the preview, tied to the preview's field of view so the guide box crops the same rectangle out of both, and only that rectangle is decoded so a 12MP frame never becomes a 48 MB bitmap.
@@ -854,7 +937,8 @@ SmartComplyFlowScreen(
     darkTheme  = null,            // null = follow system setting
     fontFamily = null,            // null = platform default; see Branding
     onComplete = { result ->
-        // result.entryId, result.status, result.submittedAt
+        // result.entryId, result.status, result.submittedAt,
+        // and from 1.6.0 result.documentCountry, result.passportCheckProblems
     }
 )
 ```
@@ -882,6 +966,9 @@ detection library it already used. Both come through Google Play Services, so th
 few hundred KB to your app and the models are fetched by Play Services, not bundled.
 
 **1.5.0 adds no dependencies.** PDF pages are drawn with the platform's `PdfRenderer`.
+
+**1.6.0 adds no dependencies.** Images are converted and their metadata removed with the
+platform's own APIs.
 
 <Warning>
 **On 1.0.2 and earlier, an app that uses Ktor 3 crashes on launch:**
