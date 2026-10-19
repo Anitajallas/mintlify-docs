@@ -7,6 +7,8 @@ openapi: "POST /api/onboarding/document_verification/kenya/kenya_id"
 
 Verify a customer's Kenyan national ID card by uploading a photo — no manual ID entry required. We read the details and compare the face on the document with a selfie. No liveness check is needed.
 
+See [Supported Countries](/supported_countries) for every country and check we support.
+
 <Note>
   This is a two-sided document — supply both `document_front` and `document_back` for the most complete extraction. Kenya has two ID card generations in circulation: the older laminated design and the newer "Maisha Card." Fields specific to the Maisha Card (`serial_number`, `place_of_issue`, expiry date) will come back empty on an older card — that's expected, not an error.
 </Note>
