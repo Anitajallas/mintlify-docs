@@ -3,7 +3,7 @@ sidebarTitle: "Nuban Advanced"
 ---
 # Verify your customers' identity using their Nuban Number Advanced
 
-Adhere's NUBAN Advanced check provides an enhanced and comprehensive view of verified customer account information at a national level, including additional identity data beyond the basic NUBAN check.
+Adhere's NUBAN Advanced check resolves a bank account's name and checks it against the `customer_name` you send, returning a name-match result.
 
 #### Request Endpoint
 
@@ -16,7 +16,8 @@ Adhere's NUBAN Advanced check provides an enhanced and comprehensive view of ver
 ```json
 {
   "account_number": "0768540312",
-  "bank_code": "035"
+  "bank_code": "035",
+  "customer_name": "STEPHEN BADMUS"
 }
 ```
 
@@ -54,9 +55,16 @@ bank_codes = {
 {
     "status": "success",
     "data": {
-        "bank_id": 11,
-        "account_name": "STEPHEN BADMUS",
-        "account_number": "0768540312"
+        "valid": true,
+        "account_data": {
+            "account_number": "0768540312",
+            "account_name": "STEPHEN BADMUS",
+            "bank_id": 11
+        },
+        "comparism_data": {
+            "status": true,
+            "confidence": 1.0
+        }
     },
     "message": "Nuban details retrieved successfully"
 }
