@@ -1,7 +1,7 @@
 ---
 title: "NUBAN Avancé"
 sidebarTitle: "NUBAN Avancé"
-description: "Récupérez des données de vérification de compte améliorées incluant le nom, la banque et les détails d'identité."
+description: "Résolvez le nom d'un compte bancaire et comparez-le au nom que vous fournissez."
 openapi: "POST /api/onboarding/nigeria_kyc/nuban_advanced/"
 ---
 
@@ -28,7 +28,7 @@ POST /api/onboarding/nigeria_kyc/nuban_advanced/
 |-----------|------|----------|-------------|
 | `account_number` | string | Oui | Le numéro de compte NUBAN à 10 chiffres |
 | `bank_code` | string | Oui | Le code bancaire (voir [codes bancaires NUBAN](/v3/kyc/nigeria/nuban#référence-des-codes-bancaires)) |
-| `customer_name` | string | Oui | Le nom à comparer par rapport au nom du titulaire du compte enregistré |
+| `customer_name` | string | Oui | Le nom à comparer par rapport au nom du titulaire du compte enregistré. Sans ce champ, la requête renvoie une erreur 400. |
 
 ### Exemple
 
@@ -56,9 +56,10 @@ response = requests.post(
 
 | Champ | Type | Description |
 |-------|------|-------------|
-| `data.bank_id` | integer | Identifiant bancaire interne |
-| `data.account_name` | string | Nom du titulaire du compte enregistré |
-| `data.account_number` | string | Numéro de compte interrogé |
+| `data.valid` | boolean | Le compte a été trouvé et résolu |
+| `data.account_data.account_number` | string | Numéro de compte interrogé |
+| `data.account_data.account_name` | string | Nom du titulaire du compte enregistré |
+| `data.account_data.bank_id` | integer | Identifiant bancaire interne |
 | `data.comparism_data.status` | boolean | Si `customer_name` correspond au titulaire du compte enregistré |
 | `data.comparism_data.confidence` | number | Score de confiance de correspondance de nom (0–1) |
 
@@ -66,9 +67,12 @@ response = requests.post(
 {
   "status": "success",
   "data": {
-    "bank_id": 11,
-    "account_name": "STEPHEN BADMUS",
-    "account_number": "0768540312",
+    "valid": true,
+    "account_data": {
+      "account_number": "0768540312",
+      "account_name": "STEPHEN BADMUS",
+      "bank_id": 11
+    },
     "comparism_data": {
       "status": true,
       "confidence": 1.0
@@ -77,6 +81,14 @@ response = requests.post(
   "message": "Nuban details retrieved successfully"
 }
 ```
+
+<Note>
+La comparaison ignore la casse et les espaces en trop : `Stephen Badmus` correspond à `STEPHEN  BADMUS`. Décidez à partir de `comparism_data.status` ; conservez `confidence` pour vos propres dossiers.
+</Note>
+
+<Tip>
+Utilisez le code bancaire exact. Le code d'une autre banque renvoie « Record not found ». Par exemple, Sterling Bank est `232` et Sterling Mobile est `23201`.
+</Tip>
 
 ### 400 Bad Request
 

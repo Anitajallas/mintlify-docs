@@ -1,7 +1,7 @@
 ---
 title: "NUBAN Advanced"
 sidebarTitle: "NUBAN Advanced"
-description: "Retrieve enhanced account verification data including account name, bank, and identity details."
+description: "Resolve a bank account's name and check it against the name you provide."
 openapi: "POST /api/onboarding/nigeria_kyc/nuban_advanced/"
 ---
 
@@ -28,7 +28,7 @@ POST /api/onboarding/nigeria_kyc/nuban_advanced/
 |-----------|------|----------|-------------|
 | `account_number` | string | Yes | The 10-digit NUBAN account number |
 | `bank_code` | string | Yes | The bank code (see [NUBAN bank codes](/v3/kyc/nigeria/nuban#bank-codes-reference)) |
-| `customer_name` | string | Yes | The name to check against the registered account holder's name |
+| `customer_name` | string | Yes | The name to check against the registered account holder's name. Leaving it out returns a 400 error. |
 
 ### Example
 
@@ -56,9 +56,10 @@ response = requests.post(
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `data.bank_id` | integer | Internal bank identifier |
-| `data.account_name` | string | Registered account holder name |
-| `data.account_number` | string | Account number that was queried |
+| `data.valid` | boolean | The account was found and resolved |
+| `data.account_data.account_number` | string | Account number that was queried |
+| `data.account_data.account_name` | string | Registered account holder name |
+| `data.account_data.bank_id` | integer | Internal bank identifier |
 | `data.comparism_data.status` | boolean | Whether `customer_name` matches the registered account holder |
 | `data.comparism_data.confidence` | number | Name-match confidence score (0–1) |
 
@@ -66,9 +67,12 @@ response = requests.post(
 {
   "status": "success",
   "data": {
-    "bank_id": 11,
-    "account_name": "STEPHEN BADMUS",
-    "account_number": "0768540312",
+    "valid": true,
+    "account_data": {
+      "account_number": "0768540312",
+      "account_name": "STEPHEN BADMUS",
+      "bank_id": 11
+    },
     "comparism_data": {
       "status": true,
       "confidence": 1.0
@@ -77,6 +81,14 @@ response = requests.post(
   "message": "Nuban details retrieved successfully"
 }
 ```
+
+<Note>
+The name match ignores letter case and extra spaces, so `Stephen Badmus` matches `STEPHEN  BADMUS`. Decide on `comparism_data.status`; keep `confidence` for your own records.
+</Note>
+
+<Tip>
+Use the exact bank code. A code for a different bank returns "Record not found". For example, Sterling Bank is `232` and Sterling Mobile is `23201`.
+</Tip>
 
 ### 400 Bad Request
 

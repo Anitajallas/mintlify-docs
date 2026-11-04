@@ -617,7 +617,22 @@ paths:
                   description: "The name to check against the registered account holder's name"
                   example: "STEPHEN BADMUS"
       responses:
-        "200": { description: NUBAN advanced data retrieved }
+        "200":
+          description: Account resolved, with the name-match result
+          content:
+            application/json:
+              example:
+                status: success
+                data:
+                  valid: true
+                  account_data:
+                    account_number: "0768540312"
+                    account_name: "STEPHEN BADMUS"
+                    bank_id: 11
+                  comparism_data:
+                    status: true
+                    confidence: 1.0
+                message: "Nuban details retrieved successfully"
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
 
