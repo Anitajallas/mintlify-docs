@@ -86,6 +86,36 @@ response = requests.post(
 The name match ignores letter case and extra spaces, so `Stephen Badmus` matches `STEPHEN  BADMUS`. Decide on `comparism_data.status`; keep `confidence` for your own records.
 </Note>
 
+### Reading the name match
+
+| Field | Meaning |
+|-------|---------|
+| `comparism_data.status` | The verdict. `true`: the name you sent belongs to the account holder. `false`: it doesn't. |
+| `comparism_data.confidence` | How similar the two names are, from 0 to 1. Multiply by 100 for a percentage: `1.0` is 100% (identical), `0.37` is 37% (mostly different). |
+
+Base your decision on `status`, not on your own confidence cut-off: the provider sets the verdict. For example, a check returned `false` at 65% and `true` at 97%. In the dashboard this shows as **Name match: Match (100%)** or **Name match: Not a match (37%)**.
+
+When the name doesn't match, the call still succeeds and returns the account details, with `status: false`:
+
+```json
+{
+  "status": "success",
+  "data": {
+    "valid": true,
+    "account_data": {
+      "account_number": "0768540312",
+      "account_name": "STEPHEN BADMUS",
+      "bank_id": 11
+    },
+    "comparism_data": {
+      "status": false,
+      "confidence": 0.37
+    }
+  },
+  "message": "Nuban details retrieved successfully"
+}
+```
+
 <Tip>
 Use the exact bank code. A code for a different bank returns "Record not found". For example, Sterling Bank is `232` and Sterling Mobile is `23201`.
 </Tip>

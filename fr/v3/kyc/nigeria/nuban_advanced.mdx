@@ -86,6 +86,36 @@ response = requests.post(
 La comparaison ignore la casse et les espaces en trop : `Stephen Badmus` correspond à `STEPHEN  BADMUS`. Décidez à partir de `comparism_data.status` ; conservez `confidence` pour vos propres dossiers.
 </Note>
 
+### Lire le résultat de la comparaison
+
+| Champ | Signification |
+|-------|---------------|
+| `comparism_data.status` | Le verdict. `true` : le nom envoyé est celui du titulaire du compte. `false` : ce n'est pas le cas. |
+| `comparism_data.confidence` | Le degré de ressemblance entre les deux noms, de 0 à 1. Multipliez par 100 pour obtenir un pourcentage : `1.0` correspond à 100 % (identiques), `0.37` à 37 % (très différents). |
+
+Décidez à partir de `status`, et non d'un seuil de confiance que vous fixez vous-même : c'est le fournisseur qui rend le verdict. Par exemple, une vérification a renvoyé `false` à 65 % et `true` à 97 %. Dans le tableau de bord, cela s'affiche **Correspondance du nom : Correspond (100 %)** ou **Correspondance du nom : Ne correspond pas (37 %)**.
+
+Lorsque le nom ne correspond pas, l'appel réussit quand même et renvoie les détails du compte, avec `status: false` :
+
+```json
+{
+  "status": "success",
+  "data": {
+    "valid": true,
+    "account_data": {
+      "account_number": "0768540312",
+      "account_name": "STEPHEN BADMUS",
+      "bank_id": 11
+    },
+    "comparism_data": {
+      "status": false,
+      "confidence": 0.37
+    }
+  },
+  "message": "Nuban details retrieved successfully"
+}
+```
+
 <Tip>
 Utilisez le code bancaire exact. Le code d'une autre banque renvoie « Record not found ». Par exemple, Sterling Bank est `232` et Sterling Mobile est `23201`.
 </Tip>
