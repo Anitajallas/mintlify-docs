@@ -27,6 +27,7 @@ POST /api/onboarding/nigeria_kyc/nin/
 | Paramètre | Type | Requis | Description |
 |-----------|------|----------|-------------|
 | `identification_number` | string | Oui | Le Numéro National d'Identification à 11 chiffres du client |
+| `reverify` | boolean | Non | `true` récupère à nouveau ce NIN auprès du NIMC au lieu de l'enregistrement conservé par Adhere. Par défaut `false`. Voir la section Revérification ci-dessous. |
 
 ### Exemple
 
@@ -67,6 +68,23 @@ response = requests.post(
 data = response.json()
 ```
 </CodeGroup>
+
+## Revérification
+
+Adhere répond à une nouvelle vérification du même NIN à partir de l'enregistrement conservé la première fois. Si les informations du client ont changé depuis auprès du NIMC (par exemple après un changement de nom), envoyez `"reverify": true` pour récupérer à nouveau l'enregistrement auprès du NIMC.
+
+- La vérification est facturée au prix normal du NIN.
+- Le nouvel enregistrement remplace celui conservé : les vérifications suivantes de ce NIN renvoient les informations actuelles.
+- Si le NIMC n'a plus l'enregistrement, vous recevez une réponse « introuvable » et l'enregistrement conservé n'est plus utilisé.
+
+```json
+{
+  "identification_number": "70123456789",
+  "reverify": true
+}
+```
+
+La même action existe dans le tableau de bord : ouvrez le menu de la vérification NIN dans Onboarding Suite → Identité et choisissez **Revérifier**.
 
 ## Réponse
 
@@ -151,6 +169,23 @@ Renvoyé lorsque le NIN est manquant, malformé ou introuvable.
   "status": "failed",
   "data": [],
   "message": "Sorry, your check cannot be processed at the moment. Please try again in a few minutes"
+}
+```
+
+#### Erreurs de revérification
+
+| Cas | `message` |
+|-----|-----------|
+| `reverify` n'est ni `true` ni `false` | `reverify must be true or false` |
+| Le type d'identifiant ne peut pas être revérifié (renvoie aussi `"code": "REVERIFY_NOT_AVAILABLE"`, rien n'est facturé) | `Reverification isn't available for this ID type.` |
+| Le NIMC est injoignable (`data.error_code` vaut `PROVIDER_UNAVAILABLE`) | `The verification service is unavailable right now, so this ID wasn't reverified. Please try again in a few minutes.` |
+| Le NIMC répond que le NIN est invalide ou introuvable | La raison donnée par le NIMC, par exemple `Invalid NIN` |
+
+```json
+{
+  "status": "failed",
+  "data": { "error_code": "PROVIDER_UNAVAILABLE" },
+  "message": "The verification service is unavailable right now, so this ID wasn't reverified. Please try again in a few minutes."
 }
 ```
 
