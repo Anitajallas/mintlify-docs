@@ -55,9 +55,18 @@ In your app or feature module `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("io.github.386konsult:android-sdk:1.6.0")
+    implementation("io.github.386konsult:android-sdk:1.7.0")
 }
 ```
+
+<Note>
+  **1.7.0 returns a session reference.** `createSession()` now returns `reference`
+  alongside `token` and `expiresAt`: the backend's ID for the session, or `null` when
+  the backend does not return one. Only an integration that calls `createSession()`
+  itself gets it. `buildIntent` and `SmartComplyFlowScreen` create their own session and
+  do not pass the reference to your app. No code changes are needed and there are no
+  new dependencies.
+</Note>
 
 <Note>
   **1.6.0 adds a Choose your document step.** After Welcome the user picks the issuing

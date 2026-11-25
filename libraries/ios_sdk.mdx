@@ -46,14 +46,14 @@ it in your app.
 1. Open your project in Xcode
 2. Go to **File → Add Package Dependencies**
 3. Enter the repository URL: `https://github.com/386konsult/smartcomply-ios-sdk`
-4. Select **Up to Next Major Version** and enter `1.6.1`
+4. Select **Up to Next Major Version** and enter `1.7.1`
 5. Click **Add Package** and select the **SmartComplySDK** library
 
 ### Package.swift
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/386konsult/smartcomply-ios-sdk", from: "1.6.1")
+    .package(url: "https://github.com/386konsult/smartcomply-ios-sdk", from: "1.7.1")
 ],
 targets: [
     .target(
@@ -64,6 +64,20 @@ targets: [
     )
 ]
 ```
+
+<Note>
+  **1.7.1 reports its own version.** 1.7.0 identified itself to the backend as 1.6.1.
+  Nothing else changed, so no code changes are needed.
+</Note>
+
+<Note>
+  **1.7.0 returns a session reference.** `createSession()` now returns `reference`
+  alongside `token` and `expiresAt`: the backend's ID for the session, or `nil` when the
+  backend does not return one. Only an integration that drives the modules itself gets
+  it. `SmartComplyFlowView` creates its own session and does not pass the reference to
+  your app. No code changes are needed, the SDK still has no third-party dependencies
+  and no new Info.plist key is needed.
+</Note>
 
 <Note>
   **1.6.1 adds a Choose your document step.** iOS 1.6.0 was published without these changes
@@ -134,8 +148,9 @@ targets: [
   below. It also adds [Branding](#branding) and a custom backend host.
 
   iOS and Android are versioned separately. Up to 1.1.x the numbers never lined up; 1.2.0,
-  1.3.0, 1.4.0 and 1.5.0 ship the same changes on both under the same number. Android 1.6.0 matches iOS 1.6.1.
-  Android 1.2.1 is an Android-only fix with no iOS counterpart.
+  1.3.0, 1.4.0, 1.5.0 and 1.7.0 ship the same changes on both under the same number. Android 1.6.0 matches iOS 1.6.1.
+  Android 1.2.1 is an Android-only fix with no iOS counterpart, and iOS 1.7.1 is an iOS-only fix
+  with no Android counterpart.
 </Note>
 
 <Note>
